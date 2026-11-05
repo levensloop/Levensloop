@@ -11,8 +11,8 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <style>
-/* basis die de artifact-viewer anders zelf toevoegt, plus ruimte voor de notch en de thuisbalk */
-html{box-sizing:border-box;background:#0a57a6;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* basis die de artifact-viewer anders zelf toevoegt */
+html{background:#0a57a6}
 body{margin:0;font:14px -apple-system,BlinkMacSystemFont,system-ui,sans-serif}
 img{max-width:100%}[hidden]{display:none!important}
 html,body{-webkit-text-size-adjust:100%;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
@@ -612,6 +612,10 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .ptbar.dark{background:#10243b}
 /* doodsscherm */
 :root{--grave:#14304f;--stone:#a3adb8;--stone-2:#8e99a6}
+/* iPhone-app: het spel vult het hele scherm; bovenin een blauwe band achter de statusbalk, onderin vangt het spel de thuisbalk zelf op */
+html,body{height:100%;overflow:hidden}
+body{position:fixed;top:0;right:0;bottom:0;left:0}
+html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(to bottom,#0a57a6 0,#0a57a6 env(safe-area-inset-top,0px),var(--surface) env(safe-area-inset-top,0px))}
 </style></head><body>
 <div id="app">
   <section id="scr-start" class="screen">
@@ -688,7 +692,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261105-0853';
+const APP_VERSION='20261105-2220';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -1324,7 +1328,7 @@ function newLife(o){
   for(let i=0;i<ns;i++){const older=chance(.5);const off=older?-(ri(1,8)*12+ri(0,11)):ri(1,8)*12+ri(0,11);if(!older&&momAge+off/12>44)continue;const g=pick(['m','v']);S.rel.push(mkPerson(g==='m'?'broer':'zus',g,off,{last:o.last,ap:apMix(mom.ap,dad.ap,g)}))}
   L(`Je bent geboren in ${o.city}, ${C().n}. Je bent een ${o.g==='m'?'jongen':o.g==='v'?'meisje':'kindje'}: ${o.first} ${o.last}.`,'big');
   L(`Je moeder is ${mom.first} ${mom.last} (${momAge}), ${mom.job}. Je vader is ${dad.first} ${dad.last} (${dadAge}), ${dad.job}.`);
-  const sib=living(['broer','zus']);if(sib.length)L(`Je hebt ${sib.length===1?'een':sib.length} ouder${sib.length>1?'e':''} ${sib.map(s=>`${relWord(s)} ${s.first}`).join(' en ')}.`);
+  const sib=living(['broer','zus']);if(sib.length)L(sib.length===1?`Je hebt een oudere ${relWord(sib[0])}: ${sib[0].first}.`:`Je hebt ${sib.length} oudere ${sib.every(x=>x.role==='broer')?'broers':sib.every(x=>x.role==='zus')?'zussen':'broers en zussen'}: ${sib.map(s=>`${relWord(s)} ${s.first}`).join(', ').replace(/, ([^,]*)$/,' en $1')}.`);
   MS(`Geboren in ${o.city}, ${C().n}`,0);
   S.energy=energyMax();S.cpi=1;S.econ={s:'normaal',y:0};
   snap();
