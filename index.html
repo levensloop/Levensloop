@@ -613,8 +613,8 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 /* doodsscherm */
 :root{--grave:#14304f;--stone:#a3adb8;--stone-2:#8e99a6}
 /* iPhone-app: het spel vult het hele scherm; bovenin een blauwe band achter de statusbalk, onderin vangt het spel de thuisbalk zelf op */
-html,body{height:100%;overflow:hidden}
-body{position:fixed;top:0;right:0;bottom:0;left:0}
+html{height:100%;overflow:hidden;background:var(--cream)}
+body{position:fixed;top:0;left:0;right:0;height:var(--apph,100%);overflow:hidden}
 html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(to bottom,#0a57a6 0,#0a57a6 env(safe-area-inset-top,0px),var(--surface) env(safe-area-inset-top,0px))}
 </style></head><body>
 <div id="app">
@@ -692,7 +692,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261105-2220';
+const APP_VERSION='20261105-2227';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -8229,6 +8229,9 @@ Object.assign(EVMETA,{dw_navo:['Oorlog','🛩️'],dw_nederlaag:['Oorlog','🏳�
 /* ================= OFFLINE-APP (alleen in de iPhone-versie) ================= */
 (function(){
   const standalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
+  // iOS geeft een beginscherm-app soms een te lage schermhoogte (zonder de statusbalk): meet de echte hoogte zelf
+  const fit=()=>{let h=window.innerHeight;if(standalone){const port=window.matchMedia('(orientation: portrait)').matches;const sh=port?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);if(sh>h&&sh-h<120)h=sh}document.documentElement.style.setProperty('--apph',h+'px')};
+  fit();window.addEventListener('resize',fit);window.addEventListener('orientationchange',()=>setTimeout(fit,300));
   // opslag zo veel mogelijk vasthouden
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
   // in Safari (nog niet op het beginscherm): korte uitleg tonen
