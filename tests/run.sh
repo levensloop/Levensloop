@@ -41,6 +41,10 @@ node regress.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
 echo "== meetscherm en indeling"
 node diag.test.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
 
+echo "== reservekopie en opslag"
+node backup.test.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
+node perf.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
+
 echo "== migratie van oude levens"
 node migratie.js || RC=1
 

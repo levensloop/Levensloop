@@ -6,6 +6,7 @@ const AUTO=fs.readFileSync(path.join(__dirname,'..','auto.js'),'utf8');
 const DIR=path.join(__dirname,'..','fixtures');const URL=process.env.URL||'http://localhost:8765/';
 const KNOWN=(()=>{try{return fs.readFileSync(path.join(__dirname,'..','bekende-fouten.txt'),'utf8').split('\n').map(s=>s.trim()).filter(s=>s&&!s.startsWith('#'))}catch(e){return[]}})();
 const known=m=>KNOWN.some(k=>m.includes(k));
+const LSNEW=process.env.OLD!=='1';// nieuwe opslag verwacht (zet OLD=1 om tegen de oude versie te testen)
 (async()=>{const b=await chromium.launch();let fail=0,knownN=0;
   const files=fs.readdirSync(DIR).filter(f=>f.endsWith('.json')).sort();
   for(const f of files){const fx=JSON.parse(fs.readFileSync(path.join(DIR,f),'utf8'));
@@ -30,8 +31,12 @@ const known=m=>KNOWN.some(k=>m.includes(k));
         }catch(e){o.ok=false;o.msg='fout: '+e.message}
         out.push(o)}
       return {ids,out}});
-    // herladen: zijn alle levens er nog?
+    // herladen: zijn alle levens er nog? En is de oude opslag netjes omgezet?
     await p.reload();const after=await p.evaluate(()=>Object.keys(STORE.lives));
+    const st=await p.evaluate(()=>{let n=0;for(const k of Object.keys(localStorage))n+=localStorage.getItem(k).length;return {v1:localStorage.getItem('levensloop.v1')!=null,v2:localStorage.getItem('levensloop.v2')!=null,kb:Math.round(n/1024)}});
+    const oldKb=Math.round(Object.values(fx.localStorage).reduce((a,v)=>a+v.length,0)/1024);
+    if(typeof LSNEW!=='undefined'&&LSNEW&&(st.v1||!st.v2)){r.out.push({ok:false,name:'opslag',msg:`niet omgezet (v1 ${st.v1}, v2 ${st.v2})`})}
+    r.out.push({ok:true,name:'opslag',msg:`${oldKb} KB → ${st.kb} KB`});
     const lost=r.ids.filter(id=>!after.includes(id));
     const real=errs.filter(e=>!known(e)),kn=errs.length-real.length;knownN+=kn;
     const bad=r.out.filter(o=>!o.ok).length+lost.length+real.length;fail+=bad;

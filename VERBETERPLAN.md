@@ -11,6 +11,7 @@ Dit plan is bedoeld om door Claude in een nieuwe chat te worden uitgevoerd. Lees
 | 0 Veiligstellen | Klaar (11 nov 2026). Bron op branch `bron`, fixtures in `tests/fixtures/`, testcommando `bash tests/run.sh`. |
 | 1 Fouten | Klaar (12 nov 2026). Alle 13 punten; regressietests in `tests/review/regress.js`. Rood staan: streng (`src/debt.js`). Uitkering dekt nu de kosten (anders zakte een passieve speler elk jaar dieper in het rood). |
 | 2.1 Balk onderin | Klaar (11 nov 2026). Thijmen koos stand B (`100vh`, geen `position:fixed`), vast in `src/pwa/fix.css`. Meetscherm blijft (5× tikken op de versie). |
+| 2.2–2.4 Opslag, reservekopie, kleine punten | Klaar (12 nov 2026). Opslag v2 (`src/store.js`), reservekopie (`src/backup.js`), energiesysteem weg (keuze Thijmen), lettertypes gelaten (keuze Thijmen). |
 
 ## Hoe je dit plan uitvoert
 

@@ -40,6 +40,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 - `tests/auto.js` is de gedeelde autospeler (`window.AUTO`) die pop-ups en minigames afhandelt.
 - `tests/nulmeting/` bevat de metingen van 11 november 2026 (vóór dit verbeterplan).
 - `tests/fixtures/*.json`: ruwe `localStorage` van levens gemaakt met versie 20261105-2229 (kind, werkende van 40, gepensioneerde met huis en politiek, een afgesloten leven met erfgenaam, en `alles.json` met alles samen). `tests/review/migratie.js` laadt ze in de nieuwe versie en controleert dat elk leven opent, een jaar ouder kan worden en na herladen nog bestaat. Niet opnieuw maken: ze moeten oud blijven. `tests/review/fixtures.js` is het script waarmee ze gemaakt zijn.
+- `tests/review/backup.test.js` (reservekopie: exporteren, wissen, importeren) en `perf.js` (snelheid; hoeveel levens van 60 jaar passen, doel 30) draaien in `run.sh` mee.
 - `tests/review/regress.js`: per opgeloste fout een kleine controle in de echte app (`node regress.js 1.5` draait alleen de 1.5-tests). Voeg bij elke opgeloste fout een test toe.
 - `build.sh` stopt bij dubbele gebeurtenis-ID's en bij `S.job.perf` zonder controle op `S.job`, en waarschuwt bij dubbele functienamen.
 - `tests/bekende-fouten.txt`: JS-fouten die nog niet opgelost zijn en de test niet rood maken. Haal een regel weg zodra de fout is opgelost.
@@ -51,14 +52,16 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag, vangnet.
+Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
 
 | Bestand | Inhoud |
 |---|---|
 | `data.js` | landen (`COUNTRIES`, 17 stuks), namen, banen, prestaties |
 | `events.js`, `events2.js` | gebeurtenissen (ruim 390) |
 | `engine.js` | toestand `S`, `advance()`, sterfte, belasting, momentopnames voor de tijdmachine |
-| `ui.js` | schermen, pop-ups, opslag (`lsSave`, `saveLife`, `loadLife`, `boot`), doodscherm, startscherm |
+| `ui.js` | schermen, pop-ups, `loadLife`, `boot`, doodscherm, startscherm |
+| `store.js` | opslag v2: index `levensloop.v2`, per leven `levensloop.v2.l.<id>`, opnames `levensloop.v2.s.<id>` als verschillen (patches); `lsLoad`, `lsSave`, `saveLife`, migratie van `levensloop.v1`, melding bij volle opslag |
+| `backup.js` | reservekopie: Menu → Reservekopie en de knop op het startscherm; exporteren (deelknop, download, tekst) en importeren (bestand, plakken) |
 | `acts.js`, `leisure.js`, `health.js`, `assets.js`, `finance.js`, `house.js`, `realty.js` | activiteiten, casino, zorg, bezit, beleggen, wonen |
 | `family.js`, `circle.js`, `legacy.js` | relaties, vrienden, erven en begrafenissen |
 | `career.js`, `sectors.js`, `fight.js`, `celeb.js`, `social.js`, `biz.js` | werk, sport, roem, social media, eigen bedrijf |
@@ -75,7 +78,7 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 
 ## Belangrijkste bouwstenen
 
-- Toestand: `S` (huidig leven), `STORE` (alle levens). Opslag in `localStorage` onder de sleutel `levensloop.v1` als één JSON-blok. `S.snaps` bevat maximaal 11 jaaropnames voor de tijdmachine.
+- Toestand: `S` (huidig leven), `STORE` (alle levens, in het geheugen). Opslag: zie `store.js` (sinds fase 2; `levensloop.v1` wordt bij de eerste start omgezet). In het geheugen bevat `S.snaps` maximaal 11 jaaropnames `{m,ll,d}` voor de tijdmachine; niet-actieve levens bewaren er 3. De huizenmarkt (`flags.mk`) gaat niet mee in opnames.
 - Gebeurtenissen: `E(id,{sys,need,c,w,cd,t,x,ch,f})`, politieke gebeurtenissen `PE(...)`, register `EV`, wachtrij `Q` met `processQ()`.
 - Schermen: `modal`, `opts`, `result`, `doAct`, `openSheet`/`closeSheet`/`refreshSheet`, `row`, `sec`, `card`, `kv`, `amountModal`, `toast`.
 - Spelwaarden: `hap`, `kar`, `sma`, `sk`, `cash`, `ageY()`, `year()`, `netWorth()`, `L(tekst,klasse)` voor het logboek, `use(k)` en `S.acts[...]` voor "één keer per jaar".
@@ -92,3 +95,6 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 - Wie alleen van een uitkering leeft, krijgt lager levensonderhoud (wat er na de huur overblijft, minstens 60%), en de uitkering dekt huur tot 16.000 × prijspeil. Zonder dat zakte een passieve speler elk jaar dieper in het rood.
 - `build.sh` maakt ook `pwa/test.html`: dezelfde app met statusbalk `black-translucent`, naam "LL test" en een eigen opslagsleutel (`levensloop.test.v1`), zodat Thijmen die los op zijn beginscherm kan zetten zonder zijn echte levens te raken.
 - De service worker cachet de app. Na een deploy ziet Thijmen een balk "Nieuwe versie · tik om bij te werken".
+
+- Het energiesysteem is in fase 2 verwijderd (Thijmens keuze).
+- Na openen toont de app meteen het laatst gespeelde leven; het startscherm zit in Menu → Startscherm.

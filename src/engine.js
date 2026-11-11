@@ -62,7 +62,7 @@ function newLife(o){
   L(`Je moeder is ${mom.first} ${mom.last} (${momAge}), ${mom.job}. Je vader is ${dad.first} ${dad.last} (${dadAge}), ${dad.job}.`);
   const sib=living(['broer','zus']);if(sib.length)L(sib.length===1?`Je hebt een oudere ${relWord(sib[0])}: ${sib[0].first}.`:`Je hebt ${sib.length} oudere ${sib.every(x=>x.role==='broer')?'broers':sib.every(x=>x.role==='zus')?'zussen':'broers en zussen'}: ${sib.map(s=>`${relWord(s)} ${s.first}`).join(', ').replace(/, ([^,]*)$/,' en $1')}.`);
   MS(`Geboren in ${o.city}, ${C().n}`,0);
-  S.energy=energyMax();S.cpi=1;S.econ={s:'normaal',y:0};
+  S.cpi=1;S.econ={s:'normaal',y:0};
   snap();
   return S;
 }
@@ -95,7 +95,7 @@ function advance(){
 }
 function snap(){
   if(S.m%12!==0||S.snaps.some(x=>x.m===S.m))return;
-  const c=Object.assign({},S);delete c.snaps;delete c.log;
+  const c=Object.assign({},S);delete c.snaps;delete c.log;if(c.flags&&c.flags.mk){c.flags=Object.assign({},c.flags);delete c.flags.mk}// huizenmarkt niet in de opname
   S.snaps.push({m:S.m,ll:S.log.length,d:JSON.stringify(c)});
   while(S.snaps.length>11)S.snaps.shift();
 }
@@ -118,7 +118,6 @@ function netWorth(){let n=S.money-S.debt-S.loan+(S.trust||0)+(S.swiss||0);for(co
 function sponsor(){if(S.foll<25000)return 0;const act=S.flags.postY!=null&&year()-S.flags.postY<=1;const eng=S.flags.eng??50;return Math.round(S.foll*.03*(eng/60)*(act?1:.25))}
 function taxOn(g){if(g<=0||(typeof noTax==='function'&&noTax()))return 0;const c=S.cpi||1;g/=c;const t=g<=38000?g*.3697:38000*.3697+(g-38000)*law('ib');const cred=Math.max(0,8000-Math.max(0,g-25000)*.08);return Math.max(0,t-cred)*c}
 function taxable(){let g=0;for(const [k,v] of incomeParts())if(['Salaris','Directeurssalaris','Militair salaris','Invaliditeitspensioen','Militaire uitkering','Werk voor de bezetter','WW-uitkering','Politieke functie','Lobbywerk','Commissariaten','Talkshowgast','Pensioen','Sponsordeals','Social media'].includes(k))g+=v;return g}
-function energyMax(){const a=ageY();if(a<4)return 3;let e=a<12?8:12;if(inJail())return 10;if(S.job&&!S.job.part)e-=3;else if(S.job)e-=1;if(S.edu.cur)e-=2;if(S.edu.stage==='basis'||S.edu.stage==='middel')e-=2;e-=Math.min(3,living('kind').filter(k=>pAge(k)<6).length);if(S.st.health>75)e+=2;if(S.st.health<30)e-=3;if(a>=70)e-=2;for(const b of S.biz)e-=1;return Math.max(3,e)}
 function econLabel(){const e=S.econ||{s:'normaal'};return {groei:'Hoogconjunctuur',normaal:'Stabiel',recessie:'Recessie'}[e.s]}
 const econ=()=>(S.econ&&S.econ.s)||'normaal';
 function incomeParts(){const a=S.m/12,out=[];
@@ -206,7 +205,6 @@ function birthday(){
   if(a===18&&S.home.k==='ouders'&&!inJail())Q.push({id:'s_18'});
   if(a===aowAge()&&S.job&&!S.job.part)Q.push({id:'s_pensioen'});
   if(a>=aowAge()&&!S.pension)setPension();
-  S.energy=energyMax();
   healthCheck(a,h0);
   if(a===18&&S.trust>0){cash(S.trust);L(`Je bent 18: het geld dat voor je vaststond (${fmt(S.trust)}) staat nu op je rekening.`,'good');S.trust=0}
   if(a===16&&S.flags.jeugd&&!S.job){setJob('voetbal',0);L('Je jeugdcontract gaat over in een profcontract!','good')}

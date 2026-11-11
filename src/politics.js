@@ -169,7 +169,7 @@ function runGR(){const W=polW(),P=S.pol;const n=['Amsterdam','Rotterdam','Den Ha
   P.camp=0;return out.join(' ')}
 /* ---------- acties ---------- */
 function partyLineOf(st,p){const v=p[st[1]];if(Math.abs(v-50)<12)return 'nuance';return (v-50)*st[2]>0?'eens':'oneens'}
-function mgDebate(title,cb){PREPAID=1;const p=PTY(S.pol.party);const qs=stellNow().slice().sort(()=>R()-.5).slice(0,4);let i=0,ok=0,tk=0,left=0;
+function mgDebate(title,cb){const p=PTY(S.pol.party);const qs=stellNow().slice().sort(()=>R()-.5).slice(0,4);let i=0,ok=0,tk=0,left=0;
   const step=()=>{clearInterval(tk);if(i>=qs.length){closeModal();cb(ok/qs.length);return}const st=qs[i],right=partyLineOf(st,p);left=10;
     const pickA=a=>{clearInterval(tk);if(a===right){ok++;toast(pick(['Applaus in de zaal!','Sterk antwoord.','Die zit!']))}else toast(right==='nuance'?'Je partij ziet het genuanceerder.':`Je partij is het hier juist ${right==='eens'?'mee eens':'mee oneens'}.`);i++;step()};
     modal({title,em:'🎤',cat:`Stelling ${i+1} van ${qs.length} · ${p.k}`,text:st[0],html:'<div class="timer"><i id="qt" style="width:100%;transition:width 1s linear"></i></div>',choices:[{t:'👍 Eens',on:()=>pickA('eens')},{t:'👎 Oneens',on:()=>pickA('oneens')},{t:'⚖️ Het ligt genuanceerd',on:()=>pickA('nuance')}]});

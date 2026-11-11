@@ -23,11 +23,11 @@ t('1.4','niet gokken of inzetten als je rood staat','NL',async()=>{S.m=25*12;S.m
   return {ok:dis&&!open,msg:`casino-rij ${dis?'uit met "Je staat rood"':'NIET uit'}, bedragvenster ${open?'opent toch':'opent niet'}`}});
 
 const debtHelpers=`var pickCh=async re=>{const b=[...document.querySelectorAll('#modal .btn')].find(x=>re.test(x.textContent));if(!b)return false;b.click();await sl(40);for(let i=0;i<5&&!document.querySelector('#modal').hidden;i++){const g=[...document.querySelectorAll('#modal .btn')].find(x=>/Verder|Oké|OK|Sluiten/.test(x.textContent))||document.querySelector('#modal .btn');g&&g.click();await sl(30)}return true};
-var year1=async()=>{Q.length=0;S.m=Math.floor(S.m/12)*12+11;advance();const has=Q.some(q=>q.id==='s_schuld'||q.id==='s_failliet');Q=Q.filter(q=>q.id==='s_schuld'||q.id==='s_failliet');return has};`;
+var year1=async()=>{Q.length=0;S.m=Math.floor(S.m/12)*12+12;debtYear();const has=Q.some(q=>q.id==='s_schuld'||q.id==='s_failliet');Q=Q.filter(q=>q.id==='s_schuld'||q.id==='s_failliet');return has};`;
 
-t('1.5a','rood staan onder de grens: rente en logregel','NL',async()=>{S.m=30*12;S.money=-3000;const n0=S.log.length;Q.length=0;S.m=30*12+11;advance();
-  const lines=S.log.slice(n0).map(l=>l.t||l[0]||String(l)).join(' ');Q.length=0;
-  return {ok:/staat .*rood/.test(lines)&&/Rente rood staan|rente rood staan/i.test(lines)&&!Q.some(q=>q.id==='s_schuld'),msg:lines.match(/Je staat.{0,60}/)?.[0]||'geen logregel'}});
+t('1.5a','rood staan onder de grens: rente en logregel','NL',async()=>{S.m=30*12;S.money=-12000;period={inc:0,exp:0,src:{},out:{}};monthTick();const rente=Math.round(period.out['Rente rood staan']||0);
+  S.money=-3000;const n0=S.log.length;Q.length=0;debtYear();const lines=S.log.slice(n0).map(l=>l.t).join(' ');
+  return {ok:rente===120&&/staat .*rood/.test(lines)&&!Q.some(q=>q.id==='s_schuld'),msg:`rente op € 12.000 rood: € ${rente} per maand · ${lines.match(/Je staat.{0,60}/)?.[0]||'geen logregel'}`}});
 
 t('1.5b','boven de grens: schuldeisers en schuldsanering','NL',async()=>{eval(DH);S.m=30*12;S.money=-200000;const has=await year1();processQ();await sl(30);
   const title=document.querySelector('#modal').textContent;const ok1=has&&/Schuldeisers/.test(title);await pickCh(/Schuldsanering/);
@@ -73,6 +73,29 @@ t('1.13','vangnet bij een fout in een keuze','NL',async()=>{S.m=20*12;localStora
   const a=ageY();Q.length=0;document.querySelector('#t-age').click();await sl(100);for(let i=0;i<10&&!document.querySelector('#modal').hidden;i++){closeModal();await sl(20)}
   openSheet('Foutenlog',sheetErrors);await sl(50);const fl=document.querySelector('#sheet-b').textContent;closeSheet();delete EV.test_crash;
   return {ok:modalDicht&&/Je leven is bewaard/.test(toastTxt)&&log.some(x=>/bewuste testfout/.test(x.m))&&ageY()===a+1&&/bewuste testfout/.test(fl),msg:`pop-up dicht ${modalDicht} · melding "${toastTxt}" · in foutenlog ${log.length} · spel gaat door ${ageY()===a+1}`}});
+
+t('2.2a','compacte opnames: na herladen precies hetzelfde','NL',async()=>{const canon=o=>JSON.stringify(o,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((a,x)=>(a[x]=v[x],a),{}):v);
+  for(let i=0;i<25;i++){S.st.health=Math.max(S.st.health,80);Q.length=0;advance();Q.length=0;if(i===12)market()}saveLife();
+  const before=S.snaps.map(x=>canon(JSON.parse(x.d)));const id=S.id;
+  // opnieuw inlezen zoals bij het openen van de app
+  const st=lsReadV2();const after=st.lives[id].snaps.map(x=>canon(JSON.parse(x.d)));
+  const same=before.length===after.length&&before.every((x,i)=>x===after[i]);
+  let kb=0;for(const k of Object.keys(localStorage))if(k.includes(id))kb+=localStorage.getItem(k).length;
+  STORE=st;loadLife(id);const a0=ageY();rewind(10);const ok10=ageY()===a0-10;
+  return {ok:same&&ok10,msg:`${before.length} opnames ${same?'gelijk':'VERSCHILLEN'} · 10 jaar terug ${ok10?'werkt':'mislukt'} · opslag van dit leven ${Math.round(kb/1024)} KB`}});
+
+t('2.2b','volle opslag geeft een melding','NL',async()=>{S.m=20*12;saveLife();const junk='x'.repeat(500000);let i=0;try{for(;i<40;i++)localStorage.setItem('junk'+i,junk)}catch(e){}
+  for(let k=0;k<30;k++)S.log.push({a:20,y:2040,t:'vul '.repeat(2000),c:''});saveLife();await sl(50);const t=document.querySelector('#modal').textContent;closeModal();
+  for(let k=0;k<i;k++)localStorage.removeItem('junk'+k);LSFULL=false;
+  return {ok:/opslag is vol/.test(t),msg:/opslag is vol/.test(t)?'melding "Je opslag is vol" verschijnt':'GEEN melding'}});
+
+t('2.4','verder waar je was, startscherm in het menu, energie weg','NL',async()=>{for(let i=0;i<3;i++){Q.length=0;advance();Q.length=0}saveLife();const id=S.id;
+  // opnieuw opstarten zoals de app dat doet
+  S=null;STORE={lives:{}};lsLoad();boot({});await sl(50);const opened=curScreen==='game'&&S&&S.id===id;closeModal();
+  openSheet('Hoofdmenu',sheetMain);await sl(50);[...document.querySelectorAll('#sheet-b .mrow')].find(r=>/Startscherm/.test(r.textContent)).click();await sl(400);const start=curScreen==='start';
+  loadLife(id);const b=document.querySelector('#t-rel');b.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));haptic(5);const fx=b.classList.contains('tapfx');closeSheet();
+  const noE=typeof spendE==='undefined'&&typeof energyMax==='undefined'&&S.energy===undefined;
+  return {ok:opened&&start&&fx&&noE,msg:`opent laatste leven ${opened} · menu → startscherm ${start} · knop veert in ${fx} · energiesysteem weg ${noE}`}});
 
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];

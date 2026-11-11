@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 cd "$(dirname "$0")"
-JS="src/data.js src/events.js src/engine.js src/career.js src/sectors.js src/icons.js src/avatar.js src/house.js src/choices.js src/create.js src/circle.js src/fight.js src/celeb.js src/ui.js src/assets.js src/finance.js src/debt.js src/family.js src/minigames.js src/crime2.js src/health.js src/leisure.js src/acts.js src/events2.js src/prison.js src/biz.js src/social.js src/realty.js src/school.js src/legacy.js src/politics.js src/polsys.js src/prlite.js src/politics2.js src/politics3.js src/pres.js src/reg.js src/mil.js src/mil2.js src/war.js src/mil3.js src/occ.js src/eco.js src/eco2.js src/eco3.js src/coup.js src/coup2.js src/diag.js src/vangnet.js"
+JS="src/data.js src/events.js src/engine.js src/career.js src/sectors.js src/icons.js src/avatar.js src/house.js src/choices.js src/create.js src/circle.js src/fight.js src/celeb.js src/ui.js src/store.js src/backup.js src/assets.js src/finance.js src/debt.js src/family.js src/minigames.js src/crime2.js src/health.js src/leisure.js src/acts.js src/events2.js src/prison.js src/biz.js src/social.js src/realty.js src/school.js src/legacy.js src/politics.js src/polsys.js src/prlite.js src/politics2.js src/politics3.js src/pres.js src/reg.js src/mil.js src/mil2.js src/war.js src/mil3.js src/occ.js src/eco.js src/eco2.js src/eco3.js src/coup.js src/coup2.js src/diag.js src/vangnet.js src/boot.js"
 SP=$(mktemp -d)
 # 1) claude.ai-versie
 {

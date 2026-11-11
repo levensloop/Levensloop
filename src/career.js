@@ -146,7 +146,7 @@ const nl1=v=>(+v).toLocaleString('nl-NL',{minimumFractionDigits:1,maximumFractio
 const clampG=v=>Math.max(1,Math.min(10,Math.round(v*10)/10));
 const gradeAvg=()=>{const v=Object.values(S.edu.gr||{});return v.length?v.reduce((x,y)=>x+y,0)/v.length:6};
 const gradesPerf=()=>clamp(Math.round((gradeAvg()-1)/9*100));
-function mgQuiz(title,qs,cb,free){if(!free){if(!spendE(1))return;PREPAID=1}let i=0,ok=0,left=0,tk=0;
+function mgQuiz(title,qs,cb,free){let i=0,ok=0,left=0,tk=0;
   const step=()=>{clearInterval(tk);if(i>=qs.length){closeModal();cb(ok/qs.length);return}const [q,ans]=qs[i];const right=ans[0];left=12;
     modal({title,em:'📝',cat:`Vraag ${i+1} van ${qs.length}`,text:q,html:'<div class="timer"><i id="qt" style="width:100%;transition:width 1s linear"></i></div>',choices:ans.slice().sort(()=>R()-.5).map(a=>({t:a,on:()=>{if(a===right){ok++;toast('Goed!')}else toast(`Fout, het was: ${right}`);i++;step()}}))});
     tk=setInterval(()=>{if(!$('#qt')){clearInterval(tk);return}left--;const t=$('#qt');if(t)t.style.width=(left/12*100)+'%';if(left<=0){toast(`Te laat! Het was: ${right}`);i++;step()}},1000)};step()}
@@ -176,7 +176,7 @@ const WORKG={
  fame:[['Een journalist stelt een gemene vraag.',[['Met humor pareren',2],['"Geen commentaar"',1],['Boos weglopen',0]]],['Een fan wil een selfie terwijl je eet.',[['Vriendelijk na het eten',2],['Snel een foto',1],['Wegsturen',0]]]],
  politiek:[['Een journalist duikt in een oude tweet van je.',[['Excuses en uitleggen wat je nu vindt',2],['Ontkennen',0],['Een woordvoerder laten reageren',1]]],['Je partij wil dat je tegen je eigen plan stemt.',[['In gesprek gaan en een compromis zoeken',2],['Tegenstemmen',1],['Uit protest de zaal verlaten',0]]]]};
 const SIG={zorg:['🩺','Extra dienst draaien','Meer geld, maar zwaar'],horeca:['🍳','Iets nieuws bedenken','Een nieuw gerecht of idee voor de gasten'],tech:['🐞','Een lastig probleem oplossen','Een minigame van je brein'],kantoor:['📞','Klanten bellen','Kans op een bonus'],onderwijs:['📝','Lessen goed voorbereiden','Betere lessen, tevreden leiding'],handwerk:['🧰','Overuren maken','Extra geld'],fame:['🎤','Jezelf in de kijker spelen','Meer bekendheid'],politiek:['🗳️','Campagne voeren','De kiezers overtuigen']};
-function mgWork(cb){if(!spendE(1))return;PREPAID=1;const pool=WORKQ.concat(WORKG[jobGroup(S.job.id)]||[]).sort(()=>R()-.5).slice(0,4);let i=0,pts=0;
+function mgWork(cb){const pool=WORKQ.concat(WORKG[jobGroup(S.job.id)]||[]).sort(()=>R()-.5).slice(0,4);let i=0,pts=0;
   const step=()=>{if(i>=pool.length){closeModal();cb(pts/(pool.length*2));return}const [q,ans]=pool[i];modal({title:'Werkdag',em:jobEm(S.job.id),cat:`Situatie ${i+1} van ${pool.length}`,text:q,choices:ans.slice().sort(()=>R()-.5).map(([a,p])=>({t:a,on:()=>{pts+=p;i++;toast(p===2?'Sterk!':p===1?'Kan beter':'Oei');step()}}))})};step()}
 function workDay(){mgWork(sc=>doAct('Werkdag',()=>{const m_=use('werk');let d=Math.round((sc-.5)*18);if(d>0)d=Math.round(d*m_);(S.job&&(S.job.perf=clamp(S.job.perf+d)));hap(sc>=.75?2:sc<.4?-2:0);return sc>=.75?`Je hebt alles goed opgelost. Je baas is onder de indruk (prestaties +${d}).`:sc>=.5?`Een prima werkdag (prestaties ${d>=0?'+':''}${d}).`:`Een rommelige dag. Je baas heeft het gemerkt (prestaties ${d}).`},true,jobEm(S.job.id)))}
 function sigAction(){const g=jobGroup(S.job.id),[e,t]=SIG[g];

@@ -473,6 +473,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .rapport{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:4px}
 .rapport div{display:flex;justify-content:space-between;gap:8px;font-size:15px;border-bottom:.5px solid var(--sep);padding:4px 0}
 .rapport b{font-variant-numeric:tabular-nums}
+@keyframes tapfx{0%{transform:scale(1)}35%{transform:scale(.94)}100%{transform:scale(1)}}.tapfx{animation:tapfx .2s ease-out}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .choices .btn.sub{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;text-align:left;padding-block:9px}.choices .btn.sub .ctx{display:flex;flex-direction:column;gap:2px;min-width:0}.choices .btn.sub .ctx>span{font-weight:700}.cic{flex:none;width:42px;height:42px;border-radius:11px;background:#fff;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.12)}.cic .ico{width:36px;height:36px}.ico{display:block}.mic .ico{width:44px;height:44px;margin:auto}.ptitle .ico{width:48px;height:48px}.card h3 .ico{width:36px;height:36px;display:inline-block;vertical-align:-10px}.bface .ico,.face .ico{width:44px;height:44px}.choices .btn.sub small{font-size:13px;font-weight:500;opacity:.72;line-height:1.3}
 [hidden]{display:none!important}
