@@ -612,9 +612,11 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .ptbar.dark{background:#10243b}
 /* doodsscherm */
 :root{--grave:#14304f;--stone:#a3adb8;--stone-2:#8e99a6}
-/* iPhone-app: het spel vult het hele venster; onderin vangt het spel de thuisbalk zelf op */
-html{height:100%;overflow:hidden;background:var(--cream)}
-body{position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden}
+/* iPhone-app: het spel vult het hele venster; onderin vangt het spel de thuisbalk zelf op.
+   Stand B uit het meetscherm (verbeterplan 2.1, getest door Thijmen op 11-11-2026):
+   hoogte 100vh en geen position:fixed. Met 100% of position:fixed bleef op iOS onderin een lege strook. */
+html{height:100vh;overflow:hidden;background:var(--cream)}
+body{height:100vh;position:relative;overflow:hidden}
 html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
 </style></head><body>
 <div id="app">
@@ -692,7 +694,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261111-2331';
+const APP_VERSION='20261112-0026';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -939,28 +941,10 @@ E('muziekles',{a:[7,14],once:1,t:'Muziekles',x:'Mag je op muziekles? Welk instru
  ['Gitaar',()=>{sk('muziek',10);loo(1);return 'Je eerste nummer is Wonderwall, natuurlijk.'}],
  ['Drums',()=>{sk('muziek',9);relAdj('vader',-3);return 'De buren zijn minder enthousiast.'}],
  ['Nee, dank je',()=>'Muziek is niks voor jou.']]});
-E('ouderruzie',{a:[5,17],c:()=>living('moeder').length&&living('vader').length&&!S.flags.divorced,t:'Ruzie thuis',x:'Je ouders hebben een flinke ruzie in de keuken.',ch:[
- ['Bemiddelen',()=>{if(chance(.5)){kar(2);return 'Je brengt ze weer nader tot elkaar.'}hap(-3);return 'Ze sturen je naar je kamer.'}],
- ['Koptelefoon op',()=>{hap(-2);return 'Je zet de muziek harder.'}]]});
-E('scheiding',{a:[4,17],once:1,w:.25,c:()=>living('moeder').length&&living('vader').length,t:'Je ouders gaan scheiden',x:'Je ouders vertellen dat ze uit elkaar gaan.',ch:[
- ['Bij je moeder wonen',()=>{S.flags.divorced=1;hap(-12);relAdj('moeder',8);relAdj('vader',-10);return 'Je ziet je vader nog om het weekend.'}],
- ['Bij je vader wonen',()=>{S.flags.divorced=1;hap(-12);relAdj('vader',8);relAdj('moeder',-10);return 'Je ziet je moeder nog om het weekend.'}],
- ['Co-ouderschap',()=>{S.flags.divorced=1;hap(-9);return 'Je woont om de week bij een andere ouder. Twee tandenborstels.'}]]});
 E('rekenwedstrijd',{a:[8,12],t:'Rekenwedstrijd',x:'Je school doet mee aan een landelijke rekenwedstrijd.',ch:[
  ['Meedoen',()=>{if(chance(S.st.smarts/140)){hap(8);sma(3);MS('Won een landelijke rekenwedstrijd',2);return 'Je wint de eerste prijs!'}hap(-1);return 'Je eindigt in de middenmoot.'}],
  ['Liever niet',()=>'Je kijkt vanaf de zijlijn toe.']]});
 /* --- tieners --- */
-E('verliefd',{a:[12,16],t:'Verliefd',ctx:()=>({n:rname()}),x:c=>`Je bent tot over je oren verliefd op ${c.n} uit je klas.`,ch:[
- ['Briefje sturen',c=>{if(chance(S.st.looks/120+.15)){hap(10);return `${c.n} vindt jou ook leuk! Jullie zijn een tijdje samen.`}hap(-8);return `${c.n} laat het briefje rondgaan in de klas. Pijnlijk.`}],
- ['Een vriend laten vragen',c=>{if(chance(.35)){hap(8);return `Het werkt. Jullie gaan samen naar de film.`}hap(-4);return 'Je vriend verpest het compleet.'}],
- ['Niks doen',()=>{hap(-2);return 'Je kijkt van een afstandje.'}]]});
-E('feestje',{a:[14,17],t:'Een feestje',x:'Je bent uitgenodigd voor een feest waar ook alcohol is.',ch:[
- ['Meedoen',()=>{hap(6);if(chance(.3)){hea(-3);relAdj('moeder',-6);relAdj('vader',-6);return 'Je wordt misselijk en je ouders komen erachter.'}return 'Het wordt een legendarische avond.'}],
- ['Alleen fris',()=>{hap(3);kar(1);return 'Je hebt het naar je zin en weet alles nog.'}],
- ['Thuisblijven',()=>{hap(-2);return 'Je mist de verhalen op maandag.'}]]});
-E('spieken',{a:[12,17],c:()=>S.edu.stage==='middel',t:'Spieken?',x:'Morgen is een belangrijke toets en je hebt niks geleerd. Een klasgenoot heeft de antwoorden.',ch:[
- ['Spieken',()=>{if(chance(.3)){S.edu.perf=clamp(S.edu.perf-15);hap(-6);kar(-3);return 'Betrapt! Een 1 en een gesprek met de rector.'}S.edu.perf=clamp(S.edu.perf+6);kar(-2);return 'Een 8. Niemand heeft iets door.'}],
- ['Nachtje doorleren',()=>{S.edu.perf=clamp(S.edu.perf+4);hea(-1);sma(1);return 'Moe, maar je haalt een 6,5.'}]]});
 E('puistjes',{a:[13,16],once:1,t:'Puistjes',x:'Je gezicht zit ineens vol puistjes.',ch:[
  ['Naar de huisarts',()=>{loo(2);return 'Met een crème wordt het snel beter.'}],
  ['Uitknijpen',()=>{loo(-3);return 'Dat maakt het alleen maar erger.'}],
@@ -968,13 +952,6 @@ E('puistjes',{a:[13,16],once:1,t:'Puistjes',x:'Je gezicht zit ineens vol puistje
 E('schoolreis',{a:[12,17],once:1,c:()=>S.edu.stage==='middel',t:'Schoolreis naar Parijs',x:'Je gaat met school een week naar Parijs.',ch:[
  ['Volop genieten',()=>{hap(7);addFriend();return 'Je komt terug met een nieuwe vriend.'}],
  ['\'s Nachts wegsluipen',()=>{if(chance(.4)){S.edu.perf=clamp(S.edu.perf-5);hap(-3);return 'Betrapt door de mentor. Je moet een dag eerder naar huis.'}hap(9);return 'De Eiffeltoren om 3 uur \'s nachts. Onvergetelijk.'}]]});
-E('spijbelen',{a:[13,17],c:()=>S.edu.stage==='middel',t:'Spijbelen',x:'Je vrienden willen het laatste uur spijbelen en naar het strand.',ch:[
- ['Mee',()=>{hap(5);S.edu.perf=clamp(S.edu.perf-4);if(chance(.25)){relAdj('moeder',-5);return 'De school belt je ouders. Huisarrest.'}return 'Zon, zee en geen aardrijkskunde.'}],
- ['Blijven',()=>{S.edu.perf=clamp(S.edu.perf+2);return 'Je let op in de les.'}]]});
-E('onlinedrama',{a:[13,19],t:'Online drama',x:'Iemand heeft een gênante foto van je in de klassenapp gezet.',ch:[
- ['Terugpesten',()=>{kar(-4);hap(2);return 'Het escaleert. Iedereen is boos.'}],
- ['Melden bij de mentor',()=>{kar(1);hap(1);return 'De foto wordt verwijderd.'}],
- ['Erom lachen',()=>{if(chance(.55)){hap(2);sk('sociaal',3);return 'Je lacht mee en het is meteen niet grappig meer.'}hap(-5);return 'Het blijft een week rondgaan.'}]]});
 E('scout',{a:[14,21],c:()=>false&&S.sk.sport>=58&&(!S.job||S.job.id!=='voetbal')&&!S.flags.jeugd,t:'Een scout',x:'Een scout van een profclub heeft je zien spelen en nodigt je uit voor een proeftraining.',ch:[
  ['Proeftraining doen',()=>{if(chance(.25+(S.sk.sport-58)/60)){if(ageY()<16){S.flags.jeugd=1;hap(10);MS('Kreeg een jeugdcontract bij een profclub',2);return 'Je krijgt een jeugdcontract! Op je 16e word je prof.'}setJob('voetbal',0);hap(12);return 'Je krijgt een profcontract!'}hap(-6);return 'Net niet goed genoeg.'}],
  ['Nee, school gaat voor',()=>{S.edu.perf=clamp(S.edu.perf+3);return 'Je kiest voor zekerheid.'}]]});
@@ -992,21 +969,15 @@ E('huisgenoot',{a:[18,32],c:()=>S.home.k==='huur',t:'Huisgenoot',x:'Je huisgenoo
  ['Aanspreken',()=>{if(chance(.6)){hap(2);return 'Hij schrikt en ruimt alles op.'}hap(-3);return 'Hij wordt boos. Sfeer in huis is ver te zoeken.'}],
  ['Briefje op de koelkast',()=>{hap(-1);return 'Hij schrijft er een gemeen briefje onder.'}],
  ['Zelf afwassen',()=>{kar(1);hap(-2);return 'Je bent de afwasheld van het huis.'}]]});
-E('overwerk',{a:[18,70],c:()=>S.job&&!S.job.part,t:'Overwerken',x:'Je leidinggevende vraagt of je dit weekend wilt overwerken.',ch:[
- ['Ja hoor',()=>{S.job.perf=clamp(S.job.perf+8);hap(-4);return 'Je baas is erg tevreden.'}],
- ['Nee',()=>{S.job.perf=clamp(S.job.perf-3);hap(2);return 'Je geniet van je vrije weekend.'}]]});
 E('reorganisatie',{a:[20,66],w:()=>econ()==='recessie'?2.2:econ()==='groei'?.2:.5,c:()=>S.job&&!S.job.part&&!JOB(S.job.id).fame,t:'Reorganisatie',x:'Je werkgever gaat reorganiseren. Er vallen ontslagen.',f:()=>{if(chance(.35-S.job.perf/400)){const sev=Math.round(salary()*.25);endJob();cash(sev);hap(-10);MS('Werd wegbezuinigd bij een reorganisatie',0);return `Je baan vervalt. Je krijgt ${fmt(sev)} transitievergoeding.`}hap(-2);return 'Je mag blijven. Opgelucht.'}});
 E('headhunter',{a:[22,62],c:()=>S.job&&S.job.perf>60&&!S.job.part&&S.job.co,t:'Een headhunter belt',ctx:()=>({co:company()}),x:c=>`Een headhunter biedt je dezelfde functie aan bij ${c.co}, voor 20% meer salaris.`,ch:[
  ['Overstappen',c=>{S.job.mult*=1.2;S.job.co=c.co;S.job.perf=55;hap(4);return `Je werkt nu bij ${c.co}.`}],
- ['Blijven',()=>{S.job.perf=clamp(S.job.perf+3);return 'Je blijft loyaal.'}],
- ['Gebruiken voor opslag',()=>{if(chance(.5)){S.job.mult*=1.1;return 'Je baas geeft je 10% opslag om je te houden.'}S.job.perf=clamp(S.job.perf-8);return 'Je baas voelt zich gechanteerd.'}]]});
+ ['Blijven',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+3)));return 'Je blijft loyaal.'}],
+ ['Gebruiken voor opslag',()=>{if(chance(.5)){S.job.mult*=1.1;return 'Je baas geeft je 10% opslag om je te houden.'}(S.job&&(S.job.perf=clamp(S.job.perf-8)));return 'Je baas voelt zich gechanteerd.'}]]});
 E('burnout',{a:[22,65],c:()=>S.job&&S.st.happy<35&&!S.job.part,t:'Op je tandvlees',x:'Je slaapt slecht en ziet tegen werk op. De bedrijfsarts denkt aan een burn-out.',ch:[
- ['Ziekmelden en herstellen',()=>{hap(8);hea(4);S.job.perf=clamp(S.job.perf-10);return 'Na een paar maanden rust ben je weer de oude.'}],
+ ['Ziekmelden en herstellen',()=>{hap(8);hea(4);(S.job&&(S.job.perf=clamp(S.job.perf-10)));return 'Na een paar maanden rust ben je weer de oude.'}],
  ['Doorwerken',()=>{hea(-8);hap(-6);return 'Het gaat steeds slechter met je.'}],
  ['Ontslag nemen',()=>{endJob();hap(10);return 'Je neemt ontslag. Er valt een last van je schouders.'}]]});
-E('collegaflirt',{a:[20,60],c:()=>S.job&&!S.job.part&&!partner(),t:'Een leuke collega',ctx:()=>({n:rname()}),x:c=>`${c.n} van de afdeling ernaast flirt al weken met je.`,ch:[
- ['Mee uit vragen',c=>{if(chance(.55)){const p=candidate();p.first=c.n;addPartner(p);hap(8);return `${c.n} zegt ja!`}hap(-5);return 'Het blijkt gewoon vriendelijkheid. Ongemakkelijk bij de koffieautomaat.'}],
- ['Werk en privé gescheiden',()=>'Je houdt het professioneel.']]});
 E('bekeuring',{a:[18,90],c:()=>S.cars.length&&S.lic,t:'Geflitst',f:()=>{const b=ri(1,4)*100;cash(-b);hap(-2);return `Je bent geflitst op de snelweg. Boete: ${fmt(b)}.`}});
 E('ongeluk',{a:[18,90],w:.35,c:()=>S.cars.length,t:'Auto-ongeluk',f:()=>{const c=S.cars[0];c.value=Math.round(c.value*.7);const h=ri(3,20);hea(-h);return h>12?`Je krijgt een aanrijding met je ${c.name} en ligt een week in het ziekenhuis.`:`Een kop-staartbotsing. Whiplash en schade aan je ${c.name}.`}});
 E('lekkage',{a:[20,95],c:()=>S.props.length,t:'Lekkage',x:'Het dak van je huis lekt.',ch:[
@@ -1047,9 +1018,6 @@ E('kleinkind',{a:[38,105],w:.9,ctx:()=>{const k=living('kind').filter(p=>pAge(p)
 E('reunie',{a:[28,65],cd:10,t:'Reünie',x:'Je middelbare school organiseert een reünie.',ch:[
  ['Gaan',()=>{hap(4);if(chance(.35))addFriend();return 'Leuk om iedereen terug te zien. Sommigen zijn erg veranderd.'}],
  ['Overslaan',()=>'Je kijkt de foto\'s later online.']]});
-E('tip',{a:[22,75],c:()=>S.money>5000,t:'Een beurstip',x:'Een collega fluistert dat de aandelen van een biotechbedrijf gaan exploderen.',ch:[
- ['5.000 inleggen',()=>{cash(-5000);if(chance(.4)){const w=ri(8,60)*1000;cash(w);hap(8);return `Het klopte! Je verkoopt voor ${fmt(w)}.`}hap(-5);return 'Het bedrijf gaat failliet. Weg geld.'}],
- ['Niet doen',()=>'Je houdt je geld veilig.']]});
 E('oplichter',{a:[16,100],w:.7,t:'Telefoontje van "de bank"',x:'Iemand belt namens je bank. Je moet je pincode geven om je rekening te beveiligen.',ch:[
  ['Pincode geven',()=>{const l=Math.round(Math.max(0,S.money)*.5);cash(-l);hap(-10);return `Oplichting! Je bent ${fmt(l)} kwijt.`}],
  ['Ophangen',()=>{sma(1);return 'Goed gedaan. Een bank vraagt nooit om je pincode.'}]]});
@@ -1166,7 +1134,7 @@ E('s_stage',{sys:1,need:()=>!!S.edu.cur,t:'Stage',x:c=>`Je laatste studiejaar be
  ['🤝 Netwerken bij elke borrel',c=>{const E=S.edu.cur;sk('sociaal',3);hap(3);if(chance(.3+S.sk.sociaal/200)){E.offer=c;return `Iedereen kent je naam. ${c.co} houdt een plek voor je vrij.`}E.perf=clamp(E.perf-2);return 'Gezellig, maar je werk blijft liggen.'}],
  ['😴 Het rustig aan doen',()=>{hap(3);S.edu.cur.perf=clamp(S.edu.cur.perf-3);return 'Je haalt je stage, maar niemand onthoudt je naam.'}]]});
 E('s_aanbod',{sys:1,need:()=>!(S.job&&S.job.id==='prosport')&&!S.edu.cur,t:'Een baanaanbod',x:c=>`${c.co}, waar je stage liep, biedt je een baan aan als ${JOB(c.job).lad[c.lvl].toLowerCase()} voor ${fmt(jsal(JOB(c.job),c.lvl))} per jaar.`,ch:[
- ['🤝 Aannemen',c=>{if(S.job)endJob();setJob(c.job,c.lvl,c.co);S.job.perf=clamp(S.job.perf+8);hap(8);return 'Je eerste echte baan, meteen na je diploma!'}],
+ ['🤝 Aannemen',c=>{if(S.job)endJob();setJob(c.job,c.lvl,c.co);(S.job&&(S.job.perf=clamp(S.job.perf+8)));hap(8);return 'Je eerste echte baan, meteen na je diploma!'}],
  ['Nee, ik kijk verder',()=>'Je wilt eerst rondkijken.']]});
 E('s_master',{sys:1,t:'Bachelor gehaald',x:c=>`Ga je door voor een master ${STUDIES.find(s=>s.id===c.f).t}?`,ch:[
  ['Master doen',c=>{enroll('master',c.f,c.fund);return 'Je schrijft je in voor de master.'}],
@@ -1347,6 +1315,7 @@ function advance(){
     monthTick();
     if(!S.alive)break;
     if(S.m%12===0)birthday();
+    if(S.m%12===0&&S.alive)debtYear();
     if(!S.alive)break;
     if(evc<maxEv){const e=rollEvent();if(e){Q.push(e);evc++}}
   }
@@ -1378,7 +1347,8 @@ function rewind(n){
 // lonen stijgen mee met de inflatie; mult is de reële loonsverhoging
 function salary(){if(!S.job)return 0;const j=JOB(S.job.id);return j.sal[S.job.lvl]*1000*S.job.mult*(S.cpi||1)*(S.eco?S.eco.wr:1)*(j.sal[S.job.lvl]<=32?law('minloon'):1)}
 const jsal=(j,l)=>Math.round(j.sal[l]*1000*(S.cpi||1));
-function bijstand(){const c=S.cpi||1;return Math.round((livingCost()*c*.95+Math.min(S.home.rent||0,11500*c)*.95)*law('minloon')*(typeof bijstandF==='function'?bijstandF():1))}
+// uitkering dekt levensonderhoud en huur tot een grens (met huurtoeslag), zodat wie niet werkt niet vanzelf steeds dieper rood komt te staan (zie verbeterplan 1.5)
+function bijstand(){const c=S.cpi||1;return Math.round((livingCost()*c+Math.min(S.home.rent||0,16000*c))*law('minloon')*(typeof bijstandF==='function'?bijstandF():1))}
 function livingCost(){const a=ageY();let c=13000;const pt=partner();if(pt&&pt.st==='getrouwd')c=9500;if(a>=aowAge())c*=.85;return c}
 function netWorth(){let n=S.money-S.debt-S.loan+(S.trust||0)+(S.swiss||0);for(const k in S.inv)n+=S.inv[k];for(const p of S.props)n+=p.value-p.mort;for(const p of S.re||[])n+=p.value-p.mort;for(const c of S.cars)n+=c.value;for(const it of S.items||[])n+=it.value;for(const b of S.biz)n+=b.value*b.eq/100;if(typeof angelVal==='function')n+=angelVal();n+=(S.crim&&S.crim.dirty)||0;return Math.round(n)}
 function sponsor(){if(S.foll<25000)return 0;const act=S.flags.postY!=null&&year()-S.flags.postY<=1;const eng=S.flags.eng??50;return Math.round(S.foll*.03*(eng/60)*(act?1:.25))}
@@ -1413,7 +1383,10 @@ function monthTick(){
   if(S.crim.jail){S.crim.jail.left--;if(S.crim.jail.left<=0)release()}
   for(const [k,v] of incomeParts()){inc+=v/12;period.src[k]=(period.src[k]||0)+v/12}
   ex('Belasting',taxOn(taxable())/12);
-  if(a>=18&&S.home.k!=='ouders'&&!S.crim.jail)ex('Levensonderhoud',livingCost()*(S.cpi||1)/12);
+  if(a>=18&&S.home.k!=='ouders'&&!S.crim.jail){let lc=livingCost()*(S.cpi||1);
+    // wie alleen van een uitkering leeft, leeft zuiniger: levensonderhoud past zich aan wat er na de huur overblijft (minstens 60%)
+    const ip=incomeParts();if(ip.length&&ip.every(([k])=>k==='Uitkering')){const left=ip[0][1]-(S.home.k==='huur'?S.home.rent||0:0);lc=Math.min(lc,Math.max(lc*.6,left))}
+    ex('Levensonderhoud',lc/12)}
   if(S.home.k==='huur')ex('Huur',S.home.rent/12);
   for(const pr of S.props){if(pr.mort>0){const rt=pr.rate??.04;const rep=pr.af==='mix'?(pr.mort>pr.mort0*.5?pr.mort0*.5/360:0):Math.min(pr.mort,pr.mort0/360);ex('Hypotheek',pr.mort*rt/12+rep);pr.mort=Math.max(0,pr.mort-rep)}ex('Onderhoud woning',pr.value*.0035/12);if(S.home.k==='eigen'&&S.home.pid===pr.id)ex('Energie',pr.value*.0022*((pr.lbl??3)+1)/4/12)}
   if(S.flags.bg&&!S.crim.jail)ex('Beveiliging',bgCost()/12);
@@ -1426,6 +1399,7 @@ function monthTick(){
   else if(S.debt>0&&a>=21){const pay=Math.min(S.debt,Math.max(45,S.debt/180));S.debt-=pay;ex('Studieschuld',pay)}
   if(S.loan>0){const pay=Math.min(S.loan,S.loan*.06/12+Math.max(80,S.loan/120));S.loan=Math.max(0,S.loan-(pay-S.loan*.06/12));ex('Leningen',pay)}
   if(S.debt>0&&S.edu.cur==null)S.debt*=1+.025/12;
+  if(S.money<0&&a>=18&&!S.wsnp)ex('Rente rood staan',-S.money*.12/12);
   if(typeof insPrem==='function')for(const x of [...S.cars,...(S.items||[])])if(x.ins)ex('Verzekeringen',insPrem(x)/12);
   S.money+=inc-exp;period.inc+=inc;period.exp+=exp;
   if(S.auto&&S.auto.pct>0&&a>=18&&!S.crim.jail&&typeof autoInvest==='function')autoInvest(inc-exp);
@@ -1434,12 +1408,12 @@ function monthTick(){
   if(chance(mortality(a,S.st.health)/12))die(deathCause(a));
 }
 function mortality(a,h){let b=a<1?.002:a<15?.0004:a<40?.0009:a<50?.0025:a<60?.006:a<70?.015:a<80?.04:a<90?.1:a<100?.24:.5;const f=h<10?6:h<25?3:h<45?1.6:h>80?.6:1;return b*f}
-function hospital(a){S.flags.zkh=(S.flags.zkh||0)+1;S.st.health=15;const k=Math.round(ri(4,9)*100*(S.cpi||1)*law('er'));cash(-k);hap(-10);if(S.job&&!S.job.part)S.job.perf=clamp(S.job.perf-15);
+function hospital(a){S.flags.zkh=(S.flags.zkh||0)+1;S.st.health=15;const k=Math.round(ri(4,9)*100*(S.cpi||1)*law('er'));cash(-k);hap(-10);if(S.job&&!S.job.part)(S.job&&(S.job.perf=clamp(S.job.perf-15)));
   L(`Je bent met spoed opgenomen in het ziekenhuis. Je lichaam gaf het bijna op. Eigen bijdrage: ${fmt(k)}.`,'bad big');MS('Werd met spoed opgenomen in het ziekenhuis',1);Q.push({id:'s_zkh',c:{n:S.flags.zkh}})}
 // kies een tekst die je recent niet hebt gezien
 function pickF(key,arr){const F=S.flags.pf||(S.flags.pf={});const rec=F[key]||[];let opts=arr.map((_,i)=>i).filter(i=>!rec.includes(i));if(!opts.length)opts=arr.map((_,i)=>i);const i=pick(opts);F[key]=rec.concat(i).slice(-Math.min(arr.length-1,4));return arr[i]}
 const causeTxt=c=>/^vredig|^in je slaap/.test(c)?'vredig in '+(S&&S.p.g==='v'?'haar':S&&S.p.g==='m'?'zijn':'diens')+' slaap':'aan '+c;
-function deathCause(a){const le=S.ill.find(i=>i.l);if(le)return le.n;if(S.st.health<=5)return 'een slechte gezondheid';if(a<4)return pick(['een zeldzame aangeboren aandoening','een ernstige infectie']);if(a<30)return pick(['een verkeersongeluk','een ongeluk tijdens het klimmen','een zeldzame hartafwijking','een val van de trap']);if(a<60)return pick(['een hartaanval','een beroerte','een verkeersongeluk','kanker']);return pick(['ouderdom','een hartaanval','longontsteking','vredig in je slaap','een beroerte','ouderdom'])}
+function deathCause(a){const le=S.ill.find(i=>i.l);if(le)return le.n;if(S.st.health<=5)return 'een slechte gezondheid';if(a<4)return pick(['een zeldzame aangeboren aandoening','een ernstige infectie']);if(a<30)return pick(['een verkeersongeluk','een ongeluk tijdens het klimmen','een zeldzame hartafwijking','een val van de trap']);if(a<60)return pick(['een hartaanval','een beroerte','een verkeersongeluk','kanker']);if(a<85)return pick(['een hartaanval','longontsteking','een beroerte','kanker','hartfalen','vredig in je slaap']);return pick(['ouderdom','een hartaanval','longontsteking','vredig in je slaap','een beroerte','ouderdom'])}
 function die(cause){if(!S.alive)return;S.alive=false;S.cause=cause;S.died=ageY();const ct=/^vredig/.test(cause)?'vredig in je slaap':'aan '+cause;L(cause==='opgegeven'?`Je hebt het opgegeven, ${ageY()} jaar oud.`:`Je bent overleden ${ct}, ${ageY()} jaar oud.`,'bad big');MS(cause==='opgegeven'?'Gaf het op':`Overleden ${ct}`,0);Q=[];checkAch()}
 
 function econYear(){if(S.eco)return;const e=S.econ||(S.econ={s:'normaal',y:0});e.y++;
@@ -1582,7 +1556,7 @@ function jobTitle(){if(!S.job)return'';if(S.job.id==='prosport'&&typeof sportTit
 function endJob(){if(!S.job)return;S.jobs.push({t:jobTitle(),co:S.job.co,y:S.job.yrs});S.job=null}
 function jobYear(a){
   if(!S.job||inJail())return;const j=JOB(S.job.id);S.job.yrs++;S.job.lyrs++;if(S.job.id==='prosport')return;if(!S.job.part&&S.job.yrs>=1)Q.push({id:'w_review'});
-  const hard=(S.lastActs||{}).werk||0;S.job.perf=clamp(S.job.perf+(S.st.smarts-50)/25+ri(-7,5)-4+Math.min(10,hard*4)+(S.st.happy<25?-5:0)-(econ()==='recessie'?3:0)+(degSec(j)?2:0)+((S.disc??50)-50)/25);
+  const hard=(S.lastActs||{}).werk||0;(S.job&&(S.job.perf=clamp(S.job.perf+(S.st.smarts-50)/25+ri(-7,5)-4+Math.min(10,hard*4)+(S.st.happy<25?-5:0)-(econ()==='recessie'?3:0)+(degSec(j)?2:0)+((S.disc??50)-50)/25)));
   if(j.sk)sk(j.sk,ri(1,3));
   S.job.mult*=S.job.perf>60?1.012:1;
   if(j.fame)S.fame=clamp(S.fame+S.job.lvl*ri(1,6));
@@ -1591,7 +1565,7 @@ function jobYear(a){
   if(j.id==='voetbal'&&a>=34){L('Je lichaam wil niet meer. Je stopt met profvoetbal.','big');MS('Stopte met profvoetbal',1);endJob();return}
   if(j.id==='model'&&a>=33&&chance(.4)){L('Het modellenbureau verlengt je contract niet meer.');endJob()}
 }
-function promote(){const j=JOB(S.job.id);S.job.lvl++;S.job.lyrs=0;S.job.mult=1;S.job.perf=clamp(S.job.perf-12);hap(8);
+function promote(){const j=JOB(S.job.id);S.job.lvl++;S.job.lyrs=0;S.job.mult=1;(S.job&&(S.job.perf=clamp(S.job.perf-12)));hap(8);
   const t=j.lad[S.job.lvl];L(`Promotie! Je bent nu ${t.toLowerCase()}.`,'good big');MS(`Werd ${t.toLowerCase()}`,S.job.lvl===j.lad.length-1?3:1);
   if(S.job.lvl===j.lad.length-1){S.flags.top=1;if(j.id==='politiek')S.flags.premier=1;if(j.id==='muzikant')S.flags.ster=1}
   if(j.id==='arts')S.flags.arts=1;S.hist.topJob=t}
@@ -1644,7 +1618,7 @@ function rollEvent(){
   if(!pool.length)return null;let r=R()*tot;
   for(const [id,w] of pool){r-=w;if(r<=0){const e=EV[id];let c={};if(e.ctx){c=safe(()=>e.ctx());if(!c)return null}S.evLast[id]=S.m;if(e.once)S.flags['e_'+id]=1;return{id,c}}}
   return null}
-function safe(f){try{return f()}catch(e){console.warn(e);return null}}
+function safe(f){try{return f()}catch(e){console.warn(e);if(typeof errLog==='function')errLog(e,'opgevangen');return null}}
 /* ---------- verhaal & score ---------- */
 function checkAch(){const a=ageY(),nw=netWorth(),f=S.flags;const got=S.ach||(S.ach=[]);const add=k=>{if(!got.includes(k))got.push(k)};
   if(nw>=1e6)add('miljonair');if(nw>=1e7)add('multi');if(a>=100)add('eeuw');if(a>=90)add('negentig');if(f.getrouwd)add('getrouwd');if(people('kind').length>=4)add('gezin');if(people('kleinkind').length)add('opa');
@@ -1661,7 +1635,7 @@ function story(){
   const wealth={arm:'een arm gezin',midden:'een gewoon gezin',rijk:'een welgesteld gezin'}[S.flags.wealth]||'een gezin';
   out.push(`${N} ${p.last} werd in ${p.by} geboren in ${p.city}, in ${wealth}. ${a<4?`${Hij} werd maar ${a} jaar oud.`:pick([`Als kind was ${hij} ${S.st.smarts>65?'slim en nieuwsgierig':S.sk.sport>40?'altijd buiten aan het sporten':'een dromer'}.`,`${Hij} groeide op ${living(['broer','zus']).length||people(['broer','zus']).length?'met '+people(['broer','zus']).map(s=>s.first).join(' en '):'als enig kind'}.`])}`);
   const deg=S.edu.deg.filter(d=>d.f).map(d=>`${ENAME[d.ty]} ${STUDIES.find(s=>s.id===d.f).t}`);const sch=S.edu.deg.find(d=>['vmbo','havo','vwo'].includes(d.ty));
-  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){let t=sch?`${Hij} haalde ${zijn} ${sch.ty}-diploma`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
+  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){const cl=S.ms.some(m=>/^Haalde het .*-diploma cum laude/.test(m.t));let t=sch?`${Hij} haalde ${zijn} ${sch.ty}-diploma${cl?' cum laude':''}`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
   const hist=S.jobs.concat(S.job?[{t:jobTitle(),co:S.job.co,y:S.job.yrs}]:[]).filter(j=>j.y>=1&&!j.mil);
   if(hist.length){const best=S.hist.topJob||hist[hist.length-1].t;const ts=[...new Set(hist.map(j=>j.t.toLowerCase()))];out.push(ts.length>2?`${Hij} had ${hist.length} banen en bracht het tot ${best.toLowerCase()}${S.flags.top?', de top van het vak':''}.`:`${Hij} werkte als ${ts.join(' en later als ')}${S.flags.top?' en bereikte daarmee de top':''}.`)}
   else if(a>=25&&!(S.pex&&S.pex.r>=1)&&!S.mil&&!S.pmil)out.push(`Een vaste baan zat er nooit echt in.`);
@@ -1674,7 +1648,7 @@ function story(){
   if(sp)out.push(`${Hij} trouwde met ${sp.first}${kids.length?` en kreeg ${kids.length===1?'één kind':kids.length+' kinderen'}: ${kids.map(k=>k.first).join(', ')}`:''}.`);
   else if(kids.length)out.push(`${Hij} kreeg ${kids.length===1?'een kind':kids.length+' kinderen'}: ${kids.map(k=>k.first).join(', ')}.`);
   else if(a>30)out.push(pick([`De grote liefde vond ${hij} nooit, maar ${hij} had ${living('vriend').length?'trouwe vrienden':'een rijk leven'}.`,`${Hij} bleef ${zijn} hele leven vrijgezel.`]));
-  const seen=new Set();const notable=S.ms.filter(m=>m.w>=2&&!/^(Studeerde|Richtte|Werd|Kreeg een relatie|Verkocht|Trouwde|Kreeg een (zoon|dochter)|Adopteerde)/.test(m.t)&&!seen.has(m.t.split(' ')[0]+m.t.split(' ')[1])&&seen.add(m.t.split(' ')[0]+m.t.split(' ')[1])).slice(-4);
+  const seen=new Set();const notable=S.ms.filter(m=>m.w>=2&&!/^(Studeerde|Richtte|Werd|Kreeg een relatie|Verkocht|Trouwde|Kreeg een (zoon|dochter)|Adopteerde|Haalde het .*-diploma|Verliet school zonder diploma|Stopte zonder diploma)/.test(m.t)&&!seen.has(m.t.split(' ')[0]+m.t.split(' ')[1])&&seen.add(m.t.split(' ')[0]+m.t.split(' ')[1])).slice(-4);
   const vs=t=>{const i=t.indexOf(' ');return i<0?t.toLowerCase()+' '+hij:t.slice(0,i).toLowerCase()+' '+hij+t.slice(i)};
   if(notable.length)out.push(notable.map((m,i)=>`${i===0?'Op':pick(['Op','Rond'])} ${m.a}-jarige leeftijd ${vs(m.t)}.`).join(' '));
   const nw=netWorth();
@@ -1860,31 +1834,31 @@ const WORKG={
 const SIG={zorg:['🩺','Extra dienst draaien','Meer geld, maar zwaar'],horeca:['🍳','Iets nieuws bedenken','Een nieuw gerecht of idee voor de gasten'],tech:['🐞','Een lastig probleem oplossen','Een minigame van je brein'],kantoor:['📞','Klanten bellen','Kans op een bonus'],onderwijs:['📝','Lessen goed voorbereiden','Betere lessen, tevreden leiding'],handwerk:['🧰','Overuren maken','Extra geld'],fame:['🎤','Jezelf in de kijker spelen','Meer bekendheid'],politiek:['🗳️','Campagne voeren','De kiezers overtuigen']};
 function mgWork(cb){if(!spendE(1))return;PREPAID=1;const pool=WORKQ.concat(WORKG[jobGroup(S.job.id)]||[]).sort(()=>R()-.5).slice(0,4);let i=0,pts=0;
   const step=()=>{if(i>=pool.length){closeModal();cb(pts/(pool.length*2));return}const [q,ans]=pool[i];modal({title:'Werkdag',em:jobEm(S.job.id),cat:`Situatie ${i+1} van ${pool.length}`,text:q,choices:ans.slice().sort(()=>R()-.5).map(([a,p])=>({t:a,on:()=>{pts+=p;i++;toast(p===2?'Sterk!':p===1?'Kan beter':'Oei');step()}}))})};step()}
-function workDay(){mgWork(sc=>doAct('Werkdag',()=>{const m_=use('werk');let d=Math.round((sc-.5)*18);if(d>0)d=Math.round(d*m_);S.job.perf=clamp(S.job.perf+d);hap(sc>=.75?2:sc<.4?-2:0);return sc>=.75?`Je hebt alles goed opgelost. Je baas is onder de indruk (prestaties +${d}).`:sc>=.5?`Een prima werkdag (prestaties ${d>=0?'+':''}${d}).`:`Een rommelige dag. Je baas heeft het gemerkt (prestaties ${d}).`},true,jobEm(S.job.id)))}
+function workDay(){mgWork(sc=>doAct('Werkdag',()=>{const m_=use('werk');let d=Math.round((sc-.5)*18);if(d>0)d=Math.round(d*m_);(S.job&&(S.job.perf=clamp(S.job.perf+d)));hap(sc>=.75?2:sc<.4?-2:0);return sc>=.75?`Je hebt alles goed opgelost. Je baas is onder de indruk (prestaties +${d}).`:sc>=.5?`Een prima werkdag (prestaties ${d>=0?'+':''}${d}).`:`Een rommelige dag. Je baas heeft het gemerkt (prestaties ${d}).`},true,jobEm(S.job.id)))}
 function sigAction(){const g=jobGroup(S.job.id),[e,t]=SIG[g];
-  if(g==='tech')return mgMemory(t,'Onthoud de stappen van de oplossing.',5,ok=>doAct(t,()=>{use('werk');if(ok){S.job.perf=clamp(S.job.perf+8);sk('tech',3);return 'Opgelost! Het hele team is je dankbaar.'}S.job.perf=clamp(S.job.perf-2);return 'Je komt er niet uit. Een collega lost het uiteindelijk op.'},true,e));
+  if(g==='tech')return mgMemory(t,'Onthoud de stappen van de oplossing.',5,ok=>doAct(t,()=>{use('werk');if(ok){(S.job&&(S.job.perf=clamp(S.job.perf+8)));sk('tech',3);return 'Opgelost! Het hele team is je dankbaar.'}(S.job&&(S.job.perf=clamp(S.job.perf-2)));return 'Je komt er niet uit. Een collega lost het uiteindelijk op.'},true,e));
   doAct(t,()=>{const m=use('sig');
-    if(g==='zorg'||g==='handwerk'){const k=Math.round(salary()/40*m);cash(k);S.job.perf=clamp(S.job.perf+3*m);return `Je draait extra uren en verdient ${fmt(k)} bij.`}
-    if(g==='horeca'){const sc=(S.sk.koken+S.sk.sociaal)/2;if(chance(.3+sc/150)){S.job.perf=clamp(S.job.perf+7*m);sk('koken',2);return 'Je idee slaat aan. De gasten zijn er lyrisch over.'}S.job.perf=clamp(S.job.perf-2);return 'Je idee valt helemaal verkeerd.'}
-    if(g==='kantoor'){if(chance(.25+S.sk.sociaal/200)){const k=Math.round(salary()*ri(2,6)/100*m);cash(k);S.job.perf=clamp(S.job.perf+5*m);sk('sociaal',2);return `Je sluit een grote deal. Bonus: ${fmt(k)}.`}return 'Niemand neemt op. Volgende keer beter.'}
-    if(g==='onderwijs'){S.job.perf=clamp(S.job.perf+5*m);return 'Je lessen lopen gesmeerd.'}
+    if(g==='zorg'||g==='handwerk'){const k=Math.round(salary()/40*m);cash(k);(S.job&&(S.job.perf=clamp(S.job.perf+3*m)));return `Je draait extra uren en verdient ${fmt(k)} bij.`}
+    if(g==='horeca'){const sc=(S.sk.koken+S.sk.sociaal)/2;if(chance(.3+sc/150)){(S.job&&(S.job.perf=clamp(S.job.perf+7*m)));sk('koken',2);return 'Je idee slaat aan. De gasten zijn er lyrisch over.'}(S.job&&(S.job.perf=clamp(S.job.perf-2)));return 'Je idee valt helemaal verkeerd.'}
+    if(g==='kantoor'){if(chance(.25+S.sk.sociaal/200)){const k=Math.round(salary()*ri(2,6)/100*m);cash(k);(S.job&&(S.job.perf=clamp(S.job.perf+5*m)));sk('sociaal',2);return `Je sluit een grote deal. Bonus: ${fmt(k)}.`}return 'Niemand neemt op. Volgende keer beter.'}
+    if(g==='onderwijs'){(S.job&&(S.job.perf=clamp(S.job.perf+5*m)));return 'Je lessen lopen gesmeerd.'}
     if(g==='fame'){S.fame=Math.round(clamp(S.fame+ri(1,4)*m));S.foll+=ri(100,2000);return 'Je staat weer even in de schijnwerpers.'}
-    if(g==='politiek'){S.job.perf=clamp(S.job.perf+5*m);S.fame=Math.round(clamp(S.fame+1));return 'Je flyert, debatteert en schudt duizend handen.'}
+    if(g==='politiek'){(S.job&&(S.job.perf=clamp(S.job.perf+5*m)));S.fame=Math.round(clamp(S.fame+1));return 'Je flyert, debatteert en schudt duizend handen.'}
     return 'Je werkt hard.'},true,e)}
 E('w_review',{sys:1,need:()=>!!S.job,t:'Functioneringsgesprek',x:()=>`Je jaarlijkse gesprek met je leidinggevende. Je prestaties staan op ${Math.round(S.job.perf)}%.`,ch:[
- ['💶 Om opslag vragen',()=>{if(chance(S.job.perf/120)){const p=ri(3,9);S.job.mult*=1+p/100;hap(4);return `Je krijgt ${p}% opslag.`}S.job.perf=clamp(S.job.perf-3);return pickF('opsl',['Je baas vindt dat je daar nog niet aan toe bent.','"Het budget is op dit jaar," zegt je baas.','Je baas wil eerst betere cijfers zien.','Je baas belooft er volgend jaar op terug te komen.'])}],
- ['📚 Om een cursus vragen',()=>{const j=JOB(S.job.id);if(j.sk)sk(j.sk,ri(4,8));S.job.perf=clamp(S.job.perf+4);return 'Je mag op cursus, op kosten van de baas.'}],
- ['📈 Om meer verantwoordelijkheid vragen',()=>{if(S.job.perf>=65){S.job.perf=clamp(S.job.perf+6);S.job.lyrs++;return 'Je krijgt een eigen project. Dat telt mee voor promotie.'}S.job.perf=clamp(S.job.perf-2);return pickF('verant',['Eerst je huidige werk op orde.','Je baas wil eerst zien dat je je eigen taken onder controle hebt.','"Misschien volgend jaar," zegt je leidinggevende.'])}],
- ['🕐 Om minder uren vragen',()=>{S.job.mult*=.85;hap(6);S.job.perf=clamp(S.job.perf-3);return 'Je gaat vier dagen werken. Minder geld, meer leven.'}],
+ ['💶 Om opslag vragen',()=>{if(chance(S.job.perf/120)){const p=ri(3,9);S.job.mult*=1+p/100;hap(4);return `Je krijgt ${p}% opslag.`}(S.job&&(S.job.perf=clamp(S.job.perf-3)));return pickF('opsl',['Je baas vindt dat je daar nog niet aan toe bent.','"Het budget is op dit jaar," zegt je baas.','Je baas wil eerst betere cijfers zien.','Je baas belooft er volgend jaar op terug te komen.'])}],
+ ['📚 Om een cursus vragen',()=>{const j=JOB(S.job.id);if(j.sk)sk(j.sk,ri(4,8));(S.job&&(S.job.perf=clamp(S.job.perf+4)));return 'Je mag op cursus, op kosten van de baas.'}],
+ ['📈 Om meer verantwoordelijkheid vragen',()=>{if(S.job.perf>=65){(S.job&&(S.job.perf=clamp(S.job.perf+6)));S.job.lyrs++;return 'Je krijgt een eigen project. Dat telt mee voor promotie.'}(S.job&&(S.job.perf=clamp(S.job.perf-2)));return pickF('verant',['Eerst je huidige werk op orde.','Je baas wil eerst zien dat je je eigen taken onder controle hebt.','"Misschien volgend jaar," zegt je leidinggevende.'])}],
+ ['🕐 Om minder uren vragen',()=>{S.job.mult*=.85;hap(6);(S.job&&(S.job.perf=clamp(S.job.perf-3)));return 'Je gaat vier dagen werken. Minder geld, meer leven.'}],
  ['🤐 Niks vragen',()=>'Een kort en gezellig gesprek.']]});
 E('w_conflict',{a:[18,70],need:()=>!!S.job,c:()=>S.job&&!S.job.part&&S.job.id!=='prosport',t:'Conflict op werk',ctx:()=>({n:rname()}),x:c=>`Je collega ${c.n} zit je al weken dwars en praat achter je rug.`,ch:[
- ['Het uitpraten',c=>{if(chance(.5+S.sk.sociaal/200)){S.job.perf=clamp(S.job.perf+3);return `Het blijkt een misverstand. ${c.n} en jij kunnen weer door één deur.`}hap(-1);return 'Het gesprek loopt uit op een ruzie.'}],
- ['Naar je leidinggevende',()=>{S.job.perf=clamp(S.job.perf-2);return 'Je baas gaat ermee aan de slag, maar de sfeer is verpest.'}],
- ['Negeren en hard werken',()=>{S.job.perf=clamp(S.job.perf+2);return 'Je laat je werk spreken.'}]]});
+ ['Het uitpraten',c=>{if(chance(.5+S.sk.sociaal/200)){(S.job&&(S.job.perf=clamp(S.job.perf+3)));return `Het blijkt een misverstand. ${c.n} en jij kunnen weer door één deur.`}hap(-1);return 'Het gesprek loopt uit op een ruzie.'}],
+ ['Naar je leidinggevende',()=>{(S.job&&(S.job.perf=clamp(S.job.perf-2)));return 'Je baas gaat ermee aan de slag, maar de sfeer is verpest.'}],
+ ['Negeren en hard werken',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+2)));return 'Je laat je werk spreken.'}]]});
 E('w_ziek',{a:[18,67],need:()=>!!S.job,c:()=>S.job&&!S.job.part&&S.job.id!=='prosport',t:'Iedereen ziek',x:'De halve afdeling ligt met griep op bed. Je baas vraagt of jij de gaten wilt vullen.',ch:[
- ['Ja, ik val in',()=>{S.job.perf=clamp(S.job.perf+7);return 'Twee weken van 60 uur. Je baas zal het niet vergeten.'}],
- ['Een paar extra uurtjes',()=>{S.job.perf=clamp(S.job.perf+3);return 'Je doet wat redelijk is.'}],
- ['Nee, ik heb al genoeg',()=>{S.job.perf=clamp(S.job.perf-4);hap(2);return 'Je bewaakt je grenzen.'}]]});
+ ['Ja, ik val in',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+7)));return 'Twee weken van 60 uur. Je baas zal het niet vergeten.'}],
+ ['Een paar extra uurtjes',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+3)));return 'Je doet wat redelijk is.'}],
+ ['Nee, ik heb al genoeg',()=>{(S.job&&(S.job.perf=clamp(S.job.perf-4)));hap(2);return 'Je bewaakt je grenzen.'}]]});
 /* ---------- vakgebieden: elke opleiding leidt naar een eigen soort werk ---------- */
 const SECN={ict:'ICT',techniek:'Techniek',bouw:'Bouw',zakelijk:'Zakelijk',juridisch:'Juridisch',zorg:'Zorg',horeca:'Horeca',onderwijs:'Onderwijs',creatief:'Creatief',media:'Media',veiligheid:'Veiligheid',sport:'Sport',wetenschap:'Wetenschap',algemeen:'Algemeen'};
 const STUDYSEC={informatica:'ict',techniek:'techniek',elektro:'techniek',bouwkunde:'bouw',bedrijfskunde:'zakelijk',economie:'zakelijk',rechten:'juridisch',verpleeg:'zorg',geneeskunde:'zorg',psychologie:'zorg',hotel:'horeca',koken:'horeca',leraar:'onderwijs',kunst:'creatief',kapper:'creatief',muziek:'creatief',communicatie:'media',journalistiek:'media',politie:'veiligheid',sport:'sport',biologie:'wetenschap'};
@@ -2445,7 +2419,7 @@ function mkListing(ci){if(ci===true||ci==null)ci=ri(0,ci===true?3:9);const C_=HC
   return {name:n,cat:ci,price,addr:n==='Privé-eiland'?`Een eigen eiland, ${place}`:`${pick(STREETS)} ${ri(1,180)}, ${place}`,w,m2,yr,lbl,cond,def,hot,need:.95+hot*.028+gauss()*.025,feat:top?pick([['Een eigen bioscoop','Een wijnkelder voor 5.000 flessen','Een helikopterplatform'],['Een infinity pool met uitzicht op zee','Personeelsverblijven','Een garage voor twaalf auto\'s'],['Een eigen haven met ligplaats voor je jacht','Een spa met hamam','Een tennisbaan']]):feats(cond,lbl,t),viewed:0,insp:0,bid:0}}
 function market(){const y=year();let m=S.flags.mk;if(!m||m.y!==y||!m.v2){m=S.flags.mk={y,v2:1,l:[]}}
   for(let ci=0;ci<HCAT.length;ci++){let n=m.l.filter(h=>h.cat===ci).length;while(n<5){m.l.push(mkListing(ci));n++}}return m.l}
-const canCash=pr=>S.money>=pr*1.03,canMort=pr=>S.money>=pr*.05&&maxMortgage()>=pr,canFin=pr=>canCash(pr)||canMort(pr);
+const canCash=pr=>S.money>=pr*1.03,canMort=pr=>S.money>=pr*.05&&maxMortgage()>=pr&&!bkr(),canFin=pr=>canCash(pr)||canMort(pr);
 
 function sheetMarket(el){const mm=maxMortgage();const l=market();
   card(el,kv([['Saldo',fmt(S.money)],['Maximale hypotheek',fmt(mm)],['Hypotheekrente',`± ${pct(rente())}`],['Woningmarkt',econLabel()]])+'<span class="muted">Er staan altijd 5 woningen per prijsklasse te koop. Bezichtig eerst: pas dan zie je gebreken en hoeveel andere kijkers er zijn. Met een hypotheek leen je de hele koopsom (tot 5× je inkomen, inclusief dat van je partner). Zelf betaal je 5% kosten koper.</span>');
@@ -2682,7 +2656,7 @@ function clubDoor(c){if(c.door&&S.fame<40&&S.st.looks+S.sk.sociaal/2+ri(-20,20)<
 function clubNight(c,what){doAct('Uitgaan',()=>{const m=use('uit');if(ageY()>=16)addUp('alcohol',what==='bar'?4:2);const a=ageY();if(a>=18)cash(-ri(c.k[0],c.k[1]));hap(Math.round(c.hap*m*(what==='dans'&&c.sc!=null?.6+c.sc*.8:1)));if(c.hea&&chance(.4))hea(c.hea);
   const pa=partner(),rel=pa&&pa.st!=='ex';
   if(what==='dans'){sk('sport',1);if(chance(c.lo*(c.dance?1.6:.8))&&!rel){addPartner();return `Je danst de hele avond met dezelfde persoon in ${c.n}. Het klikt!`}return pick(c.dance?['Na drie nummers ken je de basispassen.','Je wordt rondgedraaid tot je duizelig bent.']:['Je danst tot de lichten aangaan.','De DJ draait al je favorieten.','Je ontdekt spieren waarvan je niet wist dat je ze had.'])}
-  if(what==='bar'){if(c.net&&S.job&&chance(.35)){S.job.perf=clamp(S.job.perf+4);sk('sociaal',2);return 'Je raakt aan de praat met iemand uit jouw vak. Een handig contact.'}if(chance(c.vr||.15)){const f=addFriend();if(f)return `Je raakt aan de praat met ${f.first}. Jullie wisselen nummers uit.`}if(chance(.15)){hea(-2);return 'Eén drankje werden er zeven. Morgen wordt zwaar.'}return pick(['Je hoort drie levensverhalen van mensen die je nooit meer ziet.','Je wint een potje darts van een vreemde.','De barman geeft je er eentje van het huis.'])}
+  if(what==='bar'){if(c.net&&S.job&&chance(.35)){(S.job&&(S.job.perf=clamp(S.job.perf+4)));sk('sociaal',2);return 'Je raakt aan de praat met iemand uit jouw vak. Een handig contact.'}if(chance(c.vr||.15)){const f=addFriend();if(f)return `Je raakt aan de praat met ${f.first}. Jullie wisselen nummers uit.`}if(chance(.15)){hea(-2);return 'Eén drankje werden er zeven. Morgen wordt zwaar.'}return pick(['Je hoort drie levensverhalen van mensen die je nooit meer ziet.','Je wint een potje darts van een vreemde.','De barman geeft je er eentje van het huis.'])}
   const sc=(S.st.looks+S.sk.sociaal)/200;
   if(rel&&chance(.3)){pa.rel=clamp(pa.rel-30);hap(-6);return `Iemand maakt een foto van jou en een onbekende. ${pa.first} krijgt hem doorgestuurd.`}
   if(chance(c.lo*1.5+sc*.4)){if(rel){pa.rel=clamp(pa.rel-10);kar(-3);return 'Je wisselt nummers uit met iemand. Spannend, maar je voelt je schuldig.'}addPartner();return `Je versiert iemand in ${c.n}. Jullie spreken af voor een date.`}
@@ -2798,18 +2772,18 @@ function circStrikes(slot){return slot==='work'?(S.job&&S.job.hr)||0:slot==='sch
 function report(slot,sev,why){const c=circle(slot);if(!c)return '';const K=CIRC[c.kind];let n;
   if(slot==='work'){S.job.hr=(S.job.hr||0)+sev;n=S.job.hr;
     if(sev>=5||n>=5){const t=jobTitle().toLowerCase();endJob();hap(-10);MS(`Werd ontslagen als ${t}`,1);return ` ${why} HR grijpt in: je bent op staande voet ontslagen.`}
-    if(n>=4){S.job.perf=clamp(S.job.perf-12);return ` ${why} Laatste waarschuwing van HR: nog één keer en je ligt eruit.`}
-    if(n>=3){S.job.perf=clamp(S.job.perf-10);return ` ${why} Je krijgt een officiële waarschuwing van HR.`}
-    S.job.perf=clamp(S.job.perf-4);return ` ${why} Je moet op gesprek bij HR.`}
+    if(n>=4){(S.job&&(S.job.perf=clamp(S.job.perf-12)));return ` ${why} Laatste waarschuwing van HR: nog één keer en je ligt eruit.`}
+    if(n>=3){(S.job&&(S.job.perf=clamp(S.job.perf-10)));return ` ${why} Je krijgt een officiële waarschuwing van HR.`}
+    (S.job&&(S.job.perf=clamp(S.job.perf-4)));return ` ${why} Je moet op gesprek bij HR.`}
   if(slot==='school'){const E=S.edu;E.strk=(E.strk||0)+sev;n=E.strk;
     if(E.cur&&(sev>=5||n>=5)){const nm=E.cur.name;E.cur=null;hap(-8);MS(`Werd van ${nm} gestuurd`,1);return ` ${why} Je wordt van je opleiding gestuurd.`}
     if(!E.cur&&(sev>=5||n>=5)){E.strk=1;for(const k in (E.gr||{}))E.gr[k]=clampG(E.gr[k]-.5);if(typeof gradesPerf==='function')E.perf=gradesPerf();relAdj('moeder',-10);relAdj('vader',-10);hap(-5);S.circ.school=null;return ` ${why} Je wordt van school gestuurd en moet naar een andere school. Je ouders zijn woedend.`}
     if(n>=3){if(E.cur)E.cur.perf=clamp(E.cur.perf-8);else{for(const k in (E.gr||{}))E.gr[k]=clampG(E.gr[k]-.3);if(typeof gradesPerf==='function')E.perf=gradesPerf();relAdj('moeder',-5);relAdj('vader',-5)}return ` ${why} Je wordt een week geschorst.`}
     return ` ${why} Je moet bij ${E.cur?'de opleidingsmanager':'de directeur'} komen${E.cur?'':' en je ouders worden gebeld'}.`}
   const Pp=S.sport;Pp.strk=(Pp.strk||0)+sev;n=Pp.strk;
-  if(sev>=5||n>=5){if(Pp.st==='pro'&&S.job){const f=Math.round(salary()*.15);cash(-f);S.job.perf=clamp(S.job.perf-15);Pp.strk=2;return ` ${why} ${cap(K.auth)} schorst je voor een halve competitie en je krijgt een boete van ${fmt(f)}.`}
+  if(sev>=5||n>=5){if(Pp.st==='pro'&&S.job){const f=Math.round(salary()*.15);cash(-f);(S.job&&(S.job.perf=clamp(S.job.perf-15)));Pp.strk=2;return ` ${why} ${cap(K.auth)} schorst je voor een halve competitie en je krijgt een boete van ${fmt(f)}.`}
     Pp.sk=clamp(Pp.sk-5);Pp.strk=2;return ` ${why} Je wordt voor de rest van het seizoen geschorst.`}
-  if(n>=3){if(S.job&&Pp.st==='pro')S.job.perf=clamp(S.job.perf-6);return ` ${why} Je wordt een paar wedstrijden geschorst.`}
+  if(n>=3){if(S.job&&Pp.st==='pro')(S.job&&(S.job.perf=clamp(S.job.perf-6)));return ` ${why} Je wordt een paar wedstrijden geschorst.`}
   return ` ${why} ${K.lead==='coach'?'Je coach':cap(K.auth)} neemt je apart voor een stevig gesprek.`}
 function circYear(){if(S.job&&S.job.hr)S.job.hr=Math.max(0,S.job.hr-1);if(S.edu.strk)S.edu.strk=Math.max(0,S.edu.strk-1);if(S.sport&&S.sport.strk)S.sport.strk=Math.max(0,S.sport.strk-1);
   if(!S.circ)return;const w=S.circ.work;if(w&&S.job&&w.k===circKey('work')){for(const p of w.ppl){if(p.ref||p.lead)continue;p.rel=clamp(p.rel-ri(0,2))}
@@ -2824,8 +2798,8 @@ function sheetCircP(el,slot,p){const c=circle(slot);if(!c){empty(el,'Hier ben je
   A('🌹','Compliment geven',()=>{bump('comp',2,6);kar(1);return `${p.first} waardeert het.`});
   A('☕',kind==='work'?'Samen lunchen':kind==='solo'?'Sportief feliciteren':kind==='team'?'Na de training wat drinken':'Samen pauze houden',()=>{bump('pauze',3,8);hap(1);return kind==='solo'?`Je feliciteert ${p.first} met de laatste wedstrijd. Er ontstaat wederzijds respect.`:`Je kletst gezellig met ${p.first}.`});
   // rol-specifiek
-  if(kind==='work'&&!lead)A('🤝','Samenwerken aan een project',()=>{const m=bump('samen',2,6);S.job.perf=clamp(S.job.perf+Math.round((p.smarts>60?5:3)*m));return p.smarts>60?`${p.first} is slim: samen leveren jullie iets moois af.`:`Het project loopt, al moet jij veel uitleggen aan ${p.first}.`});
-  if(kind==='work'&&lead)A('🍏','Slijmen',()=>{const m=bump('slijm',2,6);S.job.perf=clamp(S.job.perf+Math.round(3*m));return chance(.3)?`${p.first} prikt er doorheen, maar vindt het stiekem wel leuk.`:`${p.first} lacht om je grapjes. Dat kan geen kwaad.`});
+  if(kind==='work'&&!lead)A('🤝','Samenwerken aan een project',()=>{const m=bump('samen',2,6);(S.job&&(S.job.perf=clamp(S.job.perf+Math.round((p.smarts>60?5:3)*m))));return p.smarts>60?`${p.first} is slim: samen leveren jullie iets moois af.`:`Het project loopt, al moet jij veel uitleggen aan ${p.first}.`});
+  if(kind==='work'&&lead)A('🍏','Slijmen',()=>{const m=bump('slijm',2,6);(S.job&&(S.job.perf=clamp(S.job.perf+Math.round(3*m))));return chance(.3)?`${p.first} prikt er doorheen, maar vindt het stiekem wel leuk.`:`${p.first} lacht om je grapjes. Dat kan geen kwaad.`});
   if((kind==='school'||kind==='study')&&!lead)A('📚','Samen huiswerk maken',()=>{const m=bump('hw',2,6);const g=(p.smarts>60?.3:.15)*m;if(kind==='study'&&S.edu.cur)S.edu.cur.perf=clamp(S.edu.cur.perf+g*15);else{for(const k in (S.edu.gr||{}))S.edu.gr[k]=clampG(S.edu.gr[k]+g);if(typeof gradesPerf==='function')S.edu.perf=gradesPerf()}return p.smarts>60?`${p.first} legt alles haarfijn uit.`:`Jullie kletsen meer dan dat jullie leren.`});
   if((kind==='school'||kind==='study')&&lead)A('🙋','Om hulp vragen',()=>{const m=bump('hulp',2,5);if(kind==='study'&&S.edu.cur)S.edu.cur.perf=clamp(S.edu.cur.perf+4*m);else{for(const k in (S.edu.gr||{}))S.edu.gr[k]=clampG(S.edu.gr[k]+.25*m);if(typeof gradesPerf==='function')S.edu.perf=gradesPerf()}sma(Math.round(1*m));return `${p.first} neemt de tijd voor je.`});
   if((kind==='school'||kind==='study')&&!lead)A('👀','Spieken bij '+p.first,()=>{use('spiek');if(chance(.3)){p.rel=clamp(p.rel-8);kar(-2);return `Je wordt betrapt.`+report('school',1,`${p.first} wordt er ook op aangesproken.`)}const g=p.smarts>55?.4:-.2;for(const k in (S.edu.gr||{}))S.edu.gr[k]=clampG(S.edu.gr[k]+g);if(S.edu.cur)S.edu.cur.perf=clamp(S.edu.cur.perf+g*10);if(typeof gradesPerf==='function'&&!S.edu.cur)S.edu.perf=gradesPerf();return g>0?`Niemand ziet het. ${p.first} had alles goed.`:`Niemand ziet het, maar ${p.first} had alles fout.`},{dots:true});
@@ -2850,6 +2824,10 @@ const slotOf=kind=>kind==='work'?'work':kind==='school'||kind==='study'?'school'
 function circSlot(c,p){const i=c.ppl.indexOf(p);if(i>=0)c.ppl[i]={ref:p.id}}
 function circFriend(slot,p){const c=circle(slot);p.role='vriend';p.rel=Math.max(p.rel,55);if(!S.rel.includes(p))S.rel.push(p);circSlot(c,p);L(`Je bent bevriend geraakt met ${p.first}.`,'good')}
 function circLove(slot,p){const c=circle(slot);p.role='partner';p.st='relatie';p.since=ageY();p.rel=Math.max(p.rel,60);p.job=p.job||(slot==='work'?jobTitle():slot==='school'?'scholier':'');if(!S.rel.includes(p))S.rel.push(p);circSlot(c,p);L(`Je hebt een relatie met ${p.first} ${p.last}.`,'good');MS(`Kreeg een relatie met ${p.first}`,1);hap(6)}
+// namen als "De overvaller" midden in een zin met kleine letter: "staat de overvaller" (verbeterplan 1.8)
+const midNm=n=>/^(De|Het|Een) /.test(n||'')?n[0].toLowerCase()+n.slice(1):n;
+// functienamen midden in een zin: eerste woord klein, behalve eigennamen als Eerste/Tweede Kamer, Senaat, Congres, Europees Parlement
+function lcFn(t){if(!t||/^[A-Z]{2}/.test(t))return t;if(/^(Eerste|Tweede) Kamer|^(Senaat|Congres|Bundestag|Bundesrat|Europees|Staten)/.test(t))return t;return t[0].toLowerCase()+t.slice(1)}
 /* ---------- vechten: aanvallen kiezen, vechtsporten trainen, nieuwe technieken leren ---------- */
 const MOVES={
   stomp:{n:'Stomp',em:'👊',d:[6,11],acc:.75,st:'basis'},
@@ -2884,12 +2862,12 @@ function fightFlow(o){const F=fx();const me={hp:Math.round(55+S.st.health*.45)},
   const hpBar=(n,v,mx,col)=>`<div class="fhp"><span>${he(n)}</span><i><b style="width:${clamp(v/mx*100)}%;background:${col}"></b></i><em>${Math.max(0,Math.round(v))}</em></div>`;
   const finish=res=>{if(dead)return killed(o,b);const lost=me.max-Math.max(0,me.hp);hea(-Math.round(lost/11));if(res==='win'){F.sk=clamp(F.sk+2);hap(4)}else if(res==='lose'){F.sk=clamp(F.sk+1)}
     if(res==='win')S.fights.w++;else if(res==='lose')S.fights.l++;
-    const pre=ko==='foe'?'Knock-out! ':ko==='me'?'Je gaat knock-out. ':res==='flee'?'':(foe.hp>0&&me.hp>0?(res==='win'?'Na zeven rondes sta jij er het sterkst voor. ':`Na zeven rondes staat ${o.foe.first} er beter voor. `):'');
+    const pre=ko==='foe'?'Knock-out! ':ko==='me'?'Je gaat knock-out. ':res==='flee'?'':(foe.hp>0&&me.hp>0?(res==='win'?'Na zeven rondes sta jij er het sterkst voor. ':`Na zeven rondes staat ${midNm(o.foe.first)} er beter voor. `):'');
     const txt=pre+(o.end(res,{rounds:round,myHp:me.hp,foeHp:foe.hp,ko})||'');if(txt)L(txt,res==='win'?'good':res==='lose'?'bad':'');
     result(o.title,txt,chipsFrom(b),()=>{refreshSheet();render();saveLife();o.next&&o.next()},{cat:o.cat,em:o.em||'🥊'})};
   const turn=()=>{round++;const mv=myMoves();
     modal({title:o.title,em:o.em||'🥊',cat:`Ronde ${round}`,html:`<div class="fbox">${hpBar('Jij',me.hp,me.max,'var(--good)')}${hpBar(o.foe.first,foe.hp,foe.max,'var(--bad)')}</div>${log.length?`<p class="flog">${log.slice(-2).map(he).join('<br>')}</p>`:''}<p class="muted" style="margin:4px 0 0;font-size:13px">Kies je aanval · schade · kans op raak · 💫 = kan verdoven</p>`,
-      choices:mv.map(id=>{const M=MOVES[id];const hit=hitP(M.acc,F.sk,o.foe.sk);return {t:M.n,ic:M.em,s:`${M.sub?'Afkloppen':M.d[0]+'–'+M.d[1]} · ${Math.round(hit*100)}%${M.stun?' · 💫':''}`,on:()=>attack(id)}}).concat([{t:'🏃 Wegrennen',cls:'ghost',on:()=>{closeModal();if(chance(.6)){finish('flee')}else{log.push(`Je probeert weg te rennen, maar ${o.foe.first} grijpt je.`);foeHit();check()}}}])})};
+      choices:mv.map(id=>{const M=MOVES[id];const hit=hitP(M.acc,F.sk,o.foe.sk);return {t:M.n,ic:M.em,s:`${M.sub?'Afkloppen':M.d[0]+'–'+M.d[1]} · ${Math.round(hit*100)}%${M.stun?' · 💫':''}`,on:()=>attack(id)}}).concat([{t:'🏃 Wegrennen',cls:'ghost',on:()=>{closeModal();if(chance(.6)){finish('flee')}else{log.push(`Je probeert weg te rennen, maar ${midNm(o.foe.first)} grijpt je.`);foeHit();check()}}}])})};
   const attack=id=>{closeModal();const M=MOVES[id];haptic(15);
     if(chance(hitP(M.acc,F.sk,o.foe.sk))){if(M.sub&&foe.hp<=foe.max*.5){foe.hp=0;log.push(`${M.n}! ${o.foe.first} tikt af.`)}else{const d=Math.round(ri(M.d[0],M.d[1])*(1+F.sk/120));foe.hp-=d;log.push(`${M.n} raak: −${d}.`);
       if(F.sk>=72&&M.d[1]>=18&&chance((F.sk-67)/33*.035*(foe.hp<=foe.max*.5?1.6:1))){dead=true;foe.hp=0}
@@ -2906,7 +2884,7 @@ const hitP=(acc,a,b)=>clamp(acc+(a-b)/250,.08,.97);
 function koP(sk,osk,d,t,foe){if(foe){if(sk<40)return 0;return Math.max(0,Math.min(.55,(sk-40)/160+d/t.max*.6+(1-t.hp/t.max)*.25-osk/400))}
   if(sk<35)return 0;return Math.max(0,Math.min(.62,(sk-35)/140+d/t.max*.65+(1-t.hp/t.max)*.275-osk/425))}
 // heel sterk + heftige aanval: per ongeluk iemand doden
-function killed(o,b){const n=o.foe.first,a=ageY();if(o.kill)o.kill();kar(-25);hap(-20);S.fights.w++;MS(`Doodde per ongeluk ${n}`,1);
+function killed(o,b){const n=o.foe.first,a=ageY();if(o.kill)o.kill();kar(-25);hap(-20);S.fights.w++;MS(`Doodde per ongeluk ${midNm(n)}`,1);
   let t=`Je raakt ${n} met een verwoestende klap. ${n} komt niet meer overeind en overlijdt in het ziekenhuis.`;
   if(o.ring)t+=' Het onderzoek wijst uit dat het een ongeluk was. Je wordt niet vervolgd, maar je zult het nooit vergeten.';
   else if(a<12)t+=' Je bent te jong om vervolgd te worden, maar je komt onder toezicht van jeugdzorg.';
@@ -2921,7 +2899,7 @@ function sheetFight(el){const F=fx(),a=ageY();
     row(s,{ic:T.em,t:T.n,s:a<T.a?`Vanaf ${T.a} jaar`:`Niveau ${lv}% · les ${fmt(T.les)}${nxt?(nxt[1].lv<=lv?' · nieuwe techniek bij je volgende les':` · volgende techniek bij ${nxt[1].lv}%`):' · alle technieken geleerd'}`,dis:a<T.a||S.money<T.les&&a>=18,on:()=>doAct('Les '+T.n,()=>train(k),true,T.em)})}
   const f=sec(el,'Gevechten');
   row(f,{ic:'🤜',t:'Sparren',s:'Oefengevecht op de club · je leert er veel van',dis:a<8,dots:true,on:()=>{if((S.acts.spar||0)>=3){toast('Je hebt dit jaar genoeg gespard');return}S.acts.spar=(S.acts.spar||0)+1;const foe=mkFoe(F.sk+ri(-10,10));
-    fightFlow({foe,ring:1,title:'Sparren',cat:'Vechtsport',end:res=>{F.sk=clamp(F.sk+1);for(const k in F.st)if(F.st[k])bumpStyle(k,2);return res==='win'?`Je bent ${foe.first} de baas in de training.`:res==='flee'?'Je stopt halverwege.':`${foe.first} is vandaag beter. Je leert ervan.`}})}});
+    fightFlow({foe,ring:1,title:'Sparren',cat:'Vechtsport',end:res=>{F.sk=clamp(F.sk+1);for(const k in F.st)if(F.st[k])bumpStyle(k,2);return res==='win'?`Je bent ${midNm(foe.first)} de baas in de training.`:res==='flee'?'Je stopt halverwege.':`${foe.first} is vandaag beter. Je leert ervan.`}})}});
   row(f,{ic:'🏆',t:'Amateurgevecht',s:a<16?'Vanaf 16 jaar':`Inschrijven ${fmt(50)} · winnaar krijgt ${fmt(prizeF())}`,dis:a<16||S.money<50,dots:true,on:fight});
   const m=sec(el,'Jouw aanvallen');for(const id of myMoves()){const M=MOVES[id];row(m,{ic:M.em,t:M.n,s:`${M.st==='basis'?'Basis':M.st==='vies'?'Vies':FSTYLES[M.st].n} · schade ${M.d[0]}–${M.d[1]} · ${Math.round(M.acc*100)}% raak`})}}
 function bumpStyle(k,g){const F=fx();const was=F.st[k]||0;F.st[k]=clamp(was+g);const got=[];for(const [id,M] of Object.entries(MOVES))if(M.st===k&&!F.mv.includes(id)&&F.st[k]>=M.lv){F.mv.push(id);got.push(M.n)}return got}
@@ -2931,8 +2909,8 @@ function train(k){const F=fx(),T=FSTYLES[k];if(ageY()>=18)cash(-T.les);const m=u
 function mkFoe(sk,o={}){const g=o.g||pick(['m','v','m']);const p=mkPerson('tegenstander',g,S.m-(o.age||ageY()+ri(-3,3))*12);return {first:o.first||p.first,face:faceOf(p),sk:clamp(sk),hp:ri(75,100)}}
 const prizeF=()=>Math.round(300*(1+((S.fights&&S.fights.w)||0)/3)*(S.cpi||1));
 function fight(){fx();if((S.acts.fight||0)>=2){toast('Je hebt dit jaar al genoeg gevochten');return}const prize=prizeF(),foe=mkFoe(fx().sk+ri(-12,15));
-  modal({title:'Amateurgevecht',em:'🥊',cat:'Vechtsport',text:`Je tegenstander is ${foe.first}${foe.sk>fx().sk+5?', een geduchte vechter':foe.sk<fx().sk-5?', die minder ervaring heeft dan jij':', ongeveer van jouw niveau'}. Inschrijven kost ${fmt(50)}. De winnaar krijgt ${fmt(prize)}.`,choices:opts([{t:'Vechten',cls:'go',on:()=>{closeModal();S.acts.fight=(S.acts.fight||0)+1;cash(-50);
-    fightFlow({foe,ring:1,title:'Amateurgevecht',cat:'Vechtsport',end:res=>{if(res==='win'){cash(prize);sk('sport',3);if(S.fights.w>=5)S.fame=clamp(S.fame+3);return `Je wint van ${foe.first}! Je krijgt ${fmt(prize)}. Record: ${S.fights.w}-${S.fights.l}.`}if(res==='flee')return 'Je geeft op. Het publiek fluit je uit.';return `${foe.first} wint. Record: ${S.fights.w}-${S.fights.l}.`}})}}])})}
+  modal({title:'Amateurgevecht',em:'🥊',cat:'Vechtsport',text:`Je tegenstander is ${midNm(foe.first)}${foe.sk>fx().sk+5?', een geduchte vechter':foe.sk<fx().sk-5?', die minder ervaring heeft dan jij':', ongeveer van jouw niveau'}. Inschrijven kost ${fmt(50)}. De winnaar krijgt ${fmt(prize)}.`,choices:opts([{t:'Vechten',cls:'go',on:()=>{closeModal();S.acts.fight=(S.acts.fight||0)+1;cash(-50);
+    fightFlow({foe,ring:1,title:'Amateurgevecht',cat:'Vechtsport',end:res=>{if(res==='win'){cash(prize);sk('sport',3);if(S.fights.w>=5)S.fame=clamp(S.fame+3);return `Je wint van ${midNm(foe.first)}! Je krijgt ${fmt(prize)}. Record: ${S.fights.w}-${S.fights.l}.`}if(res==='flee')return 'Je geeft op. Het publiek fluit je uit.';return `${foe.first} wint. Record: ${S.fights.w}-${S.fights.l}.`}})}}])})}
 // ---- pesten en ruzie: terugvechten ----
 function bullyP(){const c=S.circ&&S.circ.school;if(!c||c.k!==circKey('school'))return null;return circPpl(c).find(p=>p.bully)||null}
 E('pestkop',{a:[6,17],c:()=>S.edu.stage==='basis'||S.edu.stage==='middel',w:()=>bullyP()?3:1,t:'Je wordt gepest',
@@ -3136,9 +3114,11 @@ function processQ(){
   if(!Q.length)return afterQ();
   const q=Q[0],e=EV[q.id],c=q.c||{};if(!e){Q.shift();return processQ()}
   if((e.need&&!safe(()=>e.need(c)))||(e.jail&&!inJail())){Q.shift();return processQ()}
+  // de situatie kan veranderd zijn sinds de gebeurtenis in de wachtrij kwam (bijv. ontslagen): opnieuw controleren
+  if(!e.sys&&e.c&&!safe(()=>e.c())){Q.shift();return processQ()}
   if(q.id==='s_baby')return babyModal(q);
   const txt=typeof e.x==='function'?safe(()=>e.x(c)):e.x;const meta=evMeta(q.id,c);
-  if(e.f&&!e.ch){const b=snapSt();const r=safe(()=>e.f(c))||'';Q.shift();if(r)L(r);result(e.t,r,chipsFrom(b),processQ,meta);return}
+  if(e.f&&!e.ch){const b=snapSt();const r=safe(()=>e.f(c))||'';Q.shift();if(r&&!c.nolog)L(r);result(e.t,r,chipsFrom(b),processQ,meta);return}
   const chs=(e.ch||[]).filter(ch=>!ch[2]||safe(()=>ch[2](c)));const run=ch=>{const b=snapSt();const r=safe(()=>ch[1](c))||'';Q.shift();if(r&&r.go){closeModal();r.go();return}if(r)L(`${e.t.replace(/[?!.]$/,'')}: ${r}`);if(r)result(e.t,r,chipsFrom(b),processQ,meta);else{closeModal();processQ()}};
   modal({title:e.t,text:txt,...meta,surprise:chs.length>1,choices:chs.map(ch=>({t:ch[0],on:()=>run(ch)}))});
 }
@@ -3191,6 +3171,7 @@ const opts=(list,cancel=true)=>list.concat(cancel?[{t:'Annuleren',cls:'ghost',on
 function eduSub(){const E=S.edu;if(E.cur)return cap(E.cur.name);if(E.stage==='basis')return'Basisschool';if(E.stage==='middel')return`Middelbare school (${E.lvl})`;return ageY()<4?'Vanaf 4 jaar':'Ga (weer) naar school'}
 function sheetJob(el){
   const a=ageY();if(typeof polMigrate==='function')polMigrate();if(typeof milMigrate==='function')milMigrate();
+  if(a<4){card(el,`<h3>👶 Nog even geduld</h3><p class="muted" style="margin:0">Je bent nog te klein voor school of werk. Vanaf 4 jaar ga je naar de basisschool, en later kies je zelf een opleiding en een baan.</p>`);return}
   if(inJail()){card(el,`<h3>Je zit vast</h3><p class="muted" style="margin:0">Nog ${S.crim.jail.left} maanden te gaan. Werken en studeren kan pas weer na je vrijlating. Kijk bij Activiteiten wat je in de gevangenis kunt doen.</p>`);return}
   // bovenaan: waar je nu mee bezig bent (zoals BitLife)
   const top=sec(el,'');let any=0;const E=S.edu;
@@ -3247,10 +3228,10 @@ function sheetMyJob(el){if(!S.job){empty(el,'Je hebt geen baan.');return}if(S.jo
   const s=sec(el,'Acties');
   row(s,{ic:jobEm(S.job.id),t:'Werkdag',s:'Minigame · los situaties op je werk op',dots:true,on:workDay});
   {const [e,t,d]=SIG[jobGroup(S.job.id)];row(s,{ic:e,t,s:d,dots:true,on:sigAction})}
-  row(s,{ic:'💪',t:'Harder werken',s:'Je baas ziet het',on:()=>doAct('Harder werken',()=>{const m=use('werk');S.job.perf=clamp(S.job.perf+7*m);return 'Je blijft elke dag wat langer.'},true,'💪')});
-  row(s,{ic:'💶',t:'Opslag vragen',dis:!!S.acts.opslag,dots:true,on:()=>doAct('Opslag vragen',()=>{S.acts.opslag=1;if(chance(S.job.perf/130)){const p=ri(4,10);S.job.mult*=1+p/100;hap(5);return `Je krijgt ${p}% opslag!`}S.job.perf=clamp(S.job.perf-4);hap(-1);return 'Je leidinggevende zegt nee.'},true,'💶')});
-  if(S.job.lvl<j.lad.length-1)row(s,{ic:'📈',t:'Promotie vragen',s:`Presentatie voor ${j.lad[S.job.lvl+1].toLowerCase()} · minigame`,dis:!!S.acts.promo,dots:true,on:()=>mgMemory('Presentatie voor je baas','Onthoud de volgorde van je presentatie en geef hem foutloos.',4+Math.min(3,S.job.lvl),(ok,fr)=>doAct('Promotie vragen',()=>{S.acts.promo=1;const base=S.job.lyrs>=1?(S.job.perf-40)/100:-.2;if(chance(clamp(base+(ok?.35:fr*.15-.1),0,.9))){const fl=promoTxt(S.job.id);promote();return `${fl} Je bent nu ${jobTitle().toLowerCase()}!`}S.job.perf=clamp(S.job.perf+(ok?3:-4));const r=ok?'Sterke presentatie, maar er is nu geen plek. Volgend jaar maak je meer kans.':'Je raakt de draad kwijt. Geen promotie dit jaar.';L(`Promotie gevraagd: ${r}`);return r},false,'📈'))});
-  row(s,{ic:'🍻',t:'Borrelen met collega\'s',on:()=>doAct('Borrel',()=>{const m=use('borrel');hap(3*m);S.job.perf=clamp(S.job.perf+2*m);sk('sociaal',2*m);return 'Gezellig. Je leert je collega\'s beter kennen.'},true,'🍻')});
+  row(s,{ic:'💪',t:'Harder werken',s:'Je baas ziet het',on:()=>doAct('Harder werken',()=>{const m=use('werk');(S.job&&(S.job.perf=clamp(S.job.perf+7*m)));return 'Je blijft elke dag wat langer.'},true,'💪')});
+  row(s,{ic:'💶',t:'Opslag vragen',dis:!!S.acts.opslag,dots:true,on:()=>doAct('Opslag vragen',()=>{S.acts.opslag=1;if(chance(S.job.perf/130)){const p=ri(4,10);S.job.mult*=1+p/100;hap(5);return `Je krijgt ${p}% opslag!`}(S.job&&(S.job.perf=clamp(S.job.perf-4)));hap(-1);return 'Je leidinggevende zegt nee.'},true,'💶')});
+  if(S.job.lvl<j.lad.length-1)row(s,{ic:'📈',t:'Promotie vragen',s:`Presentatie voor ${j.lad[S.job.lvl+1].toLowerCase()} · minigame`,dis:!!S.acts.promo,dots:true,on:()=>mgMemory('Presentatie voor je baas','Onthoud de volgorde van je presentatie en geef hem foutloos.',4+Math.min(3,S.job.lvl),(ok,fr)=>doAct('Promotie vragen',()=>{S.acts.promo=1;const base=S.job.lyrs>=1?(S.job.perf-40)/100:-.2;if(chance(clamp(base+(ok?.35:fr*.15-.1),0,.9))){const fl=promoTxt(S.job.id);promote();return `${fl} Je bent nu ${jobTitle().toLowerCase()}!`}(S.job&&(S.job.perf=clamp(S.job.perf+(ok?3:-4))));const r=ok?'Sterke presentatie, maar er is nu geen plek. Volgend jaar maak je meer kans.':'Je raakt de draad kwijt. Geen promotie dit jaar.';L(`Promotie gevraagd: ${r}`);return r},false,'📈'))});
+  row(s,{ic:'🍻',t:'Borrelen met collega\'s',on:()=>doAct('Borrel',()=>{const m=use('borrel');hap(3*m);(S.job&&(S.job.perf=clamp(S.job.perf+2*m)));sk('sociaal',2*m);return 'Gezellig. Je leert je collega\'s beter kennen.'},true,'🍻')});
   if(a>=60)row(s,{ic:'🏖️',t:'Met pensioen gaan',dots:true,on:()=>ask('Met pensioen?','Je stopt met werken en krijgt pensioen.','Met pensioen',()=>doAct('Pensioen',()=>{retire();return `Je ontvangt voortaan ${fmt(S.pension)} per jaar.`},true,'🏖️'),'go')});
   row(s,{ic:'🚪',t:'Ontslag nemen',dots:true,on:()=>ask('Ontslag nemen?',`Je stopt als ${jobTitle().toLowerCase()}.`,'Ontslag nemen',()=>{L(`Je hebt ontslag genomen als ${jobTitle().toLowerCase()}.`);endJob();backSheet();render();saveLife()})});
 }
@@ -3305,7 +3286,7 @@ const carEm=c=>carIcon(c);
 function finPopup(){const inv=Object.values(S.inv).reduce((x,y)=>x+y,0),pr=S.props.reduce((x,p)=>x+p.value-p.mort,0),cr=S.cars.reduce((x,c)=>x+c.value,0),it=S.items.reduce((x,i)=>x+i.value,0),bz=S.biz.reduce((x,b)=>x+b.value*b.eq/100,0);const a=ageY();
   const cap_=Math.round(Math.max(0,salary()*.8+Math.max(0,netWorth())*.3-S.loan));
   modal({title:'Financiën',em:'💰',cat:'Bezit',html:pkv([['Saldo',fmt(S.money)],...incomeParts().map(([k,v])=>[k,fmt(v)+' / jaar']),['Totaal inkomen',`<b>${fmt(incomeParts().reduce((x,[,v])=>x+v,0))} / jaar</b>`],['Beleggingen',fmt(inv)],['Vastgoed (na hypotheek)',fmt(pr)],['Voertuigen',fmt(cr)],['Bezittingen',fmt(it)],['Bedrijven (jouw deel)',fmt(bz)],['Studieschuld',fmt(-S.debt)],['Leningen',fmt(-S.loan)],['Belasting per jaar (geschat)',fmt(taxOn(taxable()))],['Economie',econLabel()],['Prijzen sinds je geboorte',`+${Math.round(((S.cpi||1)-1)*100)}%`],['Netto vermogen',`<b>${fmt(netWorth())}</b>`]]),
-    choices:[{t:'Lening afsluiten',dis:a<18||cap_<=500||inJail(),on:()=>{closeModal();amountModal('Lenen',cap_,x=>doAct('Lening',()=>{S.loan+=x;cash(x);return `De bank leent je ${fmt(x)} tegen 6% rente.`},true,'🏦'))}},
+    choices:[{t:'Lening afsluiten',dis:a<18||cap_<=500||inJail()||bkr(),on:()=>{closeModal();amountModal('Lenen',cap_,x=>doAct('Lening',()=>{S.loan+=x;cash(x);return `De bank leent je ${fmt(x)} tegen 6% rente.`},true,'🏦'))}},
       {t:'Studieschuld aflossen',dis:S.debt<=0||S.money<=0,on:()=>{closeModal();amountModal('Studieschuld aflossen',Math.min(S.money,S.debt),x=>doAct('Afgelost',()=>{cash(-x);S.debt-=x;return `${fmt(x)} studieschuld afgelost.`},true,'✅'))}},
       {t:'Lening aflossen',dis:S.loan<=0||S.money<=0,on:()=>{closeModal();amountModal('Lening aflossen',Math.min(S.money,S.loan),x=>doAct('Afgelost',()=>{cash(-x);S.loan-=x;return `${fmt(x)} afgelost.`},true,'✅'))}},
       {t:'Sluiten',cls:'ghost',on:closeModal}]})}
@@ -3483,6 +3464,7 @@ function sheetMain(el){
   row(s,{ic:'💀',t:'Begraafplaats',s:'Vergelijk je vorige levens',on:()=>openSheet('Begraafplaats',sheetCemetery,true)});
   row(s,{ic:'🌳',t:'Stamboom',s:`Generatie ${S.gen}`,on:()=>openSheet('Stamboom',sheetTree,true)});
   row(s,{ic:'🔎',t:'Profiel',s:'Vaardigheden, loopbaan, strafblad',on:()=>openSheet('Profiel',sheetProfile,true)});
+  {const n=errList().length;row(sec(el,'Hulp'),{ic:'🩺',t:'Foutenlog',s:n?`${n} ${n===1?'fout':'fouten'} opgevangen · stuur een schermafbeelding naar Claude`:'Geen fouten opgevangen',on:()=>openSheet('Foutenlog',sheetErrors,true)})}
   versionLine(el);
 }
 function sheetLives(el){const s=sec(el,'');const ls=Object.values(STORE.lives).filter(l=>!l.done&&l.alive).sort((a,b)=>(b.updated||0)-(a.updated||0));
@@ -3670,7 +3652,7 @@ function migrate(s){if(s.energy==null)s.energy=12;s.cpi=s.cpi||1;s.econ=s.econ||
 function loadLife(id){S=STORE.lives[id];if(!S||S.done)return;migrate(S);Q=S.q||[];STORE.last=id;
   if(!S.alive){showDeath();return}show('game');render();if(Q.length)processQ()}
 /* ================= OPSLAAN ================= */
-const LS_KEY=window.LEVENSLOOP_KEY||'levensloop.v1';let STORE={lives:{}};
+const LS_KEY='levensloop.v1';let STORE={lives:{}};
 function meta(){if(!STORE.meta)STORE.meta={careers:[],ribbons:[]};STORE.meta.careers=STORE.meta.careers||[];STORE.meta.ribbons=STORE.meta.ribbons||[];return STORE.meta}
 function collectCareer(id){const M=meta();if(!M.careers.includes(id)){M.careers.push(id)}}
 function lsLoad(){try{const t=localStorage.getItem(LS_KEY);if(t){const d=JSON.parse(t);if(d&&d.lives)STORE=d}}catch(e){}}
@@ -3855,7 +3837,7 @@ function angelYear(){for(const x of (S.angel||[])){if(x.st!=='actief')continue;x
     x.v=Math.round(x.v*Math.max(.3,1+gauss()*({laag:.2,gemiddeld:.4,hoog:.7}[x.risk]||.4)+.1))}}
 const angelVal=()=>(S.angel||[]).reduce((s,x)=>s+(x.st==='actief'?x.v:0),0);
 // ---- bedrag kiezen: zelf intypen of snelknoppen ----
-function amountModal(title,max,cb){max=Math.floor(max);const q=[.1,.25,.5].map(f=>Math.round(max*f/10)*10).filter(v=>v>0);
+function amountModal(title,max,cb){max=Math.floor(max);if(!(max>0)){toast(S&&S.money<0?'Je staat rood':'Daar is geen geld voor');return}const q=[.1,.25,.5].map(f=>Math.round(max*f/10)*10).filter(v=>v>0);
   modal({title,em:'💶',cat:curCat(),html:`<p class="muted" style="margin:0 0 6px">Maximaal ${fmt(max)}</p><div class="inrow"><input class="inp num" id="amt" type="number" inputmode="decimal" min="1" max="${max}" placeholder="Bedrag"></div>`,choices:opts([
     {t:'Bevestigen',cls:'go',on:()=>{const v=Math.floor(+($('#amt').value||0));if(!(v>0)){toast('Vul een bedrag in');return}if(v>max){toast(`Maximaal ${fmt(max)}`);return}closeModal();cb(v)}},
     ...q.map((v,i)=>({t:`${['10%','25%','50%'][i]} · ${fmt(v)}`,on:()=>{closeModal();cb(v)}})),
@@ -3877,7 +3859,7 @@ function sheetFinance(el){const a=ageY(),inv=Object.values(S.inv).reduce((x,y)=>
   row(su,{ic:'🚀',t:'Startups zoeken geld',s:'Elk jaar nieuwe pitches · kies zelf je bedrag',on:()=>openSheet('Startups',sheetPitch,true)});
   if(S.biz.length){const bz=sec(el,'Je eigen bedrijven');for(const x of S.biz)row(bz,{ic:BIZEM[x.type],t:x.name,s:`In kas ${fmt(x.cash)} · tik om geld in te leggen of op te nemen`,on:()=>openSheet(x.name,el=>sheetBiz(el,x),true)})}
   const l=sec(el,'Lenen en aflossen');const cap_=Math.round(Math.max(0,salary()*.8+Math.max(0,netWorth())*.3-S.loan));
-  row(l,{ic:'🏦',t:'Lening afsluiten',s:`6% rente · tot ${fmt(cap_)}`,dis:cap_<=500||inJail(),dots:true,on:()=>amountModal('Lenen',cap_,x=>doAct('Lening',()=>{S.loan+=x;cash(x);return `De bank leent je ${fmt(x)} tegen 6% rente.`},true,'🏦'))});
+  row(l,{ic:'🏦',t:'Lening afsluiten',s:bkr()?bkrWhy():`6% rente · tot ${fmt(cap_)}`,dis:cap_<=500||inJail()||bkr(),dots:true,on:()=>amountModal('Lenen',cap_,x=>doAct('Lening',()=>{S.loan+=x;cash(x);return `De bank leent je ${fmt(x)} tegen 6% rente.`},true,'🏦'))});
   if(S.loan>0)row(l,{ic:'✅',t:'Lening aflossen',s:`Nog ${fmt(S.loan)}`,dis:S.money<=0,dots:true,on:()=>amountModal('Lening aflossen',Math.min(S.money,S.loan),x=>doAct('Afgelost',()=>{cash(-x);S.loan-=x;return `${fmt(x)} afgelost.`},true,'✅'))});
   if(S.debt>0)row(l,{ic:'🎓',t:'Studieschuld aflossen',s:`Nog ${fmt(S.debt)}`,dis:S.money<=0,dots:true,on:()=>amountModal('Studieschuld aflossen',Math.min(S.money,S.debt),x=>doAct('Afgelost',()=>{cash(-x);S.debt-=x;return `${fmt(x)} studieschuld afgelost.`},true,'✅'))})}
 function holdMenu(id){const isB=INV[id]&&id!=='aandelen'&&id!=='crypto';const H=isB?null:HOLD[id];const n=isB?INV[id][0]:H[0],em=isB?(id==='spaar'?'🐷':'📊'):H[1];const v=isB?S.inv[id]:(S.stk[id]?S.stk[id].v:0),inn=isB?invIn(id):(S.stk[id]?S.stk[id].in:0);
@@ -3893,6 +3875,68 @@ function autoMenu(){const A=S.auto||{pct:0,to:'index'};
 function sheetPitch(el){const L_=pitches();card(el,`<span class="muted">Startups zijn een gok: veel gaan failliet, een paar worden enorm. Na een paar jaar kan een startup worden overgenomen, dan krijg je je deel uitbetaald.</span>`);const s=sec(el,`Pitches in ${year()}`);
   for(const p of L_)row(s,{ic:p.em,t:p.n,s:`${cap(p.w)} · waardering ${fmt(p.val)} · risico ${p.risk}`,dis:!!p.done,dots:true,on:()=>{const max=Math.min(S.money,p.val*.2);if(max<1000){toast('Je hebt minimaal '+fmt(1000)+' nodig');return}
     amountModal(`Investeren in ${p.n}`,max,x=>doAct('Startup',()=>{if(x<1000)return 'Het minimum is '+fmt(1000)+'.';cash(-x);p.done=1;(S.angel=S.angel||[]).push({id:uid(),n:p.n,em:p.em,w:p.w,risk:p.risk,in:x,v:x,st:'actief',yrs:0});return `Je investeert ${fmt(x)} in ${p.n} en krijgt ${Math.max(.01,Math.round(x/p.val*10000)/100)}% van de aandelen.`},true,'🚀'))}})}
+/* ================= ROOD STAAN (verbeterplan 1.5, gekozen: streng) =================
+   - Rente: 12% per jaar op een negatief saldo (vanaf 18 jaar), zie monthTick in engine.js.
+   - Elk jaar een logregel zolang je rood staat, met de grens.
+   - Grens hangt af van inkomen en bezit (debtLimit). Daarboven komt de gebeurtenis "Schuldeisers":
+     bezit verkopen, lening bij de bank, schuldsanering (3 jaar) of negeren.
+   - Twee keer negeren of een mislukte schuldsanering = faillissement: alles wordt verkocht,
+     de rest wordt afgeschreven, 10 jaar geen krediet en een flinke klap voor je geluk.
+   - Negatieve kredietregistratie (S.flags.bkrTot): geen leningen en geen hypotheek. */
+const RED_RATE=.12;
+function bkr(){return !!S.wsnp||year()<(S.flags.bkrTot||0)}
+function bkrWhy(){return S.wsnp?'Niet tijdens een schuldsanering':`Negatieve kredietregistratie tot ${S.flags.bkrTot}`}
+function debtLimit(){const c=S.cpi||1;const inc=incomeParts().reduce((x,[,v])=>x+v,0);const assets=Math.max(0,netWorth()-S.money);return Math.round(Math.max(5000*c,inc*.3+assets*.1))}
+function loanCapNow(){return Math.round(Math.max(0,salary()*.8+Math.max(0,netWorth())*.3-S.loan))}
+// wat je bezit en kunt verkopen (na aftrek van hypotheek), zonder bedrijven
+function sellableVal(){let v=0;for(const k in S.inv)v+=Math.max(0,S.inv[k]||0);for(const x of S.items||[])v+=x.value*.7;for(const c of S.cars)v+=c.value*.7;
+  for(const p of S.props)v+=Math.max(0,p.value*.97-p.mort);for(const p of S.re||[])v+=Math.max(0,p.value*.97-p.mort);return Math.round(v)}
+// verkoopt bezit tot je saldo weer niet negatief is (all=true: alles). Geeft een lijstje terug van wat er weg is.
+function sellAssets(all){const out=[];const done=()=>!all&&S.money>=0;
+  if(typeof stkSync==='function')stkSync();
+  let inv=0;for(const id of Object.keys(S.stk||{})){inv+=divest(id,1e15)}for(const k of Object.keys(S.inv)){if((S.inv[k]||0)>0&&k!=='aandelen'&&k!=='crypto')inv+=divest(k,S.inv[k])}
+  if(inv>=1){cash(Math.round(inv));out.push(`beleggingen (${fmt(inv)})`)}
+  const sellThing=(list,label,f)=>{for(const x of list.slice().sort((a,b)=>b.value-a.value)){if(done())return;const v=Math.round(x.value*f);cash(v);out.push(`${label(x)} (${fmt(v)})`);list.splice(list.indexOf(x),1)}};
+  if(!done())sellThing(S.items||[],x=>x.name||'bezit',.7);
+  if(!done())sellThing(S.cars,x=>x.name||'auto',.7);
+  const sellProp_=(p,list,home)=>{const get=Math.round(p.value*.97-p.mort);if(get<0)S.loan+=-get;else cash(get);list.splice(list.indexOf(p),1);out.push(`${(p.name||'pand').toLowerCase()} aan de ${(p.addr||'').split(',')[0]} (${fmt(Math.max(0,get))})`);
+    if(home)S.home={k:'huur',name:'Appartement',rent:Math.round(14000*(S.cpi||1))}};
+  for(const p of (S.re||[]).slice()){if(done())break;sellProp_(p,S.re,false)}
+  for(const p of S.props.filter(p=>S.home.pid!==p.id)){if(done())break;sellProp_(p,S.props,false)}
+  for(const p of S.props.filter(p=>S.home.pid===p.id)){if(done())break;sellProp_(p,S.props,true)}
+  return out}
+function bankrupt(why){S.flags.bg=0;const sold=sellAssets(true);const rest=Math.max(0,-S.money)+S.loan;S.money=0;S.loan=0;S.wsnp=null;S.flags.schuldN=0;
+  S.flags.bkrTot=year()+10;S.flags.failliet=(S.flags.failliet||0)+1;hap(-25);MS('Ging failliet',0);
+  return `${why} Je bent failliet verklaard.${sold.length?` Alles wordt verkocht: ${sold.join(', ')}.`:''}${rest?` De resterende schuld van ${fmt(rest)} wordt afgeschreven.`:''} Tien jaar lang krijg je geen lening of hypotheek meer.`}
+function startWsnp(){const d=-S.money;S.flags.bg=0;S.wsnp={left:3,debt:d,paid:0};S.money=0;S.flags.wsnpY=year();S.flags.schuldN=0;hap(-12);MS('Begon aan een schuldsanering',1);
+  return `De rechter zet je in de schuldsanering. Drie jaar lang leef je van ${fmt(3000*(S.cpi||1))} per jaar leefgeld en gaat alles daarboven naar je schuldeisers. Lenen kan niet. Houd je het vol, dan wordt de rest van je ${fmt(d)} schuld kwijtgescholden.`}
+// één keer per jaar, op je verjaardag (vanaf 18)
+function debtYear(){if(!S.alive||ageY()<18)return;const c=S.cpi||1;
+  if(S.wsnp){const W=S.wsnp,keep=Math.round(3000*c);
+    if(S.money<0){if(-S.money>debtLimit()){S.wsnp=null;Q.push({id:'s_failliet',c:{why:`Je hebt tijdens de schuldsanering nieuwe schulden gemaakt (${fmt(-S.money)}). De rechter stopt de regeling.`}});return}
+      W.debt+=-S.money;S.money=0}
+    if(S.money>keep){const af=Math.round(S.money-keep);cash(-af);W.paid+=af}
+    W.left--;
+    if(W.left<=0){S.wsnp=null;S.flags.bkrTot=year()+5;hap(10);MS('Rondde een schuldsanering af',1);
+      L(`Je schuldsanering is klaar. ${W.paid>=1?`Je hebt ${fmt(W.paid)} afgelost. `:''}De rest van je schuld (${fmt(Math.max(0,W.debt-W.paid))}) wordt kwijtgescholden. Je kunt opnieuw beginnen, al blijf je nog vijf jaar geregistreerd bij de bank.`,'good big')}
+    else{hap(-3);L(`Schuldsanering: nog ${W.left} jaar te gaan.${W.paid>=1?` Tot nu toe ${fmt(W.paid)} afgelost.`:''}`,'sys')}
+    return}
+  if(S.money>=0){S.flags.schuldN=0;return}
+  const lim=debtLimit(),red=-S.money;
+  // dure vaste lasten die je niet kunt betalen, stoppen vanzelf
+  if(red>lim&&S.flags.bg){S.flags.bg=0;L('Je kunt je bodyguard niet meer betalen. Hij zoekt een andere klant.','bad')}
+  if(red<=lim){L(`Je staat ${fmt(red)} rood. De bank rekent ${Math.round(RED_RATE*100)}% rente per jaar. Boven ${fmt(lim)} komen de schuldeisers.`,'sys');return}
+  if((S.flags.schuldN||0)>=2){Q.push({id:'s_failliet',c:{why:'Je schuldeisers zijn naar de rechter gestapt.'}});return}
+  // hooguit eens per twee jaar een pop-up; daartussen een logregel (tenzij de schuld intussen meer dan verdubbeld is)
+  if(S.flags.schuldY&&year()-S.flags.schuldY<2&&red<=2*lim){L(`Je staat ${fmt(red)} rood, boven de grens van ${fmt(lim)}. Er komen steeds meer aanmaningen.`,'bad');return}
+  if(!Q.some(q=>q.id==='s_schuld')){S.flags.schuldY=year();Q.push({id:'s_schuld',c:{}})}}
+E('s_schuld',{sys:1,t:'Schuldeisers',x:()=>{const lim=debtLimit();return `Je staat ${fmt(-S.money)} rood, meer dan de bank toestaat (${fmt(lim)}). Er liggen aanmaningen op de mat en de deurwaarder belt.${S.flags.schuldN?' Dit is de laatste waarschuwing.':''} Wat doe je?`},ch:[
+  ['🏷️ Bezit verkopen',()=>{const s=sellAssets(false);S.flags.schuldN=0;hap(-4);return s.length?`Je verkoopt ${s.join(', ')}.${S.money<0?` Je staat nog ${fmt(-S.money)} rood.`:' Je staat weer in de plus.'}`:'Er valt niets te verkopen.'},()=>sellableVal()>0],
+  ['🏦 Lening bij de bank',()=>{const d=-S.money;S.loan+=d;S.money=0;S.flags.schuldN=0;return `De bank zet je ${fmt(d)} schuld om in een lening tegen 6% rente. Je betaalt hem elke maand af.`},()=>!bkr()&&loanCapNow()>=-S.money],
+  ['📉 Schuldsanering (3 jaar)',()=>startWsnp(),()=>!(S.flags.wsnpY&&year()-S.flags.wsnpY<10)],
+  ['🙈 Negeren',()=>{S.flags.schuldN=(S.flags.schuldN||0)+1;hap(-3);return S.flags.schuldN>=2?'Je legt de brieven op de stapel. Volgend jaar stappen je schuldeisers naar de rechter.':'Je stopt de brieven ongeopend in een la. Volgend jaar komen ze terug, strenger.'}]]});
+E('s_failliet',{sys:1,t:'Failliet',f:c=>bankrupt(c.why||'')});
+Object.assign(EVMETA,{s_schuld:['Geld','📬'],s_failliet:['Geld','⚖️']});
 /* ================= RELATIES: grote familie, liefde, opvoeden, stamboom ================= */
 const BIGR={opa:'Grootouders',oma:'Grootouders',oom:'Ooms en tantes',tante:'Ooms en tantes',neef:'Neven en nichten',nicht:'Neven en nichten',neefje:'Neefjes en nichtjes',nichtje:'Neefjes en nichtjes',
   schoonmoeder:'Schoonfamilie',schoonvader:'Schoonfamilie',zwager:'Schoonfamilie',schoonzus:'Schoonfamilie',stiefvader:'Stieffamilie',stiefmoeder:'Stieffamilie',stiefbroer:'Stieffamilie',stiefzus:'Stieffamilie'};
@@ -4208,7 +4252,7 @@ function sheetOrg(el){const o=S.crim.org,a=ageY();
     A('🧑‍🤝‍🧑','Leden werven','Nieuwe mensen voor je bende',()=>doAct('Werven',()=>{if(o.mem.length>=12)return 'Je bende is al groot genoeg.';const m=use('werf');if(!m||!chance(.4+o.rep/200))return 'Niemand durft zich aan te sluiten.';const p=gangRecruit();return `${p.first} sluit zich aan bij ${o.name}.`},true,'🧑‍🤝‍🧑'));
     A('💰','Protectiegeld innen','Winkeliers in je gebied betalen',()=>doAct('Protectiegeld',()=>{const m=use('prot');const g=Math.round(o.turf*ri(400,1500)*m*(S.cpi||1));dirtyIn(g,1);S.crim.heat=Math.min(100,(S.crim.heat||0)+6);o.rep=clamp(o.rep+2*m);kar(-3);return `Je haalt ${fmt(g)} op.`},true,'💰'));
     A('⚔️','Een gebied overnemen','Vecht tegen de leider van een rivaliserende bende',()=>{if(S.acts.turf){toast('Dit jaar al gedaan');return}S.acts.turf=1;const foe={first:pick(['"Bullet" Ramon','Dikke Gerrit','"De Slang"','Kleine Mo','Sven "Ijzer"']),sk:clamp(30+o.turf*6+ri(0,25)),hp:ri(80,100)};
-      fightFlow({foe,title:'Strijd om de buurt',cat:o.name,kill:()=>{S.crim.heat=Math.min(100,(S.crim.heat||0)+20)},end:res=>{if(res==='win'){o.turf++;o.rep=clamp(o.rep+10);return `Je verslaat ${foe.first}. De buurt is nu van ${o.name}.`}o.rep=clamp(o.rep-6);if(o.mem.length&&chance(.3)){const x=o.mem.splice(ri(0,o.mem.length-1),1)[0];return `${foe.first} wint. Je bendelid ${x.first} verlaat de bende.`}return `${foe.first} wint. Je naam heeft een deuk.`}})},{dots:true});
+      fightFlow({foe,title:'Strijd om de buurt',cat:o.name,kill:()=>{S.crim.heat=Math.min(100,(S.crim.heat||0)+20)},end:res=>{if(res==='win'){o.turf++;o.rep=clamp(o.rep+10);return `Je verslaat ${midNm(foe.first)}. De buurt is nu van ${o.name}.`}o.rep=clamp(o.rep-6);if(o.mem.length&&chance(.3)){const x=o.mem.splice(ri(0,o.mem.length-1),1)[0];return `${foe.first} wint. Je bendelid ${x.first} verlaat de bende.`}return `${foe.first} wint. Je naam heeft een deuk.`}})},{dots:true});
     A('🎯','Een lid op klus sturen','Zij doen het vuile werk, jij krijgt een deel',()=>{if(!o.mem.length){toast('Je hebt nog geen leden');return}modal({title:'Wie stuur je?',em:'🎯',cat:o.name,choices:opts(o.mem.map(p=>({t:p.first,ic:faceOf(p),s:`kracht ${crewSk(p).kracht}% · rijden ${crewSk(p).rijden}%`,on:()=>{closeModal();doAct('Klus',()=>{use('klus');const k=crewSk(p);if(chance((k.kracht+k.oplet)/220)){const g=Math.round(ri(2,15)*1000*(S.cpi||1));dirtyIn(Math.round(g*.6),1);o.rep=clamp(o.rep+3);return `${p.first} komt terug met ${fmt(g)}. Jouw deel: ${fmt(Math.round(g*.6))}.`}o.mem=o.mem.filter(x=>x!==p);S.crim.heat=Math.min(100,(S.crim.heat||0)+10);if(chance(.3)){Q.push({id:'s_caught',c:{w:'leiding geven aan een criminele organisatie',m:ri(24,60)}});return `${p.first} wordt opgepakt en praat over jou.`}return `${p.first} wordt opgepakt, maar houdt zijn mond.`},true,'🎯')}})))})},{dots:true});
     A('🧼','Witwassen','Je zwarte geld schoon krijgen',()=>openSheet('Witwassen',sheetLaunder,true));
     A('🏳️','De bende opheffen','',()=>ask('Opheffen?',`${o.name} houdt op te bestaan.`,'Opheffen',()=>{S.crim.org=null;refreshSheet();render()}),{dots:true});
@@ -4267,7 +4311,7 @@ function illYear(a){
     const pool=(a>55?ILLO:a>35?ILLY.concat(['hoge bloeddruk','diabetes','kanker']):ILLY).filter(n=>!S.ill.some(i=>i.n===n)&&(n!=='Alzheimer'||a>=65));const n=pick(pool);const d=ILLS[n];S.ill.push({n,sev:d[0],l:d[1]});L(`De dokter stelt vast dat je ${n} hebt.`,'bad');hap(-6)}}
 // eigen risico in Nederland, elders betaal je de volle prijs
 function medCost(k){const cp=S.cpi||1;if(ageY()<18)return 0;if(S.p.country==='NL'){const E=S.er&&S.er.y===year()?S.er:(S.er={y:year(),used:0});return Math.round(Math.max(0,Math.min(k*cp,385*cp-E.used)))}return Math.round(k*cp)}
-function payMed(k){const c=medCost(k);cash(-c);if(S.p.country==='NL'){S.er.used+=c}return c}
+function payMed(k){const c=medCost(k);cash(-c);if(S.p.country==='NL'&&c>0){if(!S.er||S.er.y!==year())S.er={y:year(),used:0};S.er.used+=c}return c}
 function treat(il,sp,o={}){const I=illInfo(il);let p=I.cure*(sp===I.sp?1:sp==='huisarts'?.35:.15)+(il.ref?.15:0)+(o.bonus||0);if(I.chron&&I.cure<.1)p=0;
   if(chance(p)){S.ill=S.ill.filter(x=>x!==il);hea(10);hap(6);return `${o.what||'De behandeling'} werkt. Je bent genezen van ${il.n}!`}
   if(I.chron&&sp===I.sp){il.sev=Math.max(1,il.sev-1);hea(4);return `${il.n} is niet te genezen, maar met de juiste medicijnen gaat het een stuk beter.`}
@@ -4315,7 +4359,7 @@ function sheetRehab(el){const any=Object.keys(ADD).filter(k=>addLvl(k)>0);const 
   for(const k of any){const [em,n]=ADD[k];
     row(s,{ic:'💪',t:`Zelf stoppen met ${n.toLowerCase()}`,s:'Kans hangt af van je discipline',dots:true,on:()=>doAct('Afkicken',()=>{use('stop'+k);return stop(k,.15+(S.disc??50)/300+(S.flags.ther?.1:0),`Het is je gelukt om te stoppen met ${n.toLowerCase()}!`)},true,'💪')});
     row(s,{ic:'🤝',t:`Zelfhulpgroep (${n.toLowerCase()})`,s:'Gratis · lotgenoten helpen elkaar',dots:true,on:()=>doAct('Zelfhulpgroep',()=>{use('zhg'+k);sk('sociaal',1);return stop(k,.35+(S.flags.ther?.1:0),'De groep sleept je erdoorheen. Je bent clean.')},true,'🤝')});
-    row(s,{ic:'🏥',t:`Afkickkliniek (${n.toLowerCase()})`,s:`${fmt(medCost(15000))} · grootste kans`,dis:S.money<medCost(15000),dots:true,on:()=>doAct('Afkickkliniek',()=>{payMed(15000);if(S.job&&!S.job.part)S.job.perf=clamp(S.job.perf-8);return stop(k,.8,`Na zes weken in de kliniek kom je er als een ander mens uit.`)},true,'🏥')})}}
+    row(s,{ic:'🏥',t:`Afkickkliniek (${n.toLowerCase()})`,s:`${fmt(medCost(15000))} · grootste kans`,dis:S.money<medCost(15000),dots:true,on:()=>doAct('Afkickkliniek',()=>{payMed(15000);if(S.job&&!S.job.part)(S.job&&(S.job.perf=clamp(S.job.perf-8)));return stop(k,.8,`Na zes weken in de kliniek kom je er als een ander mens uit.`)},true,'🏥')})}}
 E('h_sigaret',{a:[13,19],w:.6,once:1,c:()=>addLvl('roken')<10,t:'Een sigaret?',x:'Een vriend biedt je achter de fietsenstalling een sigaret aan.',ch:[
  ['🚬 Er een opsteken',()=>{addUp('roken',25);hap(1);return 'Je hoest je longen eruit, maar je voelt je stoer.'}],
  ['🙅 Nee, dank je',()=>{kar(1);return 'Je loopt door. Goed zo.'}]]});
@@ -4461,7 +4505,8 @@ const ACTS=[
 const FAVDEF=['mind','sport','vecht','liefde','nacht'];
 const favs=()=>{const f=S.settings.favs;return Array.isArray(f)?f.filter(k=>ACTS.some(x=>x[0]===k)):FAVDEF};
 const BANDX=['nacht','fest','conc','reis','emig','quiz','casino'];
-function actRow(s,x){const [k,ic,t,sub,min,on,g,ex]=x;const a=ageY();const e=typeof bandOn==='function'&&bandOn()&&BANDX.includes(k)?[false,'Niet met een enkelband']:ex?ex():[true];const ok=a>=min&&e[0];const st=typeof sub==='function'?safe(()=>sub())||'':sub;
+const GAMBLE=['casino','bet','paard','gevbet','lot','kras'];
+function actRow(s,x){const [k,ic,t,sub,min,on,g,ex]=x;const a=ageY();const e=typeof bandOn==='function'&&bandOn()&&BANDX.includes(k)?[false,'Niet met een enkelband']:GAMBLE.includes(k)&&a>=min&&S.money<=0?[false,S.money<0?'Je staat rood':'Je hebt geen geld']:ex?ex():[true];const ok=a>=min&&e[0];const st=typeof sub==='function'?safe(()=>sub())||'':sub;
   row(s,{ic,t,s:a<min?`Vanaf ${min} jaar`:!e[0]?e[1]:st,dis:!ok,on})}
 function sheetAct(el){if(inJail())return jailActs(el);
   const f=sec(el,'⭐ Favorieten');for(const k of favs()){const x=ACTS.find(y=>y[0]===k);if(x)actRow(f,x)}
@@ -4508,7 +4553,7 @@ E('feestje',{a:[14,17],t:'Een feestje',ctx:()=>ctxP(anyP('vriend')||circP('schoo
  ['🥤 Gaan, maar niet drinken',c=>{hap(3);rel_(findAny(c.id),3);return 'Je hebt het naar je zin en weet alles nog.'}],
  ['🏠 Thuisblijven',()=>'Je kijkt een serie. Morgen hoor je alle verhalen.']]});
 E('overwerk',{a:[18,70],c:()=>S.job&&!S.job.part&&S.job.id!=='prosport',t:'Overwerken',ctx:()=>ctxP(circP('work',true)),x:c=>`${Pe(c).first}, je leidinggevende, vraagt of je dit weekend wilt overwerken.`,ch:[
- ['💪 Ja, natuurlijk',c=>{S.job.perf=clamp(S.job.perf+5);rel_(findAny(c.id),6);cash(Math.round(salary()/52));return 'Een zwaar weekend, maar je baas is je dankbaar en je verdient extra.'}],
+ ['💪 Ja, natuurlijk',c=>{(S.job&&(S.job.perf=clamp(S.job.perf+5)));rel_(findAny(c.id),6);cash(Math.round(salary()/52));return 'Een zwaar weekend, maar je baas is je dankbaar en je verdient extra.'}],
  ['🙅 Nee, ik heb plannen',c=>{rel_(findAny(c.id),-4);return `${Pe(c).first} knikt, maar is duidelijk teleurgesteld.`}]]});
 E('collegaflirt',{a:[18,65],c:()=>S.job&&!S.job.part&&S.job.id!=='prosport',t:'Een leuke collega',ctx:()=>{const ps=S.circ?circPpl(circle('work')||{ppl:[]}).filter(p=>!p.lead&&Math.abs(pAge(p)-ageY())<=12&&p.role!=='partner'):[];return ps.length?{id:pick(ps).id}:null},x:c=>`${Pe(c).first} flirt al weken met je.${partner()?` Je hebt wel een relatie met ${partner().first}.`:''}`,ch:[
  ['😏 Terugflirten',c=>{const p=findAny(c.id);rel_(p,10);if(p)p.into=1;const pt=partner();if(pt&&chance(.3)){pt.rel=clamp(pt.rel-15);return `Het is spannend. Te spannend: ${pt.first} ziet jullie berichtjes.`}return `De koffieautomaat is nog nooit zo gezellig geweest.`}],
@@ -4574,31 +4619,31 @@ E('s_kamer',{a:[18,24],c:()=>!!S.edu.cur&&S.home.k==='ouders',t:'Op kamers?',x:'
  ['🛋️ Thuis blijven wonen',()=>{relAdj('moeder',2);return 'Je spaart een hoop geld. En je moeder kookt.'}]]});
 // ---- werk, per soort baan ----
 E('w_zorg',{a:[18,67],c:()=>jg()==='zorg',w:1.2,t:'Spoed op de afdeling',ctx:()=>ctxP(circP('work',false)),x:c=>`Een patiënt valt plotseling weg. ${Pe(c).first} is nog bij een andere patiënt.`,ch:[
- ['❤️ Zelf reanimeren 🎮',()=>evMg('Reanimeren','❤️','Werk',f=>mgRhythm({title:'Reanimeren',desc:'Druk op de maat: 100 tot 120 keer per minuut.',em:'❤️',n:12,notes:['💗'],btn:'Druk!',speed:1.1},f),sc=>{if(sc>=.6){S.job.perf=clamp(S.job.perf+8);kar(5);MS('Redde een leven op het werk',1);return 'Het hart slaat weer. Je collega\'s kijken je vol bewondering aan.'}S.job.perf=clamp(S.job.perf+2);return 'Je doet wat je kunt. Het reanimatieteam neemt het over.'})],
- ['📟 Het reanimatieteam oproepen',()=>{S.job.perf=clamp(S.job.perf+3);return 'Binnen een minuut staat het team naast het bed. Goed gehandeld.'}]]});
+ ['❤️ Zelf reanimeren 🎮',()=>evMg('Reanimeren','❤️','Werk',f=>mgRhythm({title:'Reanimeren',desc:'Druk op de maat: 100 tot 120 keer per minuut.',em:'❤️',n:12,notes:['💗'],btn:'Druk!',speed:1.1},f),sc=>{if(sc>=.6){(S.job&&(S.job.perf=clamp(S.job.perf+8)));kar(5);MS('Redde een leven op het werk',1);return 'Het hart slaat weer. Je collega\'s kijken je vol bewondering aan.'}(S.job&&(S.job.perf=clamp(S.job.perf+2)));return 'Je doet wat je kunt. Het reanimatieteam neemt het over.'})],
+ ['📟 Het reanimatieteam oproepen',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+3)));return 'Binnen een minuut staat het team naast het bed. Goed gehandeld.'}]]});
 E('w_horeca',{a:[16,67],c:()=>jg()==='horeca',w:1.2,t:'Volle bak',ctx:()=>ctxP(circP('work',false)),x:c=>`Het is zaterdagavond, het terras zit vol en ${Pe(c).first} heeft zich ziek gemeld.`,ch:[
- ['🏃 Alles zelf rennen 🎮',()=>evMg('Volle bak','🍽️','Werk',f=>mgDodge({title:'Bedienen',desc:'Loop met je dienblad tussen de tafels door zonder te botsen.',em:'🍽️',me:'🍽️',obs:['🪑','🧒','🐕','🛵'],secs:12},(l,t)=>f(l/t)),sc=>{const tip=Math.round(ri(40,160)*sc*(S.cpi||1));cash(tip);S.job.perf=clamp(S.job.perf+Math.round(sc*8));return sc>=.67?`Je vliegt over het terras. ${fmt(tip)} aan fooi!`:`Er sneuvelen een paar glazen, maar je overleeft de avond. ${fmt(tip)} fooi.`})],
+ ['🏃 Alles zelf rennen 🎮',()=>evMg('Volle bak','🍽️','Werk',f=>mgDodge({title:'Bedienen',desc:'Loop met je dienblad tussen de tafels door zonder te botsen.',em:'🍽️',me:'🍽️',obs:['🪑','🧒','🐕','🛵'],secs:12},(l,t)=>f(l/t)),sc=>{const tip=Math.round(ri(40,160)*sc*(S.cpi||1));cash(tip);(S.job&&(S.job.perf=clamp(S.job.perf+Math.round(sc*8))));return sc>=.67?`Je vliegt over het terras. ${fmt(tip)} aan fooi!`:`Er sneuvelen een paar glazen, maar je overleeft de avond. ${fmt(tip)} fooi.`})],
  ['📞 Een invaller bellen',c=>{rel_(findAny(c.id),-2);return 'Na een uur komt er hulp. Het blijft een lange avond.'}]]});
 E('w_tech',{a:[18,67],c:()=>jg()==='tech',w:1.2,t:'Alles ligt plat',ctx:()=>ctxP(circP('work',true)),x:c=>`Om 2 uur 's nachts belt ${Pe(c).first}: de website ligt plat en klanten kunnen niet betalen.`,ch:[
- ['💻 Inloggen en het oplossen 🎮',()=>evMg('Storing','💻','Werk',f=>mgCode({title:'Debuggen',desc:'Onthoud de foutcode uit de logs en voer de fix in.',em:'💻',len:5,sym:['0','1','2','3','4','5','6','7','8','9']},(h,n)=>f(h/n)),sc=>{if(sc>=.8){S.job.perf=clamp(S.job.perf+8);sk('tech',2);return 'Binnen twintig minuten draait alles weer. Je baas stuurt een bedankje met drie uitroeptekens.'}S.job.perf=clamp(S.job.perf+2);hea(-1);return 'Om 6 uur draait het weer. Je bent kapot.'})],
- ['😴 Telefoon op stil',c=>{S.job.perf=clamp(S.job.perf-8);rel_(findAny(c.id),-8);return 'De volgende ochtend heb je 23 gemiste oproepen.'}]]});
+ ['💻 Inloggen en het oplossen 🎮',()=>evMg('Storing','💻','Werk',f=>mgCode({title:'Debuggen',desc:'Onthoud de foutcode uit de logs en voer de fix in.',em:'💻',len:5,sym:['0','1','2','3','4','5','6','7','8','9']},(h,n)=>f(h/n)),sc=>{if(sc>=.8){(S.job&&(S.job.perf=clamp(S.job.perf+8)));sk('tech',2);return 'Binnen twintig minuten draait alles weer. Je baas stuurt een bedankje met drie uitroeptekens.'}(S.job&&(S.job.perf=clamp(S.job.perf+2)));hea(-1);return 'Om 6 uur draait het weer. Je bent kapot.'})],
+ ['😴 Telefoon op stil',c=>{(S.job&&(S.job.perf=clamp(S.job.perf-8)));rel_(findAny(c.id),-8);return 'De volgende ochtend heb je 23 gemiste oproepen.'}]]});
 E('w_kantoor',{a:[18,67],c:()=>jg()==='kantoor',w:1.2,t:'Presentatie voor de directie',ctx:()=>ctxP(circP('work',true)),x:c=>`${Pe(c).first} wil dat jij morgen de cijfers presenteert aan de directie.`,ch:[
- ['📊 Ja, ik doe het 🎮',()=>evMg('Presentatie','📊','Werk',f=>mgCode({title:'Je presentatie',desc:'Onthoud de belangrijkste cijfers.',em:'📊',len:4},(h,n)=>f(h/n)),sc=>{if(!S.job)return 'Je werkt daar niet meer.';S.job.perf=clamp(S.job.perf+Math.round((sc-.4)*20));sk('sociaal',1);return sc>=.75?'Je weet alles uit je hoofd. De directeur vraagt naar je naam.':sc>=.5?'Een degelijke presentatie.':'Je haalt een paar cijfers door elkaar. Ongemakkelijk.'})],
+ ['📊 Ja, ik doe het 🎮',()=>evMg('Presentatie','📊','Werk',f=>mgCode({title:'Je presentatie',desc:'Onthoud de belangrijkste cijfers.',em:'📊',len:4},(h,n)=>f(h/n)),sc=>{if(!S.job)return 'Je werkt daar niet meer.';(S.job&&(S.job.perf=clamp(S.job.perf+Math.round((sc-.4)*20))));sk('sociaal',1);return sc>=.75?'Je weet alles uit je hoofd. De directeur vraagt naar je naam.':sc>=.5?'Een degelijke presentatie.':'Je haalt een paar cijfers door elkaar. Ongemakkelijk.'})],
  ['🙅 Iemand anders laten doen',c=>{rel_(findAny(c.id),-3);return 'Je collega doet het. En krijgt de complimenten.'}]]});
 E('w_onderwijs',{a:[20,67],c:()=>jg()==='onderwijs',w:1.2,t:'Een onrustige klas',x:'Je klas is vandaag niet te houden. Er vliegt een propje papier door het lokaal.',ch:[
- ['📣 Streng optreden',()=>{if(chance(.6)){S.job.perf=clamp(S.job.perf+4);return 'Het is muisstil. Respect.'}hap(-1);return 'Het werkt averechts. De klas lacht.'}],
- ['🎲 Een spelletje inzetten',()=>{if(chance(.7)){S.job.perf=clamp(S.job.perf+6);hap(2);return 'Met een quiz krijg je de klas weer mee. Ze leren er zelfs iets van.'}return 'Het spel wordt een chaos.'}],
- ['🚪 De dader eruit sturen',()=>{S.job.perf=clamp(S.job.perf+2);return 'De rest snapt het wel.'}]]});
+ ['📣 Streng optreden',()=>{if(chance(.6)){(S.job&&(S.job.perf=clamp(S.job.perf+4)));return 'Het is muisstil. Respect.'}hap(-1);return 'Het werkt averechts. De klas lacht.'}],
+ ['🎲 Een spelletje inzetten',()=>{if(chance(.7)){(S.job&&(S.job.perf=clamp(S.job.perf+6)));hap(2);return 'Met een quiz krijg je de klas weer mee. Ze leren er zelfs iets van.'}return 'Het spel wordt een chaos.'}],
+ ['🚪 De dader eruit sturen',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+2)));return 'De rest snapt het wel.'}]]});
 E('w_handwerk',{a:[18,67],c:()=>jg()==='handwerk',w:1.1,t:'Gevaar op de bouw',ctx:()=>ctxP(circP('work',false)),x:c=>`${Pe(c).first} staat op een wankele steiger. Een plank schuift weg!`,ch:[
- ['🧍 Erheen rennen en vangen 🎮',()=>evMg('Op de bouw','🏗️','Werk',f=>mgReact({title:'Snel!',desc:'Grijp de plank op het moment dat hij valt.',em:'🏗️',idle:'🪵',go:'⬇️',goTxt:'Nu!',btn:'Grijpen!',win:550,rounds:1},(h,n)=>f(h/n)),sc=>{if(sc>=1){S.job.perf=clamp(S.job.perf+6);kar(3);return 'Je grijpt de plank op tijd. Je collega trakteert de hele week op koffie.'}hea(-ri(3,10));return 'Je bent net te laat. Gelukkig loopt het met een paar blauwe plekken af.'})],
+ ['🧍 Erheen rennen en vangen 🎮',()=>evMg('Op de bouw','🏗️','Werk',f=>mgReact({title:'Snel!',desc:'Grijp de plank op het moment dat hij valt.',em:'🏗️',idle:'🪵',go:'⬇️',goTxt:'Nu!',btn:'Grijpen!',win:550,rounds:1},(h,n)=>f(h/n)),sc=>{if(sc>=1){(S.job&&(S.job.perf=clamp(S.job.perf+6)));kar(3);return 'Je grijpt de plank op tijd. Je collega trakteert de hele week op koffie.'}hea(-ri(3,10));return 'Je bent net te laat. Gelukkig loopt het met een paar blauwe plekken af.'})],
  ['📣 Keihard waarschuwen',c=>{rel_(findAny(c.id),4);return `${Pe(c).first} springt op tijd opzij.`}]]});
 E('w_ziekcollega',{a:[18,67],c:()=>S.job&&S.job.id!=='prosport',t:'Invallen?',ctx:()=>ctxP(circP('work',false)),x:c=>`${Pe(c).first} vraagt of je volgende week een paar diensten wilt overnemen.`,ch:[
  ['🤝 Natuurlijk',c=>{rel_(findAny(c.id),10);hap(-1);return `${Pe(c).first} is je ontzettend dankbaar.`}],
  ['🙅 Sorry, kan niet',c=>{rel_(findAny(c.id),-4);return 'Jammer, maar begrijpelijk.'}]]});
 E('w_rivaal',{a:[20,65],c:()=>S.job&&!S.job.part&&S.job.id!=='prosport'&&S.job.lyrs>=1,t:'Concurrentie',ctx:()=>ctxP(circP('work',false)),x:c=>`${Pe(c).first} wil dezelfde promotie als jij en probeert bij de baas in een goed blaadje te komen.`,ch:[
- ['💪 Nog harder werken',()=>{S.job.perf=clamp(S.job.perf+6);hea(-1);return 'Je laat je werk spreken.'}],
- ['🗣️ Roddelen over je rivaal',c=>{kar(-3);if(chance(.6)){rel_(findAny(c.id),-15);S.job.perf=clamp(S.job.perf+3);return 'Het werkt. Voorlopig.'}return 'Het komt uit. Nu ben jij degene met een slechte naam.'+report('work',1,'')}],
- ['🤝 Samenwerken',c=>{rel_(findAny(c.id),8);S.job.perf=clamp(S.job.perf+2);return 'Jullie besluiten elkaar niet dwars te zitten.'}]]});
+ ['💪 Nog harder werken',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+6)));hea(-1);return 'Je laat je werk spreken.'}],
+ ['🗣️ Roddelen over je rivaal',c=>{kar(-3);if(chance(.6)){rel_(findAny(c.id),-15);(S.job&&(S.job.perf=clamp(S.job.perf+3)));return 'Het werkt. Voorlopig.'}return 'Het komt uit. Nu ben jij degene met een slechte naam.'+report('work',1,'')}],
+ ['🤝 Samenwerken',c=>{rel_(findAny(c.id),8);(S.job&&(S.job.perf=clamp(S.job.perf+2)));return 'Jullie besluiten elkaar niet dwars te zitten.'}]]});
 // ---- relaties en familie ----
 E('r_partnerjarig',{a:[16,100],c:()=>!!partner(),cd:3,t:'Verjaardag',ctx:()=>ctxP(partner()),x:c=>`${Pe(c).first} is jarig. Wat geef je?`,ch:[
  ['🎁 Een groot cadeau',c=>{const k=Math.round(ri(150,600)*(S.cpi||1));cash(-k);rel_(findAny(c.id),12);return `Je geeft iets wat ${Pe(c).first} al jaren wil hebben. ${fmt(k)}, maar dat gezicht is onbetaalbaar.`},()=>S.money>=150],
@@ -5543,8 +5588,8 @@ Object.assign(QB,{
  Frans:[['Vertaal: "bonjour"',['goedendag','tot ziens','dank je','alsjeblieft']],['Vertaal: "le livre"',['het boek','de vrije','de lever','het leven']],['Wat is "ik ben" in het Frans?',['je suis','j\'ai','je vais','je fais']],['Vertaal: "merci beaucoup"',['heel erg bedankt','veel geluk','graag gedaan','tot morgen']],['Welk lidwoord hoort bij "maison" (huis)?',['la','le','les','un']],['Vertaal: "demain"',['morgen','vandaag','gisteren','straks']]],
  Kunst:[['Wie schilderde "De Sterrennacht"?',['Vincent van Gogh','Claude Monet','Pablo Picasso','Rembrandt']],['Welke kunststroming hoort bij Piet Mondriaan?',['De Stijl','Impressionisme','Barok','Surrealisme']],['Wie maakte het beeld "David" in Florence?',['Michelangelo','Da Vinci','Donatello','Rodin']],['Wat zijn de drie primaire kleuren in de schilderkunst?',['Rood, geel, blauw','Rood, groen, blauw','Geel, groen, paars','Zwart, wit, rood']],['Waar hangt het "Meisje met de parel"?',['Mauritshuis','Rijksmuseum','Louvre','Van Gogh Museum']],['Wie schilderde de "Mona Lisa"?',['Leonardo da Vinci','Rafaël','Michelangelo','Botticelli']]]});
 const MATHS=['Rekenen','Wiskunde','Wiskunde A','Wiskunde B'];
-function subjList(E){E=E||S.edu;if(E.stage!=='middel')return SUBJ[E.stage];if(E.prof&&PROF[E.prof])return ['Nederlands','Engels',...PROF[E.prof][2],'Gym'];if(E.sect&&VSEC[E.sect])return ['Nederlands','Engels',...VSEC[E.sect][2],'Gym'];return SUBJ.middel}
-function ensureGrades(){const E=S.edu;const subs=subjList(E);if(!subs)return;E.gr=E.gr||{};const prev=Object.values(E.gr);const base=prev.length?prev.reduce((x,y)=>x+y,0)/prev.length:4+S.st.smarts/25+R();
+function subjList(E){E=E||S.edu;if(E.stage!=='middel')return SUBJ[E.stage]||[];if(E.prof&&PROF[E.prof])return ['Nederlands','Engels',...PROF[E.prof][2],'Gym'];if(E.sect&&VSEC[E.sect])return ['Nederlands','Engels',...VSEC[E.sect][2],'Gym'];return SUBJ.middel}
+function ensureGrades(){const E=S.edu;const subs=subjList(E);if(!subs.length)return;E.gr=E.gr||{};const prev=Object.values(E.gr);const base=prev.length?prev.reduce((x,y)=>x+y,0)/prev.length:4+S.st.smarts/25+R();
   for(const s of subs)if(E.gr[s]==null){const rel=s==='Wiskunde A'||s==='Wiskunde B'?E.gr.Wiskunde:null;E.gr[s]=clampG(s==='Gym'?5.5+Math.max(S.sk.sport,S.sport?S.sport.sk:0)/30+R():rel!=null?rel+(s==='Wiskunde B'?-.4:.2):base+gauss()*.7)}
   for(const k of Object.keys(E.gr))if(!subs.includes(k))delete E.gr[k];ensureTeachers()}
 // leraren met naam
@@ -5559,7 +5604,7 @@ const rapportHtml=E=>`<div class="rapport">${Object.entries(E.gr).map(([s,v])=>`
 E('sc_rapport',{sys:1,t:'Je rapport',x:c=>c.txt,f:c=>c.txt});
 
 /* ---------- het schoolscherm ---------- */
-function sheetSchool(el){const E=S.edu,a=ageY();ensureGrades();const subs=subjList(E),avg=gradeAvg();const V=E.stage==='middel'?verdict(E):null;
+function sheetSchool(el){const E=S.edu,a=ageY();if(E.stage!=='basis'&&E.stage!=='middel'){empty(sec(el,''),'Je zit niet meer op school.');return}ensureGrades();const subs=subjList(E),avg=gradeAvg();const V=E.stage==='middel'?verdict(E):null;
   const pr=E.prof&&PROF[E.prof],sc=E.sect&&VSEC[E.sect];
   card(el,`<h3>${E.stage==='basis'?'🏫 Basisschool · groep '+Math.min(8,Math.max(1,a-3)):'🏫 Middelbare school · '+E.lvl}</h3><span class="muted">${E.stage==='middel'?`Jaar ${Math.min(E.yrs+1,E.len)} van ${E.len}${pr?` · ${pr[1]} ${pr[0]}`:sc?` · ${sc[1]} ${sc[0]}`:''} · `:''}gemiddeld ${nl1(avg)}${E.stage==='middel'&&E.yrs+1>=E.len?' · examenjaar':''}</span>${rapportHtml(E)}${V?`<div class="${V[0]==='over'?'bizok':V[0]==='bespreek'?'bizwarn soft':'bizwarn'}">${V[0]==='over'?'✅':V[0]==='bespreek'?'⚖️':'⚠️'} ${E.yrs+1>=E.len?'Als het examen zo gaat: ':'Als het rapport zo blijft: '}${V[1]}</div>`:''}`);
   circRow(el,'school');
@@ -5940,7 +5985,7 @@ function sheetPol(el){polMigrate();const a=ageY(),P=S.pol;const W=polW();if(isPr
   const v=sec(el,'Verkiezingen');const camp=year()===W.nextTK-1||year()===W.nextGR-1;const nat=['kamer','min','mp'].includes(P.lvl);
   row(v,{ic:'🗳️',t:`Kandidaat voor ${PT().kamer}`,s:a<18?'Vanaf 18 jaar':['fptp','av'].includes(psys().sys)?(P.cand.tk?`Je bent kandidaat in je eigen district · verkiezingen ${W.nextTK}`:`Kandidaat worden in een district · verkiezingen ${W.nextTK}`):P.cand.tk?`Je staat op plek ${listPos('tk')} · verkiezingen ${W.nextTK}`:`Zet je op de lijst · verkiezingen ${W.nextTK}`,r:P.cand.tk?'✅':'',dis:a<18,on:()=>{P.cand.tk=P.cand.tk?0:1;toast(P.cand.tk?'Je staat op de kandidatenlijst.':'Je staat niet meer op de lijst.');refreshSheet()}});
   row(v,{ic:'🏘️',t:`Kandidaat gemeenteraad ${S.p.city}`,s:a<18?'Vanaf 18 jaar':nat?'Niet naast een landelijke functie':P.cand.gr?`Je staat op plek ${grPos()} · verkiezingen ${W.nextGR}`:`Zet je op de lijst · verkiezingen ${W.nextGR}`,r:P.cand.gr?'✅':'',dis:a<18||nat,on:()=>{P.cand.gr=P.cand.gr?0:1;toast(P.cand.gr?'Je staat op de kandidatenlijst.':'Je staat niet meer op de lijst.');refreshSheet()}});
-  if(psys().ek!==0&&(P.oy>=2||P.steun>=60))row(v,{ic:'🏛️',t:`Kandidaat ${POLO.ek.t.toLowerCase()}`,s:`${S.p.country==='NL'?'Gekozen via de provincies':'Verkiezingen'} · ${W.nextEK}`,r:P.cand.ek?'✅':'',dis:a<25,on:()=>{P.cand.ek=P.cand.ek?0:1;refreshSheet()}});
+  if(psys().ek!==0&&(P.oy>=2||P.steun>=60))row(v,{ic:'🏛️',t:`Kandidaat ${lcFn(POLO.ek.t)}`,s:`${S.p.country==='NL'?'Gekozen via de provincies':'Verkiezingen'} · ${W.nextEK}`,r:P.cand.ek?'✅':'',dis:a<25,on:()=>{P.cand.ek=P.cand.ek?0:1;refreshSheet()}});
   if(psys().eu!==0&&(P.oy>=2||P.pop>=40))row(v,{ic:'🇪🇺',t:'Kandidaat Europees Parlement',s:`Verkiezingen ${W.nextEP}`,r:P.cand.ep?'✅':'',dis:a<18,on:()=>{P.cand.ep=P.cand.ep?0:1;refreshSheet()}});
   if(typeof prSheetRows==='function')prSheetRows(v,P,a);if(typeof regSheetRows==='function')regSheetRows(v,P,a);
   if(!P.lead&&P.party!=='own'&&year()===W.nextTK-1&&P.steun>=60)row(v,{ic:'👑',t:'Lijsttrekker worden',s:P.lvl==='lid'||P.oy<2?'Je hebt eerst ervaring in een functie nodig':'Gooi je naam in de ring',dis:P.lvl==='lid'||P.oy<2||P.lt===W.nextTK,dots:true,on:()=>doAct('Lijsttrekker',()=>{P.lt=W.nextTK;if(chance(clamp((P.steun-68)/35+P.pop/300+Math.min(.2,P.oy*.025)+POLO[P.lvl].r*.04,.03,.85))){P.lead=1;P.cand.tk=1;W.lead[P.party]=myName();P.steun=clamp(P.steun+5);MS(`Werd lijsttrekker van ${p.n}`,2);return `De leden kiezen jou! Je bent de lijsttrekker van ${p.n}.`}P.steun=clamp(P.steun-6);return `${W.lead[P.party]} wint de interne verkiezing. Je staat er een beetje gekleed op.`},true,'👑')});
@@ -6259,7 +6304,7 @@ const LAWS={
 function lawIdx(k){const W=S.pw;if(!W)return LAWS[k].d;W.law=W.law||{};return W.law[k]??LAWS[k].d}
 function law(k){return LAWS[k].v[lawIdx(k)]}
 const aowAge=()=>typeof law==='function'?law('aow'):67;
-function lawTxt(k,dir){const L_=LAWS[k];return L_.v.length===2?L_.w[dir>0?1:0]:`${L_.w[dir>0?1:0]} ${L_.t.toLowerCase()} naar ${L_.f(L_.v[lawIdx(k)+dir])}`}
+function lawTxt(k,dir){const L_=LAWS[k];return L_.v.length===2?L_.w[dir>0?1:0]:`${L_.w[dir>0?1:0]} ${lcFn(L_.t)} naar ${L_.f(L_.v[lawIdx(k)+dir])}`}
 function setLaw(k,dir){const W=polW();W.law=W.law||{};W.law[k]=clamp(lawIdx(k)+dir,0,LAWS[k].v.length-1)}
 // steun per partij voor een voorstel
 function lawProb(k,dir,pid,o){const L_=LAWS[k],p=PTY(pid),W=S.pw,P=S.pol;const lean=(p[L_.ax]-50)*L_.up*dir;let pr=clamp(.5+lean/42,.04,.96);
@@ -6284,8 +6329,8 @@ function lawVote(k,dir,o){const P=S.pol,W=S.pw;if(isPres()&&typeof presLawVote==
   const lst=ids=>ids.map(x=>`${PTY(x).k} ${W.seats[x]}`).join(', ')||'niemand';
   let txt=`Voor (${n}): ${lst(voor)}. Tegen (${hseats()-n}): ${lst(tegen)}. `;
   if(ok){setLaw(k,dir);P.laws=(P.laws||0)+1;P.pop=clamp(P.pop+Math.round(L_.pp*dir)+2);P.steun=clamp(P.steun+(fits?6:-8));hap(6);
-    txt+=`Aangenomen! Vanaf nu: ${L_.t.toLowerCase()} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wetsvoorstel is aangenomen: ${lawTxt(k,0).trim()||L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(k==='vpb'&&dir<0&&S.biz.some(b=>b.eq>0&&!b.trust)){P.risk=(P.risk||0)+20;P.pop=clamp(P.pop-4);txt+=' Kranten wijzen erop dat jouw eigen bedrijf hier flink van profiteert.'}if(P.laws===1)MS(`Kreeg een eigen wet aangenomen (${L_.t.toLowerCase()})`,2)}
-  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Verworpen. Je voorstel haalt het niet.';L(`Je wetsvoorstel over ${L_.t.toLowerCase()} is verworpen.`,'bad')}
+    txt+=`Aangenomen! Vanaf nu: ${lcFn(L_.t)} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wetsvoorstel is aangenomen: ${lawTxt(k,0).trim()||L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(k==='vpb'&&dir<0&&S.biz.some(b=>b.eq>0&&!b.trust)){P.risk=(P.risk||0)+20;P.pop=clamp(P.pop-4);txt+=' Kranten wijzen erop dat jouw eigen bedrijf hier flink van profiteert.'}if(P.laws===1)MS(`Kreeg een eigen wet aangenomen (${lcFn(L_.t)})`,2)}
+  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Verworpen. Je voorstel haalt het niet.';L(`Je wetsvoorstel over ${lcFn(L_.t)} is verworpen.`,'bad')}
   result(ok?'Aangenomen!':'Verworpen',txt,'',()=>{refreshSheet();render();saveLife()},{em:ok?'✅':'❌',cat:'Kamerstemming'})}
 // kabinetsbeleid: een nieuw kabinet past een paar wetten aan
 function cabPolicy(){const W=S.pw,P=S.pol;if(P&&P.lvl==='mp')return'';const tot=seatSum(W.gov,W.seats)||1;const c={lr:0,pc:0};for(const g of W.gov){const p=PTY(g);if(!p)continue;c.lr+=p.lr*W.seats[g]/tot;c.pc+=p.pc*W.seats[g]/tot}
@@ -6461,7 +6506,7 @@ function petMenu(){const ks=Object.keys(LAWS).filter(lawOk);const ch=[];for(cons
   modal({title:'Petitie',em:'✍️',cat:'Burger',text:'Waar gaat jouw petitie over?',choices:opts(ch.sort(()=>R()-.5).slice(0,7))})}
 function petRun(k,dir){doAct('Petitie',()=>{S.flags.petY=year();const n=Math.round((400+Math.sqrt(S.foll||0)*90+S.fame*900+S.sk.sociaal*60)*(.5+R()));
   if(n<40000)return `${nf(n)} handtekeningen. Mooi, maar niet genoeg om in de Kamer besproken te worden.`;
-  const e=lawExpect(k,dir);if(chance(clamp((e-60)/40,.05,.85))){setLaw(k,dir);S.flags.wet=1;MS(`Veranderde de wet met een petitie (${LAWS[k].t.toLowerCase()})`,2);hap(10);return `${nf(n)} handtekeningen! De Kamer bespreekt je petitie en neemt het over: ${LAWS[k].t.toLowerCase()} is nu ${LAWS[k].f(law(k))}.`}
+  const e=lawExpect(k,dir);if(chance(clamp((e-60)/40,.05,.85))){setLaw(k,dir);S.flags.wet=1;MS(`Veranderde de wet met een petitie (${lcFn(LAWS[k].t)})`,2);hap(10);return `${nf(n)} handtekeningen! De Kamer bespreekt je petitie en neemt het over: ${lcFn(LAWS[k].t)} is nu ${LAWS[k].f(law(k))}.`}
   hap(2);return `${nf(n)} handtekeningen! De Kamer bespreekt je petitie, maar een meerderheid stemt tegen.`},true,'✍️')}
 /* ---------- na de politiek ---------- */
 const COMS=['een grote bank','een energiebedrijf','een pensioenfonds','een luchtvaartmaatschappij','een chipfabrikant','een supermarktketen','een verzekeraar','een ziekenhuisgroep'];
@@ -6805,8 +6850,8 @@ function presLawVote(k,dir,o){const P=S.pol,W=S.pw;S.acts.wet=1;const L_=LAWS[k]
   if(ok&&P.lvl!=='mp'){if(!chance(usPresSigns(k,dir))){const over=h>=290&&s>=67;txt+=`President ${W.pm.n} spreekt een veto uit.`;if(over)txt+=' Maar het Congres overstemt het veto met een tweederdemeerderheid!';else{txt+=' Er is geen tweederdemeerderheid om het veto te breken.';ok=false}}}
   else if(!ok&&h>=218&&s>=51&&s<sn)txt+='Een filibuster in de Senaat blokkeert je wet: er waren 60 stemmen nodig. ';
   if(ok){setLaw(k,dir);P.laws=(P.laws||0)+1;P.pop=clamp(P.pop+Math.round(L_.pp*dir)+2);P.steun=clamp(P.steun+(fits?6:-8));hap(6);
-    txt+=`${P.lvl==='mp'?'Je tekent de wet in de Rozentuin.':'De wet is aangenomen!'} Vanaf nu: ${L_.t.toLowerCase()} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wet is aangenomen: ${L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(P.laws===1)MS(`Kreeg een eigen wet door het Congres (${L_.t.toLowerCase()})`,2)}
-  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Je wet haalt het niet.';L(`Je wetsvoorstel over ${L_.t.toLowerCase()} haalt het niet.`,'bad')}
+    txt+=`${P.lvl==='mp'?'Je tekent de wet in de Rozentuin.':'De wet is aangenomen!'} Vanaf nu: ${lcFn(L_.t)} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wet is aangenomen: ${L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(P.laws===1)MS(`Kreeg een eigen wet door het Congres (${lcFn(L_.t)})`,2)}
+  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Je wet haalt het niet.';L(`Je wetsvoorstel over ${lcFn(L_.t)} haalt het niet.`,'bad')}
   result(ok?'Aangenomen!':'Verworpen',txt.trim(),'',()=>{refreshSheet();render();saveLife()},{em:ok?'✅':'❌',cat:'Het Congres'})}
 function presBudVote(b,nm){const W=S.pw,P=S.pol;const def=budSpend(b)+budTax();let ok=1;const cnt={};
   for(const [ch,seats,need] of [['h',W.seats,218],['s',W.sen,51]]){let n=0;for(const pid of Object.keys(seats)){if(!seats[pid]||!PTY(pid))continue;const p=PTY(pid),left=(50-p.lr)/50,cons=(p.pc-50)/50;
@@ -6973,8 +7018,10 @@ POLO.hos={t:'Staatshoofd',sal:254,fame:80,ft:1,r:5};
 for(const k of Object.keys(REGS))if(PSYS[k]){PSYS[k].off=PSYS[k].off||{};PSYS[k].off.gov=Object.assign({},PSYS[k].off.gov,{t:REGS[k].t,sal:k==='NL'?120:160,fame:k==='NL'?18:45,r:k==='NL'?3:4})}
 for(const k of Object.keys(HOSE))if(PSYS[k]){PSYS[k].off.hos={t:HOSE[k].t}}
 /* ---------- jaarlijks ---------- */
+// jaar van de volgende regionale verkiezing; wordt meteen gekozen als het nog niet bekend is (verbeterplan 1.6)
+function regNext(){const W=S.pw;if(!W)return year()+1;if(!W.nextRG)W.nextRG=year()+ri(1,cyc());return W.nextRG}
 function regYear(a){const P=S.pol,W=S.pw,y=year();if(!W||isPres()||S.dict)return;const R_=regC();
-  if(R_){if(!W.nextRG)W.nextRG=y+ri(1,cyc());
+  if(R_){regNext();
     if(y>=W.nextRG){W.nextRG=y+cyc();if(P&&(P.cand.reg||P.lvl==='gov'))Q.push({id:'reg_vk'});else if(P&&P.lvl==='gov')loseOffice()}}
   if(P&&P.lvl==='hos'&&y>=(P.term||0))loseOffice(`Je termijn als ${polTl('hos')} zit erop.`);
   // de koning van Marokko bemoeit zich ermee
@@ -7037,10 +7084,10 @@ PE('cor_envelop',{c:()=>polIn('raad','weth','burg','kamer','min','mp','gov')()&&
 Object.assign(EVMETA,{reg_vk:['Verkiezingen','🗺️'],reg_justitie:['Politiek','⚖️'],ma_koning:['Politiek','👑'],dem_fraude:['Politiek','🗳️'],dem_fraudeuit:['Politiek','📹'],dem_protest:['Politiek','✊'],cor_envelop:['Politiek','✉️']});
 /* ---------- schermen ---------- */
 function regSheetRows(v,P,a){const R_=regC(),r=regName();if(!R_||isPres())return;const W=S.pw;
-  if(P.lvl!=='gov'&&P.lvl!=='hos'&&POLO[P.lvl].r>=1&&a>=25)row(v,{ic:'🗺️',t:`Kandidaat ${lc1(R_.f(r))}`,s:P.cand.reg?`Verkiezingen in ${W.nextRG||'?'} · je partij moet je wel als lijsttrekker kiezen`:`Regionale verkiezingen in ${W.nextRG||'?'}`,r:P.cand.reg?'✅':'',on:()=>{P.cand.reg=P.cand.reg?0:1;refreshSheet()}})}
+  if(P.lvl!=='gov'&&P.lvl!=='hos'&&POLO[P.lvl].r>=1&&a>=25)row(v,{ic:'🗺️',t:`Kandidaat ${lcFn(R_.f(r))}`,s:P.cand.reg?`Verkiezingen in ${regNext()} · je partij moet je wel als lijsttrekker kiezen`:`Regionale verkiezingen in ${regNext()}`,r:P.cand.reg?'✅':'',on:()=>{P.cand.reg=P.cand.reg?0:1;refreshSheet()}})}
 function hosRow(s,X,P,a){const H=HOSE[S.p.country];if(!H||!P||X.r<4||a<H.age||P.lvl==='hos')return;
-  row(s,{ic:'🏛️',t:`Kandidaat voor ${H.t.toLowerCase()}`,s:`Het hoogste ambt van het land, ${H.how}`,dis:!!S.acts.hos,dots:true,on:()=>doAct('Kandidatuur',()=>{S.acts.hos=1;const W=S.pw;const ch=clamp(.12+(W.gov.includes(P.party)?.25:0)+X.r*.04+P.pop/350+(X.pmN?.15:0),.05,.75);
-    if(chance(ch)){setOffice('hos');P.term=year()+H.term;S.fame=clamp(S.fame+10);MS(`Werd gekozen tot ${H.t.toLowerCase()}`,3);return `Je wordt gekozen tot ${H.t.toLowerCase()}! ${H.term} jaar lang ben je het staatshoofd van ${C().n}.`}return 'Een andere kandidaat wordt gekozen. Het was een eer om mee te doen.'},true,'🏛️')})}
+  row(s,{ic:'🏛️',t:`Kandidaat voor ${lcFn(H.t)}`,s:`Het hoogste ambt van het land, ${H.how}`,dis:!!S.acts.hos,dots:true,on:()=>doAct('Kandidatuur',()=>{S.acts.hos=1;const W=S.pw;const ch=clamp(.12+(W.gov.includes(P.party)?.25:0)+X.r*.04+P.pop/350+(X.pmN?.15:0),.05,.75);
+    if(chance(ch)){setOffice('hos');P.term=year()+H.term;S.fame=clamp(S.fame+10);MS(`Werd gekozen tot ${lcFn(H.t)}`,3);return `Je wordt gekozen tot ${lcFn(H.t)}! ${H.term} jaar lang ben je het staatshoofd van ${C().n}.`}return 'Een andere kandidaat wordt gekozen. Het was een eer om mee te doen.'},true,'🏛️')})}
 function demCard(s){if(isPres()&&S.p.country!=='US')return;card(s,`<h3>🗳️ Democratie en corruptie</h3>${kv([['Democratie',`${demS()}/100 · ${demLbl()}`],['Corruptie',`${corS()}/100 · ${corLbl()}`],...(regC()?[['Jouw regio',regName()]]:[])])}<span class="muted">${demS()<65?'Verkiezingsfraude, massaprotesten en een staatsgreep liggen hier dichter bij dan in een sterke democratie.':'Een sterke rechtsstaat: fraude en geweld vallen snel op.'}</span>`)}
 /* ================= DEFENSIE (fase 1): krijgsmachtdelen, rangen, keuring, selectie ================= */
 const MBR={
@@ -7866,7 +7913,8 @@ function weStart(id){const D=WEV[id],E_=ecoW();const ev={id,y:0,dur:ri(D.dur[0],
    ai:'Een doorbraak in kunstmatige intelligentie verandert alles. Bedrijven zetten massaal AI in.',vloed:'Na dagen van extreme regen breken de dijken op meerdere plekken. Duizenden huizen staan onder water.',hitte:'Een ongekende hittegolf: weken boven de 35 graden. Rivieren staan droog.',energie:'De gas- en olieprijzen exploderen. Energierekeningen verdrievoudigen.',handel:'Een grote handelsoorlog breekt uit. Landen heffen hoge importtarieven op elkaars producten.'}[id];
   ecoNews(txt,1);if(id==='bub')ev.kind=/crypto/.test(txt)?'crypto':'tech';
   if(weIsMine(id))Q.push({id:'we_beleid',c:{ev:id}});else{ev.pol=weNpc(id);ev.by='npc';ecoNews(`Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`,1)}
-  Q.push({id:'war_nieuws',c:{t:D.n,txt:txt+(ev.pol?` Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`:'')}})}
+  // nolog: het nieuws staat al als nieuwsregel in het logboek (verbeterplan 1.7)
+  Q.push({id:'war_nieuws',c:{t:D.n,nolog:1,txt:txt+(ev.pol?` Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`:'')}})}
 E('we_beleid',{sys:1,t:'Jij beslist',x:c=>{const D=WEV[c.ev];return `${D.em} ${D.n}. Als ${S.pol.lvl==='dict'?'leider van het land':polTl(S.pol.lvl)} moet jij kiezen hoe het land hierop reageert.`},ch:[]});
 Object.defineProperty(EV.we_beleid,'ch',{get(){const out=[];for(const id of Object.keys(WEV))for(const o of WEV[id].pol)out.push([`${o[1]}`,c=>{const ev=weList().find(e=>e.id===c.ev&&!e.pol);if(ev){ev.pol=o[0];ev.by='me'}ecoNews(`Jouw besluit: ${o[1].toLowerCase()}.`,1);return `${o[2]}.`},c=>c.ev===id]);return out}});
 EVMETA.we_beleid=['Crisis','🏛️'];
@@ -7893,7 +7941,7 @@ function weYear(E_){const sh=E_.sh;E_.def=0;const y=year();E_.wlast=E_.wlast||{}
     for(const k of ['dyke','clim','nuc'])if(x[k])E_[k]=1;
     if(ev.y>=ev.dur)weEnd(ev)}
   if(!L_.some(e=>e.id==='pan'))E_.lock=0}
-function weEnd(ev){const E_=ecoW();E_.wev=weList().filter(e=>e!==ev);const D=WEV[ev.id];
+function weEnd(ev){const E_=ecoW();if(!weList().includes(ev))return;E_.wev=weList().filter(e=>e!==ev);const D=WEV[ev.id];
   // hoe goed was de aanpak?
   const good={pan:{streng:1,licht:1,open:-1},bank:{redden:0,failliet:-1,nat:1},bub:{regels:1,laten:-1},ai:{regels:0,omscholing:1,belasting:0,vrij:0},vloed:{dijken:1,herstel:-1},hitte:{plan:1,niets:-1},energie:{plafond:1,toeslag:1,kern:0,niets:-1},handel:{terug:-1,praten:1,steun:0}}[ev.id][ev.pol]??0;
   const sc=good+(chance(.5)?1:0)-(chance(.3)?1:0);
@@ -7916,9 +7964,9 @@ E('pe_bubbel',{sys:1,t:'Iedereen wordt rijk',x:c=>`Je buurman vertelt dat hij me
  ['🚀 Instappen met een flink bedrag',c=>{const v=Math.round(Math.max(0,S.money)*.25);if(v<100)return 'Je hebt er eigenlijk het geld niet voor.';cash(-v);if(c.k==='crypto')S.inv.crypto=(S.inv.crypto||0)+v;else S.inv.index=(S.inv.index||0)+v;return `Je stopt ${fmt(v)} in de hype. Wat kan er misgaan?`}],
  ['🧘 Niet meedoen',()=>'Je laat het aan je voorbijgaan. Je buurman noemt je ouderwets.']]});
 E('pe_ai_baan',{sys:1,need:()=>!!S.job,t:'AI neemt het over',x:()=>`Je werkgever voert een AI-systeem in dat een groot deel van jouw werk als ${jobTitle().toLowerCase()} overneemt.`,ch:[
- ['📚 Omscholen',()=>{const k=Math.round(3000*(S.cpi||1));cash(-k);sma(3);S.job.perf=clamp(S.job.perf+10);return `Je volgt een cursus om met de AI te werken (${fmt(k)}). Je bent nu juist onmisbaar.`}],
+ ['📚 Omscholen',()=>{const k=Math.round(3000*(S.cpi||1));cash(-k);sma(3);(S.job&&(S.job.perf=clamp(S.job.perf+10)));return `Je volgt een cursus om met de AI te werken (${fmt(k)}). Je bent nu juist onmisbaar.`}],
  ['🤞 Afwachten',()=>{if(chance(.5)){const amt=Math.round(Math.min(salary()*.7,62000*(S.cpi||1)));const t=jobTitle();endJob();S.ww={left:weList().some(e=>e.id==='ai'&&e.pol==='omscholing')?3:2,amt};hap(-10);MS(`Verloor zijn baan aan AI (${t.toLowerCase()})`.replace('zijn',S.p.g==='v'?'haar':'zijn'),1);return 'Je functie verdwijnt. Je krijgt WW.'}return 'Je mag blijven. Voorlopig.'}],
- ['🤖 De AI omarmen',()=>{S.job.perf=clamp(S.job.perf+6);sk('tech',3);return 'Je wordt de AI-expert van je afdeling.'}]]});
+ ['🤖 De AI omarmen',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+6)));sk('tech',3);return 'Je wordt de AI-expert van je afdeling.'}]]});
 E('pe_vloed',{sys:1,t:'Water in huis',x:'Het water staat een meter hoog in je woonkamer.',ch:[
  ['🧹 Alles laten herstellen',()=>{const h=S.props.find(p=>p.id===S.home.pid);const k=Math.round((h?h.value:250000)*.08);cash(-Math.round(k*.5));hap(-8);return `De schade is ${fmt(k)}. De verzekering betaalt de helft. Jij betaalt ${fmt(Math.round(k*.5))}.`}],
  ['🏠 Zelf opknappen',()=>{const h=S.props.find(p=>p.id===S.home.pid);const k=Math.round((h?h.value:250000)*.04);cash(-k);hea(-3);hap(-5);return `Je staat weken te sjouwen. Het kost je ${fmt(k)}.`}]]});
@@ -8228,21 +8276,11 @@ DW('dw_opstand',{t:'Opstand',x:c=>`In ${COUNTRIES[c.c].n} is een volksopstand ui
 Object.assign(EVMETA,{dw_navo:['Oorlog','🛩️'],dw_nederlaag:['Oorlog','🏳️'],dw_verlies:['Oorlog','🕯️'],dw_vredesbod:['Oorlog','🤝'],dw_held:['Oorlog','🎖️'],dw_opstand:['Jouw rijk','🔥']});
 /* ================= MEETSCHERM (verbeterplan 2.1) =================
    Verborgen: tik 5 keer op het versienummer onderaan het hoofdmenu.
-   Toont schermmaten en laat de speler wisselen tussen indelingen (standen) zonder nieuwe versie.
-   De gekozen stand en de hulplijnen worden bewaard en bij het starten meteen toegepast. */
-const DIAG_PFX=window.LEVENSLOOP_TEST?'levensloop.test.':'levensloop.';
-const LAYOUTS={
-  A:{n:'A · Huidige indeling',css:''},
-  B:{n:'B · Hoogte 100vh, niet vast',css:'html,body{height:100vh!important}body{position:relative!important;top:auto!important;bottom:auto!important}'},
-  C:{n:'C · Onder de statusbalk door (testapp)',css:'html{min-height:calc(100% + env(safe-area-inset-top,0px))!important}body{bottom:auto!important;height:calc(100% + env(safe-area-inset-top,0px))!important}'},
-  D:{n:'D · App vast op 100dvh',css:'html body #app{position:fixed!important;top:0;left:0;right:0;height:100dvh!important}'},
-  E:{n:'E · Hoogte 100dvh, niet vast',css:'html,body{height:100dvh!important;max-height:100dvh}body{position:relative!important;top:auto!important;bottom:auto!important}'},
-};
+   Toont schermmaten en hulplijnen. De proefstanden A-E zijn weg: stand B staat sinds 11-11-2026 vast in src/pwa/fix.css.
+   De hulplijnen worden bewaard en bij het starten meteen getoond. */
+const DIAG_PFX='levensloop.';
 const diagGet=k=>{try{return localStorage.getItem(DIAG_PFX+k)}catch(e){return null}};
 const diagSet=(k,v)=>{try{v==null?localStorage.removeItem(DIAG_PFX+k):localStorage.setItem(DIAG_PFX+k,v)}catch(e){}};
-function curLayout(){const k=diagGet('layout');return LAYOUTS[k]?k:'A'}
-function applyLayout(){let st=document.getElementById('lay-css');if(!st){st=document.createElement('style');st.id='lay-css';document.head.appendChild(st)}
-  st.textContent=LAYOUTS[curLayout()].css;applyGuides()}
 function applyGuides(){const on=diagGet('guides')==='1';let g=document.getElementById('diag-guides');
   if(!on){if(g)g.remove();const i=document.getElementById('diag-appline');if(i)i.remove();return}
   if(!g){g=document.createElement('div');g.id='diag-guides';g.innerHTML=
@@ -8257,8 +8295,7 @@ function diagMeasure(){const r=[];const px=v=>Math.round(v*10)/10;
   const ins=probe('padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)');
   const vv=window.visualViewport;const rect=s=>{const e=document.querySelector(s);if(!e)return 'ontbreekt';const b=e.getBoundingClientRect();if(!b.height)return 'niet zichtbaar';return `boven ${px(b.top)} · onder ${px(b.bottom)} · hoogte ${px(b.height)}`};
   const sb=document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-  r.push(['versie',(typeof APP_VERSION!=='undefined'?APP_VERSION:'claude.ai')+(window.LEVENSLOOP_TEST?' (testapp)':'')]);
-  r.push(['stand',curLayout()]);
+  r.push(['versie',(typeof APP_VERSION!=='undefined'?APP_VERSION:'claude.ai')]);
   r.push(['statusbalk',sb?sb.content:'-']);
   r.push(['standalone',`navigator ${navigator.standalone} · display-mode ${matchMedia('(display-mode: standalone)').matches}`]);
   r.push(['scherm',`${screen.width} × ${screen.height} · dpr ${devicePixelRatio}`]);
@@ -8275,17 +8312,15 @@ function diagMeasure(){const r=[];const px=v=>Math.round(v*10)/10;
   return r}
 function openDiag(){closeDiag();const o=document.createElement('div');o.id='diag';
   o.style.cssText='position:fixed;inset:0;z-index:99995;background:#fff;color:#172033;overflow-y:auto;-webkit-overflow-scrolling:touch;font:14px/1.4 -apple-system,system-ui,sans-serif;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);-webkit-user-select:text;user-select:text';
-  const draw=()=>{const m=diagMeasure();const cur=curLayout();const g=diagGet('guides')==='1';
+  const draw=()=>{const m=diagMeasure();const g=diagGet('guides')==='1';
     o.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><h2 style="margin:0;font-size:20px">📏 Meetscherm</h2><button data-x style="padding:8px 14px;border-radius:10px;background:#0a57a6;color:#fff;font-weight:700">Sluiten</button></div>
-      <p style="margin:10px 0 6px;color:#647089">Kies een stand, tik op Sluiten en kijk of de blauwe balk onderin tot de onderkant doorloopt. Verandert er niets? Veeg de app helemaal weg en open hem opnieuw: de stand blijft bewaard.</p>
-      <div style="display:grid;gap:6px">${Object.entries(LAYOUTS).map(([k,l])=>`<button data-l="${k}" style="text-align:left;padding:11px 12px;border-radius:10px;border:2px solid ${k===cur?'#0a57a6':'#e0e5ee'};background:${k===cur?'#e4eefa':'#fff'};font-weight:${k===cur?800:600}">${k===cur?'✓ ':''}${l.n}</button>`).join('')}</div>
-      <button data-g style="margin-top:8px;width:100%;padding:11px 12px;border-radius:10px;border:2px solid #e0e5ee;font-weight:600;text-align:left">${g?'✓ ':''}Hulplijnen ${g?'aan':'uit'} <span style="color:#647089;font-weight:400">· roze = onderkant volgens iOS, groen = onderkant van de app</span></button>
+      <p style="margin:10px 0 6px;color:#647089">Maten van het scherm, voor als er iets niet goed in beeld staat. Tik op Kopieer en stuur de tekst door.</p>
+      <button data-g style="width:100%;padding:11px 12px;border-radius:10px;border:2px solid #e0e5ee;font-weight:600;text-align:left">${g?'✓ ':''}Hulplijnen ${g?'aan':'uit'} <span style="color:#647089;font-weight:400">· roze = onderkant volgens iOS, groen = onderkant van de app</span></button>
       <h3 style="margin:16px 0 6px;font-size:16px">Maten</h3>
       <table style="width:100%;border-collapse:collapse;font-size:12.5px">${m.map(([k,v])=>`<tr><td style="padding:4px 8px 4px 0;color:#647089;vertical-align:top;white-space:nowrap">${he(k)}</td><td style="padding:4px 0;word-break:break-word">${he(String(v))}</td></tr>`).join('')}</table>
       <div style="display:flex;gap:8px;margin-top:12px"><button data-c style="flex:1;padding:12px;border-radius:10px;background:#17a05a;color:#fff;font-weight:700">Kopieer</button><button data-r style="flex:1;padding:12px;border-radius:10px;background:#eef2f7;font-weight:700">Ververs</button></div>
       <textarea data-t readonly style="position:absolute;left:-9999px;top:0;width:10px;height:10px"></textarea>`;
     o.querySelector('[data-x]').onclick=closeDiag;
-    o.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{diagSet('layout',b.dataset.l==='A'?null:b.dataset.l);applyLayout();setTimeout(draw,60)});
     o.querySelector('[data-g]').onclick=()=>{diagSet('guides',g?null:'1');applyGuides();draw()};
     o.querySelector('[data-r]').onclick=draw;
     o.querySelector('[data-c]').onclick=async()=>{const txt=m.map(([k,v])=>k+': '+v).join('\n');let ok=false;
@@ -8296,9 +8331,40 @@ function openDiag(){closeDiag();const o=document.createElement('div');o.id='diag
 function closeDiag(){const o=document.getElementById('diag');if(o)o.remove()}
 // vijf tikken binnen drie seconden op een element openen het meetscherm
 function diagTap(el){let n=0,t0=0;el.addEventListener('click',()=>{const t=Date.now();if(t-t0>3000)n=0;if(!n)t0=t;if(++n>=5){n=0;openDiag()}})}
-function versionLine(el){const p=document.createElement('p');p.className='verline';p.textContent='Versie '+(typeof APP_VERSION!=='undefined'?APP_VERSION:'claude.ai')+(window.LEVENSLOOP_TEST?' · testapp':'');
+function versionLine(el){const p=document.createElement('p');p.className='verline';p.textContent='Versie '+(typeof APP_VERSION!=='undefined'?APP_VERSION:'claude.ai');
   p.style.cssText='text-align:center;font-size:12px;color:#8a93a6;margin:18px 0 6px;padding:8px;-webkit-user-select:none;user-select:none';diagTap(p);el.appendChild(p)}
-applyLayout();
+// oude proefstand-instelling opruimen
+diagSet('layout',null);applyGuides();
+/* ================= VANGNET (verbeterplan 1.13) =================
+   Gaat er ergens iets mis, dan blijft het spel bruikbaar: de pop-up gaat dicht, het leven wordt bewaard
+   en de speler ziet "Er ging iets mis. Je leven is bewaard." De fout komt in een lijstje van de laatste 20,
+   te zien via Menu → Foutenlog, zodat Thijmen er een schermafbeelding van kan sturen.
+   Ook fouten die safe() stil opvangt komen in het lijstje (zonder melding), want die wijzen op een fout in het spel. */
+const ERR_KEY='levensloop.errors';
+function errList(){try{return JSON.parse(localStorage.getItem(ERR_KEY)||'[]')}catch(e){return []}}
+function errLog(err,soort){try{const m=String(err&&err.message||err||'onbekende fout').slice(0,300);
+    const st=String(err&&err.stack||'').split('\n').slice(1,3).map(x=>x.trim().replace(/\(?https?:\/\/[^)]*?(:\d+:\d+)\)?/,'$1')).join(' | ').slice(0,200);
+    const waar=(()=>{try{const t=!$('#modal').hidden?(($('#modal .ptitle')||$('#modal h3')||{}).textContent||'pop-up'):!$('#sheet').hidden?$('#sheet-t').textContent:curScreen;return `${S?ageY()+' jaar, '+S.p.country:'geen leven'} · ${t}`}catch(e){return ''}})();
+    const l=errList();const same=l.find(x=>x.m===m&&x.soort===soort);
+    if(same){same.n=(same.n||1)+1;same.t=new Date().toISOString();same.waar=waar;l.splice(l.indexOf(same),1);l.unshift(same)}
+    else l.unshift({t:new Date().toISOString(),v:typeof APP_VERSION!=='undefined'?APP_VERSION:'claude.ai',m,st,waar,soort,n:1});
+    localStorage.setItem(ERR_KEY,JSON.stringify(l.slice(0,20)))}catch(e){}}
+let errBurst=[];
+function onCrash(err){errLog(err,'crash');
+  try{const now=Date.now();errBurst=errBurst.filter(t=>now-t<3000);errBurst.push(now);
+    // zelfde gebeurtenis blijft crashen: wachtrij leeghalen zodat je verder kunt
+    if(errBurst.length>=3&&typeof Q!=='undefined'){Q.length=0;errBurst=[]}
+    if(!$('#modal').hidden)closeModal();
+    if(S&&S.alive&&curScreen==='game'){try{render()}catch(e){}}
+    if(S)saveLife();
+    toast('Er ging iets mis. Je leven is bewaard.')}catch(e){}}
+window.addEventListener('error',e=>onCrash(e.error||e.message));
+window.addEventListener('unhandledrejection',e=>onCrash(e.reason));
+function sheetErrors(el){const l=errList();
+  card(el,`<span class="muted">Hier staan de laatste ${l.length?l.length:''} fouten die het spel heeft opgevangen. Maak een schermafbeelding en stuur die naar Claude als er iets niet goed gaat.</span>`);
+  const s=sec(el,'');if(!l.length){empty(s,'Geen fouten. Alles loopt goed.');return}
+  for(const x of l)row(s,{ic:x.soort==='crash'?'💥':'🩹',t:x.m.slice(0,90),s:`${x.t.slice(0,16).replace('T',' ')} · versie ${x.v}${x.n>1?` · ${x.n}×`:''} · ${x.waar}${x.st?' · '+x.st:''}`});
+  foot(el,'🧹','Foutenlog wissen',()=>{try{localStorage.removeItem(ERR_KEY)}catch(e){}refreshSheet();toast('Foutenlog gewist')})}
 </script><script>
 /* ================= OFFLINE-APP (alleen in de iPhone-versie) ================= */
 (function(){
