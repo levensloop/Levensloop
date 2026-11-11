@@ -17,7 +17,7 @@ function illYear(a){
     const pool=(a>55?ILLO:a>35?ILLY.concat(['hoge bloeddruk','diabetes','kanker']):ILLY).filter(n=>!S.ill.some(i=>i.n===n)&&(n!=='Alzheimer'||a>=65));const n=pick(pool);const d=ILLS[n];S.ill.push({n,sev:d[0],l:d[1]});L(`De dokter stelt vast dat je ${n} hebt.`,'bad');hap(-6)}}
 // eigen risico in Nederland, elders betaal je de volle prijs
 function medCost(k){const cp=S.cpi||1;if(ageY()<18)return 0;if(S.p.country==='NL'){const E=S.er&&S.er.y===year()?S.er:(S.er={y:year(),used:0});return Math.round(Math.max(0,Math.min(k*cp,385*cp-E.used)))}return Math.round(k*cp)}
-function payMed(k){const c=medCost(k);cash(-c);if(S.p.country==='NL'){S.er.used+=c}return c}
+function payMed(k){const c=medCost(k);cash(-c);if(S.p.country==='NL'&&c>0){if(!S.er||S.er.y!==year())S.er={y:year(),used:0};S.er.used+=c}return c}
 function treat(il,sp,o={}){const I=illInfo(il);let p=I.cure*(sp===I.sp?1:sp==='huisarts'?.35:.15)+(il.ref?.15:0)+(o.bonus||0);if(I.chron&&I.cure<.1)p=0;
   if(chance(p)){S.ill=S.ill.filter(x=>x!==il);hea(10);hap(6);return `${o.what||'De behandeling'} werkt. Je bent genezen van ${il.n}!`}
   if(I.chron&&sp===I.sp){il.sev=Math.max(1,il.sev-1);hea(4);return `${il.n} is niet te genezen, maar met de juiste medicijnen gaat het een stuk beter.`}
@@ -65,7 +65,7 @@ function sheetRehab(el){const any=Object.keys(ADD).filter(k=>addLvl(k)>0);const 
   for(const k of any){const [em,n]=ADD[k];
     row(s,{ic:'💪',t:`Zelf stoppen met ${n.toLowerCase()}`,s:'Kans hangt af van je discipline',dots:true,on:()=>doAct('Afkicken',()=>{use('stop'+k);return stop(k,.15+(S.disc??50)/300+(S.flags.ther?.1:0),`Het is je gelukt om te stoppen met ${n.toLowerCase()}!`)},true,'💪')});
     row(s,{ic:'🤝',t:`Zelfhulpgroep (${n.toLowerCase()})`,s:'Gratis · lotgenoten helpen elkaar',dots:true,on:()=>doAct('Zelfhulpgroep',()=>{use('zhg'+k);sk('sociaal',1);return stop(k,.35+(S.flags.ther?.1:0),'De groep sleept je erdoorheen. Je bent clean.')},true,'🤝')});
-    row(s,{ic:'🏥',t:`Afkickkliniek (${n.toLowerCase()})`,s:`${fmt(medCost(15000))} · grootste kans`,dis:S.money<medCost(15000),dots:true,on:()=>doAct('Afkickkliniek',()=>{payMed(15000);if(S.job&&!S.job.part)S.job.perf=clamp(S.job.perf-8);return stop(k,.8,`Na zes weken in de kliniek kom je er als een ander mens uit.`)},true,'🏥')})}}
+    row(s,{ic:'🏥',t:`Afkickkliniek (${n.toLowerCase()})`,s:`${fmt(medCost(15000))} · grootste kans`,dis:S.money<medCost(15000),dots:true,on:()=>doAct('Afkickkliniek',()=>{payMed(15000);if(S.job&&!S.job.part)(S.job&&(S.job.perf=clamp(S.job.perf-8)));return stop(k,.8,`Na zes weken in de kliniek kom je er als een ander mens uit.`)},true,'🏥')})}}
 E('h_sigaret',{a:[13,19],w:.6,once:1,c:()=>addLvl('roken')<10,t:'Een sigaret?',x:'Een vriend biedt je achter de fietsenstalling een sigaret aan.',ch:[
  ['🚬 Er een opsteken',()=>{addUp('roken',25);hap(1);return 'Je hoest je longen eruit, maar je voelt je stoer.'}],
  ['🙅 Nee, dank je',()=>{kar(1);return 'Je loopt door. Goed zo.'}]]});

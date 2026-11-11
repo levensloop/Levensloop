@@ -79,6 +79,7 @@ function advance(){
     monthTick();
     if(!S.alive)break;
     if(S.m%12===0)birthday();
+    if(S.m%12===0&&S.alive)debtYear();
     if(!S.alive)break;
     if(evc<maxEv){const e=rollEvent();if(e){Q.push(e);evc++}}
   }
@@ -110,7 +111,8 @@ function rewind(n){
 // lonen stijgen mee met de inflatie; mult is de reële loonsverhoging
 function salary(){if(!S.job)return 0;const j=JOB(S.job.id);return j.sal[S.job.lvl]*1000*S.job.mult*(S.cpi||1)*(S.eco?S.eco.wr:1)*(j.sal[S.job.lvl]<=32?law('minloon'):1)}
 const jsal=(j,l)=>Math.round(j.sal[l]*1000*(S.cpi||1));
-function bijstand(){const c=S.cpi||1;return Math.round((livingCost()*c*.95+Math.min(S.home.rent||0,11500*c)*.95)*law('minloon')*(typeof bijstandF==='function'?bijstandF():1))}
+// uitkering dekt levensonderhoud en huur tot een grens (met huurtoeslag), zodat wie niet werkt niet vanzelf steeds dieper rood komt te staan (zie verbeterplan 1.5)
+function bijstand(){const c=S.cpi||1;return Math.round((livingCost()*c+Math.min(S.home.rent||0,16000*c))*law('minloon')*(typeof bijstandF==='function'?bijstandF():1))}
 function livingCost(){const a=ageY();let c=13000;const pt=partner();if(pt&&pt.st==='getrouwd')c=9500;if(a>=aowAge())c*=.85;return c}
 function netWorth(){let n=S.money-S.debt-S.loan+(S.trust||0)+(S.swiss||0);for(const k in S.inv)n+=S.inv[k];for(const p of S.props)n+=p.value-p.mort;for(const p of S.re||[])n+=p.value-p.mort;for(const c of S.cars)n+=c.value;for(const it of S.items||[])n+=it.value;for(const b of S.biz)n+=b.value*b.eq/100;if(typeof angelVal==='function')n+=angelVal();n+=(S.crim&&S.crim.dirty)||0;return Math.round(n)}
 function sponsor(){if(S.foll<25000)return 0;const act=S.flags.postY!=null&&year()-S.flags.postY<=1;const eng=S.flags.eng??50;return Math.round(S.foll*.03*(eng/60)*(act?1:.25))}
@@ -145,7 +147,10 @@ function monthTick(){
   if(S.crim.jail){S.crim.jail.left--;if(S.crim.jail.left<=0)release()}
   for(const [k,v] of incomeParts()){inc+=v/12;period.src[k]=(period.src[k]||0)+v/12}
   ex('Belasting',taxOn(taxable())/12);
-  if(a>=18&&S.home.k!=='ouders'&&!S.crim.jail)ex('Levensonderhoud',livingCost()*(S.cpi||1)/12);
+  if(a>=18&&S.home.k!=='ouders'&&!S.crim.jail){let lc=livingCost()*(S.cpi||1);
+    // wie alleen van een uitkering leeft, leeft zuiniger: levensonderhoud past zich aan wat er na de huur overblijft (minstens 60%)
+    const ip=incomeParts();if(ip.length&&ip.every(([k])=>k==='Uitkering')){const left=ip[0][1]-(S.home.k==='huur'?S.home.rent||0:0);lc=Math.min(lc,Math.max(lc*.6,left))}
+    ex('Levensonderhoud',lc/12)}
   if(S.home.k==='huur')ex('Huur',S.home.rent/12);
   for(const pr of S.props){if(pr.mort>0){const rt=pr.rate??.04;const rep=pr.af==='mix'?(pr.mort>pr.mort0*.5?pr.mort0*.5/360:0):Math.min(pr.mort,pr.mort0/360);ex('Hypotheek',pr.mort*rt/12+rep);pr.mort=Math.max(0,pr.mort-rep)}ex('Onderhoud woning',pr.value*.0035/12);if(S.home.k==='eigen'&&S.home.pid===pr.id)ex('Energie',pr.value*.0022*((pr.lbl??3)+1)/4/12)}
   if(S.flags.bg&&!S.crim.jail)ex('Beveiliging',bgCost()/12);
@@ -158,6 +163,7 @@ function monthTick(){
   else if(S.debt>0&&a>=21){const pay=Math.min(S.debt,Math.max(45,S.debt/180));S.debt-=pay;ex('Studieschuld',pay)}
   if(S.loan>0){const pay=Math.min(S.loan,S.loan*.06/12+Math.max(80,S.loan/120));S.loan=Math.max(0,S.loan-(pay-S.loan*.06/12));ex('Leningen',pay)}
   if(S.debt>0&&S.edu.cur==null)S.debt*=1+.025/12;
+  if(S.money<0&&a>=18&&!S.wsnp)ex('Rente rood staan',-S.money*.12/12);
   if(typeof insPrem==='function')for(const x of [...S.cars,...(S.items||[])])if(x.ins)ex('Verzekeringen',insPrem(x)/12);
   S.money+=inc-exp;period.inc+=inc;period.exp+=exp;
   if(S.auto&&S.auto.pct>0&&a>=18&&!S.crim.jail&&typeof autoInvest==='function')autoInvest(inc-exp);
@@ -166,12 +172,12 @@ function monthTick(){
   if(chance(mortality(a,S.st.health)/12))die(deathCause(a));
 }
 function mortality(a,h){let b=a<1?.002:a<15?.0004:a<40?.0009:a<50?.0025:a<60?.006:a<70?.015:a<80?.04:a<90?.1:a<100?.24:.5;const f=h<10?6:h<25?3:h<45?1.6:h>80?.6:1;return b*f}
-function hospital(a){S.flags.zkh=(S.flags.zkh||0)+1;S.st.health=15;const k=Math.round(ri(4,9)*100*(S.cpi||1)*law('er'));cash(-k);hap(-10);if(S.job&&!S.job.part)S.job.perf=clamp(S.job.perf-15);
+function hospital(a){S.flags.zkh=(S.flags.zkh||0)+1;S.st.health=15;const k=Math.round(ri(4,9)*100*(S.cpi||1)*law('er'));cash(-k);hap(-10);if(S.job&&!S.job.part)(S.job&&(S.job.perf=clamp(S.job.perf-15)));
   L(`Je bent met spoed opgenomen in het ziekenhuis. Je lichaam gaf het bijna op. Eigen bijdrage: ${fmt(k)}.`,'bad big');MS('Werd met spoed opgenomen in het ziekenhuis',1);Q.push({id:'s_zkh',c:{n:S.flags.zkh}})}
 // kies een tekst die je recent niet hebt gezien
 function pickF(key,arr){const F=S.flags.pf||(S.flags.pf={});const rec=F[key]||[];let opts=arr.map((_,i)=>i).filter(i=>!rec.includes(i));if(!opts.length)opts=arr.map((_,i)=>i);const i=pick(opts);F[key]=rec.concat(i).slice(-Math.min(arr.length-1,4));return arr[i]}
 const causeTxt=c=>/^vredig|^in je slaap/.test(c)?'vredig in '+(S&&S.p.g==='v'?'haar':S&&S.p.g==='m'?'zijn':'diens')+' slaap':'aan '+c;
-function deathCause(a){const le=S.ill.find(i=>i.l);if(le)return le.n;if(S.st.health<=5)return 'een slechte gezondheid';if(a<4)return pick(['een zeldzame aangeboren aandoening','een ernstige infectie']);if(a<30)return pick(['een verkeersongeluk','een ongeluk tijdens het klimmen','een zeldzame hartafwijking','een val van de trap']);if(a<60)return pick(['een hartaanval','een beroerte','een verkeersongeluk','kanker']);return pick(['ouderdom','een hartaanval','longontsteking','vredig in je slaap','een beroerte','ouderdom'])}
+function deathCause(a){const le=S.ill.find(i=>i.l);if(le)return le.n;if(S.st.health<=5)return 'een slechte gezondheid';if(a<4)return pick(['een zeldzame aangeboren aandoening','een ernstige infectie']);if(a<30)return pick(['een verkeersongeluk','een ongeluk tijdens het klimmen','een zeldzame hartafwijking','een val van de trap']);if(a<60)return pick(['een hartaanval','een beroerte','een verkeersongeluk','kanker']);if(a<85)return pick(['een hartaanval','longontsteking','een beroerte','kanker','hartfalen','vredig in je slaap']);return pick(['ouderdom','een hartaanval','longontsteking','vredig in je slaap','een beroerte','ouderdom'])}
 function die(cause){if(!S.alive)return;S.alive=false;S.cause=cause;S.died=ageY();const ct=/^vredig/.test(cause)?'vredig in je slaap':'aan '+cause;L(cause==='opgegeven'?`Je hebt het opgegeven, ${ageY()} jaar oud.`:`Je bent overleden ${ct}, ${ageY()} jaar oud.`,'bad big');MS(cause==='opgegeven'?'Gaf het op':`Overleden ${ct}`,0);Q=[];checkAch()}
 
 function econYear(){if(S.eco)return;const e=S.econ||(S.econ={s:'normaal',y:0});e.y++;
@@ -314,7 +320,7 @@ function jobTitle(){if(!S.job)return'';if(S.job.id==='prosport'&&typeof sportTit
 function endJob(){if(!S.job)return;S.jobs.push({t:jobTitle(),co:S.job.co,y:S.job.yrs});S.job=null}
 function jobYear(a){
   if(!S.job||inJail())return;const j=JOB(S.job.id);S.job.yrs++;S.job.lyrs++;if(S.job.id==='prosport')return;if(!S.job.part&&S.job.yrs>=1)Q.push({id:'w_review'});
-  const hard=(S.lastActs||{}).werk||0;S.job.perf=clamp(S.job.perf+(S.st.smarts-50)/25+ri(-7,5)-4+Math.min(10,hard*4)+(S.st.happy<25?-5:0)-(econ()==='recessie'?3:0)+(degSec(j)?2:0)+((S.disc??50)-50)/25);
+  const hard=(S.lastActs||{}).werk||0;(S.job&&(S.job.perf=clamp(S.job.perf+(S.st.smarts-50)/25+ri(-7,5)-4+Math.min(10,hard*4)+(S.st.happy<25?-5:0)-(econ()==='recessie'?3:0)+(degSec(j)?2:0)+((S.disc??50)-50)/25)));
   if(j.sk)sk(j.sk,ri(1,3));
   S.job.mult*=S.job.perf>60?1.012:1;
   if(j.fame)S.fame=clamp(S.fame+S.job.lvl*ri(1,6));
@@ -323,7 +329,7 @@ function jobYear(a){
   if(j.id==='voetbal'&&a>=34){L('Je lichaam wil niet meer. Je stopt met profvoetbal.','big');MS('Stopte met profvoetbal',1);endJob();return}
   if(j.id==='model'&&a>=33&&chance(.4)){L('Het modellenbureau verlengt je contract niet meer.');endJob()}
 }
-function promote(){const j=JOB(S.job.id);S.job.lvl++;S.job.lyrs=0;S.job.mult=1;S.job.perf=clamp(S.job.perf-12);hap(8);
+function promote(){const j=JOB(S.job.id);S.job.lvl++;S.job.lyrs=0;S.job.mult=1;(S.job&&(S.job.perf=clamp(S.job.perf-12)));hap(8);
   const t=j.lad[S.job.lvl];L(`Promotie! Je bent nu ${t.toLowerCase()}.`,'good big');MS(`Werd ${t.toLowerCase()}`,S.job.lvl===j.lad.length-1?3:1);
   if(S.job.lvl===j.lad.length-1){S.flags.top=1;if(j.id==='politiek')S.flags.premier=1;if(j.id==='muzikant')S.flags.ster=1}
   if(j.id==='arts')S.flags.arts=1;S.hist.topJob=t}
@@ -376,7 +382,7 @@ function rollEvent(){
   if(!pool.length)return null;let r=R()*tot;
   for(const [id,w] of pool){r-=w;if(r<=0){const e=EV[id];let c={};if(e.ctx){c=safe(()=>e.ctx());if(!c)return null}S.evLast[id]=S.m;if(e.once)S.flags['e_'+id]=1;return{id,c}}}
   return null}
-function safe(f){try{return f()}catch(e){console.warn(e);return null}}
+function safe(f){try{return f()}catch(e){console.warn(e);if(typeof errLog==='function')errLog(e,'opgevangen');return null}}
 /* ---------- verhaal & score ---------- */
 function checkAch(){const a=ageY(),nw=netWorth(),f=S.flags;const got=S.ach||(S.ach=[]);const add=k=>{if(!got.includes(k))got.push(k)};
   if(nw>=1e6)add('miljonair');if(nw>=1e7)add('multi');if(a>=100)add('eeuw');if(a>=90)add('negentig');if(f.getrouwd)add('getrouwd');if(people('kind').length>=4)add('gezin');if(people('kleinkind').length)add('opa');
@@ -393,7 +399,7 @@ function story(){
   const wealth={arm:'een arm gezin',midden:'een gewoon gezin',rijk:'een welgesteld gezin'}[S.flags.wealth]||'een gezin';
   out.push(`${N} ${p.last} werd in ${p.by} geboren in ${p.city}, in ${wealth}. ${a<4?`${Hij} werd maar ${a} jaar oud.`:pick([`Als kind was ${hij} ${S.st.smarts>65?'slim en nieuwsgierig':S.sk.sport>40?'altijd buiten aan het sporten':'een dromer'}.`,`${Hij} groeide op ${living(['broer','zus']).length||people(['broer','zus']).length?'met '+people(['broer','zus']).map(s=>s.first).join(' en '):'als enig kind'}.`])}`);
   const deg=S.edu.deg.filter(d=>d.f).map(d=>`${ENAME[d.ty]} ${STUDIES.find(s=>s.id===d.f).t}`);const sch=S.edu.deg.find(d=>['vmbo','havo','vwo'].includes(d.ty));
-  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){let t=sch?`${Hij} haalde ${zijn} ${sch.ty}-diploma`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
+  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){const cl=S.ms.some(m=>/^Haalde het .*-diploma cum laude/.test(m.t));let t=sch?`${Hij} haalde ${zijn} ${sch.ty}-diploma${cl?' cum laude':''}`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
   const hist=S.jobs.concat(S.job?[{t:jobTitle(),co:S.job.co,y:S.job.yrs}]:[]).filter(j=>j.y>=1&&!j.mil);
   if(hist.length){const best=S.hist.topJob||hist[hist.length-1].t;const ts=[...new Set(hist.map(j=>j.t.toLowerCase()))];out.push(ts.length>2?`${Hij} had ${hist.length} banen en bracht het tot ${best.toLowerCase()}${S.flags.top?', de top van het vak':''}.`:`${Hij} werkte als ${ts.join(' en later als ')}${S.flags.top?' en bereikte daarmee de top':''}.`)}
   else if(a>=25&&!(S.pex&&S.pex.r>=1)&&!S.mil&&!S.pmil)out.push(`Een vaste baan zat er nooit echt in.`);
@@ -406,7 +412,7 @@ function story(){
   if(sp)out.push(`${Hij} trouwde met ${sp.first}${kids.length?` en kreeg ${kids.length===1?'één kind':kids.length+' kinderen'}: ${kids.map(k=>k.first).join(', ')}`:''}.`);
   else if(kids.length)out.push(`${Hij} kreeg ${kids.length===1?'een kind':kids.length+' kinderen'}: ${kids.map(k=>k.first).join(', ')}.`);
   else if(a>30)out.push(pick([`De grote liefde vond ${hij} nooit, maar ${hij} had ${living('vriend').length?'trouwe vrienden':'een rijk leven'}.`,`${Hij} bleef ${zijn} hele leven vrijgezel.`]));
-  const seen=new Set();const notable=S.ms.filter(m=>m.w>=2&&!/^(Studeerde|Richtte|Werd|Kreeg een relatie|Verkocht|Trouwde|Kreeg een (zoon|dochter)|Adopteerde)/.test(m.t)&&!seen.has(m.t.split(' ')[0]+m.t.split(' ')[1])&&seen.add(m.t.split(' ')[0]+m.t.split(' ')[1])).slice(-4);
+  const seen=new Set();const notable=S.ms.filter(m=>m.w>=2&&!/^(Studeerde|Richtte|Werd|Kreeg een relatie|Verkocht|Trouwde|Kreeg een (zoon|dochter)|Adopteerde|Haalde het .*-diploma|Verliet school zonder diploma|Stopte zonder diploma)/.test(m.t)&&!seen.has(m.t.split(' ')[0]+m.t.split(' ')[1])&&seen.add(m.t.split(' ')[0]+m.t.split(' ')[1])).slice(-4);
   const vs=t=>{const i=t.indexOf(' ');return i<0?t.toLowerCase()+' '+hij:t.slice(0,i).toLowerCase()+' '+hij+t.slice(i)};
   if(notable.length)out.push(notable.map((m,i)=>`${i===0?'Op':pick(['Op','Rond'])} ${m.a}-jarige leeftijd ${vs(m.t)}.`).join(' '));
   const nw=netWorth();

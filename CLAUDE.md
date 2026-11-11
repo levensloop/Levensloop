@@ -40,6 +40,8 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 - `tests/auto.js` is de gedeelde autospeler (`window.AUTO`) die pop-ups en minigames afhandelt.
 - `tests/nulmeting/` bevat de metingen van 11 november 2026 (vóór dit verbeterplan).
 - `tests/fixtures/*.json`: ruwe `localStorage` van levens gemaakt met versie 20261105-2229 (kind, werkende van 40, gepensioneerde met huis en politiek, een afgesloten leven met erfgenaam, en `alles.json` met alles samen). `tests/review/migratie.js` laadt ze in de nieuwe versie en controleert dat elk leven opent, een jaar ouder kan worden en na herladen nog bestaat. Niet opnieuw maken: ze moeten oud blijven. `tests/review/fixtures.js` is het script waarmee ze gemaakt zijn.
+- `tests/review/regress.js`: per opgeloste fout een kleine controle in de echte app (`node regress.js 1.5` draait alleen de 1.5-tests). Voeg bij elke opgeloste fout een test toe.
+- `build.sh` stopt bij dubbele gebeurtenis-ID's en bij `S.job.perf` zonder controle op `S.job`, en waarschuwt bij dubbele functienamen.
 - `tests/bekende-fouten.txt`: JS-fouten die nog niet opgelost zijn en de test niet rood maken. Haal een regel weg zodra de fout is opgelost.
 - `tests/review/check.js` telt de JS-fouten in de simulatie-uitvoer; uitvoer van `run.sh` staat in `tests/out/` (niet in git).
 - `deploy-app.sh` verwacht een clone van branch `main` in `../levensloop-gh` (of zet `LEVENSLOOP_GH`); die maakt hij zelf aan als hij ontbreekt. Gebruik daarvoor nooit de map met de broncode (branch `bron`). Commit-attributie geef je mee via `COMMIT_TRAILER`.
@@ -49,7 +51,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, assets, finance, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag.
+Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag, vangnet.
 
 | Bestand | Inhoud |
 |---|---|
@@ -66,6 +68,8 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 | `mil*.js`, `war.js`, `occ.js` | leger, missies, oorlog, bezetting |
 | `eco*.js` | economie, rente, staatsschuld, wereldnieuws |
 | `coup.js`, `coup2.js` | staatsgreep en dictatuur |
+| `debt.js` | rood staan (streng): 12% rente, jaarlijkse logregel, grens naar inkomen en bezit (`debtLimit`), gebeurtenis "Schuldeisers" (verkopen, lening, schuldsanering, negeren), faillissement, kredietregistratie (`bkr()`) |
+| `vangnet.js` | vangt JS-fouten op: pop-up dicht, melding "Er ging iets mis. Je leven is bewaard.", laatste 20 fouten in `levensloop.errors`, te zien via Menu → Foutenlog. Ook fouten die `safe()` stil opvangt komen daarin. |
 | `diag.js` | verborgen meetscherm (5× tikken op de versie onderaan het hoofdmenu): schermmaten, proefstanden A–E voor de indeling, hulplijnen. Stand bewaard onder `levensloop.layout`. |
 | `src/pwa/` | iPhone-app: `meta.html`, `fix.css`, `pwa.js` (updatebalk), `sw.tpl.js` (service worker), manifest |
 
@@ -84,5 +88,7 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 - Sommige bestanden overschrijven functies uit eerdere bestanden (bijvoorbeeld `misRun` in `mil3.js` en wrappers om `EV.<id>.f`). Zoek op de functienaam in alle bestanden voordat je iets aanpast.
 - Veel regels zijn erg lang (ruim 1000 regels boven de 300 tekens). Zoek met `grep -o` en een stuk context in plaats van hele regels te lezen.
 - Bedragen worden als kommagetal bewaard. Rond af bij optellen.
+- Gebeurtenissen in de wachtrij worden bij het tonen opnieuw gecontroleerd (`e.c`); een gebeurtenis die niet meer klopt (bijv. werk na ontslag) wordt overgeslagen.
+- Wie alleen van een uitkering leeft, krijgt lager levensonderhoud (wat er na de huur overblijft, minstens 60%), en de uitkering dekt huur tot 16.000 × prijspeil. Zonder dat zakte een passieve speler elk jaar dieper in het rood.
 - `build.sh` maakt ook `pwa/test.html`: dezelfde app met statusbalk `black-translucent`, naam "LL test" en een eigen opslagsleutel (`levensloop.test.v1`), zodat Thijmen die los op zijn beginscherm kan zetten zonder zijn echte levens te raken.
 - De service worker cachet de app. Na een deploy ziet Thijmen een balk "Nieuwe versie · tik om bij te werken".

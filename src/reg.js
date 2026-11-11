@@ -31,8 +31,10 @@ POLO.hos={t:'Staatshoofd',sal:254,fame:80,ft:1,r:5};
 for(const k of Object.keys(REGS))if(PSYS[k]){PSYS[k].off=PSYS[k].off||{};PSYS[k].off.gov=Object.assign({},PSYS[k].off.gov,{t:REGS[k].t,sal:k==='NL'?120:160,fame:k==='NL'?18:45,r:k==='NL'?3:4})}
 for(const k of Object.keys(HOSE))if(PSYS[k]){PSYS[k].off.hos={t:HOSE[k].t}}
 /* ---------- jaarlijks ---------- */
+// jaar van de volgende regionale verkiezing; wordt meteen gekozen als het nog niet bekend is (verbeterplan 1.6)
+function regNext(){const W=S.pw;if(!W)return year()+1;if(!W.nextRG)W.nextRG=year()+ri(1,cyc());return W.nextRG}
 function regYear(a){const P=S.pol,W=S.pw,y=year();if(!W||isPres()||S.dict)return;const R_=regC();
-  if(R_){if(!W.nextRG)W.nextRG=y+ri(1,cyc());
+  if(R_){regNext();
     if(y>=W.nextRG){W.nextRG=y+cyc();if(P&&(P.cand.reg||P.lvl==='gov'))Q.push({id:'reg_vk'});else if(P&&P.lvl==='gov')loseOffice()}}
   if(P&&P.lvl==='hos'&&y>=(P.term||0))loseOffice(`Je termijn als ${polTl('hos')} zit erop.`);
   // de koning van Marokko bemoeit zich ermee
@@ -95,8 +97,8 @@ PE('cor_envelop',{c:()=>polIn('raad','weth','burg','kamer','min','mp','gov')()&&
 Object.assign(EVMETA,{reg_vk:['Verkiezingen','🗺️'],reg_justitie:['Politiek','⚖️'],ma_koning:['Politiek','👑'],dem_fraude:['Politiek','🗳️'],dem_fraudeuit:['Politiek','📹'],dem_protest:['Politiek','✊'],cor_envelop:['Politiek','✉️']});
 /* ---------- schermen ---------- */
 function regSheetRows(v,P,a){const R_=regC(),r=regName();if(!R_||isPres())return;const W=S.pw;
-  if(P.lvl!=='gov'&&P.lvl!=='hos'&&POLO[P.lvl].r>=1&&a>=25)row(v,{ic:'🗺️',t:`Kandidaat ${lc1(R_.f(r))}`,s:P.cand.reg?`Verkiezingen in ${W.nextRG||'?'} · je partij moet je wel als lijsttrekker kiezen`:`Regionale verkiezingen in ${W.nextRG||'?'}`,r:P.cand.reg?'✅':'',on:()=>{P.cand.reg=P.cand.reg?0:1;refreshSheet()}})}
+  if(P.lvl!=='gov'&&P.lvl!=='hos'&&POLO[P.lvl].r>=1&&a>=25)row(v,{ic:'🗺️',t:`Kandidaat ${lcFn(R_.f(r))}`,s:P.cand.reg?`Verkiezingen in ${regNext()} · je partij moet je wel als lijsttrekker kiezen`:`Regionale verkiezingen in ${regNext()}`,r:P.cand.reg?'✅':'',on:()=>{P.cand.reg=P.cand.reg?0:1;refreshSheet()}})}
 function hosRow(s,X,P,a){const H=HOSE[S.p.country];if(!H||!P||X.r<4||a<H.age||P.lvl==='hos')return;
-  row(s,{ic:'🏛️',t:`Kandidaat voor ${H.t.toLowerCase()}`,s:`Het hoogste ambt van het land, ${H.how}`,dis:!!S.acts.hos,dots:true,on:()=>doAct('Kandidatuur',()=>{S.acts.hos=1;const W=S.pw;const ch=clamp(.12+(W.gov.includes(P.party)?.25:0)+X.r*.04+P.pop/350+(X.pmN?.15:0),.05,.75);
-    if(chance(ch)){setOffice('hos');P.term=year()+H.term;S.fame=clamp(S.fame+10);MS(`Werd gekozen tot ${H.t.toLowerCase()}`,3);return `Je wordt gekozen tot ${H.t.toLowerCase()}! ${H.term} jaar lang ben je het staatshoofd van ${C().n}.`}return 'Een andere kandidaat wordt gekozen. Het was een eer om mee te doen.'},true,'🏛️')})}
+  row(s,{ic:'🏛️',t:`Kandidaat voor ${lcFn(H.t)}`,s:`Het hoogste ambt van het land, ${H.how}`,dis:!!S.acts.hos,dots:true,on:()=>doAct('Kandidatuur',()=>{S.acts.hos=1;const W=S.pw;const ch=clamp(.12+(W.gov.includes(P.party)?.25:0)+X.r*.04+P.pop/350+(X.pmN?.15:0),.05,.75);
+    if(chance(ch)){setOffice('hos');P.term=year()+H.term;S.fame=clamp(S.fame+10);MS(`Werd gekozen tot ${lcFn(H.t)}`,3);return `Je wordt gekozen tot ${lcFn(H.t)}! ${H.term} jaar lang ben je het staatshoofd van ${C().n}.`}return 'Een andere kandidaat wordt gekozen. Het was een eer om mee te doen.'},true,'🏛️')})}
 function demCard(s){if(isPres()&&S.p.country!=='US')return;card(s,`<h3>🗳️ Democratie en corruptie</h3>${kv([['Democratie',`${demS()}/100 · ${demLbl()}`],['Corruptie',`${corS()}/100 · ${corLbl()}`],...(regC()?[['Jouw regio',regName()]]:[])])}<span class="muted">${demS()<65?'Verkiezingsfraude, massaprotesten en een staatsgreep liggen hier dichter bij dan in een sterke democratie.':'Een sterke rechtsstaat: fraude en geweld vallen snel op.'}</span>`)}

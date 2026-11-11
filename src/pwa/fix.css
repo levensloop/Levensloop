@@ -1,4 +1,6 @@
-/* iPhone-app: het spel vult het hele venster; onderin vangt het spel de thuisbalk zelf op */
-html{height:100%;overflow:hidden;background:var(--cream)}
-body{position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden}
+/* iPhone-app: het spel vult het hele venster; onderin vangt het spel de thuisbalk zelf op.
+   Stand B uit het meetscherm (verbeterplan 2.1, getest door Thijmen op 11-11-2026):
+   hoogte 100vh en geen position:fixed. Met 100% of position:fixed bleef op iOS onderin een lege strook. */
+html{height:100vh;overflow:hidden;background:var(--cream)}
+body{height:100vh;position:relative;overflow:hidden}
 html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}

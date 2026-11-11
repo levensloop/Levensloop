@@ -63,7 +63,7 @@ function mkListing(ci){if(ci===true||ci==null)ci=ri(0,ci===true?3:9);const C_=HC
   return {name:n,cat:ci,price,addr:n==='Privé-eiland'?`Een eigen eiland, ${place}`:`${pick(STREETS)} ${ri(1,180)}, ${place}`,w,m2,yr,lbl,cond,def,hot,need:.95+hot*.028+gauss()*.025,feat:top?pick([['Een eigen bioscoop','Een wijnkelder voor 5.000 flessen','Een helikopterplatform'],['Een infinity pool met uitzicht op zee','Personeelsverblijven','Een garage voor twaalf auto\'s'],['Een eigen haven met ligplaats voor je jacht','Een spa met hamam','Een tennisbaan']]):feats(cond,lbl,t),viewed:0,insp:0,bid:0}}
 function market(){const y=year();let m=S.flags.mk;if(!m||m.y!==y||!m.v2){m=S.flags.mk={y,v2:1,l:[]}}
   for(let ci=0;ci<HCAT.length;ci++){let n=m.l.filter(h=>h.cat===ci).length;while(n<5){m.l.push(mkListing(ci));n++}}return m.l}
-const canCash=pr=>S.money>=pr*1.03,canMort=pr=>S.money>=pr*.05&&maxMortgage()>=pr,canFin=pr=>canCash(pr)||canMort(pr);
+const canCash=pr=>S.money>=pr*1.03,canMort=pr=>S.money>=pr*.05&&maxMortgage()>=pr&&!bkr(),canFin=pr=>canCash(pr)||canMort(pr);
 
 function sheetMarket(el){const mm=maxMortgage();const l=market();
   card(el,kv([['Saldo',fmt(S.money)],['Maximale hypotheek',fmt(mm)],['Hypotheekrente',`± ${pct(rente())}`],['Woningmarkt',econLabel()]])+'<span class="muted">Er staan altijd 5 woningen per prijsklasse te koop. Bezichtig eerst: pas dan zie je gebreken en hoeveel andere kijkers er zijn. Met een hypotheek leen je de hele koopsom (tot 5× je inkomen, inclusief dat van je partner). Zelf betaal je 5% kosten koper.</span>');

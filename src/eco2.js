@@ -43,7 +43,8 @@ function weStart(id){const D=WEV[id],E_=ecoW();const ev={id,y:0,dur:ri(D.dur[0],
    ai:'Een doorbraak in kunstmatige intelligentie verandert alles. Bedrijven zetten massaal AI in.',vloed:'Na dagen van extreme regen breken de dijken op meerdere plekken. Duizenden huizen staan onder water.',hitte:'Een ongekende hittegolf: weken boven de 35 graden. Rivieren staan droog.',energie:'De gas- en olieprijzen exploderen. Energierekeningen verdrievoudigen.',handel:'Een grote handelsoorlog breekt uit. Landen heffen hoge importtarieven op elkaars producten.'}[id];
   ecoNews(txt,1);if(id==='bub')ev.kind=/crypto/.test(txt)?'crypto':'tech';
   if(weIsMine(id))Q.push({id:'we_beleid',c:{ev:id}});else{ev.pol=weNpc(id);ev.by='npc';ecoNews(`Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`,1)}
-  Q.push({id:'war_nieuws',c:{t:D.n,txt:txt+(ev.pol?` Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`:'')}})}
+  // nolog: het nieuws staat al als nieuwsregel in het logboek (verbeterplan 1.7)
+  Q.push({id:'war_nieuws',c:{t:D.n,nolog:1,txt:txt+(ev.pol?` Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`:'')}})}
 E('we_beleid',{sys:1,t:'Jij beslist',x:c=>{const D=WEV[c.ev];return `${D.em} ${D.n}. Als ${S.pol.lvl==='dict'?'leider van het land':polTl(S.pol.lvl)} moet jij kiezen hoe het land hierop reageert.`},ch:[]});
 Object.defineProperty(EV.we_beleid,'ch',{get(){const out=[];for(const id of Object.keys(WEV))for(const o of WEV[id].pol)out.push([`${o[1]}`,c=>{const ev=weList().find(e=>e.id===c.ev&&!e.pol);if(ev){ev.pol=o[0];ev.by='me'}ecoNews(`Jouw besluit: ${o[1].toLowerCase()}.`,1);return `${o[2]}.`},c=>c.ev===id]);return out}});
 EVMETA.we_beleid=['Crisis','🏛️'];
@@ -70,7 +71,7 @@ function weYear(E_){const sh=E_.sh;E_.def=0;const y=year();E_.wlast=E_.wlast||{}
     for(const k of ['dyke','clim','nuc'])if(x[k])E_[k]=1;
     if(ev.y>=ev.dur)weEnd(ev)}
   if(!L_.some(e=>e.id==='pan'))E_.lock=0}
-function weEnd(ev){const E_=ecoW();E_.wev=weList().filter(e=>e!==ev);const D=WEV[ev.id];
+function weEnd(ev){const E_=ecoW();if(!weList().includes(ev))return;E_.wev=weList().filter(e=>e!==ev);const D=WEV[ev.id];
   // hoe goed was de aanpak?
   const good={pan:{streng:1,licht:1,open:-1},bank:{redden:0,failliet:-1,nat:1},bub:{regels:1,laten:-1},ai:{regels:0,omscholing:1,belasting:0,vrij:0},vloed:{dijken:1,herstel:-1},hitte:{plan:1,niets:-1},energie:{plafond:1,toeslag:1,kern:0,niets:-1},handel:{terug:-1,praten:1,steun:0}}[ev.id][ev.pol]??0;
   const sc=good+(chance(.5)?1:0)-(chance(.3)?1:0);
@@ -93,9 +94,9 @@ E('pe_bubbel',{sys:1,t:'Iedereen wordt rijk',x:c=>`Je buurman vertelt dat hij me
  ['🚀 Instappen met een flink bedrag',c=>{const v=Math.round(Math.max(0,S.money)*.25);if(v<100)return 'Je hebt er eigenlijk het geld niet voor.';cash(-v);if(c.k==='crypto')S.inv.crypto=(S.inv.crypto||0)+v;else S.inv.index=(S.inv.index||0)+v;return `Je stopt ${fmt(v)} in de hype. Wat kan er misgaan?`}],
  ['🧘 Niet meedoen',()=>'Je laat het aan je voorbijgaan. Je buurman noemt je ouderwets.']]});
 E('pe_ai_baan',{sys:1,need:()=>!!S.job,t:'AI neemt het over',x:()=>`Je werkgever voert een AI-systeem in dat een groot deel van jouw werk als ${jobTitle().toLowerCase()} overneemt.`,ch:[
- ['📚 Omscholen',()=>{const k=Math.round(3000*(S.cpi||1));cash(-k);sma(3);S.job.perf=clamp(S.job.perf+10);return `Je volgt een cursus om met de AI te werken (${fmt(k)}). Je bent nu juist onmisbaar.`}],
+ ['📚 Omscholen',()=>{const k=Math.round(3000*(S.cpi||1));cash(-k);sma(3);(S.job&&(S.job.perf=clamp(S.job.perf+10)));return `Je volgt een cursus om met de AI te werken (${fmt(k)}). Je bent nu juist onmisbaar.`}],
  ['🤞 Afwachten',()=>{if(chance(.5)){const amt=Math.round(Math.min(salary()*.7,62000*(S.cpi||1)));const t=jobTitle();endJob();S.ww={left:weList().some(e=>e.id==='ai'&&e.pol==='omscholing')?3:2,amt};hap(-10);MS(`Verloor zijn baan aan AI (${t.toLowerCase()})`.replace('zijn',S.p.g==='v'?'haar':'zijn'),1);return 'Je functie verdwijnt. Je krijgt WW.'}return 'Je mag blijven. Voorlopig.'}],
- ['🤖 De AI omarmen',()=>{S.job.perf=clamp(S.job.perf+6);sk('tech',3);return 'Je wordt de AI-expert van je afdeling.'}]]});
+ ['🤖 De AI omarmen',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+6)));sk('tech',3);return 'Je wordt de AI-expert van je afdeling.'}]]});
 E('pe_vloed',{sys:1,t:'Water in huis',x:'Het water staat een meter hoog in je woonkamer.',ch:[
  ['🧹 Alles laten herstellen',()=>{const h=S.props.find(p=>p.id===S.home.pid);const k=Math.round((h?h.value:250000)*.08);cash(-Math.round(k*.5));hap(-8);return `De schade is ${fmt(k)}. De verzekering betaalt de helft. Jij betaalt ${fmt(Math.round(k*.5))}.`}],
  ['🏠 Zelf opknappen',()=>{const h=S.props.find(p=>p.id===S.home.pid);const k=Math.round((h?h.value:250000)*.04);cash(-k);hea(-3);hap(-5);return `Je staat weken te sjouwen. Het kost je ${fmt(k)}.`}]]});

@@ -16,7 +16,7 @@ const LAWS={
 function lawIdx(k){const W=S.pw;if(!W)return LAWS[k].d;W.law=W.law||{};return W.law[k]??LAWS[k].d}
 function law(k){return LAWS[k].v[lawIdx(k)]}
 const aowAge=()=>typeof law==='function'?law('aow'):67;
-function lawTxt(k,dir){const L_=LAWS[k];return L_.v.length===2?L_.w[dir>0?1:0]:`${L_.w[dir>0?1:0]} ${L_.t.toLowerCase()} naar ${L_.f(L_.v[lawIdx(k)+dir])}`}
+function lawTxt(k,dir){const L_=LAWS[k];return L_.v.length===2?L_.w[dir>0?1:0]:`${L_.w[dir>0?1:0]} ${lcFn(L_.t)} naar ${L_.f(L_.v[lawIdx(k)+dir])}`}
 function setLaw(k,dir){const W=polW();W.law=W.law||{};W.law[k]=clamp(lawIdx(k)+dir,0,LAWS[k].v.length-1)}
 // steun per partij voor een voorstel
 function lawProb(k,dir,pid,o){const L_=LAWS[k],p=PTY(pid),W=S.pw,P=S.pol;const lean=(p[L_.ax]-50)*L_.up*dir;let pr=clamp(.5+lean/42,.04,.96);
@@ -41,8 +41,8 @@ function lawVote(k,dir,o){const P=S.pol,W=S.pw;if(isPres()&&typeof presLawVote==
   const lst=ids=>ids.map(x=>`${PTY(x).k} ${W.seats[x]}`).join(', ')||'niemand';
   let txt=`Voor (${n}): ${lst(voor)}. Tegen (${hseats()-n}): ${lst(tegen)}. `;
   if(ok){setLaw(k,dir);P.laws=(P.laws||0)+1;P.pop=clamp(P.pop+Math.round(L_.pp*dir)+2);P.steun=clamp(P.steun+(fits?6:-8));hap(6);
-    txt+=`Aangenomen! Vanaf nu: ${L_.t.toLowerCase()} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wetsvoorstel is aangenomen: ${lawTxt(k,0).trim()||L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(k==='vpb'&&dir<0&&S.biz.some(b=>b.eq>0&&!b.trust)){P.risk=(P.risk||0)+20;P.pop=clamp(P.pop-4);txt+=' Kranten wijzen erop dat jouw eigen bedrijf hier flink van profiteert.'}if(P.laws===1)MS(`Kreeg een eigen wet aangenomen (${L_.t.toLowerCase()})`,2)}
-  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Verworpen. Je voorstel haalt het niet.';L(`Je wetsvoorstel over ${L_.t.toLowerCase()} is verworpen.`,'bad')}
+    txt+=`Aangenomen! Vanaf nu: ${lcFn(L_.t)} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wetsvoorstel is aangenomen: ${lawTxt(k,0).trim()||L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(k==='vpb'&&dir<0&&S.biz.some(b=>b.eq>0&&!b.trust)){P.risk=(P.risk||0)+20;P.pop=clamp(P.pop-4);txt+=' Kranten wijzen erop dat jouw eigen bedrijf hier flink van profiteert.'}if(P.laws===1)MS(`Kreeg een eigen wet aangenomen (${lcFn(L_.t)})`,2)}
+  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Verworpen. Je voorstel haalt het niet.';L(`Je wetsvoorstel over ${lcFn(L_.t)} is verworpen.`,'bad')}
   result(ok?'Aangenomen!':'Verworpen',txt,'',()=>{refreshSheet();render();saveLife()},{em:ok?'✅':'❌',cat:'Kamerstemming'})}
 // kabinetsbeleid: een nieuw kabinet past een paar wetten aan
 function cabPolicy(){const W=S.pw,P=S.pol;if(P&&P.lvl==='mp')return'';const tot=seatSum(W.gov,W.seats)||1;const c={lr:0,pc:0};for(const g of W.gov){const p=PTY(g);if(!p)continue;c.lr+=p.lr*W.seats[g]/tot;c.pc+=p.pc*W.seats[g]/tot}

@@ -9,8 +9,8 @@ Object.assign(QB,{
  Frans:[['Vertaal: "bonjour"',['goedendag','tot ziens','dank je','alsjeblieft']],['Vertaal: "le livre"',['het boek','de vrije','de lever','het leven']],['Wat is "ik ben" in het Frans?',['je suis','j\'ai','je vais','je fais']],['Vertaal: "merci beaucoup"',['heel erg bedankt','veel geluk','graag gedaan','tot morgen']],['Welk lidwoord hoort bij "maison" (huis)?',['la','le','les','un']],['Vertaal: "demain"',['morgen','vandaag','gisteren','straks']]],
  Kunst:[['Wie schilderde "De Sterrennacht"?',['Vincent van Gogh','Claude Monet','Pablo Picasso','Rembrandt']],['Welke kunststroming hoort bij Piet Mondriaan?',['De Stijl','Impressionisme','Barok','Surrealisme']],['Wie maakte het beeld "David" in Florence?',['Michelangelo','Da Vinci','Donatello','Rodin']],['Wat zijn de drie primaire kleuren in de schilderkunst?',['Rood, geel, blauw','Rood, groen, blauw','Geel, groen, paars','Zwart, wit, rood']],['Waar hangt het "Meisje met de parel"?',['Mauritshuis','Rijksmuseum','Louvre','Van Gogh Museum']],['Wie schilderde de "Mona Lisa"?',['Leonardo da Vinci','Rafaël','Michelangelo','Botticelli']]]});
 const MATHS=['Rekenen','Wiskunde','Wiskunde A','Wiskunde B'];
-function subjList(E){E=E||S.edu;if(E.stage!=='middel')return SUBJ[E.stage];if(E.prof&&PROF[E.prof])return ['Nederlands','Engels',...PROF[E.prof][2],'Gym'];if(E.sect&&VSEC[E.sect])return ['Nederlands','Engels',...VSEC[E.sect][2],'Gym'];return SUBJ.middel}
-function ensureGrades(){const E=S.edu;const subs=subjList(E);if(!subs)return;E.gr=E.gr||{};const prev=Object.values(E.gr);const base=prev.length?prev.reduce((x,y)=>x+y,0)/prev.length:4+S.st.smarts/25+R();
+function subjList(E){E=E||S.edu;if(E.stage!=='middel')return SUBJ[E.stage]||[];if(E.prof&&PROF[E.prof])return ['Nederlands','Engels',...PROF[E.prof][2],'Gym'];if(E.sect&&VSEC[E.sect])return ['Nederlands','Engels',...VSEC[E.sect][2],'Gym'];return SUBJ.middel}
+function ensureGrades(){const E=S.edu;const subs=subjList(E);if(!subs.length)return;E.gr=E.gr||{};const prev=Object.values(E.gr);const base=prev.length?prev.reduce((x,y)=>x+y,0)/prev.length:4+S.st.smarts/25+R();
   for(const s of subs)if(E.gr[s]==null){const rel=s==='Wiskunde A'||s==='Wiskunde B'?E.gr.Wiskunde:null;E.gr[s]=clampG(s==='Gym'?5.5+Math.max(S.sk.sport,S.sport?S.sport.sk:0)/30+R():rel!=null?rel+(s==='Wiskunde B'?-.4:.2):base+gauss()*.7)}
   for(const k of Object.keys(E.gr))if(!subs.includes(k))delete E.gr[k];ensureTeachers()}
 // leraren met naam
@@ -25,7 +25,7 @@ const rapportHtml=E=>`<div class="rapport">${Object.entries(E.gr).map(([s,v])=>`
 E('sc_rapport',{sys:1,t:'Je rapport',x:c=>c.txt,f:c=>c.txt});
 
 /* ---------- het schoolscherm ---------- */
-function sheetSchool(el){const E=S.edu,a=ageY();ensureGrades();const subs=subjList(E),avg=gradeAvg();const V=E.stage==='middel'?verdict(E):null;
+function sheetSchool(el){const E=S.edu,a=ageY();if(E.stage!=='basis'&&E.stage!=='middel'){empty(sec(el,''),'Je zit niet meer op school.');return}ensureGrades();const subs=subjList(E),avg=gradeAvg();const V=E.stage==='middel'?verdict(E):null;
   const pr=E.prof&&PROF[E.prof],sc=E.sect&&VSEC[E.sect];
   card(el,`<h3>${E.stage==='basis'?'🏫 Basisschool · groep '+Math.min(8,Math.max(1,a-3)):'🏫 Middelbare school · '+E.lvl}</h3><span class="muted">${E.stage==='middel'?`Jaar ${Math.min(E.yrs+1,E.len)} van ${E.len}${pr?` · ${pr[1]} ${pr[0]}`:sc?` · ${sc[1]} ${sc[0]}`:''} · `:''}gemiddeld ${nl1(avg)}${E.stage==='middel'&&E.yrs+1>=E.len?' · examenjaar':''}</span>${rapportHtml(E)}${V?`<div class="${V[0]==='over'?'bizok':V[0]==='bespreek'?'bizwarn soft':'bizwarn'}">${V[0]==='over'?'✅':V[0]==='bespreek'?'⚖️':'⚠️'} ${E.yrs+1>=E.len?'Als het examen zo gaat: ':'Als het rapport zo blijft: '}${V[1]}</div>`:''}`);
   circRow(el,'school');

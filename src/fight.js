@@ -1,3 +1,7 @@
+// namen als "De overvaller" midden in een zin met kleine letter: "staat de overvaller" (verbeterplan 1.8)
+const midNm=n=>/^(De|Het|Een) /.test(n||'')?n[0].toLowerCase()+n.slice(1):n;
+// functienamen midden in een zin: eerste woord klein, behalve eigennamen als Eerste/Tweede Kamer, Senaat, Congres, Europees Parlement
+function lcFn(t){if(!t||/^[A-Z]{2}/.test(t))return t;if(/^(Eerste|Tweede) Kamer|^(Senaat|Congres|Bundestag|Bundesrat|Europees|Staten)/.test(t))return t;return t[0].toLowerCase()+t.slice(1)}
 /* ---------- vechten: aanvallen kiezen, vechtsporten trainen, nieuwe technieken leren ---------- */
 const MOVES={
   stomp:{n:'Stomp',em:'👊',d:[6,11],acc:.75,st:'basis'},
@@ -32,12 +36,12 @@ function fightFlow(o){const F=fx();const me={hp:Math.round(55+S.st.health*.45)},
   const hpBar=(n,v,mx,col)=>`<div class="fhp"><span>${he(n)}</span><i><b style="width:${clamp(v/mx*100)}%;background:${col}"></b></i><em>${Math.max(0,Math.round(v))}</em></div>`;
   const finish=res=>{if(dead)return killed(o,b);const lost=me.max-Math.max(0,me.hp);hea(-Math.round(lost/11));if(res==='win'){F.sk=clamp(F.sk+2);hap(4)}else if(res==='lose'){F.sk=clamp(F.sk+1)}
     if(res==='win')S.fights.w++;else if(res==='lose')S.fights.l++;
-    const pre=ko==='foe'?'Knock-out! ':ko==='me'?'Je gaat knock-out. ':res==='flee'?'':(foe.hp>0&&me.hp>0?(res==='win'?'Na zeven rondes sta jij er het sterkst voor. ':`Na zeven rondes staat ${o.foe.first} er beter voor. `):'');
+    const pre=ko==='foe'?'Knock-out! ':ko==='me'?'Je gaat knock-out. ':res==='flee'?'':(foe.hp>0&&me.hp>0?(res==='win'?'Na zeven rondes sta jij er het sterkst voor. ':`Na zeven rondes staat ${midNm(o.foe.first)} er beter voor. `):'');
     const txt=pre+(o.end(res,{rounds:round,myHp:me.hp,foeHp:foe.hp,ko})||'');if(txt)L(txt,res==='win'?'good':res==='lose'?'bad':'');
     result(o.title,txt,chipsFrom(b),()=>{refreshSheet();render();saveLife();o.next&&o.next()},{cat:o.cat,em:o.em||'🥊'})};
   const turn=()=>{round++;const mv=myMoves();
     modal({title:o.title,em:o.em||'🥊',cat:`Ronde ${round}`,html:`<div class="fbox">${hpBar('Jij',me.hp,me.max,'var(--good)')}${hpBar(o.foe.first,foe.hp,foe.max,'var(--bad)')}</div>${log.length?`<p class="flog">${log.slice(-2).map(he).join('<br>')}</p>`:''}<p class="muted" style="margin:4px 0 0;font-size:13px">Kies je aanval · schade · kans op raak · 💫 = kan verdoven</p>`,
-      choices:mv.map(id=>{const M=MOVES[id];const hit=hitP(M.acc,F.sk,o.foe.sk);return {t:M.n,ic:M.em,s:`${M.sub?'Afkloppen':M.d[0]+'–'+M.d[1]} · ${Math.round(hit*100)}%${M.stun?' · 💫':''}`,on:()=>attack(id)}}).concat([{t:'🏃 Wegrennen',cls:'ghost',on:()=>{closeModal();if(chance(.6)){finish('flee')}else{log.push(`Je probeert weg te rennen, maar ${o.foe.first} grijpt je.`);foeHit();check()}}}])})};
+      choices:mv.map(id=>{const M=MOVES[id];const hit=hitP(M.acc,F.sk,o.foe.sk);return {t:M.n,ic:M.em,s:`${M.sub?'Afkloppen':M.d[0]+'–'+M.d[1]} · ${Math.round(hit*100)}%${M.stun?' · 💫':''}`,on:()=>attack(id)}}).concat([{t:'🏃 Wegrennen',cls:'ghost',on:()=>{closeModal();if(chance(.6)){finish('flee')}else{log.push(`Je probeert weg te rennen, maar ${midNm(o.foe.first)} grijpt je.`);foeHit();check()}}}])})};
   const attack=id=>{closeModal();const M=MOVES[id];haptic(15);
     if(chance(hitP(M.acc,F.sk,o.foe.sk))){if(M.sub&&foe.hp<=foe.max*.5){foe.hp=0;log.push(`${M.n}! ${o.foe.first} tikt af.`)}else{const d=Math.round(ri(M.d[0],M.d[1])*(1+F.sk/120));foe.hp-=d;log.push(`${M.n} raak: −${d}.`);
       if(F.sk>=72&&M.d[1]>=18&&chance((F.sk-67)/33*.035*(foe.hp<=foe.max*.5?1.6:1))){dead=true;foe.hp=0}
@@ -54,7 +58,7 @@ const hitP=(acc,a,b)=>clamp(acc+(a-b)/250,.08,.97);
 function koP(sk,osk,d,t,foe){if(foe){if(sk<40)return 0;return Math.max(0,Math.min(.55,(sk-40)/160+d/t.max*.6+(1-t.hp/t.max)*.25-osk/400))}
   if(sk<35)return 0;return Math.max(0,Math.min(.62,(sk-35)/140+d/t.max*.65+(1-t.hp/t.max)*.275-osk/425))}
 // heel sterk + heftige aanval: per ongeluk iemand doden
-function killed(o,b){const n=o.foe.first,a=ageY();if(o.kill)o.kill();kar(-25);hap(-20);S.fights.w++;MS(`Doodde per ongeluk ${n}`,1);
+function killed(o,b){const n=o.foe.first,a=ageY();if(o.kill)o.kill();kar(-25);hap(-20);S.fights.w++;MS(`Doodde per ongeluk ${midNm(n)}`,1);
   let t=`Je raakt ${n} met een verwoestende klap. ${n} komt niet meer overeind en overlijdt in het ziekenhuis.`;
   if(o.ring)t+=' Het onderzoek wijst uit dat het een ongeluk was. Je wordt niet vervolgd, maar je zult het nooit vergeten.';
   else if(a<12)t+=' Je bent te jong om vervolgd te worden, maar je komt onder toezicht van jeugdzorg.';
@@ -69,7 +73,7 @@ function sheetFight(el){const F=fx(),a=ageY();
     row(s,{ic:T.em,t:T.n,s:a<T.a?`Vanaf ${T.a} jaar`:`Niveau ${lv}% · les ${fmt(T.les)}${nxt?(nxt[1].lv<=lv?' · nieuwe techniek bij je volgende les':` · volgende techniek bij ${nxt[1].lv}%`):' · alle technieken geleerd'}`,dis:a<T.a||S.money<T.les&&a>=18,on:()=>doAct('Les '+T.n,()=>train(k),true,T.em)})}
   const f=sec(el,'Gevechten');
   row(f,{ic:'🤜',t:'Sparren',s:'Oefengevecht op de club · je leert er veel van',dis:a<8,dots:true,on:()=>{if((S.acts.spar||0)>=3){toast('Je hebt dit jaar genoeg gespard');return}S.acts.spar=(S.acts.spar||0)+1;const foe=mkFoe(F.sk+ri(-10,10));
-    fightFlow({foe,ring:1,title:'Sparren',cat:'Vechtsport',end:res=>{F.sk=clamp(F.sk+1);for(const k in F.st)if(F.st[k])bumpStyle(k,2);return res==='win'?`Je bent ${foe.first} de baas in de training.`:res==='flee'?'Je stopt halverwege.':`${foe.first} is vandaag beter. Je leert ervan.`}})}});
+    fightFlow({foe,ring:1,title:'Sparren',cat:'Vechtsport',end:res=>{F.sk=clamp(F.sk+1);for(const k in F.st)if(F.st[k])bumpStyle(k,2);return res==='win'?`Je bent ${midNm(foe.first)} de baas in de training.`:res==='flee'?'Je stopt halverwege.':`${foe.first} is vandaag beter. Je leert ervan.`}})}});
   row(f,{ic:'🏆',t:'Amateurgevecht',s:a<16?'Vanaf 16 jaar':`Inschrijven ${fmt(50)} · winnaar krijgt ${fmt(prizeF())}`,dis:a<16||S.money<50,dots:true,on:fight});
   const m=sec(el,'Jouw aanvallen');for(const id of myMoves()){const M=MOVES[id];row(m,{ic:M.em,t:M.n,s:`${M.st==='basis'?'Basis':M.st==='vies'?'Vies':FSTYLES[M.st].n} · schade ${M.d[0]}–${M.d[1]} · ${Math.round(M.acc*100)}% raak`})}}
 function bumpStyle(k,g){const F=fx();const was=F.st[k]||0;F.st[k]=clamp(was+g);const got=[];for(const [id,M] of Object.entries(MOVES))if(M.st===k&&!F.mv.includes(id)&&F.st[k]>=M.lv){F.mv.push(id);got.push(M.n)}return got}
@@ -79,8 +83,8 @@ function train(k){const F=fx(),T=FSTYLES[k];if(ageY()>=18)cash(-T.les);const m=u
 function mkFoe(sk,o={}){const g=o.g||pick(['m','v','m']);const p=mkPerson('tegenstander',g,S.m-(o.age||ageY()+ri(-3,3))*12);return {first:o.first||p.first,face:faceOf(p),sk:clamp(sk),hp:ri(75,100)}}
 const prizeF=()=>Math.round(300*(1+((S.fights&&S.fights.w)||0)/3)*(S.cpi||1));
 function fight(){fx();if((S.acts.fight||0)>=2){toast('Je hebt dit jaar al genoeg gevochten');return}const prize=prizeF(),foe=mkFoe(fx().sk+ri(-12,15));
-  modal({title:'Amateurgevecht',em:'🥊',cat:'Vechtsport',text:`Je tegenstander is ${foe.first}${foe.sk>fx().sk+5?', een geduchte vechter':foe.sk<fx().sk-5?', die minder ervaring heeft dan jij':', ongeveer van jouw niveau'}. Inschrijven kost ${fmt(50)}. De winnaar krijgt ${fmt(prize)}.`,choices:opts([{t:'Vechten',cls:'go',on:()=>{closeModal();S.acts.fight=(S.acts.fight||0)+1;cash(-50);
-    fightFlow({foe,ring:1,title:'Amateurgevecht',cat:'Vechtsport',end:res=>{if(res==='win'){cash(prize);sk('sport',3);if(S.fights.w>=5)S.fame=clamp(S.fame+3);return `Je wint van ${foe.first}! Je krijgt ${fmt(prize)}. Record: ${S.fights.w}-${S.fights.l}.`}if(res==='flee')return 'Je geeft op. Het publiek fluit je uit.';return `${foe.first} wint. Record: ${S.fights.w}-${S.fights.l}.`}})}}])})}
+  modal({title:'Amateurgevecht',em:'🥊',cat:'Vechtsport',text:`Je tegenstander is ${midNm(foe.first)}${foe.sk>fx().sk+5?', een geduchte vechter':foe.sk<fx().sk-5?', die minder ervaring heeft dan jij':', ongeveer van jouw niveau'}. Inschrijven kost ${fmt(50)}. De winnaar krijgt ${fmt(prize)}.`,choices:opts([{t:'Vechten',cls:'go',on:()=>{closeModal();S.acts.fight=(S.acts.fight||0)+1;cash(-50);
+    fightFlow({foe,ring:1,title:'Amateurgevecht',cat:'Vechtsport',end:res=>{if(res==='win'){cash(prize);sk('sport',3);if(S.fights.w>=5)S.fame=clamp(S.fame+3);return `Je wint van ${midNm(foe.first)}! Je krijgt ${fmt(prize)}. Record: ${S.fights.w}-${S.fights.l}.`}if(res==='flee')return 'Je geeft op. Het publiek fluit je uit.';return `${foe.first} wint. Record: ${S.fights.w}-${S.fights.l}.`}})}}])})}
 // ---- pesten en ruzie: terugvechten ----
 function bullyP(){const c=S.circ&&S.circ.school;if(!c||c.k!==circKey('school'))return null;return circPpl(c).find(p=>p.bully)||null}
 E('pestkop',{a:[6,17],c:()=>S.edu.stage==='basis'||S.edu.stage==='middel',w:()=>bullyP()?3:1,t:'Je wordt gepest',

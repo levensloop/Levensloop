@@ -35,7 +35,7 @@ function angelYear(){for(const x of (S.angel||[])){if(x.st!=='actief')continue;x
     x.v=Math.round(x.v*Math.max(.3,1+gauss()*({laag:.2,gemiddeld:.4,hoog:.7}[x.risk]||.4)+.1))}}
 const angelVal=()=>(S.angel||[]).reduce((s,x)=>s+(x.st==='actief'?x.v:0),0);
 // ---- bedrag kiezen: zelf intypen of snelknoppen ----
-function amountModal(title,max,cb){max=Math.floor(max);const q=[.1,.25,.5].map(f=>Math.round(max*f/10)*10).filter(v=>v>0);
+function amountModal(title,max,cb){max=Math.floor(max);if(!(max>0)){toast(S&&S.money<0?'Je staat rood':'Daar is geen geld voor');return}const q=[.1,.25,.5].map(f=>Math.round(max*f/10)*10).filter(v=>v>0);
   modal({title,em:'💶',cat:curCat(),html:`<p class="muted" style="margin:0 0 6px">Maximaal ${fmt(max)}</p><div class="inrow"><input class="inp num" id="amt" type="number" inputmode="decimal" min="1" max="${max}" placeholder="Bedrag"></div>`,choices:opts([
     {t:'Bevestigen',cls:'go',on:()=>{const v=Math.floor(+($('#amt').value||0));if(!(v>0)){toast('Vul een bedrag in');return}if(v>max){toast(`Maximaal ${fmt(max)}`);return}closeModal();cb(v)}},
     ...q.map((v,i)=>({t:`${['10%','25%','50%'][i]} · ${fmt(v)}`,on:()=>{closeModal();cb(v)}})),
@@ -57,7 +57,7 @@ function sheetFinance(el){const a=ageY(),inv=Object.values(S.inv).reduce((x,y)=>
   row(su,{ic:'🚀',t:'Startups zoeken geld',s:'Elk jaar nieuwe pitches · kies zelf je bedrag',on:()=>openSheet('Startups',sheetPitch,true)});
   if(S.biz.length){const bz=sec(el,'Je eigen bedrijven');for(const x of S.biz)row(bz,{ic:BIZEM[x.type],t:x.name,s:`In kas ${fmt(x.cash)} · tik om geld in te leggen of op te nemen`,on:()=>openSheet(x.name,el=>sheetBiz(el,x),true)})}
   const l=sec(el,'Lenen en aflossen');const cap_=Math.round(Math.max(0,salary()*.8+Math.max(0,netWorth())*.3-S.loan));
-  row(l,{ic:'🏦',t:'Lening afsluiten',s:`6% rente · tot ${fmt(cap_)}`,dis:cap_<=500||inJail(),dots:true,on:()=>amountModal('Lenen',cap_,x=>doAct('Lening',()=>{S.loan+=x;cash(x);return `De bank leent je ${fmt(x)} tegen 6% rente.`},true,'🏦'))});
+  row(l,{ic:'🏦',t:'Lening afsluiten',s:bkr()?bkrWhy():`6% rente · tot ${fmt(cap_)}`,dis:cap_<=500||inJail()||bkr(),dots:true,on:()=>amountModal('Lenen',cap_,x=>doAct('Lening',()=>{S.loan+=x;cash(x);return `De bank leent je ${fmt(x)} tegen 6% rente.`},true,'🏦'))});
   if(S.loan>0)row(l,{ic:'✅',t:'Lening aflossen',s:`Nog ${fmt(S.loan)}`,dis:S.money<=0,dots:true,on:()=>amountModal('Lening aflossen',Math.min(S.money,S.loan),x=>doAct('Afgelost',()=>{cash(-x);S.loan-=x;return `${fmt(x)} afgelost.`},true,'✅'))});
   if(S.debt>0)row(l,{ic:'🎓',t:'Studieschuld aflossen',s:`Nog ${fmt(S.debt)}`,dis:S.money<=0,dots:true,on:()=>amountModal('Studieschuld aflossen',Math.min(S.money,S.debt),x=>doAct('Afgelost',()=>{cash(-x);S.debt-=x;return `${fmt(x)} studieschuld afgelost.`},true,'✅'))})}
 function holdMenu(id){const isB=INV[id]&&id!=='aandelen'&&id!=='crypto';const H=isB?null:HOLD[id];const n=isB?INV[id][0]:H[0],em=isB?(id==='spaar'?'🐷':'📊'):H[1];const v=isB?S.inv[id]:(S.stk[id]?S.stk[id].v:0),inn=isB?invIn(id):(S.stk[id]?S.stk[id].in:0);

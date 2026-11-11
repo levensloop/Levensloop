@@ -320,8 +320,8 @@ function presLawVote(k,dir,o){const P=S.pol,W=S.pw;S.acts.wet=1;const L_=LAWS[k]
   if(ok&&P.lvl!=='mp'){if(!chance(usPresSigns(k,dir))){const over=h>=290&&s>=67;txt+=`President ${W.pm.n} spreekt een veto uit.`;if(over)txt+=' Maar het Congres overstemt het veto met een tweederdemeerderheid!';else{txt+=' Er is geen tweederdemeerderheid om het veto te breken.';ok=false}}}
   else if(!ok&&h>=218&&s>=51&&s<sn)txt+='Een filibuster in de Senaat blokkeert je wet: er waren 60 stemmen nodig. ';
   if(ok){setLaw(k,dir);P.laws=(P.laws||0)+1;P.pop=clamp(P.pop+Math.round(L_.pp*dir)+2);P.steun=clamp(P.steun+(fits?6:-8));hap(6);
-    txt+=`${P.lvl==='mp'?'Je tekent de wet in de Rozentuin.':'De wet is aangenomen!'} Vanaf nu: ${L_.t.toLowerCase()} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wet is aangenomen: ${L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(P.laws===1)MS(`Kreeg een eigen wet door het Congres (${L_.t.toLowerCase()})`,2)}
-  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Je wet haalt het niet.';L(`Je wetsvoorstel over ${L_.t.toLowerCase()} haalt het niet.`,'bad')}
+    txt+=`${P.lvl==='mp'?'Je tekent de wet in de Rozentuin.':'De wet is aangenomen!'} Vanaf nu: ${lcFn(L_.t)} ${L_.f(law(k))}.${fits?'':' Je eigen achterban is er niet blij mee.'}`;L(`Jouw wet is aangenomen: ${L_.t} → ${L_.f(law(k))}.`,'good big');S.flags.wet=1;S.pex&&(S.pex.laws=(S.pex.laws||0)+1);if(P.laws===1)MS(`Kreeg een eigen wet door het Congres (${lcFn(L_.t)})`,2)}
+  else{P.pop=clamp(P.pop-2);P.steun=clamp(P.steun-2);hap(-3);txt+='Je wet haalt het niet.';L(`Je wetsvoorstel over ${lcFn(L_.t)} haalt het niet.`,'bad')}
   result(ok?'Aangenomen!':'Verworpen',txt.trim(),'',()=>{refreshSheet();render();saveLife()},{em:ok?'✅':'❌',cat:'Het Congres'})}
 function presBudVote(b,nm){const W=S.pw,P=S.pol;const def=budSpend(b)+budTax();let ok=1;const cnt={};
   for(const [ch,seats,need] of [['h',W.seats,218],['s',W.sen,51]]){let n=0;for(const pid of Object.keys(seats)){if(!seats[pid]||!PTY(pid))continue;const p=PTY(pid),left=(50-p.lr)/50,cons=(p.pc-50)/50;

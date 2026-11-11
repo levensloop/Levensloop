@@ -36,28 +36,10 @@ E('muziekles',{a:[7,14],once:1,t:'Muziekles',x:'Mag je op muziekles? Welk instru
  ['Gitaar',()=>{sk('muziek',10);loo(1);return 'Je eerste nummer is Wonderwall, natuurlijk.'}],
  ['Drums',()=>{sk('muziek',9);relAdj('vader',-3);return 'De buren zijn minder enthousiast.'}],
  ['Nee, dank je',()=>'Muziek is niks voor jou.']]});
-E('ouderruzie',{a:[5,17],c:()=>living('moeder').length&&living('vader').length&&!S.flags.divorced,t:'Ruzie thuis',x:'Je ouders hebben een flinke ruzie in de keuken.',ch:[
- ['Bemiddelen',()=>{if(chance(.5)){kar(2);return 'Je brengt ze weer nader tot elkaar.'}hap(-3);return 'Ze sturen je naar je kamer.'}],
- ['Koptelefoon op',()=>{hap(-2);return 'Je zet de muziek harder.'}]]});
-E('scheiding',{a:[4,17],once:1,w:.25,c:()=>living('moeder').length&&living('vader').length,t:'Je ouders gaan scheiden',x:'Je ouders vertellen dat ze uit elkaar gaan.',ch:[
- ['Bij je moeder wonen',()=>{S.flags.divorced=1;hap(-12);relAdj('moeder',8);relAdj('vader',-10);return 'Je ziet je vader nog om het weekend.'}],
- ['Bij je vader wonen',()=>{S.flags.divorced=1;hap(-12);relAdj('vader',8);relAdj('moeder',-10);return 'Je ziet je moeder nog om het weekend.'}],
- ['Co-ouderschap',()=>{S.flags.divorced=1;hap(-9);return 'Je woont om de week bij een andere ouder. Twee tandenborstels.'}]]});
 E('rekenwedstrijd',{a:[8,12],t:'Rekenwedstrijd',x:'Je school doet mee aan een landelijke rekenwedstrijd.',ch:[
  ['Meedoen',()=>{if(chance(S.st.smarts/140)){hap(8);sma(3);MS('Won een landelijke rekenwedstrijd',2);return 'Je wint de eerste prijs!'}hap(-1);return 'Je eindigt in de middenmoot.'}],
  ['Liever niet',()=>'Je kijkt vanaf de zijlijn toe.']]});
 /* --- tieners --- */
-E('verliefd',{a:[12,16],t:'Verliefd',ctx:()=>({n:rname()}),x:c=>`Je bent tot over je oren verliefd op ${c.n} uit je klas.`,ch:[
- ['Briefje sturen',c=>{if(chance(S.st.looks/120+.15)){hap(10);return `${c.n} vindt jou ook leuk! Jullie zijn een tijdje samen.`}hap(-8);return `${c.n} laat het briefje rondgaan in de klas. Pijnlijk.`}],
- ['Een vriend laten vragen',c=>{if(chance(.35)){hap(8);return `Het werkt. Jullie gaan samen naar de film.`}hap(-4);return 'Je vriend verpest het compleet.'}],
- ['Niks doen',()=>{hap(-2);return 'Je kijkt van een afstandje.'}]]});
-E('feestje',{a:[14,17],t:'Een feestje',x:'Je bent uitgenodigd voor een feest waar ook alcohol is.',ch:[
- ['Meedoen',()=>{hap(6);if(chance(.3)){hea(-3);relAdj('moeder',-6);relAdj('vader',-6);return 'Je wordt misselijk en je ouders komen erachter.'}return 'Het wordt een legendarische avond.'}],
- ['Alleen fris',()=>{hap(3);kar(1);return 'Je hebt het naar je zin en weet alles nog.'}],
- ['Thuisblijven',()=>{hap(-2);return 'Je mist de verhalen op maandag.'}]]});
-E('spieken',{a:[12,17],c:()=>S.edu.stage==='middel',t:'Spieken?',x:'Morgen is een belangrijke toets en je hebt niks geleerd. Een klasgenoot heeft de antwoorden.',ch:[
- ['Spieken',()=>{if(chance(.3)){S.edu.perf=clamp(S.edu.perf-15);hap(-6);kar(-3);return 'Betrapt! Een 1 en een gesprek met de rector.'}S.edu.perf=clamp(S.edu.perf+6);kar(-2);return 'Een 8. Niemand heeft iets door.'}],
- ['Nachtje doorleren',()=>{S.edu.perf=clamp(S.edu.perf+4);hea(-1);sma(1);return 'Moe, maar je haalt een 6,5.'}]]});
 E('puistjes',{a:[13,16],once:1,t:'Puistjes',x:'Je gezicht zit ineens vol puistjes.',ch:[
  ['Naar de huisarts',()=>{loo(2);return 'Met een crème wordt het snel beter.'}],
  ['Uitknijpen',()=>{loo(-3);return 'Dat maakt het alleen maar erger.'}],
@@ -65,13 +47,6 @@ E('puistjes',{a:[13,16],once:1,t:'Puistjes',x:'Je gezicht zit ineens vol puistje
 E('schoolreis',{a:[12,17],once:1,c:()=>S.edu.stage==='middel',t:'Schoolreis naar Parijs',x:'Je gaat met school een week naar Parijs.',ch:[
  ['Volop genieten',()=>{hap(7);addFriend();return 'Je komt terug met een nieuwe vriend.'}],
  ['\'s Nachts wegsluipen',()=>{if(chance(.4)){S.edu.perf=clamp(S.edu.perf-5);hap(-3);return 'Betrapt door de mentor. Je moet een dag eerder naar huis.'}hap(9);return 'De Eiffeltoren om 3 uur \'s nachts. Onvergetelijk.'}]]});
-E('spijbelen',{a:[13,17],c:()=>S.edu.stage==='middel',t:'Spijbelen',x:'Je vrienden willen het laatste uur spijbelen en naar het strand.',ch:[
- ['Mee',()=>{hap(5);S.edu.perf=clamp(S.edu.perf-4);if(chance(.25)){relAdj('moeder',-5);return 'De school belt je ouders. Huisarrest.'}return 'Zon, zee en geen aardrijkskunde.'}],
- ['Blijven',()=>{S.edu.perf=clamp(S.edu.perf+2);return 'Je let op in de les.'}]]});
-E('onlinedrama',{a:[13,19],t:'Online drama',x:'Iemand heeft een gênante foto van je in de klassenapp gezet.',ch:[
- ['Terugpesten',()=>{kar(-4);hap(2);return 'Het escaleert. Iedereen is boos.'}],
- ['Melden bij de mentor',()=>{kar(1);hap(1);return 'De foto wordt verwijderd.'}],
- ['Erom lachen',()=>{if(chance(.55)){hap(2);sk('sociaal',3);return 'Je lacht mee en het is meteen niet grappig meer.'}hap(-5);return 'Het blijft een week rondgaan.'}]]});
 E('scout',{a:[14,21],c:()=>false&&S.sk.sport>=58&&(!S.job||S.job.id!=='voetbal')&&!S.flags.jeugd,t:'Een scout',x:'Een scout van een profclub heeft je zien spelen en nodigt je uit voor een proeftraining.',ch:[
  ['Proeftraining doen',()=>{if(chance(.25+(S.sk.sport-58)/60)){if(ageY()<16){S.flags.jeugd=1;hap(10);MS('Kreeg een jeugdcontract bij een profclub',2);return 'Je krijgt een jeugdcontract! Op je 16e word je prof.'}setJob('voetbal',0);hap(12);return 'Je krijgt een profcontract!'}hap(-6);return 'Net niet goed genoeg.'}],
  ['Nee, school gaat voor',()=>{S.edu.perf=clamp(S.edu.perf+3);return 'Je kiest voor zekerheid.'}]]});
@@ -89,21 +64,15 @@ E('huisgenoot',{a:[18,32],c:()=>S.home.k==='huur',t:'Huisgenoot',x:'Je huisgenoo
  ['Aanspreken',()=>{if(chance(.6)){hap(2);return 'Hij schrikt en ruimt alles op.'}hap(-3);return 'Hij wordt boos. Sfeer in huis is ver te zoeken.'}],
  ['Briefje op de koelkast',()=>{hap(-1);return 'Hij schrijft er een gemeen briefje onder.'}],
  ['Zelf afwassen',()=>{kar(1);hap(-2);return 'Je bent de afwasheld van het huis.'}]]});
-E('overwerk',{a:[18,70],c:()=>S.job&&!S.job.part,t:'Overwerken',x:'Je leidinggevende vraagt of je dit weekend wilt overwerken.',ch:[
- ['Ja hoor',()=>{S.job.perf=clamp(S.job.perf+8);hap(-4);return 'Je baas is erg tevreden.'}],
- ['Nee',()=>{S.job.perf=clamp(S.job.perf-3);hap(2);return 'Je geniet van je vrije weekend.'}]]});
 E('reorganisatie',{a:[20,66],w:()=>econ()==='recessie'?2.2:econ()==='groei'?.2:.5,c:()=>S.job&&!S.job.part&&!JOB(S.job.id).fame,t:'Reorganisatie',x:'Je werkgever gaat reorganiseren. Er vallen ontslagen.',f:()=>{if(chance(.35-S.job.perf/400)){const sev=Math.round(salary()*.25);endJob();cash(sev);hap(-10);MS('Werd wegbezuinigd bij een reorganisatie',0);return `Je baan vervalt. Je krijgt ${fmt(sev)} transitievergoeding.`}hap(-2);return 'Je mag blijven. Opgelucht.'}});
 E('headhunter',{a:[22,62],c:()=>S.job&&S.job.perf>60&&!S.job.part&&S.job.co,t:'Een headhunter belt',ctx:()=>({co:company()}),x:c=>`Een headhunter biedt je dezelfde functie aan bij ${c.co}, voor 20% meer salaris.`,ch:[
  ['Overstappen',c=>{S.job.mult*=1.2;S.job.co=c.co;S.job.perf=55;hap(4);return `Je werkt nu bij ${c.co}.`}],
- ['Blijven',()=>{S.job.perf=clamp(S.job.perf+3);return 'Je blijft loyaal.'}],
- ['Gebruiken voor opslag',()=>{if(chance(.5)){S.job.mult*=1.1;return 'Je baas geeft je 10% opslag om je te houden.'}S.job.perf=clamp(S.job.perf-8);return 'Je baas voelt zich gechanteerd.'}]]});
+ ['Blijven',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+3)));return 'Je blijft loyaal.'}],
+ ['Gebruiken voor opslag',()=>{if(chance(.5)){S.job.mult*=1.1;return 'Je baas geeft je 10% opslag om je te houden.'}(S.job&&(S.job.perf=clamp(S.job.perf-8)));return 'Je baas voelt zich gechanteerd.'}]]});
 E('burnout',{a:[22,65],c:()=>S.job&&S.st.happy<35&&!S.job.part,t:'Op je tandvlees',x:'Je slaapt slecht en ziet tegen werk op. De bedrijfsarts denkt aan een burn-out.',ch:[
- ['Ziekmelden en herstellen',()=>{hap(8);hea(4);S.job.perf=clamp(S.job.perf-10);return 'Na een paar maanden rust ben je weer de oude.'}],
+ ['Ziekmelden en herstellen',()=>{hap(8);hea(4);(S.job&&(S.job.perf=clamp(S.job.perf-10)));return 'Na een paar maanden rust ben je weer de oude.'}],
  ['Doorwerken',()=>{hea(-8);hap(-6);return 'Het gaat steeds slechter met je.'}],
  ['Ontslag nemen',()=>{endJob();hap(10);return 'Je neemt ontslag. Er valt een last van je schouders.'}]]});
-E('collegaflirt',{a:[20,60],c:()=>S.job&&!S.job.part&&!partner(),t:'Een leuke collega',ctx:()=>({n:rname()}),x:c=>`${c.n} van de afdeling ernaast flirt al weken met je.`,ch:[
- ['Mee uit vragen',c=>{if(chance(.55)){const p=candidate();p.first=c.n;addPartner(p);hap(8);return `${c.n} zegt ja!`}hap(-5);return 'Het blijkt gewoon vriendelijkheid. Ongemakkelijk bij de koffieautomaat.'}],
- ['Werk en privé gescheiden',()=>'Je houdt het professioneel.']]});
 E('bekeuring',{a:[18,90],c:()=>S.cars.length&&S.lic,t:'Geflitst',f:()=>{const b=ri(1,4)*100;cash(-b);hap(-2);return `Je bent geflitst op de snelweg. Boete: ${fmt(b)}.`}});
 E('ongeluk',{a:[18,90],w:.35,c:()=>S.cars.length,t:'Auto-ongeluk',f:()=>{const c=S.cars[0];c.value=Math.round(c.value*.7);const h=ri(3,20);hea(-h);return h>12?`Je krijgt een aanrijding met je ${c.name} en ligt een week in het ziekenhuis.`:`Een kop-staartbotsing. Whiplash en schade aan je ${c.name}.`}});
 E('lekkage',{a:[20,95],c:()=>S.props.length,t:'Lekkage',x:'Het dak van je huis lekt.',ch:[
@@ -144,9 +113,6 @@ E('kleinkind',{a:[38,105],w:.9,ctx:()=>{const k=living('kind').filter(p=>pAge(p)
 E('reunie',{a:[28,65],cd:10,t:'Reünie',x:'Je middelbare school organiseert een reünie.',ch:[
  ['Gaan',()=>{hap(4);if(chance(.35))addFriend();return 'Leuk om iedereen terug te zien. Sommigen zijn erg veranderd.'}],
  ['Overslaan',()=>'Je kijkt de foto\'s later online.']]});
-E('tip',{a:[22,75],c:()=>S.money>5000,t:'Een beurstip',x:'Een collega fluistert dat de aandelen van een biotechbedrijf gaan exploderen.',ch:[
- ['5.000 inleggen',()=>{cash(-5000);if(chance(.4)){const w=ri(8,60)*1000;cash(w);hap(8);return `Het klopte! Je verkoopt voor ${fmt(w)}.`}hap(-5);return 'Het bedrijf gaat failliet. Weg geld.'}],
- ['Niet doen',()=>'Je houdt je geld veilig.']]});
 E('oplichter',{a:[16,100],w:.7,t:'Telefoontje van "de bank"',x:'Iemand belt namens je bank. Je moet je pincode geven om je rekening te beveiligen.',ch:[
  ['Pincode geven',()=>{const l=Math.round(Math.max(0,S.money)*.5);cash(-l);hap(-10);return `Oplichting! Je bent ${fmt(l)} kwijt.`}],
  ['Ophangen',()=>{sma(1);return 'Goed gedaan. Een bank vraagt nooit om je pincode.'}]]});
@@ -263,7 +229,7 @@ E('s_stage',{sys:1,need:()=>!!S.edu.cur,t:'Stage',x:c=>`Je laatste studiejaar be
  ['🤝 Netwerken bij elke borrel',c=>{const E=S.edu.cur;sk('sociaal',3);hap(3);if(chance(.3+S.sk.sociaal/200)){E.offer=c;return `Iedereen kent je naam. ${c.co} houdt een plek voor je vrij.`}E.perf=clamp(E.perf-2);return 'Gezellig, maar je werk blijft liggen.'}],
  ['😴 Het rustig aan doen',()=>{hap(3);S.edu.cur.perf=clamp(S.edu.cur.perf-3);return 'Je haalt je stage, maar niemand onthoudt je naam.'}]]});
 E('s_aanbod',{sys:1,need:()=>!(S.job&&S.job.id==='prosport')&&!S.edu.cur,t:'Een baanaanbod',x:c=>`${c.co}, waar je stage liep, biedt je een baan aan als ${JOB(c.job).lad[c.lvl].toLowerCase()} voor ${fmt(jsal(JOB(c.job),c.lvl))} per jaar.`,ch:[
- ['🤝 Aannemen',c=>{if(S.job)endJob();setJob(c.job,c.lvl,c.co);S.job.perf=clamp(S.job.perf+8);hap(8);return 'Je eerste echte baan, meteen na je diploma!'}],
+ ['🤝 Aannemen',c=>{if(S.job)endJob();setJob(c.job,c.lvl,c.co);(S.job&&(S.job.perf=clamp(S.job.perf+8)));hap(8);return 'Je eerste echte baan, meteen na je diploma!'}],
  ['Nee, ik kijk verder',()=>'Je wilt eerst rondkijken.']]});
 E('s_master',{sys:1,t:'Bachelor gehaald',x:c=>`Ga je door voor een master ${STUDIES.find(s=>s.id===c.f).t}?`,ch:[
  ['Master doen',c=>{enroll('master',c.f,c.fund);return 'Je schrijft je in voor de master.'}],

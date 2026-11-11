@@ -39,7 +39,7 @@ function petMenu(){const ks=Object.keys(LAWS).filter(lawOk);const ch=[];for(cons
   modal({title:'Petitie',em:'✍️',cat:'Burger',text:'Waar gaat jouw petitie over?',choices:opts(ch.sort(()=>R()-.5).slice(0,7))})}
 function petRun(k,dir){doAct('Petitie',()=>{S.flags.petY=year();const n=Math.round((400+Math.sqrt(S.foll||0)*90+S.fame*900+S.sk.sociaal*60)*(.5+R()));
   if(n<40000)return `${nf(n)} handtekeningen. Mooi, maar niet genoeg om in de Kamer besproken te worden.`;
-  const e=lawExpect(k,dir);if(chance(clamp((e-60)/40,.05,.85))){setLaw(k,dir);S.flags.wet=1;MS(`Veranderde de wet met een petitie (${LAWS[k].t.toLowerCase()})`,2);hap(10);return `${nf(n)} handtekeningen! De Kamer bespreekt je petitie en neemt het over: ${LAWS[k].t.toLowerCase()} is nu ${LAWS[k].f(law(k))}.`}
+  const e=lawExpect(k,dir);if(chance(clamp((e-60)/40,.05,.85))){setLaw(k,dir);S.flags.wet=1;MS(`Veranderde de wet met een petitie (${lcFn(LAWS[k].t)})`,2);hap(10);return `${nf(n)} handtekeningen! De Kamer bespreekt je petitie en neemt het over: ${lcFn(LAWS[k].t)} is nu ${LAWS[k].f(law(k))}.`}
   hap(2);return `${nf(n)} handtekeningen! De Kamer bespreekt je petitie, maar een meerderheid stemt tegen.`},true,'✍️')}
 /* ---------- na de politiek ---------- */
 const COMS=['een grote bank','een energiebedrijf','een pensioenfonds','een luchtvaartmaatschappij','een chipfabrikant','een supermarktketen','een verzekeraar','een ziekenhuisgroep'];

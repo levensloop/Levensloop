@@ -36,18 +36,18 @@ function circStrikes(slot){return slot==='work'?(S.job&&S.job.hr)||0:slot==='sch
 function report(slot,sev,why){const c=circle(slot);if(!c)return '';const K=CIRC[c.kind];let n;
   if(slot==='work'){S.job.hr=(S.job.hr||0)+sev;n=S.job.hr;
     if(sev>=5||n>=5){const t=jobTitle().toLowerCase();endJob();hap(-10);MS(`Werd ontslagen als ${t}`,1);return ` ${why} HR grijpt in: je bent op staande voet ontslagen.`}
-    if(n>=4){S.job.perf=clamp(S.job.perf-12);return ` ${why} Laatste waarschuwing van HR: nog één keer en je ligt eruit.`}
-    if(n>=3){S.job.perf=clamp(S.job.perf-10);return ` ${why} Je krijgt een officiële waarschuwing van HR.`}
-    S.job.perf=clamp(S.job.perf-4);return ` ${why} Je moet op gesprek bij HR.`}
+    if(n>=4){(S.job&&(S.job.perf=clamp(S.job.perf-12)));return ` ${why} Laatste waarschuwing van HR: nog één keer en je ligt eruit.`}
+    if(n>=3){(S.job&&(S.job.perf=clamp(S.job.perf-10)));return ` ${why} Je krijgt een officiële waarschuwing van HR.`}
+    (S.job&&(S.job.perf=clamp(S.job.perf-4)));return ` ${why} Je moet op gesprek bij HR.`}
   if(slot==='school'){const E=S.edu;E.strk=(E.strk||0)+sev;n=E.strk;
     if(E.cur&&(sev>=5||n>=5)){const nm=E.cur.name;E.cur=null;hap(-8);MS(`Werd van ${nm} gestuurd`,1);return ` ${why} Je wordt van je opleiding gestuurd.`}
     if(!E.cur&&(sev>=5||n>=5)){E.strk=1;for(const k in (E.gr||{}))E.gr[k]=clampG(E.gr[k]-.5);if(typeof gradesPerf==='function')E.perf=gradesPerf();relAdj('moeder',-10);relAdj('vader',-10);hap(-5);S.circ.school=null;return ` ${why} Je wordt van school gestuurd en moet naar een andere school. Je ouders zijn woedend.`}
     if(n>=3){if(E.cur)E.cur.perf=clamp(E.cur.perf-8);else{for(const k in (E.gr||{}))E.gr[k]=clampG(E.gr[k]-.3);if(typeof gradesPerf==='function')E.perf=gradesPerf();relAdj('moeder',-5);relAdj('vader',-5)}return ` ${why} Je wordt een week geschorst.`}
     return ` ${why} Je moet bij ${E.cur?'de opleidingsmanager':'de directeur'} komen${E.cur?'':' en je ouders worden gebeld'}.`}
   const Pp=S.sport;Pp.strk=(Pp.strk||0)+sev;n=Pp.strk;
-  if(sev>=5||n>=5){if(Pp.st==='pro'&&S.job){const f=Math.round(salary()*.15);cash(-f);S.job.perf=clamp(S.job.perf-15);Pp.strk=2;return ` ${why} ${cap(K.auth)} schorst je voor een halve competitie en je krijgt een boete van ${fmt(f)}.`}
+  if(sev>=5||n>=5){if(Pp.st==='pro'&&S.job){const f=Math.round(salary()*.15);cash(-f);(S.job&&(S.job.perf=clamp(S.job.perf-15)));Pp.strk=2;return ` ${why} ${cap(K.auth)} schorst je voor een halve competitie en je krijgt een boete van ${fmt(f)}.`}
     Pp.sk=clamp(Pp.sk-5);Pp.strk=2;return ` ${why} Je wordt voor de rest van het seizoen geschorst.`}
-  if(n>=3){if(S.job&&Pp.st==='pro')S.job.perf=clamp(S.job.perf-6);return ` ${why} Je wordt een paar wedstrijden geschorst.`}
+  if(n>=3){if(S.job&&Pp.st==='pro')(S.job&&(S.job.perf=clamp(S.job.perf-6)));return ` ${why} Je wordt een paar wedstrijden geschorst.`}
   return ` ${why} ${K.lead==='coach'?'Je coach':cap(K.auth)} neemt je apart voor een stevig gesprek.`}
 function circYear(){if(S.job&&S.job.hr)S.job.hr=Math.max(0,S.job.hr-1);if(S.edu.strk)S.edu.strk=Math.max(0,S.edu.strk-1);if(S.sport&&S.sport.strk)S.sport.strk=Math.max(0,S.sport.strk-1);
   if(!S.circ)return;const w=S.circ.work;if(w&&S.job&&w.k===circKey('work')){for(const p of w.ppl){if(p.ref||p.lead)continue;p.rel=clamp(p.rel-ri(0,2))}
@@ -62,8 +62,8 @@ function sheetCircP(el,slot,p){const c=circle(slot);if(!c){empty(el,'Hier ben je
   A('🌹','Compliment geven',()=>{bump('comp',2,6);kar(1);return `${p.first} waardeert het.`});
   A('☕',kind==='work'?'Samen lunchen':kind==='solo'?'Sportief feliciteren':kind==='team'?'Na de training wat drinken':'Samen pauze houden',()=>{bump('pauze',3,8);hap(1);return kind==='solo'?`Je feliciteert ${p.first} met de laatste wedstrijd. Er ontstaat wederzijds respect.`:`Je kletst gezellig met ${p.first}.`});
   // rol-specifiek
-  if(kind==='work'&&!lead)A('🤝','Samenwerken aan een project',()=>{const m=bump('samen',2,6);S.job.perf=clamp(S.job.perf+Math.round((p.smarts>60?5:3)*m));return p.smarts>60?`${p.first} is slim: samen leveren jullie iets moois af.`:`Het project loopt, al moet jij veel uitleggen aan ${p.first}.`});
-  if(kind==='work'&&lead)A('🍏','Slijmen',()=>{const m=bump('slijm',2,6);S.job.perf=clamp(S.job.perf+Math.round(3*m));return chance(.3)?`${p.first} prikt er doorheen, maar vindt het stiekem wel leuk.`:`${p.first} lacht om je grapjes. Dat kan geen kwaad.`});
+  if(kind==='work'&&!lead)A('🤝','Samenwerken aan een project',()=>{const m=bump('samen',2,6);(S.job&&(S.job.perf=clamp(S.job.perf+Math.round((p.smarts>60?5:3)*m))));return p.smarts>60?`${p.first} is slim: samen leveren jullie iets moois af.`:`Het project loopt, al moet jij veel uitleggen aan ${p.first}.`});
+  if(kind==='work'&&lead)A('🍏','Slijmen',()=>{const m=bump('slijm',2,6);(S.job&&(S.job.perf=clamp(S.job.perf+Math.round(3*m))));return chance(.3)?`${p.first} prikt er doorheen, maar vindt het stiekem wel leuk.`:`${p.first} lacht om je grapjes. Dat kan geen kwaad.`});
   if((kind==='school'||kind==='study')&&!lead)A('📚','Samen huiswerk maken',()=>{const m=bump('hw',2,6);const g=(p.smarts>60?.3:.15)*m;if(kind==='study'&&S.edu.cur)S.edu.cur.perf=clamp(S.edu.cur.perf+g*15);else{for(const k in (S.edu.gr||{}))S.edu.gr[k]=clampG(S.edu.gr[k]+g);if(typeof gradesPerf==='function')S.edu.perf=gradesPerf()}return p.smarts>60?`${p.first} legt alles haarfijn uit.`:`Jullie kletsen meer dan dat jullie leren.`});
   if((kind==='school'||kind==='study')&&lead)A('🙋','Om hulp vragen',()=>{const m=bump('hulp',2,5);if(kind==='study'&&S.edu.cur)S.edu.cur.perf=clamp(S.edu.cur.perf+4*m);else{for(const k in (S.edu.gr||{}))S.edu.gr[k]=clampG(S.edu.gr[k]+.25*m);if(typeof gradesPerf==='function')S.edu.perf=gradesPerf()}sma(Math.round(1*m));return `${p.first} neemt de tijd voor je.`});
   if((kind==='school'||kind==='study')&&!lead)A('👀','Spieken bij '+p.first,()=>{use('spiek');if(chance(.3)){p.rel=clamp(p.rel-8);kar(-2);return `Je wordt betrapt.`+report('school',1,`${p.first} wordt er ook op aangesproken.`)}const g=p.smarts>55?.4:-.2;for(const k in (S.edu.gr||{}))S.edu.gr[k]=clampG(S.edu.gr[k]+g);if(S.edu.cur)S.edu.cur.perf=clamp(S.edu.cur.perf+g*10);if(typeof gradesPerf==='function'&&!S.edu.cur)S.edu.perf=gradesPerf();return g>0?`Niemand ziet het. ${p.first} had alles goed.`:`Niemand ziet het, maar ${p.first} had alles fout.`},{dots:true});

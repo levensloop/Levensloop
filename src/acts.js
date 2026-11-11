@@ -51,7 +51,8 @@ const ACTS=[
 const FAVDEF=['mind','sport','vecht','liefde','nacht'];
 const favs=()=>{const f=S.settings.favs;return Array.isArray(f)?f.filter(k=>ACTS.some(x=>x[0]===k)):FAVDEF};
 const BANDX=['nacht','fest','conc','reis','emig','quiz','casino'];
-function actRow(s,x){const [k,ic,t,sub,min,on,g,ex]=x;const a=ageY();const e=typeof bandOn==='function'&&bandOn()&&BANDX.includes(k)?[false,'Niet met een enkelband']:ex?ex():[true];const ok=a>=min&&e[0];const st=typeof sub==='function'?safe(()=>sub())||'':sub;
+const GAMBLE=['casino','bet','paard','gevbet','lot','kras'];
+function actRow(s,x){const [k,ic,t,sub,min,on,g,ex]=x;const a=ageY();const e=typeof bandOn==='function'&&bandOn()&&BANDX.includes(k)?[false,'Niet met een enkelband']:GAMBLE.includes(k)&&a>=min&&S.money<=0?[false,S.money<0?'Je staat rood':'Je hebt geen geld']:ex?ex():[true];const ok=a>=min&&e[0];const st=typeof sub==='function'?safe(()=>sub())||'':sub;
   row(s,{ic,t,s:a<min?`Vanaf ${min} jaar`:!e[0]?e[1]:st,dis:!ok,on})}
 function sheetAct(el){if(inJail())return jailActs(el);
   const f=sec(el,'⭐ Favorieten');for(const k of favs()){const x=ACTS.find(y=>y[0]===k);if(x)actRow(f,x)}
