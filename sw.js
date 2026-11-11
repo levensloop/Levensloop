@@ -1,5 +1,5 @@
 /* Levensloop service worker: bewaart de app op je telefoon zodat hij offline werkt */
-const VERSION='20261105-2229';
+const VERSION='20261111-2331';
 const CACHE='levensloop-'+VERSION;
 const FONTS='levensloop-fonts';
 const CORE=['./','./index.html','./manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png'];
@@ -16,5 +16,7 @@ self.addEventListener('message',e=>{if(e.data==='skip')self.skipWaiting()});
 self.addEventListener('fetch',e=>{const req=e.request;if(req.method!=='GET')return;const u=new URL(req.url);
   if(u.hostname==='fonts.googleapis.com'||u.hostname==='fonts.gstatic.com'){e.respondWith((async()=>{const f=await caches.open(FONTS);const m=await f.match(req,{ignoreVary:true});if(m)return m;try{const r=await fetch(req);f.put(req,r.clone());return r}catch(err){return new Response('',{status:504})}})());return}
   if(u.origin!==self.location.origin)return;
+  // testapp: altijd vers van internet, met de laatst bewaarde kopie als terugval
+  if(req.mode==='navigate'&&u.pathname.endsWith('/test.html')){e.respondWith((async()=>{try{const r=await fetch(req,{cache:'no-store'});(await caches.open(CACHE)).put('./test.html',r.clone());return r}catch(err){return (await caches.match('./test.html'))||Response.error()}})());return}
   if(req.mode==='navigate'){e.respondWith((async()=>(await caches.match('./index.html'))||fetch(req))());return}
   e.respondWith((async()=>(await caches.match(req,{ignoreSearch:true}))||fetch(req))())});
