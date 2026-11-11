@@ -1,0 +1,773 @@
+{
+ "JP": {
+  "n": 831,
+  "errs": [],
+  "hits": {
+   "huisarts": {
+    "n": 2,
+    "ex": [
+     "e hebt hoge koorts en ligt een week op bed.UitziekenNaar de huisarts🎲Verras me!",
+     "terlijk😖PuistjesJe gezicht zit ineens vol puistjes.Naar de huisartsUitknijpenAccepteren🎲Verras me!"
+    ]
+   },
+   "Huisarts": {
+    "n": 15,
+    "ex": [
+     "sport🥋VechtsportschoolVechtkunst 1% · 0 gewonnen👨‍⚕️DokterHuisarts, specialisten, check-up🛋️TherapiePsycholoog, relatietherapie",
+     "[👨‍⚕️DokterHuisarts,] 👨‍⚕️ GezondheidGezondheid71%KlachtenGeenNaar de dokter🩺Hu",
+     ",] 👨‍⚕️ GezondheidGezondheid71%KlachtenGeenNaar de dokter🩺HuisartsGratis•••🧪InternistGratis•••🧠NeuroloogGratis•••🦴OrthopeedGr"
+    ]
+   },
+   "euro": {
+    "n": 4,
+    "ex": [
+     "n WatanabeMoeder💶Meer zakgeld?Voor elk klusje krijg je een euro. Je stofzuigt het hele huis.+¥ 3.300OK",
+     "Roem🥂UitnodigingDe goodiebag alleen al is duizenden euro's waard.Geluk +5%OK",
+     "Meer zakgeld: Voor elk klusje krijg je een euro. Je stofzuigt het hele huis."
+    ]
+   },
+   "Rotterdam": {
+    "n": 1,
+    "ex": [
+     "Vraag 4 van 5📝EindtoetsWelke rivier stroomt door Rotterdam?De ScheldeDe IJsselDe MaasDe Rijn"
+    ]
+   },
+   "vwo": {
+    "n": 4,
+    "ex": [
+     "School📝EindtoetsScore: 514. Je advies wordt vwo!OK",
+     "[#t-job] 🏫Middelbare school (vwo)Gemiddeld cijfer 8,9🕐BijbanenParttime vacatures🧢FreelanceLosse k",
+     "[🏫Middelbare school ] 🏫 Middelbare school · vwoJaar 3 van 6 · gemiddeld 8,9📐 Wiskunde10,0📖 Nederlands9,3🇬🇧 Eng"
+    ]
+   },
+   "Nederland": {
+    "n": 19,
+    "ex": [
+     "School📒Je rapportWiskunde 9,8 · Nederlands 7,8 · Engels 8,2 · Biologie 8,3 · Geschiedenis 8,2 · Gym 6,",
+     "School📒Je rapportWiskunde 10,0 · Nederlands 8,0 · Engels 8,9 · Biologie 8,2 · Geschiedenis 8,2 · Gym 5,",
+     "School📒Je rapportWiskunde 9,2 · Nederlands 8,5 · Engels 9,2 · Biologie 8,3 · Geschiedenis 8,9 · Gym 4,"
+    ]
+   },
+   "Ziggo": {
+    "n": 4,
+    "ex": [
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome¥ 13.420•••🤘Metalconcert¥ 8.250•••🎻Klassiek concert¥ 9.020",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome¥ 14.190•••🤘Metalconcert¥ 8.690•••🎻Klassiek concert¥ 9.460",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome¥ 15.070•••🤘Metalconcert¥ 9.240•••🎻Klassiek concert¥ 10.01"
+    ]
+   },
+   "havo": {
+    "n": 7,
+    "ex": [
+     "0,0. Je bent twee keer blijven zitten en gaat verder op het havo.OK",
+     "School📝EindexamensHet is examentijd voor je havo-diploma. Je staat gemiddeld een 8,8.📝 Examens maken🕵️ Een spiek",
+     "Eindexamen🎓Cum laude!Je hebt je havo-diploma met lof! De vlag met je schooltas gaat uit.OK"
+    ]
+   },
+   "kabinet": {
+    "n": 43,
+    "ex": [
+     "neel-Democratische Partij 106, Ishin no Kai 28). Het nieuwe kabinet bestaat uit Liberaal-Democratische Partij (238 zetels). Mei Ta",
+     "ische Partij (238 zetels). Mei Takahashi wordt premier. Het kabinet verlaagt vermogensbelasting naar 0,8% en verlaagt winstbelasti",
+     "neel-Democratische Partij 160, Ishin no Kai 49). Het nieuwe kabinet bestaat uit Liberaal-Democratische Partij, Sanseito, Ishin no "
+    ]
+   },
+   "hbo": {
+    "n": 3,
+    "ex": [
+     "andmacht, Marine, Luchtmacht of Marechaussee🎓OpleidingMbo, hbo, universiteit of avondschool📞UitzendbureauLaat een recruiter iets",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Havo"
+    ]
+   },
+   "uwv": {
+    "n": 6,
+    "ex": [
+     "6 miljoen per jaar📖Bijlesdocent¥ 4,74 miljoen per jaar🏗️Bouwvakker¥ 4,9 miljoen per jaar📊Business analyst¥ 8,69 miljoen per jaa",
+     " ] Beroep🏗️UitzendbureauDe recruiter heeft een vacature: bouwvakker bij Hollandia B.V., voor ¥ 4,9 miljoen per jaar.Ik doe hetAnn",
+     "1 miljoen per jaar📖Bijlesdocent¥ 5,01 miljoen per jaar🏗️Bouwvakker¥ 5,18 miljoen per jaar📊Business analyst¥ 9,19 miljoen per ja"
+    ]
+   },
+   "Koninklijke": {
+    "n": 8,
+    "ex": [
+     "en piloten volgt later een zware selectie.Krijgsmachtdelen🪖Koninklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninkl",
+     "inklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninklijke MarineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst",
+     "arineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst…✈️Koninklijke LuchtmachtGrondpersoneel, Luchtverdediging, Helikopterpilo"
+    ]
+   },
+   "ns-": {
+    "n": 2,
+    "ex": [
+     "likopterpiloot, Gevechtspiloot…🛂Koninklijke MarechausseeGrens- en luchthavenbewaking, Militaire politie, Beveiliging Koninklijk H"
+    ]
+   },
+   "Mbo": {
+    "n": 1,
+    "ex": [
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Havo"
+    ]
+   },
+   "Havo": {
+    "n": 1,
+    "ex": [
+     "g kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Havo"
+    ]
+   },
+   "ASML": {
+    "n": 6,
+    "ex": [
+     "exfonds7% per jaar gemiddeld · risico gemiddeld¥ 0Aandelen🔬ASMLGem. 12% per jaar · risico gemiddeld · 1% dividend🛢️ShellGem. 6% "
+    ]
+   },
+   "Heineken": {
+    "n": 6,
+    "ex": [
+     "d🛢️ShellGem. 6% per jaar · risico gemiddeld · 4% dividend🍺HeinekenGem. 5% per jaar · risico laag · 2% dividend💡PhilipsGem. 3% p"
+    ]
+   },
+   "Ahold": {
+    "n": 6,
+    "ex": [
+     "deld · 2.5% dividend💳AdyenGem. 11% per jaar · risico hoog🛒Ahold DelhaizeGem. 5% per jaar · risico laag · 3.5% dividend🍎AppleGem"
+    ]
+   },
+   "Pinkpop": {
+    "n": 9,
+    "ex": [
+     "n en vrije tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️U",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · ¥ 28.490•••🌾LowlandsAltern",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · ¥ 28.490•••🌾LowlandsAlternatief en indie · ¥ 41."
+    ]
+   },
+   "Lowlands": {
+    "n": 6,
+    "ex": [
+     "e tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️Uit etenVa",
+     "valsPinkpop, ] Festivals🎸PinkpopRock en pop · ¥ 28.490•••🌾LowlandsAlternatief en indie · ¥ 41.140•••🪩MysterylandDance en techno",
+     "valsPinkpop, ] Festivals🎸PinkpopRock en pop · ¥ 30.140•••🌾LowlandsAlternatief en indie · ¥ 43.450•••🪩MysterylandDance en techno"
+    ]
+   },
+   "Feyenoord": {
+    "n": 2,
+    "ex": [
+     "rtweddenschappen] Gokken⚽SportweddenschapKies een wedstrijd.Feyenoord – FC Utrecht1: 2.23× · X: 3.3× · 2: 2.65×AZ – Real Madrid1: ",
+     "FC Utrecht – Ajax1: 2.06× · X: 3.3× · 2: 2.93×Real Madrid – Feyenoord1: 1.96× · X: 3.3× · 2: 3.18×Inter – FC Utrecht1: 2.12× · X: "
+    ]
+   },
+   "Utrecht": {
+    "n": 4,
+    "ex": [
+     "n] Gokken⚽SportweddenschapKies een wedstrijd.Feyenoord – FC Utrecht1: 2.23× · X: 3.3× · 2: 2.65×AZ – Real Madrid1: 1.54× · X: 3.3×",
+     " 2: 2.09×Inter – Real Madrid1: 1.44× · X: 3.3× · 2: 7.73×FC Utrecht – AZ1: 2.91× · X: 3.3× · 2: 2.07×Annuleren",
+     "eddenschappen] Gokken⚽SportweddenschapKies een wedstrijd.FC Utrecht – Ajax1: 2.06× · X: 3.3× · 2: 2.93×Real Madrid – Feyenoord1: 1"
+    ]
+   },
+   "PSV": {
+    "n": 1,
+    "ex": [
+     "3.3× · 2: 2.65×AZ – Real Madrid1: 1.54× · X: 3.3× · 2: 5.69×PSV – FC Barcelona1: 1.39× · X: 3.3× · 2: 9.52×Annuleren"
+    ]
+   },
+   "aow": {
+    "n": 5,
+    "ex": [
+     "62 zetels). Sota Suzuki wordt premier. Het kabinet verhoogt aow-leeftijd naar 68 jaar en verlaagt erfbe",
+     "erlaagt toptarief inkomstenbelasting naar 46,5% en verhoogt aow-leeftijd naa",
+     "62 zetels). Sota Suzuki wordt premier. Het kabinet verhoogt aow-leeftijd naar 68 jaar en verlaagt erfbelasting naar afgeschaft."
+    ]
+   },
+   "Ajax": {
+    "n": 1,
+    "ex": [
+     "pen] Gokken⚽SportweddenschapKies een wedstrijd.FC Utrecht – Ajax1: 2.06× · X: 3.3× · 2: 2.93×Real Madrid – Feyenoord1: 1.96× · X: "
+    ]
+   }
+  }
+ },
+ "BR": {
+  "n": 803,
+  "errs": [],
+  "hits": {
+   "kabinet": {
+    "n": 31,
+    "ex": [
+     "p meerdere plekken. Duizenden huizen staan onder water. Het kabinet kiest: investeren in dijken en waterbeheer.OK",
+     "tegolf: weken boven de 35 graden. Rivieren staan droog. Het kabinet kiest: niets extra doen.OK",
+     "president Samuel Rodrigues heeft 295 van de 513 zetels. Het kabinet verlaagt vermogensbelasting naar 0,8% en verlaagt toptarief in"
+    ]
+   },
+   "huisarts": {
+    "n": 1,
+    "ex": [
+     "e hebt hoge koorts en ligt een week op bed.UitziekenNaar de huisarts🎲Verras me!"
+    ]
+   },
+   "Huisarts": {
+    "n": 15,
+    "ex": [
+     "sport🥋VechtsportschoolVechtkunst 1% · 0 gewonnen👨‍⚕️DokterHuisarts, specialisten, check-up🛋️TherapiePsycholoog, relatietherapie",
+     "[👨‍⚕️DokterHuisarts,] 👨‍⚕️ GezondheidGezondheid82%KlachtenGeenNaar de dokter🩺Hu",
+     ",] 👨‍⚕️ GezondheidGezondheid82%KlachtenGeenNaar de dokter🩺HuisartsGratis•••🧪InternistGratis•••🧠NeuroloogGratis•••🦴OrthopeedGr"
+    ]
+   },
+   "Nederland": {
+    "n": 19,
+    "ex": [
+     "Vraag 3 van 5📝EindtoetsWat is de hoofdstad van Nederland?RotterdamDen HaagAmsterdamUtrecht",
+     "Vraag 4 van 5📝EindtoetsHoeveel provincies heeft Nederland?10141211",
+     "School📒Je rapportWiskunde 8,9 · Nederlands 9,7 · Engels 9,7 · Biologie 9,4 · Geschiedenis 10,0 · Gym 5"
+    ]
+   },
+   "Rotterdam": {
+    "n": 1,
+    "ex": [
+     "Vraag 3 van 5📝EindtoetsWat is de hoofdstad van Nederland?RotterdamDen HaagAmsterdamUtrecht"
+    ]
+   },
+   "Den Haag": {
+    "n": 1,
+    "ex": [
+     " van 5📝EindtoetsWat is de hoofdstad van Nederland?RotterdamDen HaagAmsterdamUtrecht"
+    ]
+   },
+   "Amsterdam": {
+    "n": 1,
+    "ex": [
+     "EindtoetsWat is de hoofdstad van Nederland?RotterdamDen HaagAmsterdamUtrecht"
+    ]
+   },
+   "Utrecht": {
+    "n": 4,
+    "ex": [
+     "Wat is de hoofdstad van Nederland?RotterdamDen HaagAmsterdamUtrecht",
+     "FC Twente – Feyenoord1: 1.58× · X: 3.3× · 2: 5.13×Ajax – FC Utrecht1: 2.35× · X: 3.3× · 2: 2.49×Annuleren",
+     "eddenschappen] Gokken⚽SportweddenschapKies een wedstrijd.FC Utrecht – PSV1: 2.42× · X: 3.3× · 2: 2.42×FC Barcelona – Ajax1: 1.88× "
+    ]
+   },
+   "provincie": {
+    "n": 1,
+    "ex": [
+     "Vraag 4 van 5📝EindtoetsHoeveel provincies heeft Nederland?10141211"
+    ]
+   },
+   "vwo": {
+    "n": 8,
+    "ex": [
+     "School📝EindtoetsScore: 520. Je advies wordt vwo!OK",
+     "[#t-job] 🏫Middelbare school (vwo)Gemiddeld cijfer 9,1🕐BijbanenParttime vacatures🧢FreelanceLosse k",
+     "[🏫Middelbare school ] 🏫 Middelbare school · vwoJaar 4 van 6 · 🧬 Natuur & Gezondheid · gemiddeld 9,1📖 Nederlands1"
+    ]
+   },
+   "Ziggo": {
+    "n": 4,
+    "ex": [
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo DomeR$ 206•••🤘MetalconcertR$ 126•••🎻Klassiek concertR$ 138•••\ud83c",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo DomeR$ 229•••🤘MetalconcertR$ 139•••🎻Klassiek concertR$ 152•••\ud83c",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo DomeR$ 254🤘MetalconcertR$ 155🎻Klassiek concertR$ 170🎷Jazzclub"
+    ]
+   },
+   "hbo": {
+    "n": 3,
+    "ex": [
+     "andmacht, Marine, Luchtmacht of Marechaussee🎓OpleidingMbo, hbo, universiteit of avondschool📞UitzendbureauLaat een recruiter iets",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Vwo"
+    ]
+   },
+   "uwv": {
+    "n": 3,
+    "ex": [
+     "eiderR$ 101.760 per jaar🛡️BeveiligerR$ 71.232 per jaar🏗️BouwvakkerR$ 78.864 per jaar🧑‍🏫DocentR$ 106.848 per jaar📷FotograafR$ ",
+     "iderR$ 112.917 per jaar📖BijlesdocentR$ 84.688 per jaar🏗️BouwvakkerR$ 87.510 per jaar📊Business analystR$ 155.261 per jaar⚡Elektr",
+     "16.731 per jaar📐Bouwkundig tekenaarR$ 124.514 per jaar🏗️BouwvakkerR$ 120.622 per jaar📷FotograafR$ 108.950 per jaar💻Junior deve"
+    ]
+   },
+   "Koninklijke": {
+    "n": 4,
+    "ex": [
+     "en piloten volgt later een zware selectie.Krijgsmachtdelen🪖Koninklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninkl",
+     "inklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninklijke MarineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst",
+     "arineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst…✈️Koninklijke LuchtmachtGrondpersoneel, Luchtverdediging, Helikopterpilo"
+    ]
+   },
+   "ns-": {
+    "n": 1,
+    "ex": [
+     "likopterpiloot, Gevechtspiloot…🛂Koninklijke MarechausseeGrens- en luchthavenbewaking, Militaire politie, Beveiliging Koninklijk H"
+    ]
+   },
+   "Mbo": {
+    "n": 1,
+    "ex": [
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Vwo"
+    ]
+   },
+   "Vwo": {
+    "n": 1,
+    "ex": [
+     "g kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Vwo"
+    ]
+   },
+   "ASML": {
+    "n": 6,
+    "ex": [
+     "xfonds7% per jaar gemiddeld · risico gemiddeldR$ 0Aandelen🔬ASMLGem. 12% per jaar · risico gemiddeld · 1% dividend🛢️ShellGem. 6% "
+    ]
+   },
+   "Heineken": {
+    "n": 6,
+    "ex": [
+     "d🛢️ShellGem. 6% per jaar · risico gemiddeld · 4% dividend🍺HeinekenGem. 5% per jaar · risico laag · 2% dividend💡PhilipsGem. 3% p"
+    ]
+   },
+   "Ahold": {
+    "n": 6,
+    "ex": [
+     "deld · 2.5% dividend💳AdyenGem. 11% per jaar · risico hoog🛒Ahold DelhaizeGem. 5% per jaar · risico laag · 3.5% dividend🍎AppleGem"
+    ]
+   },
+   "Pinkpop": {
+    "n": 13,
+    "ex": [
+     "n en vrije tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️U",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · R$ 458•••🌾LowlandsAlternat",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · R$ 458•••🌾LowlandsAlternatief en indie · R$ 661•"
+    ]
+   },
+   "Lowlands": {
+    "n": 10,
+    "ex": [
+     "e tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️Uit etenVa",
+     "tivalsPinkpop, ] Festivals🎸PinkpopRock en pop · R$ 458•••🌾LowlandsAlternatief en indie · R$ 661•••🪩MysterylandDance en techno ·",
+     "FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · R$ 509🌾LowlandsAlternatief en indie · R$ 734🪩MysterylandDance en techno · R$"
+    ]
+   },
+   "Feyenoord": {
+    "n": 3,
+    "ex": [
+     "d.FC Barcelona – AZ1: 2.98× · X: 3.3× · 2: 2.04×FC Twente – Feyenoord1: 1.58× · X: 3.3× · 2: 5.13×Ajax – FC Utrecht1: 2.35× · X: 3",
+     "3× · 2: 2.42×FC Barcelona – Ajax1: 1.88× · X: 3.3× · 2: 3.4×Feyenoord – Inter1: 2.73× · X: 3.3× · 2: 2.18×Annuleren",
+     "89×Liverpool – PSV1: 1.51× · X: 3.3× · 2: 6.19×FC Utrecht – Feyenoord1: 1.33× · X: 3.3× · 2: 13.49×Annuleren"
+    ]
+   },
+   "Ajax": {
+    "n": 2,
+    "ex": [
+     "· 2: 2.04×FC Twente – Feyenoord1: 1.58× · X: 3.3× · 2: 5.13×Ajax – FC Utrecht1: 2.35× · X: 3.3× · 2: 2.49×Annuleren",
+     "FC Utrecht – PSV1: 2.42× · X: 3.3× · 2: 2.42×FC Barcelona – Ajax1: 1.88× · X: 3.3× · 2: 3.4×Feyenoord – Inter1: 2.73× · X: 3.3× · "
+    ]
+   },
+   "gemeente": {
+    "n": 1,
+    "ex": [
+     "rijdag een feest tot 3 uur 's nachts.AanbellenKlacht bij de gemeenteGewoon meefeesten🎲Verras me!"
+    ]
+   },
+   "PSV": {
+    "n": 2,
+    "ex": [
+     "pen] Gokken⚽SportweddenschapKies een wedstrijd.FC Utrecht – PSV1: 2.42× · X: 3.3× · 2: 2.42×FC Barcelona – Ajax1: 1.88× · X: 3.3× ",
+     "e – Manchester City1: 1.47× · X: 3.3× · 2: 6.89×Liverpool – PSV1: 1.51× · X: 3.3× · 2: 6.19×FC Utrecht – Feyenoord1: 1.33× · X: 3."
+    ]
+   },
+   "eigen risico": {
+    "n": 2,
+    "ex": [
+     "Rodrigues heeft 264 van de 513 zetels. Het kabinet verlaagt eigen risico in de zorg naar normaal en verhoogt toptarief inkomstenbe"
+    ]
+   }
+  }
+ },
+ "US": {
+  "n": 1146,
+  "errs": [],
+  "hits": {
+   "huisarts": {
+    "n": 1,
+    "ex": [
+     "e hebt hoge koorts en ligt een week op bed.UitziekenNaar de huisarts🎲Verras me!"
+    ]
+   },
+   "Eigen risico": {
+    "n": 6,
+    "ex": [
+     "rtij heeft nu het Witte Huis en het hele Congres in handen. Eigen risico in de zorg: voortaan 150% van normaal.OK",
+     "rtij heeft nu het Witte Huis en het hele Congres in handen. Eigen risico in de zorg: voortaan normaal",
+     "rtij heeft nu het Witte Huis en het hele Congres in handen. Eigen risico"
+    ]
+   },
+   "kabinet": {
+    "n": 25,
+    "ex": [
+     "gentie verandert alles. Bedrijven zetten massaal AI in. Het kabinet kiest: vrij baan geven.OK",
+     "tegolf: weken boven de 35 graden. Rivieren staan droog. Het kabinet kiest: een hitteplan en strenge klimaatdoelen.OK",
+     "urs: AI-aandelen schieten omhoog. Iedereen wil meedoen. Het kabinet kiest: ingrijpen met strenge regels.OK"
+    ]
+   },
+   "Huisarts": {
+    "n": 20,
+    "ex": [
+     "rclub🥋VechtsportschoolVechtkunst 2% · 0 gewonnen👨‍⚕️DokterHuisarts, specialisten, check-up🛋️TherapiePsycholoog, relatietherapie",
+     "[👨‍⚕️DokterHuisarts,] 👨‍⚕️ GezondheidGezondheid78%KlachtenGeenNaar de dokter🩺Hu",
+     ",] 👨‍⚕️ GezondheidGezondheid78%KlachtenGeenNaar de dokter🩺HuisartsGratis•••🧪InternistGratis•••🧠NeuroloogGratis•••🦴OrthopeedGr"
+    ]
+   },
+   "Utrecht": {
+    "n": 5,
+    "ex": [
+     "\udcddEindtoetsWelke zin heeft de juiste hoofdletters?ik woon in Utrecht.Ik woon in Utrecht.ik woon in utrecht.Ik woon in utrecht.",
+     " heeft de juiste hoofdletters?ik woon in Utrecht.Ik woon in Utrecht.ik woon in utrecht.Ik woon in utrecht.",
+     " van 5📝EindtoetsWat is de hoofdstad van Nederland?AmsterdamUtrechtRotterdamDen Haag"
+    ]
+   },
+   "utrecht": {
+    "n": 2,
+    "ex": [
+     "ofdletters?ik woon in Utrecht.Ik woon in Utrecht.ik woon in utrecht.Ik woon in utrecht.",
+     "in Utrecht.Ik woon in Utrecht.ik woon in utrecht.Ik woon in utrecht."
+    ]
+   },
+   "Nederland": {
+    "n": 18,
+    "ex": [
+     "Vraag 4 van 5📝EindtoetsWat is de hoofdstad van Nederland?AmsterdamUtrechtRotterdamDen Haag",
+     "School📒Je rapportWiskunde 8,0 · Nederlands 5,4 · Engels 6,4 · Biologie 5,3 · Geschiedenis 7,6 · Gym 5,",
+     "School📒Je rapportWiskunde 8,0 · Nederlands 5,1 · Engels 6,7 · Biologie 5,5 · Geschiedenis 7,3 · Gym 6,"
+    ]
+   },
+   "Amsterdam": {
+    "n": 1,
+    "ex": [
+     "Vraag 4 van 5📝EindtoetsWat is de hoofdstad van Nederland?AmsterdamUtrechtRotterdamDen Haag"
+    ]
+   },
+   "Rotterdam": {
+    "n": 1,
+    "ex": [
+     "\udcddEindtoetsWat is de hoofdstad van Nederland?AmsterdamUtrechtRotterdamDen Haag"
+    ]
+   },
+   "Den Haag": {
+    "n": 1,
+    "ex": [
+     "sWat is de hoofdstad van Nederland?AmsterdamUtrechtRotterdamDen Haag"
+    ]
+   },
+   "havo": {
+    "n": 8,
+    "ex": [
+     "School📝EindtoetsScore: 506. Je advies wordt havo!OK",
+     "[#t-job] 🏫Middelbare school (havo)Gemiddeld cijfer 7,1🏃AtletiekAmateurclub🕐BijbanenParttime vacat",
+     "[🏫Middelbare school ] 🏫 Middelbare school · havoJaar 3 van 5 · gemiddeld 7,1📐 Wiskunde8,9📖 Nederlands5,5🇬🇧 Eng"
+    ]
+   },
+   "Ziggo": {
+    "n": 5,
+    "ex": [
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome$ 160•••🤘Metalconcert$ 98•••🎻Klassiek concert$ 107•••🎷Jaz",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome$ 174•••🤘Metalconcert$ 107•••🎻Klassiek concert$ 116•••🎷Ja",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome$ 204•••🤘Metalconcert$ 125•••🎻Klassiek concert$ 137•••🎷Ja"
+    ]
+   },
+   "hbo": {
+    "n": 5,
+    "ex": [
+     "andmacht, Marine, Luchtmacht of Marechaussee🎓OpleidingMbo, hbo, universiteit of avondschool📞UitzendbureauLaat een recruiter iets",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Havo"
+    ]
+   },
+   "uwv": {
+    "n": 2,
+    "ex": [
+     "$ 52.169 per jaar📐Bouwkundig tekenaar$ 61.831 per jaar🏗️Bouwvakker$ 59.898 per jaar🧑‍🏫Docent$ 81.151 per jaar🫂Ggz-begeleider$",
+     "$ 78.874 per jaar📐Bouwkundig tekenaar$ 90.141 per jaar🏗️Bouwvakker$ 87.325 per jaar📊Business analyst$ 154.930 per jaar🧑‍🏫Doce"
+    ]
+   },
+   "Koninklijke": {
+    "n": 4,
+    "ex": [
+     "en piloten volgt later een zware selectie.Krijgsmachtdelen🪖Koninklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninkl",
+     "inklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninklijke MarineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst",
+     "arineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst…✈️Koninklijke LuchtmachtGrondpersoneel, Luchtverdediging, Helikopterpilo"
+    ]
+   },
+   "ns-": {
+    "n": 1,
+    "ex": [
+     "likopterpiloot, Gevechtspiloot…🛂Koninklijke MarechausseeGrens- en luchthavenbewaking, Militaire politie, Beveiliging Koninklijk H"
+    ]
+   },
+   "Mbo": {
+    "n": 1,
+    "ex": [
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Havo"
+    ]
+   },
+   "Havo": {
+    "n": 1,
+    "ex": [
+     "g kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Havo"
+    ]
+   },
+   "ASML": {
+    "n": 8,
+    "ex": [
+     "exfonds7% per jaar gemiddeld · risico gemiddeld$ 0Aandelen🔬ASMLGem. 12% per jaar · risico gemiddeld · 1% dividend🛢️ShellGem. 6% "
+    ]
+   },
+   "Heineken": {
+    "n": 8,
+    "ex": [
+     "d🛢️ShellGem. 6% per jaar · risico gemiddeld · 4% dividend🍺HeinekenGem. 5% per jaar · risico laag · 2% dividend💡PhilipsGem. 3% p"
+    ]
+   },
+   "Ahold": {
+    "n": 8,
+    "ex": [
+     "deld · 2.5% dividend💳AdyenGem. 11% per jaar · risico hoog🛒Ahold DelhaizeGem. 5% per jaar · risico laag · 3.5% dividend🍎AppleGem"
+    ]
+   },
+   "Pinkpop": {
+    "n": 14,
+    "ex": [
+     "n en vrije tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️U",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · $ 348•••🌾LowlandsAlternati",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · $ 348•••🌾LowlandsAlternatief en indie · $ 502•••"
+    ]
+   },
+   "Lowlands": {
+    "n": 10,
+    "ex": [
+     "e tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️Uit etenVa",
+     "stivalsPinkpop, ] Festivals🎸PinkpopRock en pop · $ 348•••🌾LowlandsAlternatief en indie · $ 502•••🪩MysterylandDance en techno · ",
+     "stivalsPinkpop, ] Festivals🎸PinkpopRock en pop · $ 408•••🌾LowlandsAlternatief en indie · $ 590•••🪩MysterylandDance en techno · "
+    ]
+   },
+   "PSV": {
+    "n": 3,
+    "ex": [
+     "denschappen] Gokken⚽SportweddenschapKies een wedstrijd.AZ – PSV1: 1.86× · X: 3.3× · 2: 3.48×Feyenoord – FC Utrecht1: 2.76× · X: 3.",
+     "n wedstrijd.FC Barcelona – Ajax1: 1.77× · X: 3.3× · 2: 3.83×PSV – Feyenoord1: 1.37× · X: 3.3× · 2: 10.47×FC Utrecht – Real Madrid1",
+     "ppen] Gokken⚽SportweddenschapKies een wedstrijd.Feyenoord – PSV1: 1.75× · X: 3.3× · 2: 3.94×Inter – Ajax1: 2.75× · X: 3.3× · 2: 2."
+    ]
+   },
+   "Feyenoord": {
+    "n": 5,
+    "ex": [
+     "chapKies een wedstrijd.AZ – PSV1: 1.86× · X: 3.3× · 2: 3.48×Feyenoord – FC Utrecht1: 2.76× · X: 3.3× · 2: 2.15×AZ – Feyenoord1: 1.",
+     ".48×Feyenoord – FC Utrecht1: 2.76× · X: 3.3× · 2: 2.15×AZ – Feyenoord1: 1.33× · X: 3.3× · 2: 13.9×Annuleren",
+     "trijd.FC Barcelona – Ajax1: 1.77× · X: 3.3× · 2: 3.83×PSV – Feyenoord1: 1.37× · X: 3.3× · 2: 10.47×FC Utrecht – Real Madrid1: 2.41"
+    ]
+   },
+   "Ajax": {
+    "n": 3,
+    "ex": [
+     "Bayern München1: 1.58× · X: 3.3× · 2: 5.14×Bayern München – Ajax1: 1.92× · X: 3.3× · 2: 3.28×Manchester City – FC Twente1: 3.06× ·",
+     "n] Gokken⚽SportweddenschapKies een wedstrijd.FC Barcelona – Ajax1: 1.77× · X: 3.3× · 2: 3.83×PSV – Feyenoord1: 1.37× · X: 3.3× · 2",
+     "dstrijd.Feyenoord – PSV1: 1.75× · X: 3.3× · 2: 3.94×Inter – Ajax1: 2.75× · X: 3.3× · 2: 2.16×Real Madrid – Feyenoord1: 1.65× · X: "
+    ]
+   },
+   "AOW": {
+    "n": 4,
+    "ex": [
+     "rtij heeft nu het Witte Huis en het hele Congres in handen. AOW-leeftijd: voortaan 66 jaar.OK",
+     "rtij heeft nu het Witte Huis en het hele Congres in handen. AOW-leeftijd: voortaan 67 jaar.OK",
+     "rtij heeft nu het Witte Huis en het hele Congres in handen. AOW-leeftijd: voortaan 66 jaar."
+    ]
+   },
+   "gemeente": {
+    "n": 1,
+    "ex": [
+     "rijdag een feest tot 3 uur 's nachts.AanbellenKlacht bij de gemeenteGewoon meefeesten🎲Verras me!"
+    ]
+   }
+  }
+ },
+ "TR": {
+  "n": 1090,
+  "errs": [],
+  "hits": {
+   "huisarts": {
+    "n": 1,
+    "ex": [
+     "e hebt hoge koorts en ligt een week op bed.UitziekenNaar de huisarts🎲Verras me!"
+    ]
+   },
+   "kabinet": {
+    "n": 38,
+    "ex": [
+     "gentie verandert alles. Bedrijven zetten massaal AI in. Het kabinet kiest: vrij baan geven.OK",
+     "tegolf: weken boven de 35 graden. Rivieren staan droog. Het kabinet kiest: niets extra doen.OK",
+     "Landen heffen hoge importtarieven op elkaars producten. Het kabinet kiest: terugslaan met heffingen.OK"
+    ]
+   },
+   "Huisarts": {
+    "n": 14,
+    "ex": [
+     "sport🥋VechtsportschoolVechtkunst 2% · 0 gewonnen👨‍⚕️DokterHuisarts, specialisten, check-up🛋️TherapiePsycholoog, relatietherapie",
+     "[👨‍⚕️DokterHuisarts,] 👨‍⚕️ GezondheidGezondheid92%KlachtenGeenNaar de dokter🩺Hu",
+     ",] 👨‍⚕️ GezondheidGezondheid92%KlachtenGeenNaar de dokter🩺HuisartsGratis🧪InternistGratis🧠NeuroloogGratis🦴OrthopeedGratis🫁Lon"
+    ]
+   },
+   "euro": {
+    "n": 4,
+    "ex": [
+     "em de VriesVader💶Meer zakgeld?Voor elk klusje krijg je een euro. Je stofzuigt het hele huis.+₺ 360OK",
+     "Roem🥂UitnodigingDe goodiebag alleen al is duizenden euro's waard.Geluk +5%OK",
+     "Meer zakgeld: Voor elk klusje krijg je een euro. Je stofzuigt het hele huis."
+    ]
+   },
+   "provincie": {
+    "n": 1,
+    "ex": [
+     "Vraag 3 van 5📝EindtoetsHoeveel provincies heeft Nederland?11101214"
+    ]
+   },
+   "Nederland": {
+    "n": 18,
+    "ex": [
+     "Vraag 3 van 5📝EindtoetsHoeveel provincies heeft Nederland?11101214",
+     "School📒Je rapportWiskunde 9,9 · Nederlands 8,9 · Engels 9,1 · Biologie 9,7 · Geschiedenis 8,5 · Gym 5,",
+     "School📒Je rapportWiskunde 10,0 · Nederlands 9,6 · Engels 10,0 · Biologie 10,0 · Geschiedenis 8,5 · Gym "
+    ]
+   },
+   "vwo": {
+    "n": 8,
+    "ex": [
+     "School📝EindtoetsScore: 523. Je advies wordt vwo!OK",
+     "[#t-job] 🏫Middelbare school (vwo)Gemiddeld cijfer 9,3🕐BijbanenParttime vacatures🧢FreelanceLosse k",
+     "[🏫Middelbare school ] 🏫 Middelbare school · vwoJaar 4 van 6 · 🧬 Natuur & Gezondheid · gemiddeld 9,3📖 Nederlands1"
+    ]
+   },
+   "Ziggo": {
+    "n": 5,
+    "ex": [
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome₺ 1.488•••🤘Metalconcert₺ 912•••🎻Klassiek concert₺ 996•••🎷",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome₺ 1.656•••🤘Metalconcert₺ 1.008•••🎻Klassiek concert₺ 1.104•",
+     "[🎤ConcertenVan jazzc] Concerten🎤Popconcert in de Ziggo Dome₺ 1.968•••🤘Metalconcert₺ 1.200•••🎻Klassiek concert₺ 1.308•"
+    ]
+   },
+   "hbo": {
+    "n": 5,
+    "ex": [
+     "andmacht, Marine, Luchtmacht of Marechaussee🎓OpleidingMbo, hbo, universiteit of avondschool📞UitzendbureauLaat een recruiter iets",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma",
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Vwo"
+    ]
+   },
+   "uwv": {
+    "n": 4,
+    "ex": [
+     "akker₺ 495.396 per jaar📖Bijlesdocent₺ 550.440 per jaar🏗️Bouwvakker₺ 568.788 per jaar⚡Elektricien₺ 605.484 per jaar🫂Ggz-begeleid",
+     "612.372 per jaar📐Bouwkundig tekenaar₺ 699.852 per jaar🏗️Bouwvakker₺ 677.988 per jaar📷Fotograaf₺ 612.372 per jaar🫂Ggz-begeleide",
+     "oen per jaar📐Bouwkundig tekenaar₺ 1,1 miljoen per jaar🏗️Bouwvakker₺ 1,06 miljoen per jaar⚡Elektricien₺ 1,13 miljoen per jaar🫂Gg"
+    ]
+   },
+   "Koninklijke": {
+    "n": 8,
+    "ex": [
+     "en piloten volgt later een zware selectie.Krijgsmachtdelen🪖Koninklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninkl",
+     "inklijke LandmachtInfanterie, Cavalerie, Artillerie, Genie…⚓Koninklijke MarineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst",
+     "arineVloot, Mijnenbestrijding, Duikdienst, Onderzeedienst…✈️Koninklijke LuchtmachtGrondpersoneel, Luchtverdediging, Helikopterpilo"
+    ]
+   },
+   "ns-": {
+    "n": 2,
+    "ex": [
+     "likopterpiloot, Gevechtspiloot…🛂Koninklijke MarechausseeGrens- en luchthavenbewaking, Militaire politie, Beveiliging Koninklijk H"
+    ]
+   },
+   "Mbo": {
+    "n": 1,
+    "ex": [
+     "[🎓OpleidingMbo, hbo,] Opleiding kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Vwo"
+    ]
+   },
+   "Vwo": {
+    "n": 1,
+    "ex": [
+     "g kiezen🏫Mbo, hbo of universiteitKies een studieDiploma's📜Vwo"
+    ]
+   },
+   "ASML": {
+    "n": 8,
+    "ex": [
+     "exfonds7% per jaar gemiddeld · risico gemiddeld₺ 0Aandelen🔬ASMLGem. 12% per jaar · risico gemiddeld · 1% dividend🛢️ShellGem. 6% "
+    ]
+   },
+   "Heineken": {
+    "n": 8,
+    "ex": [
+     "d🛢️ShellGem. 6% per jaar · risico gemiddeld · 4% dividend🍺HeinekenGem. 5% per jaar · risico laag · 2% dividend💡PhilipsGem. 3% p"
+    ]
+   },
+   "Ahold": {
+    "n": 8,
+    "ex": [
+     "deld · 2.5% dividend💳AdyenGem. 11% per jaar · risico hoog🛒Ahold DelhaizeGem. 5% per jaar · risico laag · 3.5% dividend🍎AppleGem"
+    ]
+   },
+   "Pinkpop": {
+    "n": 12,
+    "ex": [
+     "n en vrije tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️U",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · ₺ 3.300•••🌾LowlandsAlterna",
+     "[🎪FestivalsPinkpop, ] Festivals🎸PinkpopRock en pop · ₺ 3.300•••🌾LowlandsAlternatief en indie · ₺ 4.77"
+    ]
+   },
+   "Lowlands": {
+    "n": 8,
+    "ex": [
+     "e tijd🍸NachtlevenClubs, bars en kroegen🎪FestivalsPinkpop, Lowlands, Tomorrowland🎤ConcertenVan jazzclub tot stadion🍽️Uit etenVa",
+     "ivalsPinkpop, ] Festivals🎸PinkpopRock en pop · ₺ 3.300•••🌾LowlandsAlternatief en indie · ₺ 4.776•••🪩MysterylandDance en techno ",
+     "ivalsPinkpop, ] Festivals🎸PinkpopRock en pop · ₺ 3.936•••🌾LowlandsAlternatief en indie · ₺ 5.688•••🪩MysterylandDance en techno "
+    ]
+   },
+   "Ajax": {
+    "n": 6,
+    "ex": [
+     "n] Gokken⚽SportweddenschapKies een wedstrijd.FC Barcelona – Ajax1: 1.51× · X: 3.3× · 2: 6.04×Real Madrid – Liverpool1: 1.69× · X: ",
+     "enschappen] Gokken⚽SportweddenschapKies een wedstrijd.PSV – Ajax1: 1.36× · X: 3.3× · 2: 11.06×AZ – Ajax1: 2× · X: 3.3× · 2: 3.06×M",
+     " een wedstrijd.PSV – Ajax1: 1.36× · X: 3.3× · 2: 11.06×AZ – Ajax1: 2× · X: 3.3× · 2: 3.06×Manchester City – Ajax1: 3× · X: 3.3× · "
+    ]
+   },
+   "Feyenoord": {
+    "n": 2,
+    "ex": [
+     "drid – Liverpool1: 1.69× · X: 3.3× · 2: 4.26×FC Barcelona – Feyenoord1: 2.57× · X: 3.3× · 2: 2.29×Annuleren",
+     "FC Utrecht – FC Barcelona1: 2.04× · X: 3.3× · 2: 2.99×PSV – Feyenoord1: 1.55× · X: 3.3× · 2: 5.52×FC Twente – FC Barcelona1: 1.59×"
+    ]
+   },
+   "PSV": {
+    "n": 3,
+    "ex": [
+     "rtweddenschappen] Gokken⚽SportweddenschapKies een wedstrijd.PSV – Ajax1: 1.36× · X: 3.3× · 2: 11.06×AZ – Ajax1: 2× · X: 3.3× · 2: ",
+     "trijd.FC Utrecht – FC Barcelona1: 2.04× · X: 3.3× · 2: 2.99×PSV – Feyenoord1: 1.55× · X: 3.3× · 2: 5.52×FC Twente – FC Barcelona1:",
+     "rijd.AZ – Ajax1: 2.08× · X: 3.3× · 2: 2.9×Manchester City – PSV1: 2.38× · X: 3.3× · 2: 2.47×Liverpool – Ajax1: 2.74× · X: 3.3× · 2"
+    ]
+   },
+   "eigen risico": {
+    "n": 2,
+    "ex": [
+     "fne Demir heeft 320 van de 600 zetels. Het kabinet verlaagt eigen risico in de zorg naar normaal en versterkt bescherming huurders"
+    ]
+   },
+   "Utrecht": {
+    "n": 1,
+    "ex": [
+     "eddenschappen] Gokken⚽SportweddenschapKies een wedstrijd.FC Utrecht – FC Barcelona1: 2.04× · X: 3.3× · 2: 2.99×PSV – Feyenoord1: 1"
+    ]
+   },
+   "aow": {
+    "n": 4,
+    "ex": [
+     "net versterkt bescherming huurders naar normaal en verlaagt aow-leeftijd naar 66 jaar.OK",
+     "if Arslan heeft 315 van de 600 zetels. Het kabinet verhoogt aow-leeftijd naar 67 jaar en verlaagt vermogensbelasting naar 0,8%.OK",
+     "net versterkt bescherming huurders naar normaal en verlaagt aow-leeftijd naar 66 jaar."
+    ]
+   }
+  }
+ }
+}

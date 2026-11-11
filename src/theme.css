@@ -1,0 +1,53 @@
+/* ===== Levensloop v2 · alleen kleuren (lichtblauw, fris), indeling = v1 ===== */
+:root{--brand:#2b9cf2;--brand-2:#1477c8;--name:#1477c8;--row-ink:#1477c8;--row-line:#dbe6f1;--cream:#ffffff;--cream-line:#e3ebf4;--track:#e2ebf5;
+ --bluebar:linear-gradient(180deg,#45adf6,#2b9cf2);--btn-blue:#2b9cf2;--ios-blue:#2b9cf2;--tab:#ffffff;--tab-2:#e3f2fe;--muted:#6b7a90;--ink:#1f2a3c;--line:#e3ebf4;
+ --pop-red:#2b9cf2;--pop-ink:#1f2a3c;--pop-bg:#f2f8fd}
+/* bovenbalk */
+#scr-game .appbar{background:#eef1f5;color:#1477c8}
+#scr-game .appbar .wordmark{color:#1477c8}
+#scr-game .appbar .ring{border-color:#2b9cf2}
+#scr-game .appbar .iconbtn svg{fill:#1477c8}
+#scr-game .appbar-r{background:#dfeefb;color:#1477c8}
+/* profiel */
+.prof{background:#f4f6f9;border-bottom-color:#e1e6ed}
+#scr-game .prof .sub{color:#6b7a90}
+#scr-game .prof .money b{color:#17a35a}
+#scr-game .prof .money small{color:#97a3b5}
+/* logboek */
+#log{background:#fff}
+.age-h b{color:#1477c8}
+.age-h span{background:#e3f2fe;color:#1477c8}
+.ln{color:#1f2a3c}
+.ln.good{color:#15803d}.ln.bad{color:#d64545}
+.ln.sys{color:#6b7a90}
+/* onderste balk */
+#scr-game .tabbar{background:#eef1f5;box-shadow:inset 0 1px 0 #dde3eb}
+#scr-game .tabbar>button{color:#3d4a60;border-color:#dde3eb}
+#scr-game .tabbar>button:active{background:#f2f8fd}
+#t-job .tic-work{background:#ff9f2e}#t-job.school .tic-school{background:#ff9f2e}
+#t-assets .tic{background:#22c06b}#t-rel .tic{background:#ff5f8f}#t-act .tic{background:#4fb3ff}
+#scr-game .agebig{background:radial-gradient(circle at 50% 28%,#4ce08a 0%,#22b864 58%,#16a85a 100%)}
+#scr-game .backbtn{background:#ff5a5f}
+/* balkjes */
+#stats.srows{background:#f4f6f9}
+.srow .sl{color:#2d3a52}
+.srow .sb{background:#e1e7ef}
+.srow .sv{background:#e1e7ef;color:#1f2a3c}
+/* menu's */
+.shead{background:#d6ecfd;color:#1477c8}
+/* ===== overige schermen: alleen kleuren ===== */
+/* startscherm + Mijn levens */
+.brand-mark h1{color:#1477c8}
+#scr-start,#scr-create{background:#eef1f5}
+.savecard{background:#fff}
+.savecard b{color:#1f2a3c}
+/* pop-ups en minigames */
+.mcard .pbody .btn.ghost{color:#1477c8}
+.band{background:linear-gradient(90deg,rgba(43,156,242,0) 0%,rgba(43,156,242,.3) 40%,#2b9cf2 82%)}
+.mhead{background:#2b9cf2;color:#fff}
+.mhead.dark{background:linear-gradient(180deg,#45adf6,#1477c8)}
+.dodge{background:#34506e}.react{background:#2c4866}.code b{background:#1d3a5c}
+/* donkere menu's (misdaad e.d.) */
+.ptbar.dark{background:#10243b}
+/* doodsscherm */
+:root{--grave:#14304f;--stone:#a3adb8;--stone-2:#8e99a6}

@@ -1,0 +1,204 @@
+[0 big] Je bent geboren in Eindhoven, Nederland. Je bent een jongen: Thijmen Jansen.
+[0] Je moeder is Fleur Mulder (34), chirurg. Je vader is Thijs Jansen (39), chirurg.
+[1 sys] De hypotheekrente stijgt naar 4,4%.
+[1] Griep: Na een week ben je er weer.
+[2 sys] De economie groeit weer.
+[2 sys] De hypotheekrente daalt naar 3,9%.
+[2] Je eerste stapjes: Kruipen gaat sneller. Lopen komt later wel.
+[2] Je eerste woordje: Je vader filmt het en stuurt het naar de hele familie.
+[3 sys] Een doorbraak in kunstmatige intelligentie verandert alles. Bedrijven zetten massaal AI in.
+[3 sys] Het kabinet kiest: een ai-belasting.
+[3 sys] De centrale bank verhoogt de rente naar 3%.
+[3 sys] Verkiezingen voor de Tweede Kamer: Partij voor de Vrijheid wordt de grootste met 25 zetels (Partij voor de Vrijheid 25, D66 24, VVD 23).
+[3] Een doorbraak in kunstmatige intelligentie verandert alles. Bedrijven zetten massaal AI in. Het kabinet kiest: een ai-belasting.
+[3] Kwijt in de supermarkt: Ze roepen je ouders om. Slim gedaan.
+[4 sys] De economie stabiliseert.
+[4 sys] De centrale bank verlaagt de rente naar 1,75%.
+[4] Je gaat naar de basisschool.
+[4 sys] De hypotheekrente daalt naar 3,4%.
+[4] Een nachtmerrie: Er ligt alleen een sok. Je bent een held.
+[5 sys] De economie groeit weer.
+[5 sys] De centrale bank verhoogt de rente naar 2,25%.
+[5] Waterpokken: Zwaar, maar het geneest netjes.
+[5] Logeren bij opa en oma: Jullie bakken drie bakplaten vol. Isa laat je overal van proeven.
+[6 sys] De centrale bank verhoogt de rente naar 2,75%.
+[6] Je eerste tand is eruit. De tandenfee legt geld onder je kussen.
+[7 sys] Verkiezingen voor de Tweede Kamer: D66 wordt de grootste met 26 zetels (D66 26, VVD 26, Partij voor de Vrijheid 20).
+[7 sys] De hypotheekrente stijgt naar 4,2%.
+[7] Je verjaardagsfeest: Klein, maar gezellig.
+[8 sys] De economie stabiliseert.
+[8 sys] De centrale bank verlaagt de rente naar 1,75%.
+[8 sys] De hypotheekrente daalt naar 3,7%.
+[8 good] Je bent lid geworden van Hockeyclub Eindhoven.
+[8] Sportclub: Je hockeyteam wordt je tweede familie.
+[8] Gevallen: Hij blijkt gebroken en groeit scheef aan elkaar.
+[8] Een huisdier: Je ouders zeggen nee. Je mokt de hele dag.
+[9 sys] De economie groeit weer.
+[9 sys] De centrale bank verhoogt de rente naar 2,25%.
+[9 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 4 doelpunten. Een teleurstellend seizoen.
+[10 sys] De centrale bank verhoogt de rente naar 3%.
+[10 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 4 doelpunten. Een teleurstellend seizoen.
+[10] De buurman: Ontploffing. Je wenkbrauwen zijn weg.
+[11 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 9 doelpunten. Een teleurstellend seizoen.
+[11 sys] Verkiezingen voor de Tweede Kamer: D66 wordt de grootste met 25 zetels (D66 25, VVD 24, Partij voor de Vrijheid 23).
+[11 sys] De hypotheekrente stijgt naar 4,7%.
+[11] Griep: Rust, veel drinken en paracetamol. Je knapt snel op.
+[11] Rekenwedstrijd: Je eindigt in de middenmoot.
+[12 bad] Je oma Iris is overleden, 85 jaar oud.
+[12 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 5 doelpunten. Een teleurstellend seizoen.
+[12] Spreekbeurt: De juf snapt er niks van. Een 6.
+[12 big] Je eindtoetsscore is 511. Je basisschooladvies is havo. Je gaat naar de middelbare school.
+[13 sys] De economie stabiliseert.
+[13 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 4 doelpunten. Een teleurstellend seizoen.
+[13] Schatkaart: Een boswachter jaagt je weg.
+[13] Wiskunde 7,1 · Nederlands 7,2 · Engels 4,9 · Biologie 8,2 · Geschiedenis 6,5 · Gym 6,3. Je gaat over naar jaar 2!
+[14 sys] AI-revolutie: de crisis is voorbij.
+[14 sys] De economie groeit weer.
+[14 sys] De centrale bank verhoogt de rente naar 3,75%.
+[14 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 6 doelpunten. Een teleurstellend seizoen.
+[14 sys] De hypotheekrente stijgt naar 4,9%.
+[14] Muziekles: Muziek is niks voor jou.
+[14] Je wordt gepest: Jens moet bij de directeur komen en laat je voortaan met rust.
+[14] Viraal: Je gaat een maand niet de deur uit.
+[14] Wiskunde 7,2 · Nederlands 7,0 · Engels 4,4 · Biologie 8,9 · Geschiedenis 6,3 · Gym 5,3. Je was een bespreekgeval, maar de docenten geven je een kans. Je gaat over naar jaar 3!
+[15 sys] De centrale bank verhoogt de rente naar 4,5%.
+[15 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 7 doelpunten. Een teleurstellend seizoen.
+[15 sys] Verkiezingen voor de Tweede Kamer: VVD wordt de grootste met 24 zetels (VVD 24, GroenLinks-PvdA 24, D66 23).
+[15 sys] De hypotheekrente stijgt naar 5,7%.
+[15] Geluk: Je wast drie keer.
+[15] Iemand in het water: De hulp komt te laat. Dit laat je nooit meer los.
+[15] Wiskunde 7,6 · Nederlands 7,3 · Engels 4,1 · Biologie 8,4 · Geschiedenis 6,0 · Gym 5,2. Je was een bespreekgeval, maar de docenten geven je een kans. Je gaat over naar jaar 4!
+[15] Profiel kiezen: Je kiest Cultuur & Maatschappij: geschiedenis, frans, kunst. Taal, kunst en cultuur worden je ding.
+[16] 🏑 Seizoen bij Hockeyclub Eindhoven: 8 doelpunten. Een degelijk seizoen.
+[16 sys] De hypotheekrente stijgt naar 6,5%.
+[16] Vrijwilligers gezocht: Elke zaterdag help je pakketten inpakken.
+[16] Gevonden portemonnee: Niemand zag het.
+[16] Je ouders gaan scheiden: Je woont de ene week hier, de andere week daar. Wennen.
+[16] Nederlands 7,6 · Engels 4,0 · Geschiedenis 6,3 · Gym 5,0 · Frans 7,1 · Kunst 6,4. Je was een bespreekgeval, maar de docenten geven je een kans. Je gaat over naar jaar 5!
+[17 sys] Je moeder heeft een nieuwe partner: Luuk. Je hebt nu een stiefvader.
+[17 bad] Je oma Isa is overleden, 83 jaar oud.
+[17 bad] Je bent blijven zitten.
+[17] 🏑 Seizoen bij Hockeyclub Eindhoven: 10 doelpunten. Een degelijk seizoen.
+[17 sys] De hypotheekrente stijgt naar 6,9%.
+[17] Spieken: Iris krijgt straf. In de klas word je voortaan "de klikspaan" genoemd.
+[17] Afscheid: Je blijft weg. Het wordt je kwalijk genomen.
+[17] Dopingcontrole: Je monster is schoon. Niets aan de hand.
+[18 sys] De economie draait op volle toeren: hoogconjunctuur.
+[18 sys] De centrale bank verhoogt de rente naar 5,5%.
+[18 good] Je opa heeft je € 12.074 nagelaten.
+[18 bad] Je opa Sven is overleden, 83 jaar oud.
+[18] 🏑 Seizoen bij Hockeyclub Eindhoven: 11 doelpunten. Een degelijk seizoen.
+[18] Koningsdag: Je verkoopt je oude spullen voor € 137.
+[18] Afscheid: Je blijft weg. Het wordt je kwalijk genomen.
+[18 good big] Geslaagd voor je havo-examen met gemiddeld een 7,0!
+[18] Je huurt nu een studio voor € 958 per maand.
+[18] Je bent 18: Je eigen plek!
+[18] Geslaagd: Je reist een jaar door Zuid-Amerika.
+[19 sys] De economie stabiliseert.
+[19 sys] De centrale bank verlaagt de rente naar 4,5%.
+[19] 🏑 Seizoen bij Hockeyclub Eindhoven: 8 doelpunten. Een degelijk seizoen.
+[19 sys] De hypotheekrente daalt naar 6,4%.
+[19 sys] Dit jaar: € 26.307 inkomsten (uitkering € 26.307), € 32.021 uitgaven (levensonderhoud € 20.521, huur € 11.500).
+[19] Tv-quiz: Je kijkt vanaf de bank.
+[19 good] Je bent begonnen als model.
+[19] Modellenbureau: Je eerste shoot is al volgende week.
+[19] Je stemt op Partij voor de Dieren.
+[19] Verkiezingen voor de Tweede Kamer: Partij voor de Vrijheid wordt de grootste met 25 zetels (Partij voor de Vrijheid 25, D66 23, GroenLinks-PvdA 23). Het nieuwe kabinet bestaat uit Partij voor de Vrijheid, SGP, Forum voor Democratie, JA21, BoerBurgerBeweging, CDA, 50PLUS, DENK, ChristenUnie en VVD (93 zetels). Levi Visser wordt minister-president. Het kabinet verlaagt winstbelasting voor bedrijven naar 23% en verlaagt toptarief inkomstenbelasting naar 46,5%.
+[20 sys] De economie groeit weer.
+[20 sys] De centrale bank verlaagt de rente naar 4%.
+[20 good] 🏑 Seizoen bij Hockeyclub Eindhoven: 11 doelpunten. Een sterk seizoen.
+[20 sys] De hypotheekrente daalt naar 5,5%.
+[20 sys] Dit jaar: € 49.925 inkomsten (salaris € 49.925), € 39.197 uitgaven (levensonderhoud € 21.136, huur € 11.868, belasting € 6.192).
+[20] Functioneringsgesprek: Een kort en gezellig gesprek.
+[21 sys] De centrale bank verlaagt de rente naar 3,25%.
+[21] 🏑 Seizoen bij Hockeyclub Eindhoven: 8 doelpunten. Een degelijk seizoen.
+[21 sys] Dit jaar: € 51.279 inkomsten (salaris € 51.279), € 40.198 uitgaven (levensonderhoud € 21.601, huur € 12.153, belasting € 6.444).
+[21] Gevallen: Hij blijkt gebroken en groeit scheef aan elkaar.
+[21] Bijen: Je verkoopt potjes honing aan de buren.
+[21] Functioneringsgesprek: Je baas wil eerst zien dat je je eigen taken onder controle hebt.
+[21] Blessure: Je mist een groot deel van het seizoen, maar herstelt goed.
+[22 sys] De economie draait op volle toeren: hoogconjunctuur.
+[22 sys] De centrale bank verhoogt de rente naar 4%.
+[22 sys] Je collega Bram is vertrokken. Sophie komt erbij.
+[22 bad] Je seizoen valt grotendeels in het water door je blessure.
+[22] 🏑 Seizoen bij Hockeyclub Eindhoven: 10 doelpunten. Een degelijk seizoen.
+[22 sys] Dit jaar: € 52.652 inkomsten (salaris € 52.652), € 41.234 uitgaven (levensonderhoud € 22.098, huur € 12.457, belasting € 6.679).
+[22] Brand: De brandweer is snel ter plaatse. De hond wordt gered.
+[22] Een leuke collega: De koffieautomaat is nog nooit zo gezellig geweest.
+[22] Functioneringsgesprek: Je mag op cursus, op kosten van de baas.
+[23 sys] De centrale bank verhoogt de rente naar 4,75%.
+[23 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 7 doelpunten. Een teleurstellend seizoen.
+[23 sys] De hypotheekrente stijgt naar 6%.
+[23 sys] Dit jaar: € 54.751 inkomsten (salaris € 54.751), € 42.747 uitgaven (levensonderhoud € 22.783, huur € 12.868, belasting € 7.096).
+[23] Een behulpzame buur: Je bedankt hartelijk.
+[23] Op straat: Je krijgt een dankbare glimlach.
+[23] Functioneringsgesprek: Eerst je huidige werk op orde.
+[23] Je stemt op Volt.
+[23] Verkiezingen voor de Tweede Kamer: VVD wordt de grootste met 28 zetels (VVD 28, Partij voor de Vrijheid 27, D66 21). Het nieuwe kabinet bestaat uit VVD, CDA, Partij voor de Vrijheid en Forum voor Democratie (78 zetels). Julia van den Berg wordt minister-president. Het kabinet verhoogt eigen risico in de zorg naar 150% van normaal en verbiedt wiet weer.
+[24 sys] De economie stabiliseert.
+[24 sys] De centrale bank verlaagt de rente naar 2,75%.
+[24] 🏑 Seizoen bij Hockeyclub Eindhoven: 11 doelpunten. Een degelijk seizoen.
+[24 sys] De hypotheekrente daalt naar 5,2%.
+[24 sys] Dit jaar: € 56.907 inkomsten (salaris € 56.907), € 44.402 uitgaven (levensonderhoud € 23.535, huur € 13.318, belasting € 7.487, vermogensbelasting € 62).
+[24] Een inbreker: De volgende ochtend is je tv weg, en voor € 5.899 aan andere spullen.
+[24] Functioneringsgesprek: Je gaat vier dagen werken. Minder geld, meer leven.
+[25 sys] De centrale bank verlaagt de rente naar 1,75%.
+[25 bad] Je opa Thijs is overleden, 92 jaar oud.
+[25] 🏑 Seizoen bij Hockeyclub Eindhoven: 10 doelpunten. Een degelijk seizoen.
+[25 sys] De hypotheekrente daalt naar 4,3%.
+[25 sys] Dit jaar: € 49.159 inkomsten (salaris € 49.159), € 41.168 uitgaven (levensonderhoud € 23.794, huur € 13.491, belasting € 3.804, vermogensbelasting € 79).
+[25] Een vreemde bezoeker: Hij geeft je één tip: "Investeer in zonnepanelen." Dan is hij weg.
+[25] Iedereen ziek: Je doet wat redelijk is.
+[25] Functioneringsgesprek: "Misschien volgend jaar," zegt je leidinggevende.
+[26 sys] Kredietbeoordelaars verlagen de kredietwaardigheid van het land naar AA.
+[26 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 5 doelpunten. Een teleurstellend seizoen.
+[26 sys] De hypotheekrente daalt naar 3,5%.
+[26 sys] Dit jaar: € 49.826 inkomsten (salaris € 49.826), € 41.768 uitgaven (levensonderhoud € 24.056, huur € 13.666, belasting € 3.902, vermogensbelasting € 144).
+[26] Huurverhoging: Je betaalt voortaan meer.
+[26] Geluk: Niks gewonnen. Wel nog poep in je haar.
+[26] Functioneringsgesprek: Je mag op cursus, op kosten van de baas.
+[27 sys] De economie is in een recessie beland. Bedrijven schrappen banen.
+[27 sys] De centrale bank verlaagt de rente naar 0,75%.
+[27 sys] De werkloosheid stijgt naar 5,9%.
+[27] 🏑 Seizoen bij Hockeyclub Eindhoven: 8 doelpunten. Een degelijk seizoen.
+[27 sys] De hypotheekrente daalt naar 2,5%.
+[27 sys] Dit jaar: € 50.399 inkomsten (salaris € 50.399), € 43.311 uitgaven (levensonderhoud € 24.344, huur € 14.827, belasting € 3.938, vermogensbelasting € 201).
+[27] Reorganisatie: Je krijgt twee jaar WW: € 35.294 per jaar.
+[27] Je stemt op BoerBurgerBeweging.
+[27] Verkiezingen voor de Tweede Kamer: Partij voor de Vrijheid wordt de grootste met 31 zetels (Partij voor de Vrijheid 31, D66 29, VVD 16). Het nieuwe kabinet bestaat uit Partij voor de Vrijheid, SGP, Forum voor Democratie, JA21, BoerBurgerBeweging, CDA, 50PLUS, DENK en ChristenUnie (76 zetels). Levi Visser wordt minister-president. Het kabinet verlaagt erfbelasting naar afgeschaft en verlaagt winstbelasting voor bedrijven naar 20%.
+[28 sys] Beurskrach: de beurs verliest 24% in een jaar.
+[28] 🏑 Seizoen bij Hockeyclub Eindhoven: 11 doelpunten. Een degelijk seizoen.
+[28 sys] Dit jaar: € 35.294 inkomsten (ww-uitkering € 35.294), € 39.603 uitgaven (levensonderhoud € 24.490, huur € 14.946, vermogensbelasting € 167).
+[28] Redding: Je raakt zelf in de problemen. Gelukkig springt er nog iemand in en worden jullie allebei gered.
+[29 sys] De economie stabiliseert.
+[29 sys] De centrale bank verhoogt de rente naar 1,5%.
+[29 bad] Je WW-uitkering is afgelopen.
+[29 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 8 doelpunten. Een teleurstellend seizoen.
+[29 sys] De hypotheekrente stijgt naar 2,8%.
+[29 sys] Dit jaar: € 35.294 inkomsten (ww-uitkering € 35.294), € 39.638 uitgaven (levensonderhoud € 24.515, huur € 14.991, vermogensbelasting € 132).
+[29] Telefoontje van "de bank": Oplichting! Je bent € 36.658 kwijt.
+[30] 🏑 Seizoen bij Hockeyclub Eindhoven: 9 doelpunten. Een degelijk seizoen.
+[30 sys] Dit jaar: € 33.033 inkomsten (uitkering € 33.033), € 40.208 uitgaven (levensonderhoud € 24.932, huur € 15.276).
+[30] Huisgenoot: Je bent de afwasheld van het huis.
+[30] Realityshow: Je privacy is je lief.
+[30] De buren: Ze bieden excuses aan en zetten de muziek zachter.
+[31 sys] Kredietbeoordelaars verlagen de kredietwaardigheid van het land naar A.
+[31 bad] Je tante Iris is overleden, 65 jaar oud.
+[31 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 7 doelpunten. Een teleurstellend seizoen.
+[31 sys] Dit jaar: € 33.455 inkomsten (uitkering € 33.455), € 40.721 uitgaven (levensonderhoud € 25.231, huur € 15.490).
+[31] Je jaarafrekening valt mee: je krijgt € 600 terug.
+[31] Je stemt op VVD.
+[31] Verkiezingen voor de Tweede Kamer: D66 wordt de grootste met 31 zetels (D66 31, Partij voor de Vrijheid 20, GroenLinks-PvdA 20). Het nieuwe kabinet bestaat uit D66, Volt, GroenLinks-PvdA, Partij voor de Dieren en VVD (76 zetels). Julia Visser wordt minister-president. Het kabinet legaliseert wiet en verlaagt defensiebudget naar 2% van het bbp.
+[32 sys] De centrale bank verhoogt de rente naar 2,25%.
+[32] 🏑 Seizoen bij Hockeyclub Eindhoven: 11 doelpunten. Een degelijk seizoen.
+[32 sys] De hypotheekrente stijgt naar 3,9%.
+[32 sys] Dit jaar: € 34.049 inkomsten (uitkering € 34.049), € 41.444 uitgaven (levensonderhoud € 25.660, huur € 15.784).
+[32] Last-minute aanbieding: Je blijft thuis.
+[32] Koningsdag: Je hoort de muziek tot diep in de nacht.
+[33 sys] De economie groeit weer.
+[33 bad] Je stiefvader Luuk is overleden, 70 jaar oud.
+[33] 🏑 Seizoen bij Hockeyclub Eindhoven: 7 doelpunten. Een degelijk seizoen.
+[33 sys] Dit jaar: € 34.926 inkomsten (uitkering € 34.926), € 42.511 uitgaven (levensonderhoud € 26.301, huur € 16.210).
+[33 bad] Na zeven rondes staat De overvaller er beter voor. De overvaller slaat je neer en vlucht.
+[34 bad] 🏑 Seizoen bij Hockeyclub Eindhoven: 6 doelpunten. Een teleurstellend seizoen.
+[34 sys] Dit jaar: € 35.651 inkomsten (uitkering € 35.651), € 43.394 uitgaven (levensonderhoud € 26.827, huur € 16.567).

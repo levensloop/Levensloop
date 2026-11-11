@@ -1,0 +1,73 @@
+<div id="app">
+  <section id="scr-start" class="screen">
+    <div class="scroll gut">
+      <div class="brand-mark">
+        <div class="timeline-deco" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <h1>Levensloop</h1>
+        <p>Leef een heel leven, jaar voor jaar of maand voor maand. Elke keuze telt.</p>
+      </div>
+      <button class="btn go" id="btn-new">Nieuw leven beginnen</button>
+      <div>
+        <p class="sec-l" style="margin-bottom:8px">Mijn levens</p>
+        <div id="saves"></div>
+      </div>
+      <p class="sync" id="sync">Opslaan op dit apparaat</p>
+    </div>
+  </section>
+
+  <section id="scr-create" class="screen" hidden>
+    <div class="topbar gut">
+      <button class="iconbtn" id="c-back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M15.4 4.6 8 12l7.4 7.4-1.8 1.8L4.4 12l9.2-9.2z"/></svg></button>
+      <h2>Nieuw leven</h2>
+      <button class="iconbtn" id="c-rand" aria-label="Alles willekeurig"><svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2.5 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM7.5 15a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg></button>
+    </div>
+    <div class="scroll gut cbody" id="cbody"></div>
+  </section>
+
+  <section id="scr-game" class="screen" hidden>
+    <div class="appbar gut">
+      <button class="iconbtn ring" id="h-menu" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16v2.4H4zm0 4.8h16v2.4H4zm0 4.8h16V18H4z"/></svg></button>
+      <span class="wordmark">Levensloop</span>
+      <span class="appbar-r" id="h-year"></span>
+    </div>
+    <header class="prof gut">
+      <button class="who" id="h-who" aria-label="Profiel">
+        <span class="face" id="h-av"></span>
+        <span class="who-t"><span class="nm"><span id="h-flag"></span> <span id="h-name"></span></span><span class="sub" id="h-sub"></span></span>
+      </button>
+      <div class="money"><b id="h-money"></b><small>Saldo</small></div>
+    </header>
+    <main id="log" class="scroll gut" aria-live="polite"></main>
+    <footer class="bottom2">
+      <nav class="tabbar">
+        <button id="t-job"><span class="tic tic-school"><svg viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2V17l7 4 7-4v-3.8L12 17z"/></svg></span><span class="tic tic-work"><svg viewBox="0 0 24 24"><path d="M9 6V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h4a2 2 0 0 1 2 2v4H3V8a2 2 0 0 1 2-2zm2 0h2V5h-2zM3 13.5h8V15h2v-1.5h8V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>Beroep</button>
+        <button id="t-assets"><span class="tic"><svg viewBox="0 0 24 24"><path d="M9 2.5h6l-1.6 3.2c3.9 1.6 6.6 5.8 6.6 9.8 0 3.6-2.8 6-8 6s-8-2.4-8-6c0-4 2.7-8.2 6.6-9.8zm2.2 8.3v1c-1.4.3-2.3 1.2-2.3 2.4 0 1.5 1.2 2.1 2.7 2.4 1 .2 1.3.4 1.3.8s-.4.7-1.2.7c-.9 0-1.5-.3-2-.9l-1 1.1c.6.6 1.4 1 2.4 1.1v1h1.6v-1c1.4-.3 2.3-1.2 2.3-2.4 0-1.5-1.1-2.1-2.7-2.4-1-.2-1.3-.4-1.3-.8 0-.3.4-.6 1-.6.8 0 1.3.3 1.7.7l1-1.1c-.5-.5-1.2-.9-2-1v-1z"/></svg></span>Bezit</button>
+        <div class="agewrap">
+          <button id="t-age" class="agebig" aria-label="Leeftijd verder"><svg viewBox="0 0 24 24"><path d="M10.4 3h3.2v7.4H21v3.2h-7.4V21h-3.2v-7.4H3v-3.2h7.4z"/></svg><span id="t-age-l">Leeftijd</span></button>
+          <button id="t-back" class="backbtn" aria-label="Terugspoelen"><b>−</b><span>Terug</span></button>
+        </div>
+        <button id="t-rel"><span class="tic"><svg viewBox="0 0 24 24"><path d="M12 21s-7.6-4.7-9.6-9.4C1 8.3 3.2 4.8 6.7 4.8c2 0 3.5 1.1 5.3 3.1 1.8-2 3.3-3.1 5.3-3.1 3.5 0 5.7 3.5 4.3 6.8C19.6 16.3 12 21 12 21z"/></svg></span>Relaties</button>
+        <button id="t-act"><span class="tic"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.4"/><circle cx="12" cy="12" r="2.4"/><circle cx="19" cy="12" r="2.4"/></svg></span>Activiteiten</button>
+      </nav>
+      <button id="stats" class="srows gut" aria-label="Bekijk profiel"></button>
+    </footer>
+  </section>
+
+  <section id="scr-death" class="screen" hidden>
+    <div class="scroll" id="death"></div>
+  </section>
+</div>
+
+<div id="sheet" class="panel" hidden>
+  <div class="panel-in" role="dialog" aria-modal="true" aria-labelledby="sheet-t">
+    <header class="prof gut" id="sheet-prof"></header>
+    <div class="ptbar gut" id="sheet-bar">
+      <button class="xbtn" id="sheet-x" aria-label="Sluiten"><svg viewBox="0 0 24 24"><path d="M5 2.9 12 9.9l7-7L21.1 5l-7 7 7 7-2.1 2.1-7-7-7 7L2.9 19l7-7-7-7z"/></svg></button>
+      <h2 id="sheet-t"></h2>
+      <span id="sheet-en" class="ptbar-en"></span>
+    </div>
+    <div class="pscroll" id="sheet-b"></div>
+  </div>
+</div>
+<div id="modal" class="overlay center" hidden><div class="mcard" id="mcard" role="dialog" aria-modal="true"></div></div>
+<div id="toast" role="status"></div>

@@ -1,0 +1,4 @@
+/* iPhone-app: het spel vult het hele venster; onderin vangt het spel de thuisbalk zelf op */
+html{height:100%;overflow:hidden;background:var(--cream)}
+body{position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden}
+html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}

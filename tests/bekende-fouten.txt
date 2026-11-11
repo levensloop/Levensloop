@@ -1,0 +1,8 @@
+# Bekende JS-fouten die nog niet zijn opgelost. tests/run.sh en migratie.js laten deze niet rood worden.
+# Haal een regel weg zodra de fout is opgelost (fase 1), dan bewaakt de test dat hij niet terugkomt.
+# 1.1 zorgkosten onder de 18 (health.js)
+reading 'used'
+# 1.2 schoolscherm na school (school.js)
+subs is not iterable
+# 1.3 werk-minigame zonder baan (events2.js)
+reading 'perf'

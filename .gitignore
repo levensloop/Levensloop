@@ -1,0 +1,10 @@
+# gebouwd door build.sh
+/index.html
+/pwa/index.html
+/pwa/sw.js
+/pwa/manifest.webmanifest
+# testuitvoer
+/tests/out/
+/tests/review/shots/
+/tests/review/*.json
+node_modules/
