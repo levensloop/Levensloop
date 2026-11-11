@@ -35,6 +35,9 @@ node stats.js "$OUT/passive.json" "$OUT/monkey.json" | sed 's/^/   /'
 echo "== fouten en vastlopers"
 node check.js "$OUT/passive.json" "$OUT/monkey.json" || RC=1
 
+echo "== meetscherm en testapp"
+node diag.test.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
+
 echo "== migratie van oude levens"
 node migratie.js || RC=1
 

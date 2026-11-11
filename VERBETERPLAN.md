@@ -9,7 +9,7 @@ Dit plan is bedoeld om door Claude in een nieuwe chat te worden uitgevoerd. Lees
 | Fase | Stand |
 |---|---|
 | 0 Veiligstellen | Klaar (11 nov 2026). Bron op branch `bron`, fixtures in `tests/fixtures/`, testcommando `bash tests/run.sh`. |
-| 2.1 Balk onderin | Bezig: meetscherm. |
+| 2.1 Balk onderin | Meetscherm en testapp gebouwd (`src/diag.js`, `pwa/test.html`); nog niet online. Wacht op Thijmens metingen op zijn iPhone, daarna één stand definitief maken. |
 
 ## Hoe je dit plan uitvoert
 

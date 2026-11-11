@@ -49,7 +49,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, assets, finance, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2.
+Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, assets, finance, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag.
 
 | Bestand | Inhoud |
 |---|---|
@@ -66,6 +66,7 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 | `mil*.js`, `war.js`, `occ.js` | leger, missies, oorlog, bezetting |
 | `eco*.js` | economie, rente, staatsschuld, wereldnieuws |
 | `coup.js`, `coup2.js` | staatsgreep en dictatuur |
+| `diag.js` | verborgen meetscherm (5× tikken op de versie onderaan het hoofdmenu): schermmaten, proefstanden A–E voor de indeling, hulplijnen. Stand bewaard onder `levensloop.layout`. |
 | `src/pwa/` | iPhone-app: `meta.html`, `fix.css`, `pwa.js` (updatebalk), `sw.tpl.js` (service worker), manifest |
 
 ## Belangrijkste bouwstenen
@@ -83,4 +84,5 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 - Sommige bestanden overschrijven functies uit eerdere bestanden (bijvoorbeeld `misRun` in `mil3.js` en wrappers om `EV.<id>.f`). Zoek op de functienaam in alle bestanden voordat je iets aanpast.
 - Veel regels zijn erg lang (ruim 1000 regels boven de 300 tekens). Zoek met `grep -o` en een stuk context in plaats van hele regels te lezen.
 - Bedragen worden als kommagetal bewaard. Rond af bij optellen.
+- `build.sh` maakt ook `pwa/test.html`: dezelfde app met statusbalk `black-translucent`, naam "LL test" en een eigen opslagsleutel (`levensloop.test.v1`), zodat Thijmen die los op zijn beginscherm kan zetten zonder zijn echte levens te raken.
 - De service worker cachet de app. Na een deploy ziet Thijmen een balk "Nieuwe versie · tik om bij te werken".

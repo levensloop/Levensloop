@@ -440,6 +440,7 @@ function sheetMain(el){
   row(s,{ic:'💀',t:'Begraafplaats',s:'Vergelijk je vorige levens',on:()=>openSheet('Begraafplaats',sheetCemetery,true)});
   row(s,{ic:'🌳',t:'Stamboom',s:`Generatie ${S.gen}`,on:()=>openSheet('Stamboom',sheetTree,true)});
   row(s,{ic:'🔎',t:'Profiel',s:'Vaardigheden, loopbaan, strafblad',on:()=>openSheet('Profiel',sheetProfile,true)});
+  versionLine(el);
 }
 function sheetLives(el){const s=sec(el,'');const ls=Object.values(STORE.lives).filter(l=>!l.done&&l.alive).sort((a,b)=>(b.updated||0)-(a.updated||0));
   for(const l of ls)row(s,{ic:l.id===S.id?'▶️':'🧑',t:`${l.p.first} ${l.p.last}`,s:`${Math.floor(l.m/12)} jaar · ${COUNTRIES[l.p.country].n} · generatie ${l.gen}${l.id===S.id?' · nu bezig':''}`,on:l.id===S.id?null:()=>{saveLife();closeSheet();loadLife(l.id)}})}
@@ -626,7 +627,7 @@ function migrate(s){if(s.energy==null)s.energy=12;s.cpi=s.cpi||1;s.econ=s.econ||
 function loadLife(id){S=STORE.lives[id];if(!S||S.done)return;migrate(S);Q=S.q||[];STORE.last=id;
   if(!S.alive){showDeath();return}show('game');render();if(Q.length)processQ()}
 /* ================= OPSLAAN ================= */
-const LS_KEY='levensloop.v1';let STORE={lives:{}};
+const LS_KEY=window.LEVENSLOOP_KEY||'levensloop.v1';let STORE={lives:{}};
 function meta(){if(!STORE.meta)STORE.meta={careers:[],ribbons:[]};STORE.meta.careers=STORE.meta.careers||[];STORE.meta.ribbons=STORE.meta.ribbons||[];return STORE.meta}
 function collectCareer(id){const M=meta();if(!M.careers.includes(id)){M.careers.push(id)}}
 function lsLoad(){try{const t=localStorage.getItem(LS_KEY);if(t){const d=JSON.parse(t);if(d&&d.lives)STORE=d}}catch(e){}}

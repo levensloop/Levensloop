@@ -8,3 +8,5 @@
 /tests/review/shots/
 /tests/review/*.json
 node_modules/
+/pwa/test.html
+/pwa/manifest-test.webmanifest
