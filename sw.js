@@ -1,5 +1,5 @@
 /* Levensloop service worker: bewaart de app op je telefoon zodat hij offline werkt */
-const VERSION='20261112-0026';
+const VERSION='20261116-2306';
 const CACHE='levensloop-'+VERSION;
 const FONTS='levensloop-fonts';
 const CORE=['./','./index.html','./manifest.webmanifest','./icons/apple-touch-icon.png','./icons/icon-192.png','./icons/icon-512.png'];

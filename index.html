@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <style>
 /* basis die de artifact-viewer anders zelf toevoegt */
-html{background:#0a57a6}
+html{background:#ffffff}
 body{margin:0;font:14px -apple-system,BlinkMacSystemFont,system-ui,sans-serif}
 img{max-width:100%}[hidden]{display:none!important}
 html,body{-webkit-text-size-adjust:100%;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
@@ -496,6 +496,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .rapport{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:4px}
 .rapport div{display:flex;justify-content:space-between;gap:8px;font-size:15px;border-bottom:.5px solid var(--sep);padding:4px 0}
 .rapport b{font-variant-numeric:tabular-nums}
+@keyframes tapfx{0%{transform:scale(1)}35%{transform:scale(.94)}100%{transform:scale(1)}}.tapfx{animation:tapfx .2s ease-out}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .choices .btn.sub{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;text-align:left;padding-block:9px}.choices .btn.sub .ctx{display:flex;flex-direction:column;gap:2px;min-width:0}.choices .btn.sub .ctx>span{font-weight:700}.cic{flex:none;width:42px;height:42px;border-radius:11px;background:#fff;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.12)}.cic .ico{width:36px;height:36px}.ico{display:block}.mic .ico{width:44px;height:44px;margin:auto}.ptitle .ico{width:48px;height:48px}.card h3 .ico{width:36px;height:36px;display:inline-block;vertical-align:-10px}.bface .ico,.face .ico{width:44px;height:44px}.choices .btn.sub small{font-size:13px;font-weight:500;opacity:.72;line-height:1.3}
 [hidden]{display:none!important}
@@ -632,6 +633,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
         <p class="sec-l" style="margin-bottom:8px">Mijn levens</p>
         <div id="saves"></div>
       </div>
+      <button class="btn ghost" id="btn-backup" style="margin-top:14px">🛟 Reservekopie</button>
       <p class="sync" id="sync">Opslaan op dit apparaat</p>
     </div>
   </section>
@@ -694,7 +696,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261112-0026';
+const APP_VERSION='20261116-2306';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -1298,7 +1300,7 @@ function newLife(o){
   L(`Je moeder is ${mom.first} ${mom.last} (${momAge}), ${mom.job}. Je vader is ${dad.first} ${dad.last} (${dadAge}), ${dad.job}.`);
   const sib=living(['broer','zus']);if(sib.length)L(sib.length===1?`Je hebt een oudere ${relWord(sib[0])}: ${sib[0].first}.`:`Je hebt ${sib.length} oudere ${sib.every(x=>x.role==='broer')?'broers':sib.every(x=>x.role==='zus')?'zussen':'broers en zussen'}: ${sib.map(s=>`${relWord(s)} ${s.first}`).join(', ').replace(/, ([^,]*)$/,' en $1')}.`);
   MS(`Geboren in ${o.city}, ${C().n}`,0);
-  S.energy=energyMax();S.cpi=1;S.econ={s:'normaal',y:0};
+  S.cpi=1;S.econ={s:'normaal',y:0};
   snap();
   return S;
 }
@@ -1331,7 +1333,7 @@ function advance(){
 }
 function snap(){
   if(S.m%12!==0||S.snaps.some(x=>x.m===S.m))return;
-  const c=Object.assign({},S);delete c.snaps;delete c.log;
+  const c=Object.assign({},S);delete c.snaps;delete c.log;if(c.flags&&c.flags.mk){c.flags=Object.assign({},c.flags);delete c.flags.mk}// huizenmarkt niet in de opname
   S.snaps.push({m:S.m,ll:S.log.length,d:JSON.stringify(c)});
   while(S.snaps.length>11)S.snaps.shift();
 }
@@ -1354,7 +1356,6 @@ function netWorth(){let n=S.money-S.debt-S.loan+(S.trust||0)+(S.swiss||0);for(co
 function sponsor(){if(S.foll<25000)return 0;const act=S.flags.postY!=null&&year()-S.flags.postY<=1;const eng=S.flags.eng??50;return Math.round(S.foll*.03*(eng/60)*(act?1:.25))}
 function taxOn(g){if(g<=0||(typeof noTax==='function'&&noTax()))return 0;const c=S.cpi||1;g/=c;const t=g<=38000?g*.3697:38000*.3697+(g-38000)*law('ib');const cred=Math.max(0,8000-Math.max(0,g-25000)*.08);return Math.max(0,t-cred)*c}
 function taxable(){let g=0;for(const [k,v] of incomeParts())if(['Salaris','Directeurssalaris','Militair salaris','Invaliditeitspensioen','Militaire uitkering','Werk voor de bezetter','WW-uitkering','Politieke functie','Lobbywerk','Commissariaten','Talkshowgast','Pensioen','Sponsordeals','Social media'].includes(k))g+=v;return g}
-function energyMax(){const a=ageY();if(a<4)return 3;let e=a<12?8:12;if(inJail())return 10;if(S.job&&!S.job.part)e-=3;else if(S.job)e-=1;if(S.edu.cur)e-=2;if(S.edu.stage==='basis'||S.edu.stage==='middel')e-=2;e-=Math.min(3,living('kind').filter(k=>pAge(k)<6).length);if(S.st.health>75)e+=2;if(S.st.health<30)e-=3;if(a>=70)e-=2;for(const b of S.biz)e-=1;return Math.max(3,e)}
 function econLabel(){const e=S.econ||{s:'normaal'};return {groei:'Hoogconjunctuur',normaal:'Stabiel',recessie:'Recessie'}[e.s]}
 const econ=()=>(S.econ&&S.econ.s)||'normaal';
 function incomeParts(){const a=S.m/12,out=[];
@@ -1442,7 +1443,6 @@ function birthday(){
   if(a===18&&S.home.k==='ouders'&&!inJail())Q.push({id:'s_18'});
   if(a===aowAge()&&S.job&&!S.job.part)Q.push({id:'s_pensioen'});
   if(a>=aowAge()&&!S.pension)setPension();
-  S.energy=energyMax();
   healthCheck(a,h0);
   if(a===18&&S.trust>0){cash(S.trust);L(`Je bent 18: het geld dat voor je vaststond (${fmt(S.trust)}) staat nu op je rekening.`,'good');S.trust=0}
   if(a===16&&S.flags.jeugd&&!S.job){setJob('voetbal',0);L('Je jeugdcontract gaat over in een profcontract!','good')}
@@ -1802,7 +1802,7 @@ const nl1=v=>(+v).toLocaleString('nl-NL',{minimumFractionDigits:1,maximumFractio
 const clampG=v=>Math.max(1,Math.min(10,Math.round(v*10)/10));
 const gradeAvg=()=>{const v=Object.values(S.edu.gr||{});return v.length?v.reduce((x,y)=>x+y,0)/v.length:6};
 const gradesPerf=()=>clamp(Math.round((gradeAvg()-1)/9*100));
-function mgQuiz(title,qs,cb,free){if(!free){if(!spendE(1))return;PREPAID=1}let i=0,ok=0,left=0,tk=0;
+function mgQuiz(title,qs,cb,free){let i=0,ok=0,left=0,tk=0;
   const step=()=>{clearInterval(tk);if(i>=qs.length){closeModal();cb(ok/qs.length);return}const [q,ans]=qs[i];const right=ans[0];left=12;
     modal({title,em:'📝',cat:`Vraag ${i+1} van ${qs.length}`,text:q,html:'<div class="timer"><i id="qt" style="width:100%;transition:width 1s linear"></i></div>',choices:ans.slice().sort(()=>R()-.5).map(a=>({t:a,on:()=>{if(a===right){ok++;toast('Goed!')}else toast(`Fout, het was: ${right}`);i++;step()}}))});
     tk=setInterval(()=>{if(!$('#qt')){clearInterval(tk);return}left--;const t=$('#qt');if(t)t.style.width=(left/12*100)+'%';if(left<=0){toast(`Te laat! Het was: ${right}`);i++;step()}},1000)};step()}
@@ -1832,7 +1832,7 @@ const WORKG={
  fame:[['Een journalist stelt een gemene vraag.',[['Met humor pareren',2],['"Geen commentaar"',1],['Boos weglopen',0]]],['Een fan wil een selfie terwijl je eet.',[['Vriendelijk na het eten',2],['Snel een foto',1],['Wegsturen',0]]]],
  politiek:[['Een journalist duikt in een oude tweet van je.',[['Excuses en uitleggen wat je nu vindt',2],['Ontkennen',0],['Een woordvoerder laten reageren',1]]],['Je partij wil dat je tegen je eigen plan stemt.',[['In gesprek gaan en een compromis zoeken',2],['Tegenstemmen',1],['Uit protest de zaal verlaten',0]]]]};
 const SIG={zorg:['🩺','Extra dienst draaien','Meer geld, maar zwaar'],horeca:['🍳','Iets nieuws bedenken','Een nieuw gerecht of idee voor de gasten'],tech:['🐞','Een lastig probleem oplossen','Een minigame van je brein'],kantoor:['📞','Klanten bellen','Kans op een bonus'],onderwijs:['📝','Lessen goed voorbereiden','Betere lessen, tevreden leiding'],handwerk:['🧰','Overuren maken','Extra geld'],fame:['🎤','Jezelf in de kijker spelen','Meer bekendheid'],politiek:['🗳️','Campagne voeren','De kiezers overtuigen']};
-function mgWork(cb){if(!spendE(1))return;PREPAID=1;const pool=WORKQ.concat(WORKG[jobGroup(S.job.id)]||[]).sort(()=>R()-.5).slice(0,4);let i=0,pts=0;
+function mgWork(cb){const pool=WORKQ.concat(WORKG[jobGroup(S.job.id)]||[]).sort(()=>R()-.5).slice(0,4);let i=0,pts=0;
   const step=()=>{if(i>=pool.length){closeModal();cb(pts/(pool.length*2));return}const [q,ans]=pool[i];modal({title:'Werkdag',em:jobEm(S.job.id),cat:`Situatie ${i+1} van ${pool.length}`,text:q,choices:ans.slice().sort(()=>R()-.5).map(([a,p])=>({t:a,on:()=>{pts+=p;i++;toast(p===2?'Sterk!':p===1?'Kan beter':'Oei');step()}}))})};step()}
 function workDay(){mgWork(sc=>doAct('Werkdag',()=>{const m_=use('werk');let d=Math.round((sc-.5)*18);if(d>0)d=Math.round(d*m_);(S.job&&(S.job.perf=clamp(S.job.perf+d)));hap(sc>=.75?2:sc<.4?-2:0);return sc>=.75?`Je hebt alles goed opgelost. Je baas is onder de indruk (prestaties +${d}).`:sc>=.5?`Een prima werkdag (prestaties ${d>=0?'+':''}${d}).`:`Een rommelige dag. Je baas heeft het gemerkt (prestaties ${d}).`},true,jobEm(S.job.id)))}
 function sigAction(){const g=jobGroup(S.job.id),[e,t]=SIG[g];
@@ -2551,7 +2551,7 @@ function raiseRent(p){const t=p.ten;modal({title:'Huur verhogen',em:'📈',cat:p
 function sellFlow(p){modal({title:'Verkopen',em:'🏷️',cat:p.name,text:`Geschatte waarde: ${fmt(p.value)}. Hoe wil je verkopen?`,choices:opts([
   {t:'🤵 Via een makelaar',s:'1,5% courtage, maar meer kijkers en betere biedingen',on:()=>{closeModal();askPrice(p,true)}},
   {t:'💻 Zelf verkopen via internet',s:'Geen kosten, minder kijkers',on:()=>{closeModal();askPrice(p,false)}}])})}
-function askPrice(p,mak){modal({title:'Vraagprijs',em:'🏷️',cat:p.name,text:'Welke vraagprijs zet je erop?',choices:opts([[.95,'Scherp geprijsd','Veel kijkers, kans op een biedoorlog'],[1,'Marktwaarde','Wat de makelaar adviseert'],[1.1,'Hoog inzetten','Minder kijkers, misschien een gek']].map(([f,t,s])=>({t:`${t}: ${fmt(Math.round(p.value*f/1000)*1000)}`,s,on:()=>{closeModal();if(!spendE(1))return;S.acts['vk'+p.id]=1;showOffers(p,mak,offersFor(p,mak,f))}})))})}
+function askPrice(p,mak){modal({title:'Vraagprijs',em:'🏷️',cat:p.name,text:'Welke vraagprijs zet je erop?',choices:opts([[.95,'Scherp geprijsd','Veel kijkers, kans op een biedoorlog'],[1,'Marktwaarde','Wat de makelaar adviseert'],[1.1,'Hoog inzetten','Minder kijkers, misschien een gek']].map(([f,t,s])=>({t:`${t}: ${fmt(Math.round(p.value*f/1000)*1000)}`,s,on:()=>{closeModal();S.acts['vk'+p.id]=1;showOffers(p,mak,offersFor(p,mak,f))}})))})}
 const BUYERS=['Een jong stel','Een gezin uit de buurt','Een belegger','Een starter','Een gepensioneerd stel','Een expat','Een gescheiden vader','Een projectontwikkelaar'];
 function offersFor(p,mak,f){const e=econ();let n=ri(0,2)+(mak?2:0)+(e==='groei'?2:e==='recessie'?-1:0)+(f<1?2:f>1?-2:0)+(p.cond>70?1:p.cond<35?-1:0);n=clamp(n,0,6);
   const pen=p.def.filter(d=>!d.fixed).reduce((a,d)=>a+d.cost,0)*.9,ten=p.ten?.9:1,out=[],who=BUYERS.slice().sort(()=>R()-.5);
@@ -3049,7 +3049,7 @@ function render(){
   if(!S)return;
   $('#h-av').innerHTML=playerFace();$('#h-flag').textContent=flag(S.p.country);$('#h-name').textContent=`${S.p.first} ${S.p.last}`;
   $('#h-sub').textContent=subtitle();
-  if(S.energy==null)S.energy=energyMax();$('#h-year').textContent=`${S.settings.mode==='month'?MONTHS[monthIdx()]+' ':''}${year()}`;
+  $('#h-year').textContent=`${S.settings.mode==='month'?MONTHS[monthIdx()]+' ':''}${year()}`;
   animMoney(S.money);$('#h-money').style.color=S.money<0?'var(--bad)':'';
   const h=S.st.happy;const rows=[['Geluk','happy',h>=75?'😄':h>=50?'🙂':h>=25?'😐':'😖'],['Gezondheid','health','❤️'],['Slimheid','smarts','💡'],['Uiterlijk','looks','🔥']];
   const vals={...S.st,fame:S.fame};if(S.fame>0)rows.push(['Roem','fame','⭐']);
@@ -3062,7 +3062,9 @@ function render(){
 }
 let shownMoney=null,moneyFor=null,moneyRaf=0,logSeen={id:null,n:0};
 const RM=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
-function haptic(ms){try{navigator.vibrate&&navigator.vibrate(ms||8)}catch(e){}}
+// trillen kan niet in een iPhone-webapp (navigator.vibrate doet daar niets); daarom veert de getikte knop even in (verbeterplan 2.4)
+let lastTapEl=null;document.addEventListener('pointerdown',e=>{lastTapEl=e.target},{capture:true,passive:true});
+function haptic(ms){try{if(RM)return;const b=lastTapEl&&lastTapEl.closest&&lastTapEl.closest('button,.mrow,.tile');if(!b)return;b.classList.remove('tapfx');void b.offsetWidth;b.classList.add('tapfx');setTimeout(()=>b.classList.remove('tapfx'),220)}catch(e){}}
 function animMoney(to){const el=$('#h-money');el.classList.toggle('long',Math.abs(to)>=1e6);if(moneyFor!==S.id){moneyFor=S.id;shownMoney=to;el.textContent=fmt(to);return}
   const from=shownMoney??to;shownMoney=to;cancelAnimationFrame(moneyRaf);if(RM||Math.abs(to-from)<1){el.textContent=fmt(to);return}
   const t0=performance.now(),d=650;const step=t=>{const k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)moneyRaf=requestAnimationFrame(step)};moneyRaf=requestAnimationFrame(step)}
@@ -3097,14 +3099,8 @@ const snapSt=()=>({h:S.st.happy,he:S.st.health,sm:S.st.smarts,lk:S.st.looks,m:S.
 function chipsFrom(b){const a=snapSt(),out=[];for(const [k,n] of [['h','Geluk'],['he','Gezondheid'],['sm','Slimheid'],['lk','Uiterlijk']]){const d=a[k]-b[k];if(d)out.push(`<span class="chip ${d>0?'up':'dn'}">${n} ${d>0?'+':''}${d}%</span>`)}
   const dm=a.m-b.m;if(Math.abs(dm)>=1)out.push(`<span class="chip ${dm>0?'up':'dn'}">${dm>0?'+':'-'}${fmt(Math.abs(dm))}</span>`);return out.join('')}
 function result(title,text,chips,next,o={}){modal({title,text,chips,cat:o.cat,em:o.em,person:o.person,green:o.green,choices:[{t:'OK',cls:'go',on:()=>{closeModal();next&&next()}}]})}
-let PREPAID=0;
-const FREE=new Set(['Keuring','Herstel','Huurverhoging','Kortverhuur','Gekocht!','Gekocht','Verkocht','Afgelost','Lening','Garage','Verhuisd','Verhuur','Winst uitkeren','Geld inleggen','Personeel','Spaarrekening','Indexfonds','Losse aandelen','Crypto','Pensioen','Thuisblijven','Werkplaats','Marketing','Testament','Uitzendbureau','Plan','Sponsordeal']);
-const ECOST={'Harder werken':2,'Harder studeren':2,'Harder leren':2,'Studentenleven':2,'Hard werken':2,'Tijd met iedereen':2,'Weekendje Ardennen':2,'Zon in Spanje':2,'Stedentrip New York':3,'Rondreis Japan':3,'Malediven':3,'Wereldreis van een jaar':6,'IVF':2,'Rechtszaak':2};
-const eCost=t=>FREE.has(t)?0:(ECOST[t]??1);
-function hasE(){return true}
-function spendE(){return true}
 const curCat=()=>sheetStack.length?sheetStack[sheetStack.length-1].title:'';
-function doAct(title,fn,logIt=true,em){const cat=curCat();const pre=PREPAID;const cost=pre?0:eCost(title);PREPAID=0;if(!spendE(cost))return;const b=snapSt();let r;BUY=1;try{r=fn()}catch(e){BUY=0;if(e===NOMONEY){toast(S.money<=0?'Je hebt geen geld. Dit kun je niet betalen.':`Te duur: je hebt maar ${fmt(S.money)}.`);haptic(30);return}throw e}BUY=0;if(r==null)return;if(logIt&&r)L(r);const ch=chipsFrom(b);checkAch();result(title,r,ch,()=>{if(!S.alive){closeSheet();afterQ();return}refreshSheet();render();saveLife();if(afterModal){const f=afterModal;afterModal=null;f()}},{cat,em})}
+function doAct(title,fn,logIt=true,em){const cat=curCat();const b=snapSt();let r;BUY=1;try{r=fn()}catch(e){BUY=0;if(e===NOMONEY){toast(S.money<=0?'Je hebt geen geld. Dit kun je niet betalen.':`Te duur: je hebt maar ${fmt(S.money)}.`);haptic(30);return}throw e}BUY=0;if(r==null)return;if(logIt&&r)L(r);const ch=chipsFrom(b);checkAch();result(title,r,ch,()=>{if(!S.alive){closeSheet();afterQ();return}refreshSheet();render();saveLife();if(afterModal){const f=afterModal;afterModal=null;f()}},{cat,em})}
 function ask(title,text,yes,fn,cls,em){modal({title,text,em,cat:curCat(),choices:[{t:yes,cls:cls||'bad',on:()=>{closeModal();fn()}},{t:'Annuleren',cls:'ghost',on:closeModal}]})}
 
 /* ---------- gebeurtenissen ---------- */
@@ -3123,7 +3119,7 @@ function processQ(){
   modal({title:e.t,text:txt,...meta,surprise:chs.length>1,choices:chs.map(ch=>({t:ch[0],on:()=>run(ch)}))});
 }
 function afterQ(){render();saveLife();if(!S.alive){showDeath();return}if(afterModal){const f=afterModal;afterModal=null;f()}}
-function onAge(){if(!S||!S.alive)return;if(Q.length){if($('#modal').hidden)processQ();return}PREPAID=0;haptic(12);closeSheet();advance();render();processQ()}
+function onAge(){if(!S||!S.alive)return;if(Q.length){if($('#modal').hidden)processQ();return}haptic(12);closeSheet();advance();render();processQ()}
 function babyModal(q){const k=P(q.c.id);const def=k.first;
   modal({title:q.c.adopt?'Adoptie':'Een baby!',em:'👶',cat:'Familie',text:q.c.adopt?`Je adopteert een ${k.g==='v'?'meisje':'jongen'} van ${pAge(k)} jaar. Hoe heet je kind?`:`${S.p.g==='v'?'Je bent bevallen van':partner()?partner().first+' is bevallen van':'Je hebt'} een ${k.g==='v'?'dochter':'zoon'}! Hoe noem je ${k.g==='v'?'haar':'hem'}?`,
     html:`<div class="inrow"><input class="inp" id="bname" maxlength="24" value="${he(def)}"><button class="btn ghost sm" id="brand" style="width:auto">🎲</button></div>`,
@@ -3354,7 +3350,7 @@ function dating(){if(inJail()){toast('Daten kan niet vanuit de gevangenis');retu
   if(!S.flags.pref){modal({title:'Daten',em:'❤️',cat:'Liefde',text:'Op wie val je?',choices:[['Mannen','mannen'],['Vrouwen','vrouwen'],['Iedereen','beide']].map(([t,v])=>({t,on:()=>{S.flags.pref=v;closeModal();dating()}}))});return}
   let n=0;const next=()=>{if(n++>=5){closeModal();toast('Genoeg geswiped voor nu');return}const c=candidate();
     modal({title:`${c.first} ${c.last}`,em:faceOf(c),cat:'Liefde',text:`${pAge(c)} jaar · ${c.job}. Houdt van ${TRAITS[c.tr]||'gezelligheid'}.`,html:`<div class="pstats"><span>Uiterlijk</span><i><b style="width:${c.looks}%;background:var(--good)"></b></i><span>Slimheid</span><i><b style="width:${c.smarts}%;background:var(--good)"></b></i></div>`,choices:[
-      {t:'Mee uit vragen',cls:'go',on:()=>{const p=clamp(.5+(S.st.looks-c.looks)/150+(S.st.happy-50)/300+S.fame/300+(S.money>50000?.05:0),.05,.95);closeModal();if(chance(p)){if(!spendE(1))return;dateGame(c)}else doAct('Daten',()=>{hap(-2);return `${c.first} heeft geen interesse.`},false,'💔')}},
+      {t:'Mee uit vragen',cls:'go',on:()=>{const p=clamp(.5+(S.st.looks-c.looks)/150+(S.st.happy-50)/300+S.fame/300+(S.money>50000?.05:0),.05,.95);closeModal();if(chance(p)){dateGame(c)}else doAct('Daten',()=>{hap(-2);return `${c.first} heeft geen interesse.`},false,'💔')}},
       {t:'Volgende',on:next},{t:'Stoppen',cls:'ghost',on:closeModal}]})};next()}
 
 /* ================= ACTIVITEITEN ================= */
@@ -3408,8 +3404,8 @@ function sheetFame(el){const jt=jobFameT();
 }
 function sheetIdentity(el){const s=sec(el,'');row(s,{ic:'🪪',t:'Naam veranderen',s:`${S.p.first} ${S.p.last}`,dots:true,on:()=>modal({title:'Nieuwe naam',em:'🪪',cat:'Identiteit',html:`<div class="inrow"><input class="inp" id="nf" value="${he(S.p.first)}" maxlength="24"><input class="inp" id="nl" value="${he(S.p.last)}" maxlength="28"></div>`,choices:opts([{t:'Opslaan',cls:'go',on:()=>{const f=$('#nf').value.trim(),l=$('#nl').value.trim();if(f)S.p.first=f;if(l)S.p.last=l;closeModal();L(`Je heet voortaan ${S.p.first} ${S.p.last}.`);render();refreshSheet();saveLife()}}])})})}
 function sheetLic(el){const s=sec(el,'');const a=ageY();
-  row(s,{ic:'🚗',t:'Rijbewijs',s:S.lic?'Je hebt je rijbewijs':a<17?'Vanaf 17 jaar':`Lessen en examen: ${fmt(2600)} · minigame`,dis:S.lic||a<17||S.money<2600,dots:true,on:()=>{if(!hasE())return;cash(-2600);mgDodge({title:'Rijexamen',desc:'Rijd veilig door het verkeer. Je mag maximaal één fout maken.',em:'🚗',me:'🚗',obs:['🚙','🚲','🚸','🚧'],secs:14,speed:.9},(h,tot)=>doAct('Rijexamen',()=>{if(h>=2){S.lic=true;hap(8);MS('Haalde het rijbewijs',1);return 'Geslaagd! Je hebt je rijbewijs.'}hap(-2);return 'Gezakt. De examinator schudt zijn hoofd.'},true,'🚗'))}});
-  row(s,{ic:'🏍️',t:'Motorrijbewijs',s:S.flags.motor?'Je hebt je motorrijbewijs':a<18?'Vanaf 18 jaar':`${fmt(2200)} · minigame`,dis:!!S.flags.motor||a<18||S.money<2200,dots:true,on:()=>{if(!hasE())return;cash(-2200);mgDodge({title:'Motorexamen',desc:'Slalom tussen de pionnen en het verkeer door.',em:'🏍️',me:'🏍️',obs:['🔶','🚗','🚧'],secs:12},(h,tot)=>doAct('Motorexamen',()=>{if(h>=2){S.flags.motor=1;hap(6);return 'Geslaagd!'}return 'Gezakt bij de uitwijkoefening.'},true,'🏍️'))}});
+  row(s,{ic:'🚗',t:'Rijbewijs',s:S.lic?'Je hebt je rijbewijs':a<17?'Vanaf 17 jaar':`Lessen en examen: ${fmt(2600)} · minigame`,dis:S.lic||a<17||S.money<2600,dots:true,on:()=>{cash(-2600);mgDodge({title:'Rijexamen',desc:'Rijd veilig door het verkeer. Je mag maximaal één fout maken.',em:'🚗',me:'🚗',obs:['🚙','🚲','🚸','🚧'],secs:14,speed:.9},(h,tot)=>doAct('Rijexamen',()=>{if(h>=2){S.lic=true;hap(8);MS('Haalde het rijbewijs',1);return 'Geslaagd! Je hebt je rijbewijs.'}hap(-2);return 'Gezakt. De examinator schudt zijn hoofd.'},true,'🚗'))}});
+  row(s,{ic:'🏍️',t:'Motorrijbewijs',s:S.flags.motor?'Je hebt je motorrijbewijs':a<18?'Vanaf 18 jaar':`${fmt(2200)} · minigame`,dis:!!S.flags.motor||a<18||S.money<2200,dots:true,on:()=>{cash(-2200);mgDodge({title:'Motorexamen',desc:'Slalom tussen de pionnen en het verkeer door.',em:'🏍️',me:'🏍️',obs:['🔶','🚗','🚧'],secs:12},(h,tot)=>doAct('Motorexamen',()=>{if(h>=2){S.flags.motor=1;hap(6);return 'Geslaagd!'}return 'Gezakt bij de uitwijkoefening.'},true,'🏍️'))}});
   row(s,{ic:'⛵',t:'Vaarbewijs',s:S.flags.vaar?'Je hebt je vaarbewijs':a<18?'Vanaf 18 jaar':fmt(400),dis:!!S.flags.vaar||a<18||S.money<400,dots:true,on:()=>doAct('Vaarbewijs',()=>{cash(-400);if(chance(.4+S.st.smarts/200)){S.flags.vaar=1;return 'Geslaagd voor je theorie-examen!'}return 'Net gezakt. Volgende keer beter.'},true,'⛵')})}
 function sheetMovies(el){const s=sec(el,'Wat draait er?');for(const [ic,t,txt] of [['💥','Actiefilm','Veel explosies, weinig verhaal.'],['😂','Komedie','Je lacht zo hard dat je popcorn morst.'],['👻','Horrorfilm','Je slaapt vannacht met het licht aan.'],['💕','Romantische film','Je pinkt een traantje weg.'],['🧸','Animatiefilm','Leuker dan verwacht.'],['📽️','Arthousefilm','Je snapt er niks van, maar voelt je cultureel.']])
   row(s,{ic,t,s:fmt(13),dis:S.money<13&&ageY()>=18,on:()=>doAct(t,()=>{if(ageY()>=18)cash(-13);const m=use('film');hap(ri(2,5)*m);return txt},true,ic)})}
@@ -3450,6 +3446,8 @@ function sheetMain(el){
   row(s,{ic:'💥',t:'Nieuw leven',s:'Bewaar dit leven en begin een nieuw',dots:true,on:()=>{saveLife();closeSheet();openCreate()}});
   row(s,{ic:'💾',t:'Leven opslaan',s:'Sla dit leven op',dots:true,on:()=>{saveLife();toast(CL.ready?'Opgeslagen in je account':'Opgeslagen op dit apparaat')}});
   row(s,{ic:'👥',t:'Lopende levens',s:'Laad een opgeslagen leven',on:()=>openSheet('Lopende levens',sheetLives,true)});
+  row(s,{ic:'🏠',t:'Startscherm',s:'Al je levens, de begraafplaats en een nieuw leven',on:()=>{saveLife();closeSheet();renderStart();show('start')}});
+  row(s,{ic:'🛟',t:'Reservekopie',s:'Bewaar je levens buiten de app, of zet ze terug',on:()=>openSheet('Reservekopie',sheetBackup,true)});
   s=sec(el,'Spel');
   row(s,{ic:'⏱️',t:'Tempo',s:S.settings.mode==='year'?'Per jaar (tik om te wisselen)':'Per maand (tik om te wisselen)',dots:true,on:()=>{S.settings.mode=S.settings.mode==='year'?'month':'year';render();refreshSheet();saveLife();toast(S.settings.mode==='year'?'Je speelt nu per jaar':'Je speelt nu per maand')}});
   row(s,{ic:'👨‍👩‍👧‍👦',t:'Grote familie',s:(S.settings.bigFam?'Aan':'Uit')+' · grootouders, ooms, tantes, neven, nichten, schoonfamilie (tik om te wisselen)',dots:true,on:()=>{S.settings.bigFam=S.settings.bigFam?0:1;if(S.settings.bigFam)ensureBigFam();refreshSheet();saveLife();toast(S.settings.bigFam?'Grote familie staat aan':'Grote familie staat uit')}});
@@ -3563,13 +3561,13 @@ function inherit(cid){
 function storyModal(r){modal({title:r.name,em:'📜',cat:`${r.by} · ${r.age} jaar`,html:r.story.map(p=>`<p style="font-size:15.5px;text-align:left;margin:0">${he(p)}</p>`).join('')+`<p style="margin:0"><b>Score ${r.score}${r.ribbon?' · '+he(r.ribbon):''}</b></p>`,choices:[{t:'Sluiten',cls:'ghost',on:closeModal}]})}
 
 /* ================= MINIGAMES ================= */
-function mgTap(title,desc,cb){if(!spendE(1))return;PREPAID=1;let n=0,started=false,done=false,t0=0,raf=0;
+function mgTap(title,desc,cb){let n=0,started=false,done=false,t0=0,raf=0;
   openRaw(`<div class="mhead dark"><small>Minigame · 6 seconden</small><h3>${he(title)}</h3></div><div class="mbody"><p>${he(desc)}</p><div class="big-n" id="tn" style="text-align:center">0</div><div class="timer"><i id="tt" style="width:100%;transition:none"></i></div><button class="btn go tapbtn" id="tb">Tik zo snel als je kunt!</button></div>`);
   const tb=$('#tb');
   const tick=()=>{if(!$('#tt')){done=true;return}const el=(performance.now()-t0)/1000;$('#tt').style.width=Math.max(0,100-el/6*100)+'%';if(el>=6)end();else raf=requestAnimationFrame(tick)};
   const end=()=>{if(done)return;done=true;cancelAnimationFrame(raf);tb.disabled=true;tb.textContent=`${n} keer!`;setTimeout(()=>{closeModal();cb(Math.min(1,n/45),n)},700)};
   tb.addEventListener('pointerdown',e=>{e.preventDefault();if(done)return;if(!started){started=true;t0=performance.now();raf=requestAnimationFrame(tick)}n++;$('#tn').textContent=n;haptic(4)})}
-function mgMemory(title,desc,len,cb){if(!spendE(1))return;PREPAID=1;const sy=['📊','💡','🤝','📈','🎯','🚀'];const seq=Array.from({length:len},()=>pick(sy));let i=0,phase='show',done=false;
+function mgMemory(title,desc,len,cb){const sy=['📊','💡','🤝','📈','🎯','🚀'];const seq=Array.from({length:len},()=>pick(sy));let i=0,phase='show',done=false;
   openRaw(`<div class="mhead dark"><small>Minigame · geheugen</small><h3>${he(title)}</h3></div><div class="mbody"><p>${he(desc)}</p><div class="memshow" id="ms">👀</div><div class="dots" id="md">${'<i></i>'.repeat(len)}</div><div class="memgrid">${sy.map(s=>`<button class="memb" data-s="${s}" disabled>${s}</button>`).join('')}</div><p class="muted" id="mt" style="text-align:center;margin:0">Onthoud de volgorde…</p></div>`);
   const ms=$('#ms'),dots=[...$('#md').children],btns=[...document.querySelectorAll('.memb')];let k=0;
   const iv=setInterval(()=>{if(!document.body.contains(ms)){clearInterval(iv);return}if(k<seq.length){ms.textContent=seq[k];ms.classList.remove('pulse');void ms.offsetWidth;ms.classList.add('pulse');k++}else{clearInterval(iv);ms.textContent='❓';phase='input';btns.forEach(b=>b.disabled=false);$('#mt').textContent=`Tik de ${len} symbolen in dezelfde volgorde`}},850);
@@ -3584,13 +3582,13 @@ const DATEQ=[
 function dateGame(c){const qs=DATEQ.slice().sort(()=>R()-.5).slice(0,3);let i=0,chem=S.st.looks>=c.looks?1:0;
   const step=()=>{if(i>=3)return finish();const [q,op]=qs[i];const match=op.find(o=>o[1]===c.tr);const others=op.filter(o=>o!==match).sort(()=>R()-.5).slice(0,2);const ch=[match,...others].sort(()=>R()-.5);
     modal({title:'Eerste date',em:'💘',cat:`Ronde ${i+1} van 3`,person:c,text:q,html:`<div class="chem"><span>Klik</span><i><b style="width:${clamp(chem/7*100)}%"></b></i></div>`,choices:ch.map(o=>({t:o[0],on:()=>{const d=o[1]===c.tr?2:R()<.3?-1:0;chem+=d;i++;toast(d>0?`${c.first} straalt`:d<0?`${c.first} kijkt ongemakkelijk`:`${c.first} glimlacht beleefd`);step()}}))})};
-  const finish=()=>{closeModal();PREPAID=1;doAct('Eerste date',()=>{use('date');if(chem>=3){addPartner(c);hap(8);return `Het klikt enorm! ${c.first} wil je weer zien. Jullie hebben een relatie.`}hap(-1);return `Gezellig, maar er is geen klik. ${c.first} stuurt de volgende dag dat het niet verder gaat.`},false,chem>=3?'💞':'💔')};step()}
+  const finish=()=>{closeModal();doAct('Eerste date',()=>{use('date');if(chem>=3){addPartner(c);hap(8);return `Het klikt enorm! ${c.first} wil je weer zien. Jullie hebben een relatie.`}hap(-1);return `Gezellig, maar er is geen klik. ${c.first} stuurt de volgende dag dat het niet verder gaat.`},false,chem>=3?'💞':'💔')};step()}
 const TOPICS=[['💼','Werk en school'],['👪','Familie'],['🎮','Hobby\'s'],['🗳️','Politiek'],['🍿','Roddels'],['🔮','Dromen voor later'],['⚽','Sport']];
 function topicPref(p){let h=0;for(const ch of p.id)h=(h*31+ch.charCodeAt(0))>>>0;const like=h%7;let dis=(h>>>5)%7;if(dis===like)dis=(dis+3)%7;return[like,dis]}
 function talk(p){const [like,dis]=topicPref(p);p.tk=p.tk||{};
   modal({title:`Gesprek met ${p.first}`,em:'💬',cat:roleLabel(p),person:p,text:'Waar wil je het over hebben? Wat iemand leuk vindt, ontdek je door het te proberen.',choices:opts(TOPICS.map(([e,t],i)=>({t:`${e} ${t}${p.tk[i]===1?'  ❤️':p.tk[i]===-1?'  👎':''}`,on:()=>{closeModal();doAct('Gesprek',()=>{use('praat'+p.id);let d;if(i===like){d=ri(8,14);p.tk[i]=1;hap(3)}else if(i===dis){d=-ri(5,10);p.tk[i]=-1;hap(-1)}else{d=ri(1,4);p.tk[i]=p.tk[i]||0}p.rel=clamp(p.rel+d);
     return i===like?`${p.first} gaat helemaal los over ${t.toLowerCase()}. Wat een gesprek!`:i===dis?`${p.first} zucht. ${t} is echt niet ${p.g==='v'?'haar':'zijn'} onderwerp.`:`Een prima gesprek over ${t.toLowerCase()}.`},true,e)}})))})}
-function mgTiming(title,desc,rounds,cb){if(!spendE(1))return;PREPAID=1;
+function mgTiming(title,desc,rounds,cb){
   openRaw(`<div class="mhead dark"><small>Minigame</small><h3>${he(title)}</h3></div><div class="mbody"><p>${he(desc)}</p><div class="tbar"><div class="tzone" id="tz"></div><div class="tmark" id="tm"></div></div><div class="dots" id="td">${'<i></i>'.repeat(rounds)}</div><button class="btn go" id="tstop">Stop!</button></div>`);
   let r=0,hits=0,pos=0,dir=1,speed=1,zone=[0,0],raf,last=performance.now(),done=false;
   const tz=$('#tz'),tm=$('#tm'),dots=[...$('#td').children];
@@ -3598,7 +3596,7 @@ function mgTiming(title,desc,rounds,cb){if(!spendE(1))return;PREPAID=1;
   function loop(t){const dt=Math.min(3,(t-last)/16.7);last=t;pos+=dir*speed*dt;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}if(!tm.isConnected){done=true;return}tm.style.left=pos+'%';if(!done)raf=requestAnimationFrame(loop)}
   $('#tstop').onclick=()=>{if(done)return;const hit=pos>=zone[0]&&pos<=zone[1];dots[r].className=hit?'hit':'miss';if(hit)hits++;r++;if(r>=rounds){done=true;cancelAnimationFrame(raf);setTimeout(()=>{closeModal();cb(hits)},500)}else setup()};
   setup();raf=requestAnimationFrame(loop)}
-function mgExam(cb){if(!spendE(1))return;PREPAID=1;
+function mgExam(cb){
   const a=ageY(),lv=a<10?0:a<14?1:2;const qs=[];for(let i=0;i<6;i++){let q,ans;const t=ri(0,2);
     if(lv===0){const x=ri(2,20),y=ri(1,15);if(t){q=`${x} + ${y}`;ans=x+y}else{const b=Math.max(x,y),s=Math.min(x,y);q=`${b} − ${s}`;ans=b-s}}
     else if(lv===1){const x=ri(3,12),y=ri(3,12);if(t===0){q=`${x} × ${y}`;ans=x*y}else if(t===1){q=`${x*y} ÷ ${x}`;ans=y}else{const b=ri(40,150),s=ri(11,39);q=`${b} − ${s}`;ans=b-s}}
@@ -3610,7 +3608,7 @@ function mgExam(cb){if(!spendE(1))return;PREPAID=1;
   const end=()=>{if(done)return;done=true;clearInterval(tk);closeModal();cb(ok/6)};
   const tk=setInterval(()=>{if(!$('#xf')){done=true;clearInterval(tk);return}left--;const t=$('#xt');if(t)t.style.width=(left/30*100)+'%';if(left<=0)end()},1000);
   $('#xf').onsubmit=e=>{e.preventDefault();if(done)return;const v=parseFloat($('#xa').value.replace(',','.'));if(v===qs[i][1])ok++;i++;if(i>=6)end();else show_()};show_()}
-function mgInterview(t,cb,sec){if(!spendE(1))return;PREPAID=1;const qs=(SECQ[sec]||[]).slice(0,1).concat(INTERVIEW.slice().sort(()=>R()-.5)).slice(0,3).sort(()=>R()-.5);let i=0,pts=0;
+function mgInterview(t,cb,sec){const qs=(SECQ[sec]||[]).slice(0,1).concat(INTERVIEW.slice().sort(()=>R()-.5)).slice(0,3).sort(()=>R()-.5);let i=0,pts=0;
   const step=()=>{if(i>=3){closeModal();cb(pts/6);return}const [q,ans]=qs[i];modal({title:q,em:'🤝',cat:`Vraag ${i+1} van 3`,choices:ans.slice().sort(()=>R()-.5).map(([a,p])=>({t:a,on:()=>{pts+=p;i++;step()}}))})};step()}
 function mgBlackjack(){
   const suits=['♠','♥','♦','♣'],ranks=['A','2','3','4','5','6','7','8','9','10','B','V','H'];let deck,pl,dl,bet=0,phase='bet',msg='Plaats je inzet.',net=0;
@@ -3648,16 +3646,13 @@ function renderStart(){
     const del=()=>{modal({title:'Verwijderen?',em:'🗑️',text:`${l.done?l.name:l.p.first+' '+l.p.last} wordt definitief verwijderd.`,choices:opts([{t:'Verwijderen',cls:'bad',on:()=>{closeModal();delete STORE.lives[l.id];lsSave();cloudQueue(l.id);renderStart()}}])})};
     if(l.done)modal({title:l.name,em:'📜',cat:`${l.by} · ${l.age} jaar`,html:l.story.map(p=>`<p style="font-size:15.5px;text-align:left;margin:0">${he(p)}</p>`).join(''),choices:[{t:'Sluiten',cls:'ghost',on:closeModal},{t:'Verwijderen',cls:'bad',on:del}]});
     else modal({title:l.p.first+' '+l.p.last,em:l.alive?'🧑':'💀',cat:l.alive?`${Math.floor(l.m/12)} jaar`:'Overleden',choices:[{t:l.alive?'Verder spelen':'Bekijken',cls:'go',on:()=>{closeModal();loadLife(l.id)}},{t:'Verwijderen',cls:'bad',on:del},{t:'Annuleren',cls:'ghost',on:closeModal}]})})}
-function migrate(s){if(s.energy==null)s.energy=12;s.cpi=s.cpi||1;s.econ=s.econ||{s:'normaal',y:0};s.crim=Object.assign({heat:0,open:[]},s.crim||{});if(s.crim.jail)s.crim.jail=Object.assign({resp:10,gb:50,gang:null,work:false,tunnel:0,study:0,cell:null,contra:0},s.crim.jail);s.items=s.items||[];s.fights=s.fights||{w:0,l:0};for(const c of s.cars||[])if(c.cond==null)c.cond=100;s.flags=s.flags||{};if(!s.ap)s.ap=randAp(s.p.g);if(s.disc==null)s.disc=50;if(s.fert==null)s.fert=65;if(!s.talent)s.talent='geen';if(!s.flags.ingMig){if(s.job&&s.job.id==='ingenieur')s.job.lvl=Math.min(s.job.lvl+1,3);s.flags.ingMig=1}if(!s.flags.salCpi){if(s.job&&s.cpi>1)s.job.mult/=s.cpi;s.flags.salCpi=1}return s}
+function migrate(s){delete s.energy;s.cpi=s.cpi||1;s.econ=s.econ||{s:'normaal',y:0};s.crim=Object.assign({heat:0,open:[]},s.crim||{});if(s.crim.jail)s.crim.jail=Object.assign({resp:10,gb:50,gang:null,work:false,tunnel:0,study:0,cell:null,contra:0},s.crim.jail);s.items=s.items||[];s.fights=s.fights||{w:0,l:0};for(const c of s.cars||[])if(c.cond==null)c.cond=100;s.flags=s.flags||{};if(!s.ap)s.ap=randAp(s.p.g);if(s.disc==null)s.disc=50;if(s.fert==null)s.fert=65;if(!s.talent)s.talent='geen';if(!s.flags.ingMig){if(s.job&&s.job.id==='ingenieur')s.job.lvl=Math.min(s.job.lvl+1,3);s.flags.ingMig=1}if(!s.flags.salCpi){if(s.job&&s.cpi>1)s.job.mult/=s.cpi;s.flags.salCpi=1}return s}
 function loadLife(id){S=STORE.lives[id];if(!S||S.done)return;migrate(S);Q=S.q||[];STORE.last=id;
   if(!S.alive){showDeath();return}show('game');render();if(Q.length)processQ()}
-/* ================= OPSLAAN ================= */
+/* ================= OPSLAAN (lsLoad, lsSave, saveLife: zie src/store.js) ================= */
 const LS_KEY='levensloop.v1';let STORE={lives:{}};
 function meta(){if(!STORE.meta)STORE.meta={careers:[],ribbons:[]};STORE.meta.careers=STORE.meta.careers||[];STORE.meta.ribbons=STORE.meta.ribbons||[];return STORE.meta}
 function collectCareer(id){const M=meta();if(!M.careers.includes(id)){M.careers.push(id)}}
-function lsLoad(){try{const t=localStorage.getItem(LS_KEY);if(t){const d=JSON.parse(t);if(d&&d.lives)STORE=d}}catch(e){}}
-function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify(STORE))}catch(e){try{for(const l of Object.values(STORE.lives))if(l.snaps&&l.id!==(S&&S.id))l.snaps=[];localStorage.setItem(LS_KEY,JSON.stringify(STORE))}catch(e2){}}}
-function saveLife(){if(!S)return;S.updated=Date.now();S.q=Q;STORE.lives[S.id]=S;STORE.last=S.id;lsSave();cloudQueue(S.id);cloudQueue('_meta')}
 const CL={col:null,ready:false,pending:new Set(),busy:false,t:null};
 function setSync(t){const e=$('#sync');if(e)e.textContent=t}
 const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms))]);
@@ -3686,7 +3681,7 @@ async function cloudFlush(){if(!CL.ready||CL.busy)return;CL.busy=true;
 /* ================= BOOT ================= */
 function boot(data){
   lsLoad();meta();initCreate();
-  $('#btn-new').onclick=openCreate;$('#t-age').onclick=onAge;$('#t-back').onclick=()=>openSheet('Tijdmachine',sheetRewind);
+  $('#btn-new').onclick=openCreate;$('#btn-backup').onclick=()=>backupModal();$('#t-age').onclick=onAge;$('#t-back').onclick=()=>openSheet('Tijdmachine',sheetRewind);
   $('#t-job').onclick=()=>openSheet('Beroep',sheetJob);$('#t-assets').onclick=()=>openSheet('Bezit',sheetAssets);
   $('#t-rel').onclick=()=>openSheet('Relaties',sheetRel);$('#t-act').onclick=()=>openSheet('Activiteiten',sheetAct);
   $('#h-who').onclick=profilePopup;$('#stats').onclick=profilePopup;$('#h-menu').onclick=()=>openSheet('Hoofdmenu',sheetMain,false,{dark:true});
@@ -3694,10 +3689,158 @@ function boot(data){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden&&$('#modal').hidden)backSheet()});
   window.claude?.hot?.snapshot?.(()=>({sid:S&&S.id,screen:curScreen}));
   renderStart();
-  const sid=data&&data.sid;if(sid&&STORE.lives[sid]&&!STORE.lives[sid].done&&data.screen!=='start'){loadLife(sid)}else show('start');
+  // meteen verder met het laatst gespeelde leven (verbeterplan 2.4); het startscherm zit in het menu
+  const sid=data&&data.sid||(data&&data.screen==='start'?null:STORE.last);const L_=sid&&STORE.lives[sid];
+  if(L_&&!L_.done&&L_.alive){loadLife(sid)}else show('start');
   setTimeout(cloudInit,0);
 }
-window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
+// boot() wordt aangeroepen in src/boot.js, als laatste, zodat alle bestanden geladen zijn
+
+/* ================= OPSLAG v2 (verbeterplan 2.2) =================
+   Indeling in localStorage:
+     levensloop.v2          index: {v:2, last, meta, ids:[...]}
+     levensloop.v2.l.<id>   één leven (zonder tijdmachine-opnames), of een afgesloten leven (begraafplaats)
+     levensloop.v2.s.<id>   de tijdmachine-opnames van dat leven, compact (zie snapPack)
+   In het geheugen blijft alles zoals het was: STORE.lives[id] met S.snaps = [{m,ll,d:JSON-tekst}].
+   Alleen bij opslaan en laden wordt omgezet. Migratie van levensloop.v1 gebeurt bij de eerste start;
+   de oude sleutel gaat pas weg als de nieuwe indeling goed is teruggelezen.
+
+   Compacte opnames: de nieuwste opname wordt bewaard als verschil met het leven zelf, elke oudere als
+   verschil met de opname erna. Een verschil (patch) zegt per sleutel wat er anders was:
+     waarde       gewone waarde of lijst: zo was het
+     {$v:obj}     een object dat in zijn geheel anders was
+     {$p:patch}   een object met een paar andere sleutels (verder inzoomen)
+     {$x:1}       deze sleutel bestond toen nog niet
+   De huizenmarkt (flags.mk) gaat niet mee in opnames; die wordt na terugspoelen opnieuw gemaakt. */
+const V2='levensloop.v2',V2L=V2+'.l.',V2S=V2+'.s.';
+const isObj_=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+function objDiff(a,b){const p={};let n=0;
+  for(const k in a){const x=a[k];if(!(k in b)){p[k]=isObj_(x)?{$v:x}:x;n++;continue}const y=b[k];
+    if(isObj_(x)&&isObj_(y)){const s=objDiff(x,y);if(s){p[k]={$p:s};n++}}else if(JSON.stringify(x)!==JSON.stringify(y)){p[k]=isObj_(x)?{$v:x}:x;n++}}
+  for(const k in b)if(!(k in a)){p[k]={$x:1};n++}
+  return n?p:null}
+function objApply(b,p){if(!p)return b;for(const k in p){const v=p[k];
+    if(isObj_(v)&&v.$x){delete b[k]}else if(isObj_(v)&&'$p' in v){b[k]=objApply(isObj_(b[k])?b[k]:{},v.$p)}else if(isObj_(v)&&'$v' in v){b[k]=v.$v}else b[k]=v}
+  return b}
+// kale kopie van een leven zoals een opname hem bewaart: zonder opnames, logboek en huizenmarkt
+function snapBase(o){const c=Object.assign({},o);delete c.snaps;delete c.log;if(c.flags&&c.flags.mk){c.flags=Object.assign({},c.flags);delete c.flags.mk}return c}
+const PACKC={};// per leven: {key, ps:[patches van oudere opnames], newest:{object}}
+function snapPack(life,keep){let sn=life.snaps||[];if(keep&&sn.length>keep)sn=life.snaps=sn.slice(-keep);if(!sn.length)return null;
+  const key=sn.map(x=>x.m+':'+x.ll+':'+x.d.length).join(',');let C=PACKC[life.id];
+  if(!C||C.key!==key){const objs=sn.map(x=>snapBase(JSON.parse(x.d)));C=PACKC[life.id]={key,newest:objs[objs.length-1],ps:objs.slice(0,-1).map((o,i)=>objDiff(o,objs[i+1]))}}
+  const cur=JSON.parse(JSON.stringify(snapBase(life)));
+  const list=sn.map((x,i)=>({m:x.m,ll:x.ll,p:i===sn.length-1?objDiff(C.newest,cur):C.ps[i]}));
+  return {v:2,list}}
+function snapUnpack(life,pk){if(!pk||!pk.list||!pk.list.length)return [];
+  let o=JSON.parse(JSON.stringify(snapBase(life)));const out=[];
+  for(let i=pk.list.length-1;i>=0;i--){const it=pk.list[i];o=objApply(o,it.p);out.unshift({m:it.m,ll:it.ll,d:JSON.stringify(o)});o=JSON.parse(out[0].d)}
+  return out}
+/* ---------- schrijven ---------- */
+const LSW={};// sleutel → laatst geschreven tekst (om onnodig schrijven over te slaan)
+let LSFULL=false;
+function lsPut(k,v){if(LSW[k]===v)return;localStorage.setItem(k,v);LSW[k]=v}
+function lsDel(k){try{localStorage.removeItem(k)}catch(e){}delete LSW[k]}
+function lifeStr(l){const c=Object.assign({},l);delete c.snaps;return JSON.stringify(c)}
+function writeLife(id){const l=STORE.lives[id];if(!l)return;
+  lsPut(V2L+id,lifeStr(l));
+  const act=S?S.id:STORE.last;const pk=l.done?null:snapPack(l,act===id?0:3);if(pk)lsPut(V2S+id,JSON.stringify(pk));else if(localStorage.getItem(V2S+id)!=null)lsDel(V2S+id)}
+function writeIndex(){lsPut(V2,JSON.stringify({v:2,last:STORE.last,meta:STORE.meta,ids:Object.keys(STORE.lives)}))}
+function removeGone(){for(const k of Object.keys(localStorage))if(k.startsWith(V2L)||k.startsWith(V2S)){const id=k.slice(k.startsWith(V2L)?V2L.length:V2S.length);if(!STORE.lives[id])lsDel(k)}}
+// alles wegschrijven wat veranderd is; only = alleen dit leven (snel, bij ouder worden)
+function lsSave(only){
+  if(STORE.v1only){try{const c=Object.assign({},STORE);delete c.v1only;delete c.migrated;localStorage.setItem(LS_KEY,JSON.stringify(c));return true}catch(e){storeFull(e);return false}}
+  try{
+    if(only)writeLife(only);else for(const id of Object.keys(STORE.lives))writeLife(id);
+    writeIndex();if(!only)removeGone();LSFULL=false;return true}
+  catch(e){storeFull(e);return false}}
+function saveLife(){if(!S)return;S.updated=Date.now();S.q=Q;const prev=STORE.lives[S.id];STORE.lives[S.id]=S;STORE.last=S.id;
+  // andere levens die net veranderd zijn (erfenis: het oude leven wordt een grafsteen) ook meenemen
+  const others=Object.keys(STORE.lives).filter(id=>id!==S.id&&!LSW[V2L+id]);
+  lsSave(others.length||prev!==S?null:S.id);cloudQueue(S.id);cloudQueue('_meta')}
+/* ---------- volle opslag: nooit stil ---------- */
+function storeFull(e){console.warn('opslag',e);if(LSFULL)return;LSFULL=true;
+  const others=Object.values(STORE.lives).filter(l=>!l.done&&(!S||l.id!==S.id)&&(l.snaps||[]).length);
+  try{modal({title:'Je opslag is vol',em:'💾',cat:'Opslaan',text:`Dit leven kon niet worden bewaard. Maak ruimte vrij, dan probeer ik het meteen opnieuw.${others.length?` De tijdmachine van je ${others.length} andere ${others.length===1?'leven':'levens'} wissen scheelt het meest.`:''}`,choices:opts([
+    ...(others.length?[{t:'Tijdmachine van andere levens wissen',cls:'go',on:()=>{closeModal();for(const l of others){l.snaps=[];delete PACKC[l.id];lsDel(V2S+l.id)}LSFULL=false;if(lsSave())toast('Ruimte gemaakt en opgeslagen')}}]:[]),
+    {t:'Naar mijn levens (oude levens verwijderen)',on:()=>{closeModal();LSFULL=false;closeSheet();renderStart();show('start')}},
+    {t:'Later',cls:'ghost',on:()=>{closeModal();toast('Let op: je laatste stappen zijn nog niet bewaard')}}])})}catch(x){}}
+/* ---------- laden en migreren ---------- */
+function lsReadV2(){const ix=JSON.parse(localStorage.getItem(V2)||'null');if(!ix||ix.v!==2)return null;
+  const st={lives:{},last:ix.last,meta:ix.meta};
+  for(const id of ix.ids||[]){const t=localStorage.getItem(V2L+id);if(t==null)continue;LSW[V2L+id]=t;const l=JSON.parse(t);
+    const s=localStorage.getItem(V2S+id);if(s!=null){LSW[V2S+id]=s;try{l.snaps=snapUnpack(l,JSON.parse(s))}catch(e){console.warn('opnames',id,e);l.snaps=[]}}else if(!l.done)l.snaps=[];
+    st.lives[id]=l}
+  LSW[V2]=localStorage.getItem(V2);return st}
+function lsLoad(){try{
+    const v2=lsReadV2();if(v2){STORE=v2;return}
+    const t=localStorage.getItem(LS_KEY);if(!t)return;const d=JSON.parse(t);if(!(d&&d.lives))return;
+    STORE=d;migrateV1()}
+  catch(e){console.warn('laden',e);if(typeof errLog==='function')errLog(e,'opgevangen')}}
+function migrateV1(){
+  const ok=()=>{for(const k of Object.keys(LSW))delete LSW[k];const back=lsReadV2();if(!back)return false;
+    for(const id of Object.keys(STORE.lives)){const a=STORE.lives[id],b=back.lives[id];if(!b||lifeStr(a)!==lifeStr(b)||(a.snaps||[]).length&&!(b.snaps||[]).length&&a.id!==STORE.last)return false}return true};
+  let saved=false;try{for(const id of Object.keys(STORE.lives))writeLife(id);writeIndex();saved=true}catch(e){
+    // te vol voor oud + nieuw naast elkaar: tijdmachine van niet-actieve levens laten vallen (deed de oude versie ook)
+    try{for(const l of Object.values(STORE.lives))if(l.id!==STORE.last)l.snaps=[];for(const id of Object.keys(STORE.lives))writeLife(id);writeIndex();saved=true}catch(e2){console.warn('migratie',e2)}}
+  if(saved&&ok()){localStorage.removeItem(LS_KEY);STORE.migrated=1;return true}
+  // mislukt: nieuwe sleutels weghalen, met de oude gegevens verder (niets kwijt)
+  try{localStorage.removeItem(V2);for(const k of Object.keys(localStorage))if(k.startsWith(V2L)||k.startsWith(V2S))localStorage.removeItem(k)}catch(e){}
+  for(const k of Object.keys(LSW))delete LSW[k];STORE.v1only=1;return false}
+/* ================= RESERVEKOPIE (verbeterplan 2.3) =================
+   Menu → Reservekopie. Exporteren naar een bestand (deelknop van de iPhone, of downloaden),
+   of als tekst kopiëren. Importeren uit een bestand of door te plakken. Importeren voegt levens toe;
+   een leven dat al bestaat wordt alleen vervangen als de speler dat kiest. */
+function backupText(){const lives={};
+  for(const [id,l] of Object.entries(STORE.lives)){const c=Object.assign({},l);delete c.snaps;let pk=null;try{pk=l.done?null:snapPack(l,S&&S.id===id?0:3)}catch(e){}lives[id]={l:c,s:pk}}
+  return JSON.stringify({app:'levensloop',v:2,versie:typeof APP_VERSION!=='undefined'?APP_VERSION:'claude.ai',gemaakt:new Date().toISOString(),last:STORE.last,meta:STORE.meta,lives})}
+function backupName(){const d=new Date(),z=n=>String(n).padStart(2,'0');return `levensloop-reservekopie-${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}.json`}
+async function backupShare(){if(S)saveLife();const txt=backupText();const name=backupName();
+  try{const f=new File([txt],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Levensloop reservekopie'});toast('Reservekopie gedeeld');return 'share'}}catch(e){if(e&&e.name==='AbortError')return 'abort'}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);toast('Reservekopie gedownload');return 'download'}catch(e){}
+  toast('Delen lukte niet. Gebruik "Kopieer als tekst".');return 'fail'}
+async function backupCopy(){if(S)saveLife();const txt=backupText();let ok=false;try{await navigator.clipboard.writeText(txt);ok=true}catch(e){}
+  if(!ok){const t=document.createElement('textarea');t.value=txt;t.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(t);t.select();t.setSelectionRange(0,txt.length);try{ok=document.execCommand('copy')}catch(e){}t.remove()}
+  toast(ok?`Gekopieerd (${Math.round(txt.length/1024)} KB). Plak het in Notities of een mail aan jezelf.`:'Kopiëren lukte niet');return ok}
+// leest een reservekopie; geeft {lives:{id:leven}, meta, n} of gooit een fout met een leesbare uitleg
+function backupParse(txt){let d;try{d=JSON.parse(String(txt).trim())}catch(e){throw new Error('Dit is geen reservekopie van Levensloop (geen geldige tekst).')}
+  if(d&&d.lives&&!d.app&&!d.v)return {lives:d.lives,meta:d.meta,n:Object.keys(d.lives).length};// ook een oude levensloop.v1-opslag
+  if(!d||d.app!=='levensloop'||!d.lives)throw new Error('Dit is geen reservekopie van Levensloop.');
+  const lives={};for(const [id,x] of Object.entries(d.lives)){const l=x.l;if(!l)continue;if(!l.done)l.snaps=x.s?snapUnpack(l,x.s):[];lives[id]=l}
+  return {lives,meta:d.meta,n:Object.keys(lives).length}}
+function backupImport(txt){let B;try{B=backupParse(txt)}catch(e){toast(e.message);return}
+  if(!B.n){toast('Er staan geen levens in deze reservekopie.');return}
+  const clash=Object.keys(B.lives).filter(id=>STORE.lives[id]);const fresh=Object.keys(B.lives).filter(id=>!STORE.lives[id]);
+  const finish=(mode)=>{let n=0;for(const id of fresh){STORE.lives[id]=B.lives[id];n++}
+    for(const id of clash){if(mode==='skip')continue;const l=B.lives[id];if(mode==='copy'){const nid=uid();l.id=nid;STORE.lives[nid]=l}else{if(S&&S.id===id)continue;STORE.lives[id]=l}n++}
+    if(B.meta){const M=meta();for(const c of B.meta.careers||[])if(!M.careers.includes(c))M.careers.push(c);for(const r of B.meta.ribbons||[])if(!M.ribbons.includes(r))M.ribbons.push(r)}
+    const ok=lsSave();if(curScreen==='start')renderStart();refreshSheet&&!$('#sheet').hidden&&refreshSheet();
+    toast(n?`${n} ${n===1?'leven':'levens'} toegevoegd${ok?'':' (maar opslaan lukte niet)'}`:'Niets toegevoegd')};
+  if(!clash.length){finish('skip');return}
+  const nm=id=>{const l=B.lives[id];return l.done?l.name:l.p.first+' '+l.p.last};
+  modal({title:'Bestaat al',em:'📦',cat:'Reservekopie',text:`${clash.length===1?nm(clash[0])+' staat':clash.length+' levens staan'} al op dit toestel${fresh.length?`. ${fresh.length} nieuwe ${fresh.length===1?'leven wordt':'levens worden'} hoe dan ook toegevoegd`:''}. Wat wil je met ${clash.length===1?'dit leven':'deze levens'}?`,choices:opts([
+    {t:'Overslaan (niets overschrijven)',cls:'go',on:()=>{closeModal();finish('skip')}},
+    {t:'Als kopie toevoegen',on:()=>{closeModal();finish('copy')}},
+    {t:'Vervangen door de reservekopie',cls:'bad',on:()=>{closeModal();finish('replace')}}])})}
+function backupPickFile(){const i=document.createElement('input');i.type='file';i.accept='.json,application/json,text/plain';i.style.display='none';
+  i.onchange=()=>{const f=i.files&&i.files[0];if(!f){i.remove();return}const r=new FileReader();r.onload=()=>{backupImport(r.result);i.remove()};r.onerror=()=>{toast('Het bestand kon niet worden gelezen');i.remove()};r.readAsText(f)};
+  document.body.appendChild(i);i.click()}
+function backupPaste(){modal({title:'Reservekopie plakken',em:'📋',cat:'Reservekopie',html:'<textarea id="bk-txt" class="inp" style="width:100%;height:140px;font-size:12px" placeholder="Plak hier de tekst van je reservekopie"></textarea>',
+  choices:[{t:'Importeren',cls:'go',on:()=>{const v=$('#bk-txt').value;closeModal();backupImport(v)}},{t:'Annuleren',cls:'ghost',on:closeModal}]})}
+function sheetBackup(el){const n=Object.keys(STORE.lives).length;
+  card(el,`<span class="muted">Je levens staan alleen in deze app. Haal je de app van je beginscherm, dan ben je ze kwijt. Maak daarom af en toe een reservekopie en bewaar die bijvoorbeeld in Bestanden of iCloud Drive.</span>`);
+  let s=sec(el,'Bewaren');
+  row(s,{ic:'📤',t:'Reservekopie maken',s:`${n} ${n===1?'leven':'levens'} · via de deelknop of als download`,on:()=>backupShare()});
+  row(s,{ic:'📋',t:'Kopieer als tekst',s:'Plak het in Notities of een mail aan jezelf',on:()=>backupCopy()});
+  s=sec(el,'Terugzetten');
+  row(s,{ic:'📥',t:'Bestand kiezen',s:'Levens uit een reservekopie toevoegen',on:()=>backupPickFile()});
+  row(s,{ic:'📝',t:'Tekst plakken',s:'Als je de reservekopie als tekst hebt bewaard',dots:true,on:()=>backupPaste()})}
+// vanaf het startscherm (ook als er nog geen leven is, bijvoorbeeld na opnieuw installeren)
+function backupModal(){const n=Object.keys(STORE.lives).length;
+  modal({title:'Reservekopie',em:'🛟',cat:'Mijn levens',text:n?`Bewaar je ${n} ${n===1?'leven':'levens'} buiten de app, of zet levens terug uit een reservekopie.`:'Zet je levens terug uit een reservekopie die je eerder hebt gemaakt.',choices:opts([
+    ...(n?[{t:'📤 Reservekopie maken',cls:'go',on:()=>{closeModal();backupShare()}},{t:'📋 Kopieer als tekst',on:()=>{closeModal();backupCopy()}}]:[]),
+    {t:'📥 Bestand kiezen',cls:n?'':'go',on:()=>{closeModal();backupPickFile()}},
+    {t:'📝 Tekst plakken',on:()=>{closeModal();backupPaste()}},
+    {t:'Annuleren',cls:'ghost',on:closeModal}])})}
 /* ================= BEZIT (zoals BitLife) ================= */
 // ---- extra winkels ----
 Object.assign(CATALOG.boten.brands,{'Zodiac':[['Rubberboot met buitenboordmotor',8000]],'Bayliner':[['VR5 speedboot',45000]],'Hallberg-Rassy':[['Zeiljacht 40',650000,-.04]],'Sunseeker':[['Predator 60',2500000]],'Azimut':[['Grande 27M',9000000]],'Benetti':[['Oasis 40M',22000000]],'Lürssen':[['Gigajacht van 120 meter',250000000]]});
@@ -4075,7 +4218,7 @@ function sheetTree(el){const gens=S.gens||[];
 const mgHead=(t,d,em)=>`<div class="mhead dark"><small>Minigame</small><h3>${em?em+' ':''}${he(t)}</h3></div><div class="mbody mg"><p>${he(d)}</p>`;
 const alive_=id=>!!document.getElementById(id);
 // 1) Uitwijken: rijden, vluchten, karten, skiën. cb(over, totaal)
-function mgDodge(o,cb){PREPAID=1;const lives=o.lives||3,secs=o.secs||12;
+function mgDodge(o,cb){const lives=o.lives||3,secs=o.secs||12;
   openRaw(mgHead(o.title,o.desc,o.em)+`<div class="dodge" id="dg"><i></i><i></i><div class="dg-me" id="dgme">${o.me||'🚗'}</div></div><div class="dg-hud"><span id="dgl">${'❤️'.repeat(lives)}</span><span id="dgt">${secs}s</span></div><div class="dg-ctl"><button class="btn" id="dgL" aria-label="Links">◀</button><button class="btn" id="dgR" aria-label="Rechts">▶</button></div></div>`);
   let lane=1,left=lives,obs=[],t0=performance.now(),last=t0,spawn=0,done=false;const box=$('#dg'),me=$('#dgme');const sp=(o.speed||1)*(.55+(o.hard||0)*.25);
   const place=()=>{me.style.left=(lane*33.33+16.66)+'%'};place();
@@ -4093,7 +4236,7 @@ function mgDodge(o,cb){PREPAID=1;const lives=o.lives||3,secs=o.secs||12;
     obs=obs.filter(b=>{if(b.y>108){b.d.remove();return false}return true});requestAnimationFrame(loop)}
   requestAnimationFrame(loop)}
 // 2) Op de maat: muziek, dansen, zingen. cb(score 0..1)
-function mgRhythm(o,cb){PREPAID=1;const n=o.n||10;
+function mgRhythm(o,cb){const n=o.n||10;
   openRaw(mgHead(o.title,o.desc,o.em)+`<div class="rhy" id="rh"><div class="rh-line"></div><div class="rh-fb" id="rhf"></div></div><div class="dg-hud"><span id="rhs">0 / ${n}</span><span id="rhc"></span></div><button class="btn go" id="rhb">${he(o.btn||'Tik!')}</button></div>`);
   const box=$('#rh');let notes=[],made=0,score=0,judged=0,last=performance.now(),next=20,done=false,combo=0;const sp=.85*(o.speed||1);
   const fb=(t,c)=>{const f=$('#rhf');f.textContent=t;f.className='rh-fb '+c;setTimeout(()=>{if(alive_('rhf'))f.className='rh-fb'},260)};
@@ -4106,7 +4249,7 @@ function mgRhythm(o,cb){PREPAID=1;const n=o.n||10;
     requestAnimationFrame(loop)}
   requestAnimationFrame(loop)}
 // 3) Het juiste moment: zakkenrollen, winkeldiefstal, vissen, sprintstart. cb(raak, rondes)
-function mgReact(o,cb){PREPAID=1;const rounds=o.rounds||3;
+function mgReact(o,cb){const rounds=o.rounds||3;
   openRaw(mgHead(o.title,o.desc,o.em)+`<div class="react" id="rc"><div class="rc-e" id="rce">${o.idle}</div><div class="rc-t" id="rct">Wacht…</div></div><div class="dots" id="rcd">${'<i></i>'.repeat(rounds)}</div><button class="btn go" id="rcb">${he(o.btn||'Nu!')}</button></div>`);
   let r=0,hits=0,state='wait',timer=null,t0=0,done=false;const dots=[...$('#rcd').children],win=o.win||650;
   const set=(e,t,c)=>{$('#rce').textContent=e;$('#rct').textContent=t;$('#rc').className='react '+(c||'')};
@@ -4117,7 +4260,7 @@ function mgReact(o,cb){PREPAID=1;const rounds=o.rounds||3;
   $('#rcb').onclick=()=>{if(done||state==='res')return;if(state==='wait'){res(false,'Te vroeg!');return}res(true,`${Math.round(performance.now()-t0)} ms`)};
   nextR()}
 // 4) Draaiknop/slot: inbreken, kluis, auto openbreken. cb(raak, rondes)
-function mgDial(o,cb){PREPAID=1;const rounds=o.rounds||3;
+function mgDial(o,cb){const rounds=o.rounds||3;
   openRaw(mgHead(o.title,o.desc,o.em)+`<div class="dial"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#1b2633" stroke="#3a4a5c" stroke-width="5"/><path id="dla" fill="none" stroke="#3ccf6e" stroke-width="7" stroke-linecap="round"/><line id="dln" x1="50" y1="50" x2="50" y2="14" stroke="#ffcf3f" stroke-width="3.5" stroke-linecap="round"/><circle cx="50" cy="50" r="5" fill="#ffcf3f"/></svg><div class="dl-c">${o.mid||'🔒'}</div></div><div class="dots" id="dld">${'<i></i>'.repeat(rounds)}</div><button class="btn go" id="dlb">${he(o.btn||'Vastzetten')}</button></div>`);
   let r=0,hits=0,ang=0,sp=2,arc=[0,0],last=performance.now(),done=false;const dots=[...$('#dld').children];
   const pt=a=>{const rad=(a-90)*Math.PI/180;return [50+40*Math.cos(rad),50+40*Math.sin(rad)]};
@@ -4126,7 +4269,7 @@ function mgDial(o,cb){PREPAID=1;const rounds=o.rounds||3;
   $('#dlb').onclick=()=>{if(done)return;const a=((ang-arc[0])%360+360)%360;const hit=a<=arc[1]-arc[0];dots[r].className=hit?'hit':'miss';if(hit)hits++;haptic(hit?8:25);r++;if(r>=rounds){done=true;setTimeout(()=>{closeModal();cb(hits,rounds)},450)}else setup()};
   setup();requestAnimationFrame(loop)}
 // 5) Code onthouden: kluis kraken, alarm, recept. cb(goed, lengte)
-function mgCode(o,cb){PREPAID=1;const len=o.len||4,sy=o.sym||['1','2','3','4','5','6','7','8','9','0'];const seq=Array.from({length:len},()=>pick(sy));let inp=[],done=false;
+function mgCode(o,cb){const len=o.len||4,sy=o.sym||['1','2','3','4','5','6','7','8','9','0'];const seq=Array.from({length:len},()=>pick(sy));let inp=[],done=false;
   openRaw(mgHead(o.title,o.desc,o.em)+`<div class="code"><div class="cd-show" id="cds">${seq.map(x=>`<b>${x}</b>`).join('')}</div><div class="cd-in" id="cdi">${'<b>·</b>'.repeat(len)}</div><div class="cd-msg" id="cdm">Onthoud dit!</div><div class="cd-pad" id="cdp" hidden>${sy.map(x=>`<button class="btn" data-v="${x}">${x}</button>`).join('')}<button class="btn ghost" data-v="⌫">⌫</button></div></div></div>`);
   const showMs=o.show||(900+len*450);
   setTimeout(()=>{if(!alive_('cds'))return;$('#cds').classList.add('gone');$('#cdm').textContent='Voer de code in';$('#cdp').hidden=false},showMs);
@@ -4134,7 +4277,7 @@ function mgCode(o,cb){PREPAID=1;const len=o.len||4,sy=o.sym||['1','2','3','4','5
     $('#cdi').innerHTML=Array.from({length:len},(_,i)=>`<b>${inp[i]??'·'}</b>`).join('');
     if(inp.length===len){done=true;const ok=inp.filter((v,i)=>v===seq[i]).length;$('#cdi').innerHTML=seq.map((v,i)=>`<b class="${inp[i]===v?'ok':'no'}">${inp[i]}</b>`).join('');$('#cdm').textContent=ok===len?'Helemaal goed!':`${ok} van de ${len} goed`;setTimeout(()=>{closeModal();cb(ok,len)},900)}})}
 // 6) Mikken: darts, schieten, bowlen. cb(punten, max)
-function mgAim(o,cb){PREPAID=1;const n=o.n||3;
+function mgAim(o,cb){const n=o.n||3;
   openRaw(mgHead(o.title,o.desc,o.em)+`<div class="aim" id="am"><svg class="am-t" viewBox="0 0 100 100">${Array.from({length:10},(_,i)=>{const k=10-i;return `<circle cx="50" cy="50" r="${k*4.2}" fill="${k===1?'#e53935':k%2?(o.c1||'#f3efe6'):(o.c2||'#22303f')}"/>`}).join('')}</svg><div class="am-x" id="amx">${o.cross||'✛'}</div></div><div class="dg-hud"><span id="ams">0 punten</span><span id="amn">${n} over</span></div><button class="btn go" id="amb">${he(o.btn||'Gooi!')}</button></div>`);
   let left=n,pts=0,t0=performance.now(),done=false,x=50,y=50;const fa=1.1+R()*.5,fb=1.6+R()*.6;
   function loop(t){if(done||!alive_('amx'))return;const s=(t-t0)/1000*(o.speed||1);x=50+40*Math.sin(s*fa);y=50+40*Math.sin(s*fb+1);const e=$('#amx');e.style.left=x+'%';e.style.top=y+'%';requestAnimationFrame(loop)}
@@ -5953,7 +6096,7 @@ function runGR(){const W=polW(),P=S.pol;const n=['Amsterdam','Rotterdam','Den Ha
   P.camp=0;return out.join(' ')}
 /* ---------- acties ---------- */
 function partyLineOf(st,p){const v=p[st[1]];if(Math.abs(v-50)<12)return 'nuance';return (v-50)*st[2]>0?'eens':'oneens'}
-function mgDebate(title,cb){PREPAID=1;const p=PTY(S.pol.party);const qs=stellNow().slice().sort(()=>R()-.5).slice(0,4);let i=0,ok=0,tk=0,left=0;
+function mgDebate(title,cb){const p=PTY(S.pol.party);const qs=stellNow().slice().sort(()=>R()-.5).slice(0,4);let i=0,ok=0,tk=0,left=0;
   const step=()=>{clearInterval(tk);if(i>=qs.length){closeModal();cb(ok/qs.length);return}const st=qs[i],right=partyLineOf(st,p);left=10;
     const pickA=a=>{clearInterval(tk);if(a===right){ok++;toast(pick(['Applaus in de zaal!','Sterk antwoord.','Die zit!']))}else toast(right==='nuance'?'Je partij ziet het genuanceerder.':`Je partij is het hier juist ${right==='eens'?'mee eens':'mee oneens'}.`);i++;step()};
     modal({title,em:'🎤',cat:`Stelling ${i+1} van ${qs.length} · ${p.k}`,text:st[0],html:'<div class="timer"><i id="qt" style="width:100%;transition:width 1s linear"></i></div>',choices:[{t:'👍 Eens',on:()=>pickA('eens')},{t:'👎 Oneens',on:()=>pickA('oneens')},{t:'⚖️ Het ligt genuanceerd',on:()=>pickA('nuance')}]});
@@ -8365,6 +8508,9 @@ function sheetErrors(el){const l=errList();
   const s=sec(el,'');if(!l.length){empty(s,'Geen fouten. Alles loopt goed.');return}
   for(const x of l)row(s,{ic:x.soort==='crash'?'💥':'🩹',t:x.m.slice(0,90),s:`${x.t.slice(0,16).replace('T',' ')} · versie ${x.v}${x.n>1?` · ${x.n}×`:''} · ${x.waar}${x.st?' · '+x.st:''}`});
   foot(el,'🧹','Foutenlog wissen',()=>{try{localStorage.removeItem(ERR_KEY)}catch(e){}refreshSheet();toast('Foutenlog gewist')})}
+/* Start het spel pas als alle bestanden geladen zijn (voorheen gebeurde dat halverwege, aan het eind van ui.js,
+   waardoor gebeurtenissen uit latere bestanden bij het openen nog niet bestonden). */
+window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 </script><script>
 /* ================= OFFLINE-APP (alleen in de iPhone-versie) ================= */
 (function(){
