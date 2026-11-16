@@ -108,7 +108,7 @@ const DOPE=[['steroiden','💪','Anabole steroïden','Meer spierkracht: je nivea
   ['epo','🩸','EPO','Meer uithoudingsvermogen: dit seizoen presteer je veel beter',2500,()=>{S.sport.boost=(S.sport.boost||0)+14;hea(-ri(3,6));return 'Je bloed is dikker, je longen lijken eindeloos.'}],
   ['groei','🧬','Groeihormoon','Sneller herstel en meer kracht',4000,()=>{S.sport.sk=clamp(S.sport.sk+ri(3,5));if(S.sport.inj)S.sport.inj=0;hea(-ri(2,5));return 'Je herstelt razendsnel van elke training.'}]];
 function dopeMenu(){const P=S.sport,cp=S.cpi||1;
-  modal({title:'Doping',em:'💉',cat:SPORTS[P.id].n,text:`Doping maakt je beter, maar het blijft ongeveer 4 jaar aantoonbaar in je bloed. ${P.st==='pro'?'Profs worden vaak gecontroleerd.':'Ook amateurs worden soms gecontroleerd.'}`,choices:opts(DOPE.map(([id,em,t,s,k,fn])=>({t,ic:em,s:`${s} · ${fmt(k*cp)}`,dis:S.money<k*cp,on:()=>{closeModal();doAct('Doping',()=>{S.acts.dope=1;cash(-Math.round(k*cp));P.dopeM=S.m;P.doped=(P.doped||0)+1;kar(-3);return fn()},true,'💉')}})))})}
+  modal({title:'Doping',em:'💉',cat:SPORTS[P.id].n,text:`Doping maakt je beter, maar het blijft ongeveer 4 jaar aantoonbaar in je bloed. ${P.st==='pro'?'Profs worden vaak gecontroleerd.':['academie','uni'].includes(P.st)?'Op jouw niveau wordt af en toe gecontroleerd.':'Amateurs worden niet gecontroleerd, maar het blijft valsspelen.'}`,choices:opts(DOPE.map(([id,em,t,s,k,fn])=>({t,ic:em,s:`${s} · ${fmt(k*cp)}`,dis:S.money<k*cp,on:()=>{closeModal();doAct('Doping',()=>{S.acts.dope=1;cash(-Math.round(k*cp));P.dopeM=S.m;P.doped=(P.doped||0)+1;kar(-3);return fn()},true,'💉')}})))})}
 function caught(yrs,why){const P=S.sport,D=SPORTS[P.id];P.ban=S.m+yrs*12;P.caught=(P.caught||0)+1;S.fame=clamp(S.fame-15);kar(-8);hap(-10);let x='';
   if(P.st==='pro'&&S.job){const f=Math.round(salary()*.2);cash(-f);x=` ${P.team} ontbindt je contract en je krijgt een boete van ${fmt(f)}.`;endJob();P.st='club';P.lvl=0;P.team=`${cap(D.c)} ${S.p.city}`}
   MS(`Werd betrapt op doping`,1);return `Positief! ${why?cap(why)+'. ':''}Je wordt ${yrs} jaar geschorst.${x} Je naam staat in alle kranten.`}
@@ -121,4 +121,4 @@ E('sp_dope',{sys:1,need:()=>!!S.sport&&S.sport.st!=='gestopt'&&!banned(),t:'Dopi
 function dopeYear(){const P=S.sport;if(!P||P.st==='gestopt')return false;
   if(banned()){P.sk=clamp(P.sk-ri(1,3));L(`Je bent nog ${Math.ceil((P.ban-S.m)/12)} jaar geschorst voor doping. Je mag niet spelen.`,'bad');return true}
   if(inBlood()&&chance(.3))hea(-ri(1,3));
-  const pc={pro:.45,academie:.2,uni:.25,club:.06,school:.03}[P.st]||0;if(ageY()>=15&&chance(pc))Q.push({id:'sp_dope'});return false}
+  const pc={pro:.45,academie:.12,uni:.08}[P.st]||0;/* amateurs en schoolsport worden niet gecontroleerd (verbeterplan 3.4) */if(ageY()>=15&&chance(pc))Q.push({id:'sp_dope'});return false}

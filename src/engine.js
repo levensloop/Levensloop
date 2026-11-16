@@ -166,11 +166,12 @@ function monthTick(){
   if(typeof insPrem==='function')for(const x of [...S.cars,...(S.items||[])])if(x.ins)ex('Verzekeringen',insPrem(x)/12);
   S.money+=inc-exp;period.inc+=inc;period.exp+=exp;
   if(S.auto&&S.auto.pct>0&&a>=18&&!S.crim.jail&&typeof autoInvest==='function')autoInvest(inc-exp);
-  for(const il of S.ill)st('health',-il.sev/12);
+  for(const il of S.ill)st('health',-il.sev*.5/12);
   if(S.st.health<=0){const n=S.flags.zkh||0;if(a>=82||(n>=2&&chance(.35+n*.1))||(S.ill.some(i=>i.l)&&n>=1&&chance(.5)))return die(deathCause(a));hospital(a);return}
   if(chance(mortality(a,S.st.health)/12))die(deathCause(a));
 }
-function mortality(a,h){let b=a<1?.002:a<15?.0004:a<40?.0009:a<50?.0025:a<60?.006:a<70?.015:a<80?.04:a<90?.1:a<100?.24:.5;const f=h<10?6:h<25?3:h<45?1.6:h>80?.6:1;return b*f}
+// sterftekans per jaar, ongeveer naar Nederlandse overlevingstafels (verbeterplan 3.2); lage gezondheid verhoogt hem
+function mortality(a,h){let b=a<1?.002:a<15?.0004:a<40?.0009:a<50?.0025:a<60?.005:a<70?.01:a<80?.025:a<90?.07:a<100?.18:.4;const f=h<10?6:h<25?3:h<45?1.6:h>80?.6:1;return b*f}
 function hospital(a){S.flags.zkh=(S.flags.zkh||0)+1;S.st.health=15;const k=Math.round(ri(4,9)*100*(S.cpi||1)*law('er'));cash(-k);hap(-10);if(S.job&&!S.job.part)(S.job&&(S.job.perf=clamp(S.job.perf-15)));
   L(`Je bent met spoed opgenomen in het ziekenhuis. Je lichaam gaf het bijna op. Eigen bijdrage: ${fmt(k)}.`,'bad big');MS('Werd met spoed opgenomen in het ziekenhuis',1);Q.push({id:'s_zkh',c:{n:S.flags.zkh}})}
 // kies een tekst die je recent niet hebt gezien
@@ -186,9 +187,12 @@ function birthday(){
   const a=ageY();const did=S.acts||{};S.lastActs=did;S.acts={};S.hist.happy+=S.st.happy;S.hist.n++;
   if(typeof ecoYear==='function')ecoYear();const infl=S.eco?S.eco.inf/100:.022+gauss()*.008;S.cpi=(S.cpi||1)*(1+infl);if(S.pension)S.pension=Math.round(S.pension*(1+infl));if(S.home.k==='huur'&&a>=19){const hb=law('huur');S.home.rent=Math.round(S.home.rent*(hb===-1?1:1+infl+hb))}
   econYear();if(typeof warYear==='function'){warYear();vetYear()}
-  const h0=S.st.health;const sporty=['gym','run','klim','jsport','tapgym','taprun','spel','zorg','fiets','zwem','sp_'].some(k=>Object.keys(did).some(x=>x.startsWith(k)))||(S.sport&&['club','school','academie','uni','pro'].includes(S.sport.st));if(a>=25&&!sporty){hea(-ri(0,2));if(a>=45)hea(-ri(0,1));if(chance(.4))loo(-1)}if(sporty&&a>=16)hea(ri(0,2));
+  const h0=S.st.health;const sporty=['gym','run','klim','jsport','tapgym','taprun','spel','zorg','fiets','zwem','sp_'].some(k=>Object.keys(did).some(x=>x.startsWith(k)))||(S.sport&&['club','school','academie','uni','pro'].includes(S.sport.st));if(a>=25&&!sporty){if(chance(.4))hea(-1);if(chance(.4))loo(-1)}if(sporty&&a>=16)hea(ri(0,2));
   if(a>=18&&!(typeof noTax==='function'&&noTax())){const base=Math.max(0,S.money)+Object.values(S.inv).reduce((x,y)=>x+y,0)+S.props.filter(p=>p.id!==S.home.pid).reduce((x,p)=>x+p.value-p.mort,0)-57000;if(base>0){const t=Math.round(base*law('verm'));cash(-t);period.out['Vermogensbelasting']=(period.out['Vermogensbelasting']||0)+t;period.exp+=t}}
-  if(a>=45)hea(-ri(0,1));if(a>=60)hea(-ri(0,2));if(a>=75)hea(-ri(1,3));
+  // ouder worden (verbeterplan 3.1): rustig na je 40e, sneller pas boven de 75
+  if(a>=45&&chance(.6))hea(-1);if(a>=60)hea(-ri(0,1));if(a>=75)hea(-ri(1,2));
+  // je lichaam herstelt langzaam van griep, vallen en andere tegenslag, tot een niveau dat bij je leeftijd past (verbeterplan 3.1)
+  {const tgt=a<40?85:Math.max(40,85-(a-40)*.8);if(S.st.health<tgt&&!S.ill.length&&chance(.5))hea(1)}
   if(a>=35&&chance(.5))loo(-1);if(a>=55)loo(-ri(0,2));if(a<=18)sma(ri(0,2));
   // geluk zakt alleen door echte gebeurtenissen; zonder tegenslag drijft het alleen omhoog naar je basis
   {const hb=happyBase(),neg=happyParts().some(([v])=>v<0);if(hb>S.st.happy)hap(Math.round((hb-S.st.happy)/7)+ri(0,1));else if(neg)hap(Math.round((hb-S.st.happy)/7))}
@@ -236,7 +240,7 @@ function relYear(a){
 }
 function onDeath(p){if(typeof famOnDeath==='function')famOnDeath(p);
   const close=['moeder','vader','partner','kind'].includes(p.role);
-  L(`Je ${relWord(p)} ${p.first} is overleden, ${pAge(p)} jaar oud.`,'bad');hap(close?-ri(12,25):-ri(3,8));
+  L(`Je ${relWord(p)} ${p.first} is overleden, ${pAge(p)} jaar oud.`,'bad');hap(close?-ri(12,25):['broer','zus','opa','oma','vriend'].includes(p.role)?-ri(3,8):-ri(1,3));// verre familie minder zwaar (verbeterplan 3.3)
   if(close)MS(`Verloor ${p.role==='partner'?'je '+partnerWord(p):'je '+relWord(p)} ${p.first}`,1);
   if(p.role==='moeder'||p.role==='vader'){
     const other=living(p.role==='moeder'?'vader':'moeder')[0];

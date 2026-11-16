@@ -97,6 +97,17 @@ t('2.4','verder waar je was, startscherm in het menu, energie weg','NL',async()=
   const noE=typeof spendE==='undefined'&&typeof energyMax==='undefined'&&S.energy===undefined;
   return {ok:opened&&start&&fx&&noE,msg:`opent laatste leven ${opened} · menu → startscherm ${start} · knop veert in ${fx} · energiesysteem weg ${noE}`}});
 
+t('3.4','gebeurtenissen alleen voor wie ze passen','NL',async()=>{S.m=25*12;S.sport={id:Object.keys(SPORTS)[0],st:'club',sk:40,seasons:[],yrs:0};Q.length=0;for(let i=0;i<200;i++)dopeYear();const dope=Q.filter(q=>q.id==='sp_dope').length;Q.length=0;
+  S.fame=30;const h30=!!EV.c_herkend.need();S.fame=45;const h45=!!EV.c_herkend.need();S.fame=0;
+  delete S.sm;const v0=!!EV.viraal.c();
+  return {ok:dope===0&&!h30&&h45&&!v0&&EV.quiz.cd>=20,msg:`doping bij amateur ${dope}× · herkend bij roem 30 ${h30}, bij 45 ${h45} · viraal zonder account ${v0} · tv-quiz afkoeltijd ${EV.quiz.cd} jaar`}});
+
+t('3.6','staatsschuld blijft rond het normale niveau en rentenieuws is zeldzaam','NL',async()=>{const E_=ecoW();const d0=E_.d0;const n0=S.log.length;
+  for(let i=0;i<45;i++){S.st.health=90;Q.length=0;advance();Q.length=0}
+  const ds=E_.hist.map(h=>h.debt);const max=Math.max(...ds),min=Math.min(...ds);const rn=S.log.slice(n0).filter(l=>/centrale bank/.test(l.t)).length;
+  const jp=(()=>{const o=E_.d0;E_.d0=ECO_D0.JP;const r=rating(ECO_D0.JP)[1];E_.d0=o;return r})();
+  return {ok:d0===45&&max<=d0+40&&min>=d0-30&&rn<=Math.ceil(45/3)+1&&jp!=='Junk',msg:`NL begint op ${d0}%, schuld over 45 jaar ${min}–${max}% · rentenieuws ${rn}× · Japan (${ECO_D0.JP}%) krijgt rating ${jp}`}});
+
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];
   for(const x of T){if(only&&!x.nr.startsWith(only))continue;

@@ -24,7 +24,7 @@ function fameYear(){const act=S.flags.postY!=null&&year()-S.flags.postY<=1;
 function celebYear(){if(!famous()||inJail()||ageY()<12)return;const f=S.fame,bg=!!S.flags.bg;
   if(chance(.5)){const v=Math.round(ri(5,40)*f*(S.cpi||1)/10)*10;S.flags.gifts=(S.flags.gifts||0)+v;hap(1);L(`Merken sturen je gratis spullen ter waarde van ${fmt(v)}.`,'good')}
   const pool=[['c_papa',f>=30?.35:0],['c_roddel',f>=35?.25:0],['c_haat',S.foll>=1e5?.25:0],['c_fans',f>=45&&!bg?.18:0],['c_stalker',f>=50?(bg?.03:.1):0],['c_hack',f>=45?.08:0],['c_afpers',f>=60?.06:0],
-    ['c_gala',f>=30?.3:0],['c_ambassadeur',f>=40&&!S.acts.amb?.15:0],['c_deal',f>=50?.2:0],['c_herkend',.25]];
+    ['c_gala',f>=30?.3:0],['c_ambassadeur',f>=40&&!S.acts.amb?.15:0],['c_deal',f>=50?.2:0],['c_herkend',f>=40?.25:0]];
   let n=0;for(const [id,p] of pool.sort(()=>R()-.5)){if(n>=2)break;if(p&&chance(p)){const e=EV[id];Q.push({id,c:e.ctx?e.ctx():{}});n++}}}
 const bgCost=()=>Math.round(65000*(S.cpi||1));
 // --- problemen ---
@@ -66,6 +66,6 @@ E('c_deal',{sys:1,need:famous,t:'Groot reclamecontract',ctx:()=>({b:pick(['een s
  ['✍️ Tekenen',c=>{cash(c.k);S.foll+=Math.round(S.foll*.03);return `Je staat op billboards door het hele land. ${fmt(c.k)} rijker.`}],
  ['💬 Meer vragen',c=>{if(chance(.45)){const k=Math.round(c.k*1.4);cash(k);return `Ze gaan akkoord: ${fmt(k)}.`}return 'Ze kiezen iemand anders.'}],
  ['❌ Afslaan',()=>'Je wilt je naam niet aan dat merk verbinden.']]});
-E('c_herkend',{sys:1,need:famous,t:'Herkend!',x:()=>pick(['In een restaurant krijg je de beste tafel en de chef komt persoonlijk langs.','Op het vliegveld word je naar de VIP-lounge gebracht.','Een fan vraagt huilend om een selfie.','Je krijgt een gratis upgrade naar de suite in je hotel.']),ch:[
+E('c_herkend',{sys:1,need:()=>S.fame>=40,t:'Herkend!',x:()=>pick(['In een restaurant krijg je de beste tafel en de chef komt persoonlijk langs.','Op het vliegveld word je naar de VIP-lounge gebracht.','Een fan vraagt huilend om een selfie.','Je krijgt een gratis upgrade naar de suite in je hotel.']),ch:[
  ['😊 Genieten',()=>{hap(3);return 'Soms is bekend zijn best fijn.'}],
  ['😐 Je ongemakkelijk voelen',()=>{hap(-1);return 'Je zou soms willen dat je gewoon even anoniem was.'}]]});

@@ -3,7 +3,8 @@ const BPOST=[['zorg','Zorg','🏥',1],['onderwijs','Onderwijs','🎓',.6],['defe
 const BLVL=['Flink bezuinigen','Bezuinigen','Gelijk houden','Meer geld','Veel meer geld'];
 const RATES=[[60,'AAA',0],[80,'AA',.2],[100,'A',.5],[120,'BBB',1],[150,'BB',2],[999,'Junk',4]];
 function budW(){const E_=ecoW();if(!E_.bud)E_.bud={zorg:2,onderwijs:2,defensie:2,sociaal:2,infra:2};if(E_.eduAcc==null)E_.eduAcc=0;return E_.bud}
-const rating=d=>RATES.find(r=>d<r[0]);
+// kredietwaardigheid ten opzichte van wat normaal is voor het land (Japan met 230% is geen junk)
+const rating=d=>RATES.find(r=>d-Math.max(0,((S.eco&&S.eco.d0)||48)-70)<r[0]);
 const ratePrem=()=>S.eco?rating(S.eco.debt)[2]:0;
 function budSpend(b){return BPOST.reduce((s,[k,,,w])=>s+(b[k]-2)*w,0)}
 function budTax(){return -((lawIdx('ib')-2)*.7+(lawIdx('vpb')-2)*.4+(lawIdx('verm')-2)*.3+(lawIdx('aow')-2)*.35)}
@@ -15,19 +16,22 @@ function budYear(E_){const b=budW(),sh=E_.sh;const y=year();
   b.defensie=clamp(lawIdx('defb')+1,0,4);
   // kabinet past de begroting aan als jij het niet bent
   if(!budMine()){const W=S.pw;let lr=50;if(W&&W.gov&&W.gov.length){const tot=seatSum(W.gov,W.seats)||1;lr=W.gov.reduce((s,g)=>s+(PTY(g)?PTY(g).lr*W.seats[g]/tot:0),0)}
-    if(E_.debt>95){const k=pick(['zorg','sociaal','infra','onderwijs'].filter(k=>b[k]>0));if(k){b[k]--;ecoNews(`De staatsschuld is te hoog. Het kabinet bezuinigt op ${BPOST.find(p=>p[0]===k)[1].toLowerCase()}.`,1)}}
-    else if(chance(.45)){const up=lr<45?pick(['sociaal','zorg','onderwijs']):lr>58?pick(['defensie','infra']):pick(['zorg','onderwijs','infra']);const dn=lr<45?null:lr>58?'sociaal':null;
+    const d0=E_.d0||48,bs=budSpend(b);
+    if(E_.debt>d0+15&&(bs>-2||E_.debt>d0+40)&&chance(.6)){const k=pick(['zorg','sociaal','infra','onderwijs'].filter(k=>b[k]>0));if(k){b[k]--;ecoNews(`De staatsschuld is te hoog. Het kabinet bezuinigt op ${BPOST.find(p=>p[0]===k)[1].toLowerCase()}.`,1)}}
+    // terug naar een sluitende begroting als de schuld normaal is
+    else if(Math.abs(E_.debt-d0)<=15&&Math.abs(bs)>=1&&chance(.35)){const ks=BPOST.map(p=>p[0]).filter(k=>k!=='defensie'&&(bs>0?b[k]>2:b[k]<2));const k=ks.length&&pick(ks);if(k){b[k]+=bs>0?-1:1}}
+    else if((E_.debt<d0-15||bs<1)&&chance(.35)){const up=lr<45?pick(['sociaal','zorg','onderwijs']):lr>58?pick(['defensie','infra']):pick(['zorg','onderwijs','infra']);const dn=lr<45?null:lr>58?'sociaal':null;
       if(b[up]<4&&budSpend(b)<4){b[up]++;ecoNews(`Prinsjesdag: het kabinet trekt extra geld uit voor ${BPOST.find(p=>p[0]===up)[1].toLowerCase()}.`)}if(dn&&b[dn]>1&&chance(.4)){b[dn]--;ecoNews(`Prinsjesdag: het kabinet bezuinigt op ${BPOST.find(p=>p[0]===dn)[1].toLowerCase()}.`)}}
     setDefb(b.defensie)}
   else if(!S.acts.bud&&!Q.some(q=>q.id==='bud_prinsjes'))Q.push({id:'bud_prinsjes'});
   E_.bdef=Math.round((budSpend(b)+budTax())*10)/10;
   E_.eduAcc=E_.eduAcc*.9+(b.onderwijs-2)*.06;sh.g+=(b.infra-2)*.15+E_.eduAcc-((lawIdx('ib')-2)*.1+(lawIdx('vpb')-2)*.1);sh.u+=-(b.sociaal-2)*.15;
   // persoonlijk
-  if(b.zorg!==2&&chance(.5))hea(b.zorg>2?1:-1);for(const k of living('kind'))if(pAge(k)<18&&b.onderwijs!==2&&chance(.5))k.smarts=clamp((k.smarts||50)+(b.onderwijs>2?1:-1));
+  if(b.zorg!==2&&chance(.2))hea(b.zorg>2?1:-1);for(const k of living('kind'))if(pAge(k)<18&&b.onderwijs!==2&&chance(.5))k.smarts=clamp((k.smarts||50)+(b.onderwijs>2?1:-1));
   // kredietwaardigheid
   const r=rating(E_.debt)[1];if(E_.rate&&E_.rate!==r)ecoNews(`Kredietbeoordelaars ${RATES.findIndex(x=>x[1]===r)>RATES.findIndex(x=>x[1]===E_.rate)?'verlagen':'verhogen'} de kredietwaardigheid van het land naar ${r}.`,1);E_.rate=r;
-  if(E_.debt>=150&&!E_.imf){E_.imf=y;if(budMine())Q.push({id:'bud_imf'});else{for(const [k] of BPOST)if(k!=='defensie'&&b[k]>0)b[k]--;setLaw('ib',1);ecoNews('Het IMF grijpt in. Het land moet hard bezuinigen en de belastingen verhogen.',1)}}
-  if(E_.imf&&E_.debt<110)E_.imf=0}
+  if(E_.debt>=Math.max(150,(E_.d0||48)+60)&&!E_.imf){E_.imf=y;if(budMine())Q.push({id:'bud_imf'});else{for(const [k] of BPOST)if(k!=='defensie'&&b[k]>0)b[k]--;setLaw('ib',1);ecoNews('Het IMF grijpt in. Het land moet hard bezuinigen en de belastingen verhogen.',1)}}
+  if(E_.imf&&E_.debt<Math.max(110,(E_.d0||48)+20))E_.imf=0}
 /* ---------- Prinsjesdag ---------- */
 E('bud_prinsjes',{sys:1,need:budMine,t:'Prinsjesdag',x:()=>{const E_=ecoW();return `${isPres()?'Het is tijd om je begroting naar het Congres te sturen.':S.p.country==='NL'?'Het is Prinsjesdag. Jij presenteert de begroting.':`Je presenteert de begroting in ${PT().kamer}.`} Staatsschuld: ${E_.debt.toLocaleString('nl-NL')}% van de economie, kredietwaardigheid ${rating(E_.debt)[1]}.`},ch:[
  ['📊 Zelf de begroting maken',()=>({go:()=>{S.budDraft=Object.assign({},budW());openSheet('Begroting',sheetBudget);processQ()}})],

@@ -4,14 +4,15 @@ const ILLS={
  'migraine':[2,0,'neuroloog',.5],'een hernia':[3,0,'orthopeed',.6],'astma':[2,0,'longarts',.35,1],'een burn-out':[3,0,'psycholoog',.5,0,1],'de ziekte van Pfeiffer':[4,0,'huisarts',.7],
  'een depressie':[3,0,'psycholoog',.45,0,1],'een angststoornis':[2,0,'psycholoog',.5,0,1],'de ziekte van Lyme':[3,0,'huisarts',.65],'diabetes type 1':[3,0,'internist',0,1],'long covid':[3,0,'huisarts',.3],
  'een gebroken been':[3,0,'orthopeed',.85],'een longontsteking':[5,1,'longarts',.75],
- 'diabetes':[4,0,'internist',.1,1],'hartfalen':[7,1,'cardioloog',.35],'artrose':[2,0,'orthopeed',.4,1],'COPD':[6,1,'longarts',.15,1],'hoge bloeddruk':[3,0,'cardioloog',.5],'kanker':[9,1,'oncoloog',.4],
+ 'diabetes':[4,0,'internist',.1,1],'hartfalen':[7,1,'cardioloog',.35],'artrose':[2,0,'orthopeed',.4,1],'COPD':[4,1,'longarts',.15,1],'hoge bloeddruk':[3,0,'cardioloog',.5],'kanker':[9,1,'oncoloog',.4],
  'Alzheimer':[6,1,'neuroloog',0,1],'Parkinson':[5,0,'neuroloog',.05,1],'staar':[1,0,'oogarts',.9],'een hartinfarct':[8,1,'cardioloog',.55]};
 const SPEC={huisarts:['🩺','Huisarts',60],internist:['🧪','Internist',900],neuroloog:['🧠','Neuroloog',1100],orthopeed:['🦴','Orthopeed',1000],longarts:['🫁','Longarts',1000],cardioloog:['❤️','Cardioloog',1400],oncoloog:['🎗️','Oncoloog',2500],oogarts:['👁️','Oogarts',800],psycholoog:['🛋️','Psycholoog',110],dermatoloog:['🧴','Dermatoloog',700]};
 const ILLY=['migraine','een hernia','astma','een burn-out','de ziekte van Pfeiffer','een depressie','een angststoornis','de ziekte van Lyme','diabetes type 1','long covid','een longontsteking'];
 const ILLO=['diabetes','hartfalen','artrose','COPD','hoge bloeddruk','kanker','Alzheimer','Parkinson','staar','een hartinfarct','een longontsteking'];
 const illInfo=il=>{const d=ILLS[il.n]||[il.sev,il.l,'huisarts',.4];return {sev:il.sev??d[0],l:il.l??d[1],sp:d[2],cure:d[3],chron:!!d[4],ment:!!d[5]}};
 function illYear(a){
-  for(const il of S.ill.slice()){const I=illInfo(il);if(!I.l&&!I.chron&&chance(I.ment?(S.flags.ther?.35:.15):.3)){S.ill=S.ill.filter(x=>x!==il);L(`Je bent hersteld van ${il.n}.`,'good');hap(5)}}
+  // gewone zorg (verbeterplan 3.1): ook zonder zelf naar de dokter te gaan herstel je meestal; ernstige ziektes via het ziekenhuis
+  for(const il of S.ill.slice()){const I=illInfo(il);if(!I.chron&&chance(I.ment?(S.flags.ther?.35:.15):I.l?.35:.3)){S.ill=S.ill.filter(x=>x!==il);L(`Je bent hersteld van ${il.n}.`,'good');hap(5)}}
   S.flags.ther=0;
   if(S.ill.length<2&&chance((a>55?.09:a>35?.045:.02)*(S.st.health>70?.6:S.st.health<35?1.4:1)*(addLvl('roken')>=50||addLvl('alcohol')>=50?1.4:1))){
     const pool=(a>55?ILLO:a>35?ILLY.concat(['hoge bloeddruk','diabetes','kanker']):ILLY).filter(n=>!S.ill.some(i=>i.n===n)&&(n!=='Alzheimer'||a>=65));const n=pick(pool);const d=ILLS[n];S.ill.push({n,sev:d[0],l:d[1]});L(`De dokter stelt vast dat je ${n} hebt.`,'bad');hap(-6)}}

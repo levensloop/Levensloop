@@ -12,6 +12,7 @@ Dit plan is bedoeld om door Claude in een nieuwe chat te worden uitgevoerd. Lees
 | 1 Fouten | Klaar (12 nov 2026). Alle 13 punten; regressietests in `tests/review/regress.js`. Rood staan: streng (`src/debt.js`). Uitkering dekt nu de kosten (anders zakte een passieve speler elk jaar dieper in het rood). |
 | 2.1 Balk onderin | Klaar (11 nov 2026). Thijmen koos stand B (`100vh`, geen `position:fixed`), vast in `src/pwa/fix.css`. Meetscherm blijft (5× tikken op de versie). |
 | 2.2–2.4 Opslag, reservekopie, kleine punten | Klaar (12 nov 2026). Opslag v2 (`src/store.js`), reservekopie (`src/backup.js`), energiesysteem weg (keuze Thijmen), lettertypes gelaten (keuze Thijmen). |
+| 3 Balans | Klaar (17 nov 2026), gemeten met 136 passieve levens. Gezondheid 55/65: 61/48, sterfte mediaan 79 (12% vóór 60, doel 10%), geluk 65: 49. Doping/Herkend/Viraal 0× bij passieve speler; staatsschuld 95% van de jaren binnen ±25 van de startwaarde. Ontdekt: de oude versie verhoogde gezondheid per ongeluk via de zorgbegroting; vervangen door langzaam herstel naar een leeftijdsniveau. |
 
 ## Hoe je dit plan uitvoert
 

@@ -4,8 +4,11 @@ const EPH={hoog:{n:'Hoogconjunctuur',em:'🚀',g:3.8,u:3.2,inf:3.6,ret:.16},groe
 const EDUR={groei:[2,6],hoog:[1,3],stabiel:[1,4],recessie:[1,2],depressie:[2,4],hyper:[1,3]};
 const ETR={groei:[['hoog',.3],['stabiel',.5],['recessie',.2]],hoog:[['stabiel',.45],['recessie',.55]],stabiel:[['groei',.6],['recessie',.4]],recessie:[['stabiel',.5],['groei',.42],['depressie',.08]],depressie:[['recessie',.55],['stabiel',.45]],hyper:[['recessie',1]]};
 const wpick=arr=>{let t=arr.reduce((s,x)=>s+x[1],0),r=R()*t;for(const [k,w] of arr){r-=w;if(r<=0)return k}return arr[arr.length-1][0]};
-function ecoW(){if(!S.eco){const ph=S.econ&&S.econ.s==='groei'?'groei':S.econ&&S.econ.s==='recessie'?'recessie':'stabiel';const T=EPH[ph];
-  S.eco={ph,py:0,g:T.g,u:T.u,inf:2.2,r:2.5,hp:100,hreal:1,idx:1000,oil:80,debt:48,wr:1,ret:0,hpg:0,news:[],hist:[]}}return S.eco}
+// staatsschuld als % van het bbp bij de start, ongeveer zoals in de echte landen (2024)
+const ECO_D0={NL:45,US:120,DE:63,UK:100,FR:112,BE:104,JP:230,BR:75,MA:70,TR:30,ES:105,IT:137,CA:107,AU:50,MX:50,ZA:75,ID:40};
+const ecoD0=()=>ECO_D0[S.p&&S.p.country]||60;
+function ecoW(){if(S.eco&&S.eco.d0==null)S.eco.d0=ecoD0();if(!S.eco){const ph=S.econ&&S.econ.s==='groei'?'groei':S.econ&&S.econ.s==='recessie'?'recessie':'stabiel';const T=EPH[ph];
+  S.eco={ph,py:0,g:T.g,u:T.u,inf:2.2,r:2.5,hp:100,hreal:1,idx:1000,oil:80,debt:ecoD0(),d0:ecoD0(),wr:1,ret:0,hpg:0,news:[],hist:[]}}return S.eco}
 const ecoPhase=()=>EPH[ecoW().ph];
 function ecoNews(t,big){const E_=ecoW();E_.news.unshift({y:year(),t});if(E_.news.length>12)E_.news.pop();if(big)L(t,'sys')}
 function ecoYear(){const E_=ecoW(),W=typeof warW==='function'?warW():{lvl:0,reb:0},WE=typeof warEcon==='function'?warEcon():{infl:0,stk:0,house:0};const occ=typeof occHere==='function'&&occHere();
@@ -25,25 +28,29 @@ function ecoYear(){const E_=ecoW(),W=typeof warW==='function'?warW():{lvl:0,reb:
   E_.u=Math.round(clamp(E_.u+(T.u+sh.u-E_.u)*.5+gauss()*.3,2,25)*10)/10;
   E_.inf=Math.round((ph==='hyper'?ri(40,220):T.inf+gauss()*.5+(E_.oil-80)/45+WE.infl*100+sh.inf)*10)/10;
   // centrale bank
-  const tR=clamp(2+1.5*(E_.inf-2)+.4*(E_.g-1.5),0,ph==='hyper'?45:12);E_.r=Math.max(0,Math.round((E_.r+(tR-E_.r)*.5)*4)/4);
+  const tR=clamp(2+1.5*(E_.inf-2)+.4*(E_.g-1.5),0,ph==='hyper'?45:12);if(Math.abs(tR-E_.r)>=1||ph==='hyper')E_.r=Math.max(0,Math.round((E_.r+(tR-E_.r)*.5)*4)/4);
   // beurs en huizen
   E_.ret=Math.round((T.ret+gauss()*.09-(E_.r-prev.r)*.03-WE.stk+sh.ret)*1000)/1000;E_.idx=Math.max(50,Math.round(E_.idx*(1+E_.ret)));
   E_.hpg=Math.round(clamp((E_.g*.9+2.1-(E_.r-2.5)*1.3+(E_.inf-2)*.3)/100+gauss()*.015-WE.house+sh.hpg,-.25,.2)*1000)/1000;E_.hp=Math.round(E_.hp*(1+E_.hpg)*10)/10;E_.hreal=clamp(E_.hreal*(1+E_.hpg)/(1+E_.inf/100),.4,3);
   // lonen (cao) lopen soms achter op de inflatie
   const cao=ph==='hyper'?E_.inf*.6:E_.inf+({hoog:1,groei:.5,stabiel:.2,recessie:-.6,depressie:-1.5}[ph]||0)+gauss()*.3;E_.wr=clamp(E_.wr*(1+cao/100)/(1+E_.inf/100),.75,1.3);
   // staatsschuld
-  const def=(typeof budInt==='function'?budInt(E_):2)-E_.g*.5+(W.lvl>=3?6:0)+(ph==='depressie'?3:0)+(E_.def||0)+(E_.bdef||0);E_.debt=Math.round(clamp(E_.debt*(1-(E_.g+Math.max(0,E_.inf))/100)+def,8,260)*10)/10;
+  // staatsschuld (verbeterplan 3.6): schommelt rond het normale niveau van het land (d0). Tekorten, crises en oorlog duwen hem op,
+  // daarna trekt hij langzaam terug (15% van het verschil per jaar; 3% als jij zelf over de begroting gaat). Hyperinflatie holt hem uit.
+  {const d0=E_.d0??48,k=(typeof budMine==='function'&&budMine())?.03:.15;
+   const shock=(E_.bdef||0)+(E_.def||0)+(W.lvl>=3?6:0)+(ph==='depressie'?3:0)+(1.5-E_.g)*.6+(typeof ratePrem==='function'?ratePrem()*.5:0);
+   let d=E_.debt-(E_.debt-d0)*k+shock;if(ph==='hyper')d*=.75;E_.debt=Math.round(clamp(d,8,260)*10)/10}
   // econ() koppelen aan de rest van het spel
   S.econ.s=['hoog','groei'].includes(ph)?'groei':ph==='stabiel'?'normaal':'recessie';S.econ.y=E_.py;
   // nieuws
   const pc=v=>v.toLocaleString('nl-NL',{maximumFractionDigits:2})+'%';
-  if(Math.abs(E_.r-prev.r)>=.5)ecoNews(`De centrale bank ${E_.r>prev.r?'verhoogt':'verlaagt'} de rente naar ${pc(E_.r)}.`,1);
+  if(Math.abs(E_.r-prev.r)>=.5&&(Math.abs(E_.r-prev.r)>=1.5||year()-(E_.rnY||0)>=3)&&(E_.rnY=year()))ecoNews(`De centrale bank ${E_.r>prev.r?'verhoogt':'verlaagt'} de rente naar ${pc(E_.r)}.`,1);
   if(Math.abs(E_.u-prev.u)>=1)ecoNews(`De werkloosheid ${E_.u>prev.u?'stijgt':'daalt'} naar ${pc(E_.u)}.`,E_.u>prev.u);
   if(E_.inf>=5&&ph!=='hyper')ecoNews(`De inflatie loopt op tot ${pc(E_.inf)}. Boodschappen worden flink duurder.`,1);
   if(E_.ret<=-.18)ecoNews(`Beurskrach: de beurs verliest ${Math.round(-E_.ret*100)}% in een jaar.`,1);else if(E_.ret>=.22)ecoNews(`De beurs stijgt ${Math.round(E_.ret*100)}% en breekt records.`);
   if(E_.hpg>=.08)ecoNews(`De huizenprijzen stijgen ${Math.round(E_.hpg*100)}%.`);else if(E_.hpg<=-.05)ecoNews(`De huizenprijzen dalen ${Math.round(-E_.hpg*100)}%.`,1);
   if(E_.oil>=130&&prev.inf!==E_.inf)ecoNews(`De olieprijs schiet naar $${E_.oil} per vat.`);
-  if(E_.debt>=90&&(E_.hist.slice(-1)[0]||{debt:0}).debt<90)ecoNews('De staatsschuld gaat over de 90% van de economie.',1);
+  {const t=Math.max(90,Math.round(((E_.d0??48)+30)/10)*10);if(E_.debt>=t&&(E_.hist.slice(-1)[0]||{debt:0}).debt<t)ecoNews(`De staatsschuld gaat over de ${t}% van de economie.`,1)}
   E_.hist.push({y:year(),g:E_.g,u:E_.u,inf:E_.inf,r:E_.r,hp:E_.hp,idx:E_.idx,oil:E_.oil,debt:E_.debt,ph});if(E_.hist.length>40)E_.hist.shift();
   ecoPersonal()}
 /* ---------- persoonlijke gevolgen ---------- */

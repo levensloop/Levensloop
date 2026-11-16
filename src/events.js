@@ -160,7 +160,7 @@ E('steelt',{a:[18,90],ctx:bizCtx(b=>b.staff>0),t:'Diefstal',x:c=>`Een medewerker
  ['Tweede kans geven',c=>{kar(4);if(chance(.5))return 'De medewerker is je eeuwig dankbaar en werkt harder dan ooit.';B(c).cash-=5000;return 'Het gebeurt opnieuw.'}]]});
 /* --- chaos --- */
 E('oom',{chaos:1,a:[12,100],once:1,w:.6,t:'Een verre erfenis',ctx:()=>({l:pick(['Canada','Argentinië','Nieuw-Zeeland','Zwitserland','Friesland','Zeeland']),w:pick(['achteroom','oudtante','verre neef','oudoom']),a:Math.round((chance(.02)?ri(100,400)*1000:ri(2,25)*1000)*(S.cpi||1))}),x:c=>`Een notaris belt. Je ${c.w} uit ${c.l}, die je nauwelijks kende, is overleden en heeft je iets nagelaten.`,f:c=>{hap(c.a>50000?10:4);if(c.a>50000)MS(`Erfde ${fmt(c.a)} van een verre ${c.w}`,2);if(ageY()<18){S.trust=(S.trust||0)+c.a;return `Je erft ${fmt(c.a)}. Het geld staat vast tot je 18 bent.`}cash(c.a);return c.a>50000?`Je erft ${fmt(c.a)}! Daar had niemand op gerekend.`:`Je erft ${fmt(c.a)}. Een mooi extraatje.`}});
-E('viraal',{chaos:1,a:[12,90],cd:20,t:'Viraal!',x:'Een filmpje waarin je over een duif struikelt gaat de hele wereld over.',ch:[
+E('viraal',{chaos:1,a:[12,90],cd:20,c:()=>!!(S.sm&&Object.keys(S.sm.acc||{}).length),t:'Viraal!',x:'Een filmpje waarin je over een duif struikelt gaat de hele wereld over.',ch:[
  ['Er munt uit slaan',()=>{S.foll+=ri(5,60)*1000;S.fame=clamp(S.fame+6);hap(6);MS('Ging viraal met een duivenfilmpje',2);return 'Je verkoopt merchandise met duiven erop.'}],
  ['Je kapot schamen',()=>{hap(-6);S.foll+=ri(1,8)*1000;return 'Je gaat een maand niet de deur uit.'}]]});
 E('eendjes',{chaos:1,a:[16,90],once:1,t:'Verkeerd pakket',x:'De bezorger levert 400 rubberen eendjes bij je af. Niemand weet van wie ze zijn.',ch:[
@@ -174,7 +174,7 @@ E('tijdreiziger',{chaos:1,a:[16,90],once:1,t:'Een vreemde bezoeker',x:'Een man i
  ['Binnenlaten',()=>{if(chance(.5)){sma(5);return 'Hij geeft je één tip: "Investeer in zonnepanelen." Dan is hij weg.'}cash(-200);return 'Hij eet je koelkast leeg en verdwijnt.'}],
  ['Deur dichtdoen',()=>'Je hoort nooit meer iets van hem.']]});
 E('ikea',{chaos:1,a:[16,90],once:1,t:'Verdwaald',f:()=>{hap(-3);hea(-1);cash(-35);return 'Je raakt de weg kwijt in de IKEA. Na negen uur vind je de uitgang, met 14 pakken theelichtjes.'}});
-E('quiz',{chaos:1,a:[16,85],cd:8,t:'Tv-quiz',x:'Je wordt gevraagd als kandidaat voor een quiz op tv.',ch:[
+E('quiz',{chaos:1,a:[16,85],cd:40,w:.3,t:'Tv-quiz',x:'Je wordt gevraagd als kandidaat voor een quiz op tv.',ch:[
  ['Meedoen',()=>{if(chance(S.st.smarts/140)){const w=ri(5,50)*1000;cash(w);S.fame=clamp(S.fame+8);MS(`Won ${fmt(w)} in een tv-quiz`,2);return `Je wint ${fmt(w)}!`}hap(-4);return 'Je gaat bij de eerste vraag al onderuit.'}],
  ['Nee, spannend',()=>'Je kijkt vanaf de bank.']]});
 E('schatkaart',{chaos:1,a:[8,80],once:1,t:'Schatkaart',x:'Op zolder vind je een oude kaart met een kruisje bij het bos verderop.',ch:[

@@ -66,7 +66,7 @@ function sportYear(a){const P=S.sport;if(!P||P.st==='gestopt'||inJail())return;i
   if(P.inj>0){P.inj--;g=-ri(2,6);L(`Je seizoen valt grotendeels in het water door je blessure.`,'bad')}
   P.sk=clamp(Math.round(P.sk+g*(S.talent==='sport'?1.5:1)));
   const need={club:30,school:40,academie:52,uni:58,pro:62+(P.lvl||0)*9}[P.st]||30;
-  const perf=clamp(Math.round(50+(P.sk-need)*1.6+ri(-14,14)+tr*2+(P.big||0)*5+(P.boost||0)));P.big=0;P.boost=0;
+  const perf=clamp(Math.round(50+(P.sk-need)*1.6+ri(-22,22)+tr*2+(P.big||0)*5+(P.boost||0)));P.big=0;P.boost=0;
   const num=Math.max(0,Math.round(D.stat[1]*perf/70*(.7+R()*.6)));
   const lvlF=P.st==='pro'?(P.lvl+2):P.st==='uni'?1.2:P.st==='academie'?.8:.3;
   S.fame=Math.round(clamp(S.fame+pop/100*perf/25*lvlF));if(P.st==='pro'&&S.job)S.job.perf=perf;

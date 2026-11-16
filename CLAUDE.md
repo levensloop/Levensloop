@@ -98,3 +98,5 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 
 - Het energiesysteem is in fase 2 verwijderd (Thijmens keuze).
 - Na openen toont de app meteen het laatst gespeelde leven; het startscherm zit in Menu → Startscherm.
+- Balans (fase 3): gezondheid herstelt elk jaar langzaam naar een niveau dat bij de leeftijd past (`birthday` in engine.js); ernstige niet-chronische ziektes genezen ook zonder doktersbezoek (35%/jaar). Staatsschuld schommelt rond `ECO_D0[land]` (eco.js), het kabinet stuurt daarnaar (eco3.js `budYear`).
+- Meet balans altijd met minstens 136 passieve levens (`LIVES=8`) en draai dan niets anders tegelijk: met 68 levens of een drukke processor verschillen de medianen tot 10 punten. `MAXAGE=31` geeft snel alleen de jeugd.
