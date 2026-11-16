@@ -696,7 +696,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261116-2306';
+const APP_VERSION='20261117-0054';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -1067,7 +1067,7 @@ E('steelt',{a:[18,90],ctx:bizCtx(b=>b.staff>0),t:'Diefstal',x:c=>`Een medewerker
  ['Tweede kans geven',c=>{kar(4);if(chance(.5))return 'De medewerker is je eeuwig dankbaar en werkt harder dan ooit.';B(c).cash-=5000;return 'Het gebeurt opnieuw.'}]]});
 /* --- chaos --- */
 E('oom',{chaos:1,a:[12,100],once:1,w:.6,t:'Een verre erfenis',ctx:()=>({l:pick(['Canada','Argentinië','Nieuw-Zeeland','Zwitserland','Friesland','Zeeland']),w:pick(['achteroom','oudtante','verre neef','oudoom']),a:Math.round((chance(.02)?ri(100,400)*1000:ri(2,25)*1000)*(S.cpi||1))}),x:c=>`Een notaris belt. Je ${c.w} uit ${c.l}, die je nauwelijks kende, is overleden en heeft je iets nagelaten.`,f:c=>{hap(c.a>50000?10:4);if(c.a>50000)MS(`Erfde ${fmt(c.a)} van een verre ${c.w}`,2);if(ageY()<18){S.trust=(S.trust||0)+c.a;return `Je erft ${fmt(c.a)}. Het geld staat vast tot je 18 bent.`}cash(c.a);return c.a>50000?`Je erft ${fmt(c.a)}! Daar had niemand op gerekend.`:`Je erft ${fmt(c.a)}. Een mooi extraatje.`}});
-E('viraal',{chaos:1,a:[12,90],cd:20,t:'Viraal!',x:'Een filmpje waarin je over een duif struikelt gaat de hele wereld over.',ch:[
+E('viraal',{chaos:1,a:[12,90],cd:20,c:()=>!!(S.sm&&Object.keys(S.sm.acc||{}).length),t:'Viraal!',x:'Een filmpje waarin je over een duif struikelt gaat de hele wereld over.',ch:[
  ['Er munt uit slaan',()=>{S.foll+=ri(5,60)*1000;S.fame=clamp(S.fame+6);hap(6);MS('Ging viraal met een duivenfilmpje',2);return 'Je verkoopt merchandise met duiven erop.'}],
  ['Je kapot schamen',()=>{hap(-6);S.foll+=ri(1,8)*1000;return 'Je gaat een maand niet de deur uit.'}]]});
 E('eendjes',{chaos:1,a:[16,90],once:1,t:'Verkeerd pakket',x:'De bezorger levert 400 rubberen eendjes bij je af. Niemand weet van wie ze zijn.',ch:[
@@ -1081,7 +1081,7 @@ E('tijdreiziger',{chaos:1,a:[16,90],once:1,t:'Een vreemde bezoeker',x:'Een man i
  ['Binnenlaten',()=>{if(chance(.5)){sma(5);return 'Hij geeft je één tip: "Investeer in zonnepanelen." Dan is hij weg.'}cash(-200);return 'Hij eet je koelkast leeg en verdwijnt.'}],
  ['Deur dichtdoen',()=>'Je hoort nooit meer iets van hem.']]});
 E('ikea',{chaos:1,a:[16,90],once:1,t:'Verdwaald',f:()=>{hap(-3);hea(-1);cash(-35);return 'Je raakt de weg kwijt in de IKEA. Na negen uur vind je de uitgang, met 14 pakken theelichtjes.'}});
-E('quiz',{chaos:1,a:[16,85],cd:8,t:'Tv-quiz',x:'Je wordt gevraagd als kandidaat voor een quiz op tv.',ch:[
+E('quiz',{chaos:1,a:[16,85],cd:40,w:.3,t:'Tv-quiz',x:'Je wordt gevraagd als kandidaat voor een quiz op tv.',ch:[
  ['Meedoen',()=>{if(chance(S.st.smarts/140)){const w=ri(5,50)*1000;cash(w);S.fame=clamp(S.fame+8);MS(`Won ${fmt(w)} in een tv-quiz`,2);return `Je wint ${fmt(w)}!`}hap(-4);return 'Je gaat bij de eerste vraag al onderuit.'}],
  ['Nee, spannend',()=>'Je kijkt vanaf de bank.']]});
 E('schatkaart',{chaos:1,a:[8,80],once:1,t:'Schatkaart',x:'Op zolder vind je een oude kaart met een kruisje bij het bos verderop.',ch:[
@@ -1404,11 +1404,12 @@ function monthTick(){
   if(typeof insPrem==='function')for(const x of [...S.cars,...(S.items||[])])if(x.ins)ex('Verzekeringen',insPrem(x)/12);
   S.money+=inc-exp;period.inc+=inc;period.exp+=exp;
   if(S.auto&&S.auto.pct>0&&a>=18&&!S.crim.jail&&typeof autoInvest==='function')autoInvest(inc-exp);
-  for(const il of S.ill)st('health',-il.sev/12);
+  for(const il of S.ill)st('health',-il.sev*.5/12);
   if(S.st.health<=0){const n=S.flags.zkh||0;if(a>=82||(n>=2&&chance(.35+n*.1))||(S.ill.some(i=>i.l)&&n>=1&&chance(.5)))return die(deathCause(a));hospital(a);return}
   if(chance(mortality(a,S.st.health)/12))die(deathCause(a));
 }
-function mortality(a,h){let b=a<1?.002:a<15?.0004:a<40?.0009:a<50?.0025:a<60?.006:a<70?.015:a<80?.04:a<90?.1:a<100?.24:.5;const f=h<10?6:h<25?3:h<45?1.6:h>80?.6:1;return b*f}
+// sterftekans per jaar, ongeveer naar Nederlandse overlevingstafels (verbeterplan 3.2); lage gezondheid verhoogt hem
+function mortality(a,h){let b=a<1?.002:a<15?.0004:a<40?.0009:a<50?.0025:a<60?.005:a<70?.01:a<80?.025:a<90?.07:a<100?.18:.4;const f=h<10?6:h<25?3:h<45?1.6:h>80?.6:1;return b*f}
 function hospital(a){S.flags.zkh=(S.flags.zkh||0)+1;S.st.health=15;const k=Math.round(ri(4,9)*100*(S.cpi||1)*law('er'));cash(-k);hap(-10);if(S.job&&!S.job.part)(S.job&&(S.job.perf=clamp(S.job.perf-15)));
   L(`Je bent met spoed opgenomen in het ziekenhuis. Je lichaam gaf het bijna op. Eigen bijdrage: ${fmt(k)}.`,'bad big');MS('Werd met spoed opgenomen in het ziekenhuis',1);Q.push({id:'s_zkh',c:{n:S.flags.zkh}})}
 // kies een tekst die je recent niet hebt gezien
@@ -1424,9 +1425,12 @@ function birthday(){
   const a=ageY();const did=S.acts||{};S.lastActs=did;S.acts={};S.hist.happy+=S.st.happy;S.hist.n++;
   if(typeof ecoYear==='function')ecoYear();const infl=S.eco?S.eco.inf/100:.022+gauss()*.008;S.cpi=(S.cpi||1)*(1+infl);if(S.pension)S.pension=Math.round(S.pension*(1+infl));if(S.home.k==='huur'&&a>=19){const hb=law('huur');S.home.rent=Math.round(S.home.rent*(hb===-1?1:1+infl+hb))}
   econYear();if(typeof warYear==='function'){warYear();vetYear()}
-  const h0=S.st.health;const sporty=['gym','run','klim','jsport','tapgym','taprun','spel','zorg','fiets','zwem','sp_'].some(k=>Object.keys(did).some(x=>x.startsWith(k)))||(S.sport&&['club','school','academie','uni','pro'].includes(S.sport.st));if(a>=25&&!sporty){hea(-ri(0,2));if(a>=45)hea(-ri(0,1));if(chance(.4))loo(-1)}if(sporty&&a>=16)hea(ri(0,2));
+  const h0=S.st.health;const sporty=['gym','run','klim','jsport','tapgym','taprun','spel','zorg','fiets','zwem','sp_'].some(k=>Object.keys(did).some(x=>x.startsWith(k)))||(S.sport&&['club','school','academie','uni','pro'].includes(S.sport.st));if(a>=25&&!sporty){if(chance(.4))hea(-1);if(chance(.4))loo(-1)}if(sporty&&a>=16)hea(ri(0,2));
   if(a>=18&&!(typeof noTax==='function'&&noTax())){const base=Math.max(0,S.money)+Object.values(S.inv).reduce((x,y)=>x+y,0)+S.props.filter(p=>p.id!==S.home.pid).reduce((x,p)=>x+p.value-p.mort,0)-57000;if(base>0){const t=Math.round(base*law('verm'));cash(-t);period.out['Vermogensbelasting']=(period.out['Vermogensbelasting']||0)+t;period.exp+=t}}
-  if(a>=45)hea(-ri(0,1));if(a>=60)hea(-ri(0,2));if(a>=75)hea(-ri(1,3));
+  // ouder worden (verbeterplan 3.1): rustig na je 40e, sneller pas boven de 75
+  if(a>=45&&chance(.6))hea(-1);if(a>=60)hea(-ri(0,1));if(a>=75)hea(-ri(1,2));
+  // je lichaam herstelt langzaam van griep, vallen en andere tegenslag, tot een niveau dat bij je leeftijd past (verbeterplan 3.1)
+  {const tgt=a<40?85:Math.max(40,85-(a-40)*.8);if(S.st.health<tgt&&!S.ill.length&&chance(.5))hea(1)}
   if(a>=35&&chance(.5))loo(-1);if(a>=55)loo(-ri(0,2));if(a<=18)sma(ri(0,2));
   // geluk zakt alleen door echte gebeurtenissen; zonder tegenslag drijft het alleen omhoog naar je basis
   {const hb=happyBase(),neg=happyParts().some(([v])=>v<0);if(hb>S.st.happy)hap(Math.round((hb-S.st.happy)/7)+ri(0,1));else if(neg)hap(Math.round((hb-S.st.happy)/7))}
@@ -1474,7 +1478,7 @@ function relYear(a){
 }
 function onDeath(p){if(typeof famOnDeath==='function')famOnDeath(p);
   const close=['moeder','vader','partner','kind'].includes(p.role);
-  L(`Je ${relWord(p)} ${p.first} is overleden, ${pAge(p)} jaar oud.`,'bad');hap(close?-ri(12,25):-ri(3,8));
+  L(`Je ${relWord(p)} ${p.first} is overleden, ${pAge(p)} jaar oud.`,'bad');hap(close?-ri(12,25):['broer','zus','opa','oma','vriend'].includes(p.role)?-ri(3,8):-ri(1,3));// verre familie minder zwaar (verbeterplan 3.3)
   if(close)MS(`Verloor ${p.role==='partner'?'je '+partnerWord(p):'je '+relWord(p)} ${p.first}`,1);
   if(p.role==='moeder'||p.role==='vader'){
     const other=living(p.role==='moeder'?'vader':'moeder')[0];
@@ -1722,7 +1726,7 @@ function sportYear(a){const P=S.sport;if(!P||P.st==='gestopt'||inJail())return;i
   if(P.inj>0){P.inj--;g=-ri(2,6);L(`Je seizoen valt grotendeels in het water door je blessure.`,'bad')}
   P.sk=clamp(Math.round(P.sk+g*(S.talent==='sport'?1.5:1)));
   const need={club:30,school:40,academie:52,uni:58,pro:62+(P.lvl||0)*9}[P.st]||30;
-  const perf=clamp(Math.round(50+(P.sk-need)*1.6+ri(-14,14)+tr*2+(P.big||0)*5+(P.boost||0)));P.big=0;P.boost=0;
+  const perf=clamp(Math.round(50+(P.sk-need)*1.6+ri(-22,22)+tr*2+(P.big||0)*5+(P.boost||0)));P.big=0;P.boost=0;
   const num=Math.max(0,Math.round(D.stat[1]*perf/70*(.7+R()*.6)));
   const lvlF=P.st==='pro'?(P.lvl+2):P.st==='uni'?1.2:P.st==='academie'?.8:.3;
   S.fame=Math.round(clamp(S.fame+pop/100*perf/25*lvlF));if(P.st==='pro'&&S.job)S.job.perf=perf;
@@ -2934,7 +2938,7 @@ const DOPE=[['steroiden','💪','Anabole steroïden','Meer spierkracht: je nivea
   ['epo','🩸','EPO','Meer uithoudingsvermogen: dit seizoen presteer je veel beter',2500,()=>{S.sport.boost=(S.sport.boost||0)+14;hea(-ri(3,6));return 'Je bloed is dikker, je longen lijken eindeloos.'}],
   ['groei','🧬','Groeihormoon','Sneller herstel en meer kracht',4000,()=>{S.sport.sk=clamp(S.sport.sk+ri(3,5));if(S.sport.inj)S.sport.inj=0;hea(-ri(2,5));return 'Je herstelt razendsnel van elke training.'}]];
 function dopeMenu(){const P=S.sport,cp=S.cpi||1;
-  modal({title:'Doping',em:'💉',cat:SPORTS[P.id].n,text:`Doping maakt je beter, maar het blijft ongeveer 4 jaar aantoonbaar in je bloed. ${P.st==='pro'?'Profs worden vaak gecontroleerd.':'Ook amateurs worden soms gecontroleerd.'}`,choices:opts(DOPE.map(([id,em,t,s,k,fn])=>({t,ic:em,s:`${s} · ${fmt(k*cp)}`,dis:S.money<k*cp,on:()=>{closeModal();doAct('Doping',()=>{S.acts.dope=1;cash(-Math.round(k*cp));P.dopeM=S.m;P.doped=(P.doped||0)+1;kar(-3);return fn()},true,'💉')}})))})}
+  modal({title:'Doping',em:'💉',cat:SPORTS[P.id].n,text:`Doping maakt je beter, maar het blijft ongeveer 4 jaar aantoonbaar in je bloed. ${P.st==='pro'?'Profs worden vaak gecontroleerd.':['academie','uni'].includes(P.st)?'Op jouw niveau wordt af en toe gecontroleerd.':'Amateurs worden niet gecontroleerd, maar het blijft valsspelen.'}`,choices:opts(DOPE.map(([id,em,t,s,k,fn])=>({t,ic:em,s:`${s} · ${fmt(k*cp)}`,dis:S.money<k*cp,on:()=>{closeModal();doAct('Doping',()=>{S.acts.dope=1;cash(-Math.round(k*cp));P.dopeM=S.m;P.doped=(P.doped||0)+1;kar(-3);return fn()},true,'💉')}})))})}
 function caught(yrs,why){const P=S.sport,D=SPORTS[P.id];P.ban=S.m+yrs*12;P.caught=(P.caught||0)+1;S.fame=clamp(S.fame-15);kar(-8);hap(-10);let x='';
   if(P.st==='pro'&&S.job){const f=Math.round(salary()*.2);cash(-f);x=` ${P.team} ontbindt je contract en je krijgt een boete van ${fmt(f)}.`;endJob();P.st='club';P.lvl=0;P.team=`${cap(D.c)} ${S.p.city}`}
   MS(`Werd betrapt op doping`,1);return `Positief! ${why?cap(why)+'. ':''}Je wordt ${yrs} jaar geschorst.${x} Je naam staat in alle kranten.`}
@@ -2947,7 +2951,7 @@ E('sp_dope',{sys:1,need:()=>!!S.sport&&S.sport.st!=='gestopt'&&!banned(),t:'Dopi
 function dopeYear(){const P=S.sport;if(!P||P.st==='gestopt')return false;
   if(banned()){P.sk=clamp(P.sk-ri(1,3));L(`Je bent nog ${Math.ceil((P.ban-S.m)/12)} jaar geschorst voor doping. Je mag niet spelen.`,'bad');return true}
   if(inBlood()&&chance(.3))hea(-ri(1,3));
-  const pc={pro:.45,academie:.2,uni:.25,club:.06,school:.03}[P.st]||0;if(ageY()>=15&&chance(pc))Q.push({id:'sp_dope'});return false}
+  const pc={pro:.45,academie:.12,uni:.08}[P.st]||0;/* amateurs en schoolsport worden niet gecontroleerd (verbeterplan 3.4) */if(ageY()>=15&&chance(pc))Q.push({id:'sp_dope'});return false}
 /* ---------- roem: bekende beroepen, volgers, en het leven als celebrity ---------- */
 // hoe bekend je wordt per niveau van je beroep
 const FAMEJ={politiek:[8,20,45,75,95],muzikant:[3,15,60,92],acteur:[5,30,88],model:[25,70],voetbal:[30,55,90],schrijver:[10,50],kok:[0,0,0,5,35],journalist:[3,8,25],orkest:[0,5,25]};
@@ -2974,7 +2978,7 @@ function fameYear(){const act=S.flags.postY!=null&&year()-S.flags.postY<=1;
 function celebYear(){if(!famous()||inJail()||ageY()<12)return;const f=S.fame,bg=!!S.flags.bg;
   if(chance(.5)){const v=Math.round(ri(5,40)*f*(S.cpi||1)/10)*10;S.flags.gifts=(S.flags.gifts||0)+v;hap(1);L(`Merken sturen je gratis spullen ter waarde van ${fmt(v)}.`,'good')}
   const pool=[['c_papa',f>=30?.35:0],['c_roddel',f>=35?.25:0],['c_haat',S.foll>=1e5?.25:0],['c_fans',f>=45&&!bg?.18:0],['c_stalker',f>=50?(bg?.03:.1):0],['c_hack',f>=45?.08:0],['c_afpers',f>=60?.06:0],
-    ['c_gala',f>=30?.3:0],['c_ambassadeur',f>=40&&!S.acts.amb?.15:0],['c_deal',f>=50?.2:0],['c_herkend',.25]];
+    ['c_gala',f>=30?.3:0],['c_ambassadeur',f>=40&&!S.acts.amb?.15:0],['c_deal',f>=50?.2:0],['c_herkend',f>=40?.25:0]];
   let n=0;for(const [id,p] of pool.sort(()=>R()-.5)){if(n>=2)break;if(p&&chance(p)){const e=EV[id];Q.push({id,c:e.ctx?e.ctx():{}});n++}}}
 const bgCost=()=>Math.round(65000*(S.cpi||1));
 // --- problemen ---
@@ -3016,7 +3020,7 @@ E('c_deal',{sys:1,need:famous,t:'Groot reclamecontract',ctx:()=>({b:pick(['een s
  ['✍️ Tekenen',c=>{cash(c.k);S.foll+=Math.round(S.foll*.03);return `Je staat op billboards door het hele land. ${fmt(c.k)} rijker.`}],
  ['💬 Meer vragen',c=>{if(chance(.45)){const k=Math.round(c.k*1.4);cash(k);return `Ze gaan akkoord: ${fmt(k)}.`}return 'Ze kiezen iemand anders.'}],
  ['❌ Afslaan',()=>'Je wilt je naam niet aan dat merk verbinden.']]});
-E('c_herkend',{sys:1,need:famous,t:'Herkend!',x:()=>pick(['In een restaurant krijg je de beste tafel en de chef komt persoonlijk langs.','Op het vliegveld word je naar de VIP-lounge gebracht.','Een fan vraagt huilend om een selfie.','Je krijgt een gratis upgrade naar de suite in je hotel.']),ch:[
+E('c_herkend',{sys:1,need:()=>S.fame>=40,t:'Herkend!',x:()=>pick(['In een restaurant krijg je de beste tafel en de chef komt persoonlijk langs.','Op het vliegveld word je naar de VIP-lounge gebracht.','Een fan vraagt huilend om een selfie.','Je krijgt een gratis upgrade naar de suite in je hotel.']),ch:[
  ['😊 Genieten',()=>{hap(3);return 'Soms is bekend zijn best fijn.'}],
  ['😐 Je ongemakkelijk voelen',()=>{hap(-1);return 'Je zou soms willen dat je gewoon even anoniem was.'}]]});
 /* ================= UI ================= */
@@ -4441,14 +4445,15 @@ const ILLS={
  'migraine':[2,0,'neuroloog',.5],'een hernia':[3,0,'orthopeed',.6],'astma':[2,0,'longarts',.35,1],'een burn-out':[3,0,'psycholoog',.5,0,1],'de ziekte van Pfeiffer':[4,0,'huisarts',.7],
  'een depressie':[3,0,'psycholoog',.45,0,1],'een angststoornis':[2,0,'psycholoog',.5,0,1],'de ziekte van Lyme':[3,0,'huisarts',.65],'diabetes type 1':[3,0,'internist',0,1],'long covid':[3,0,'huisarts',.3],
  'een gebroken been':[3,0,'orthopeed',.85],'een longontsteking':[5,1,'longarts',.75],
- 'diabetes':[4,0,'internist',.1,1],'hartfalen':[7,1,'cardioloog',.35],'artrose':[2,0,'orthopeed',.4,1],'COPD':[6,1,'longarts',.15,1],'hoge bloeddruk':[3,0,'cardioloog',.5],'kanker':[9,1,'oncoloog',.4],
+ 'diabetes':[4,0,'internist',.1,1],'hartfalen':[7,1,'cardioloog',.35],'artrose':[2,0,'orthopeed',.4,1],'COPD':[4,1,'longarts',.15,1],'hoge bloeddruk':[3,0,'cardioloog',.5],'kanker':[9,1,'oncoloog',.4],
  'Alzheimer':[6,1,'neuroloog',0,1],'Parkinson':[5,0,'neuroloog',.05,1],'staar':[1,0,'oogarts',.9],'een hartinfarct':[8,1,'cardioloog',.55]};
 const SPEC={huisarts:['🩺','Huisarts',60],internist:['🧪','Internist',900],neuroloog:['🧠','Neuroloog',1100],orthopeed:['🦴','Orthopeed',1000],longarts:['🫁','Longarts',1000],cardioloog:['❤️','Cardioloog',1400],oncoloog:['🎗️','Oncoloog',2500],oogarts:['👁️','Oogarts',800],psycholoog:['🛋️','Psycholoog',110],dermatoloog:['🧴','Dermatoloog',700]};
 const ILLY=['migraine','een hernia','astma','een burn-out','de ziekte van Pfeiffer','een depressie','een angststoornis','de ziekte van Lyme','diabetes type 1','long covid','een longontsteking'];
 const ILLO=['diabetes','hartfalen','artrose','COPD','hoge bloeddruk','kanker','Alzheimer','Parkinson','staar','een hartinfarct','een longontsteking'];
 const illInfo=il=>{const d=ILLS[il.n]||[il.sev,il.l,'huisarts',.4];return {sev:il.sev??d[0],l:il.l??d[1],sp:d[2],cure:d[3],chron:!!d[4],ment:!!d[5]}};
 function illYear(a){
-  for(const il of S.ill.slice()){const I=illInfo(il);if(!I.l&&!I.chron&&chance(I.ment?(S.flags.ther?.35:.15):.3)){S.ill=S.ill.filter(x=>x!==il);L(`Je bent hersteld van ${il.n}.`,'good');hap(5)}}
+  // gewone zorg (verbeterplan 3.1): ook zonder zelf naar de dokter te gaan herstel je meestal; ernstige ziektes via het ziekenhuis
+  for(const il of S.ill.slice()){const I=illInfo(il);if(!I.chron&&chance(I.ment?(S.flags.ther?.35:.15):I.l?.35:.3)){S.ill=S.ill.filter(x=>x!==il);L(`Je bent hersteld van ${il.n}.`,'good');hap(5)}}
   S.flags.ther=0;
   if(S.ill.length<2&&chance((a>55?.09:a>35?.045:.02)*(S.st.health>70?.6:S.st.health<35?1.4:1)*(addLvl('roken')>=50||addLvl('alcohol')>=50?1.4:1))){
     const pool=(a>55?ILLO:a>35?ILLY.concat(['hoge bloeddruk','diabetes','kanker']):ILLY).filter(n=>!S.ill.some(i=>i.n===n)&&(n!=='Alzheimer'||a>=65));const n=pick(pool);const d=ILLS[n];S.ill.push({n,sev:d[0],l:d[1]});L(`De dokter stelt vast dat je ${n} hebt.`,'bad');hap(-6)}}
@@ -7937,8 +7942,11 @@ const EPH={hoog:{n:'Hoogconjunctuur',em:'🚀',g:3.8,u:3.2,inf:3.6,ret:.16},groe
 const EDUR={groei:[2,6],hoog:[1,3],stabiel:[1,4],recessie:[1,2],depressie:[2,4],hyper:[1,3]};
 const ETR={groei:[['hoog',.3],['stabiel',.5],['recessie',.2]],hoog:[['stabiel',.45],['recessie',.55]],stabiel:[['groei',.6],['recessie',.4]],recessie:[['stabiel',.5],['groei',.42],['depressie',.08]],depressie:[['recessie',.55],['stabiel',.45]],hyper:[['recessie',1]]};
 const wpick=arr=>{let t=arr.reduce((s,x)=>s+x[1],0),r=R()*t;for(const [k,w] of arr){r-=w;if(r<=0)return k}return arr[arr.length-1][0]};
-function ecoW(){if(!S.eco){const ph=S.econ&&S.econ.s==='groei'?'groei':S.econ&&S.econ.s==='recessie'?'recessie':'stabiel';const T=EPH[ph];
-  S.eco={ph,py:0,g:T.g,u:T.u,inf:2.2,r:2.5,hp:100,hreal:1,idx:1000,oil:80,debt:48,wr:1,ret:0,hpg:0,news:[],hist:[]}}return S.eco}
+// staatsschuld als % van het bbp bij de start, ongeveer zoals in de echte landen (2024)
+const ECO_D0={NL:45,US:120,DE:63,UK:100,FR:112,BE:104,JP:230,BR:75,MA:70,TR:30,ES:105,IT:137,CA:107,AU:50,MX:50,ZA:75,ID:40};
+const ecoD0=()=>ECO_D0[S.p&&S.p.country]||60;
+function ecoW(){if(S.eco&&S.eco.d0==null)S.eco.d0=ecoD0();if(!S.eco){const ph=S.econ&&S.econ.s==='groei'?'groei':S.econ&&S.econ.s==='recessie'?'recessie':'stabiel';const T=EPH[ph];
+  S.eco={ph,py:0,g:T.g,u:T.u,inf:2.2,r:2.5,hp:100,hreal:1,idx:1000,oil:80,debt:ecoD0(),d0:ecoD0(),wr:1,ret:0,hpg:0,news:[],hist:[]}}return S.eco}
 const ecoPhase=()=>EPH[ecoW().ph];
 function ecoNews(t,big){const E_=ecoW();E_.news.unshift({y:year(),t});if(E_.news.length>12)E_.news.pop();if(big)L(t,'sys')}
 function ecoYear(){const E_=ecoW(),W=typeof warW==='function'?warW():{lvl:0,reb:0},WE=typeof warEcon==='function'?warEcon():{infl:0,stk:0,house:0};const occ=typeof occHere==='function'&&occHere();
@@ -7958,25 +7966,29 @@ function ecoYear(){const E_=ecoW(),W=typeof warW==='function'?warW():{lvl:0,reb:
   E_.u=Math.round(clamp(E_.u+(T.u+sh.u-E_.u)*.5+gauss()*.3,2,25)*10)/10;
   E_.inf=Math.round((ph==='hyper'?ri(40,220):T.inf+gauss()*.5+(E_.oil-80)/45+WE.infl*100+sh.inf)*10)/10;
   // centrale bank
-  const tR=clamp(2+1.5*(E_.inf-2)+.4*(E_.g-1.5),0,ph==='hyper'?45:12);E_.r=Math.max(0,Math.round((E_.r+(tR-E_.r)*.5)*4)/4);
+  const tR=clamp(2+1.5*(E_.inf-2)+.4*(E_.g-1.5),0,ph==='hyper'?45:12);if(Math.abs(tR-E_.r)>=1||ph==='hyper')E_.r=Math.max(0,Math.round((E_.r+(tR-E_.r)*.5)*4)/4);
   // beurs en huizen
   E_.ret=Math.round((T.ret+gauss()*.09-(E_.r-prev.r)*.03-WE.stk+sh.ret)*1000)/1000;E_.idx=Math.max(50,Math.round(E_.idx*(1+E_.ret)));
   E_.hpg=Math.round(clamp((E_.g*.9+2.1-(E_.r-2.5)*1.3+(E_.inf-2)*.3)/100+gauss()*.015-WE.house+sh.hpg,-.25,.2)*1000)/1000;E_.hp=Math.round(E_.hp*(1+E_.hpg)*10)/10;E_.hreal=clamp(E_.hreal*(1+E_.hpg)/(1+E_.inf/100),.4,3);
   // lonen (cao) lopen soms achter op de inflatie
   const cao=ph==='hyper'?E_.inf*.6:E_.inf+({hoog:1,groei:.5,stabiel:.2,recessie:-.6,depressie:-1.5}[ph]||0)+gauss()*.3;E_.wr=clamp(E_.wr*(1+cao/100)/(1+E_.inf/100),.75,1.3);
   // staatsschuld
-  const def=(typeof budInt==='function'?budInt(E_):2)-E_.g*.5+(W.lvl>=3?6:0)+(ph==='depressie'?3:0)+(E_.def||0)+(E_.bdef||0);E_.debt=Math.round(clamp(E_.debt*(1-(E_.g+Math.max(0,E_.inf))/100)+def,8,260)*10)/10;
+  // staatsschuld (verbeterplan 3.6): schommelt rond het normale niveau van het land (d0). Tekorten, crises en oorlog duwen hem op,
+  // daarna trekt hij langzaam terug (15% van het verschil per jaar; 3% als jij zelf over de begroting gaat). Hyperinflatie holt hem uit.
+  {const d0=E_.d0??48,k=(typeof budMine==='function'&&budMine())?.03:.15;
+   const shock=(E_.bdef||0)+(E_.def||0)+(W.lvl>=3?6:0)+(ph==='depressie'?3:0)+(1.5-E_.g)*.6+(typeof ratePrem==='function'?ratePrem()*.5:0);
+   let d=E_.debt-(E_.debt-d0)*k+shock;if(ph==='hyper')d*=.75;E_.debt=Math.round(clamp(d,8,260)*10)/10}
   // econ() koppelen aan de rest van het spel
   S.econ.s=['hoog','groei'].includes(ph)?'groei':ph==='stabiel'?'normaal':'recessie';S.econ.y=E_.py;
   // nieuws
   const pc=v=>v.toLocaleString('nl-NL',{maximumFractionDigits:2})+'%';
-  if(Math.abs(E_.r-prev.r)>=.5)ecoNews(`De centrale bank ${E_.r>prev.r?'verhoogt':'verlaagt'} de rente naar ${pc(E_.r)}.`,1);
+  if(Math.abs(E_.r-prev.r)>=.5&&(Math.abs(E_.r-prev.r)>=1.5||year()-(E_.rnY||0)>=3)&&(E_.rnY=year()))ecoNews(`De centrale bank ${E_.r>prev.r?'verhoogt':'verlaagt'} de rente naar ${pc(E_.r)}.`,1);
   if(Math.abs(E_.u-prev.u)>=1)ecoNews(`De werkloosheid ${E_.u>prev.u?'stijgt':'daalt'} naar ${pc(E_.u)}.`,E_.u>prev.u);
   if(E_.inf>=5&&ph!=='hyper')ecoNews(`De inflatie loopt op tot ${pc(E_.inf)}. Boodschappen worden flink duurder.`,1);
   if(E_.ret<=-.18)ecoNews(`Beurskrach: de beurs verliest ${Math.round(-E_.ret*100)}% in een jaar.`,1);else if(E_.ret>=.22)ecoNews(`De beurs stijgt ${Math.round(E_.ret*100)}% en breekt records.`);
   if(E_.hpg>=.08)ecoNews(`De huizenprijzen stijgen ${Math.round(E_.hpg*100)}%.`);else if(E_.hpg<=-.05)ecoNews(`De huizenprijzen dalen ${Math.round(-E_.hpg*100)}%.`,1);
   if(E_.oil>=130&&prev.inf!==E_.inf)ecoNews(`De olieprijs schiet naar $${E_.oil} per vat.`);
-  if(E_.debt>=90&&(E_.hist.slice(-1)[0]||{debt:0}).debt<90)ecoNews('De staatsschuld gaat over de 90% van de economie.',1);
+  {const t=Math.max(90,Math.round(((E_.d0??48)+30)/10)*10);if(E_.debt>=t&&(E_.hist.slice(-1)[0]||{debt:0}).debt<t)ecoNews(`De staatsschuld gaat over de ${t}% van de economie.`,1)}
   E_.hist.push({y:year(),g:E_.g,u:E_.u,inf:E_.inf,r:E_.r,hp:E_.hp,idx:E_.idx,oil:E_.oil,debt:E_.debt,ph});if(E_.hist.length>40)E_.hist.shift();
   ecoPersonal()}
 /* ---------- persoonlijke gevolgen ---------- */
@@ -8132,7 +8144,8 @@ const BPOST=[['zorg','Zorg','🏥',1],['onderwijs','Onderwijs','🎓',.6],['defe
 const BLVL=['Flink bezuinigen','Bezuinigen','Gelijk houden','Meer geld','Veel meer geld'];
 const RATES=[[60,'AAA',0],[80,'AA',.2],[100,'A',.5],[120,'BBB',1],[150,'BB',2],[999,'Junk',4]];
 function budW(){const E_=ecoW();if(!E_.bud)E_.bud={zorg:2,onderwijs:2,defensie:2,sociaal:2,infra:2};if(E_.eduAcc==null)E_.eduAcc=0;return E_.bud}
-const rating=d=>RATES.find(r=>d<r[0]);
+// kredietwaardigheid ten opzichte van wat normaal is voor het land (Japan met 230% is geen junk)
+const rating=d=>RATES.find(r=>d-Math.max(0,((S.eco&&S.eco.d0)||48)-70)<r[0]);
 const ratePrem=()=>S.eco?rating(S.eco.debt)[2]:0;
 function budSpend(b){return BPOST.reduce((s,[k,,,w])=>s+(b[k]-2)*w,0)}
 function budTax(){return -((lawIdx('ib')-2)*.7+(lawIdx('vpb')-2)*.4+(lawIdx('verm')-2)*.3+(lawIdx('aow')-2)*.35)}
@@ -8144,19 +8157,22 @@ function budYear(E_){const b=budW(),sh=E_.sh;const y=year();
   b.defensie=clamp(lawIdx('defb')+1,0,4);
   // kabinet past de begroting aan als jij het niet bent
   if(!budMine()){const W=S.pw;let lr=50;if(W&&W.gov&&W.gov.length){const tot=seatSum(W.gov,W.seats)||1;lr=W.gov.reduce((s,g)=>s+(PTY(g)?PTY(g).lr*W.seats[g]/tot:0),0)}
-    if(E_.debt>95){const k=pick(['zorg','sociaal','infra','onderwijs'].filter(k=>b[k]>0));if(k){b[k]--;ecoNews(`De staatsschuld is te hoog. Het kabinet bezuinigt op ${BPOST.find(p=>p[0]===k)[1].toLowerCase()}.`,1)}}
-    else if(chance(.45)){const up=lr<45?pick(['sociaal','zorg','onderwijs']):lr>58?pick(['defensie','infra']):pick(['zorg','onderwijs','infra']);const dn=lr<45?null:lr>58?'sociaal':null;
+    const d0=E_.d0||48,bs=budSpend(b);
+    if(E_.debt>d0+15&&(bs>-2||E_.debt>d0+40)&&chance(.6)){const k=pick(['zorg','sociaal','infra','onderwijs'].filter(k=>b[k]>0));if(k){b[k]--;ecoNews(`De staatsschuld is te hoog. Het kabinet bezuinigt op ${BPOST.find(p=>p[0]===k)[1].toLowerCase()}.`,1)}}
+    // terug naar een sluitende begroting als de schuld normaal is
+    else if(Math.abs(E_.debt-d0)<=15&&Math.abs(bs)>=1&&chance(.35)){const ks=BPOST.map(p=>p[0]).filter(k=>k!=='defensie'&&(bs>0?b[k]>2:b[k]<2));const k=ks.length&&pick(ks);if(k){b[k]+=bs>0?-1:1}}
+    else if((E_.debt<d0-15||bs<1)&&chance(.35)){const up=lr<45?pick(['sociaal','zorg','onderwijs']):lr>58?pick(['defensie','infra']):pick(['zorg','onderwijs','infra']);const dn=lr<45?null:lr>58?'sociaal':null;
       if(b[up]<4&&budSpend(b)<4){b[up]++;ecoNews(`Prinsjesdag: het kabinet trekt extra geld uit voor ${BPOST.find(p=>p[0]===up)[1].toLowerCase()}.`)}if(dn&&b[dn]>1&&chance(.4)){b[dn]--;ecoNews(`Prinsjesdag: het kabinet bezuinigt op ${BPOST.find(p=>p[0]===dn)[1].toLowerCase()}.`)}}
     setDefb(b.defensie)}
   else if(!S.acts.bud&&!Q.some(q=>q.id==='bud_prinsjes'))Q.push({id:'bud_prinsjes'});
   E_.bdef=Math.round((budSpend(b)+budTax())*10)/10;
   E_.eduAcc=E_.eduAcc*.9+(b.onderwijs-2)*.06;sh.g+=(b.infra-2)*.15+E_.eduAcc-((lawIdx('ib')-2)*.1+(lawIdx('vpb')-2)*.1);sh.u+=-(b.sociaal-2)*.15;
   // persoonlijk
-  if(b.zorg!==2&&chance(.5))hea(b.zorg>2?1:-1);for(const k of living('kind'))if(pAge(k)<18&&b.onderwijs!==2&&chance(.5))k.smarts=clamp((k.smarts||50)+(b.onderwijs>2?1:-1));
+  if(b.zorg!==2&&chance(.2))hea(b.zorg>2?1:-1);for(const k of living('kind'))if(pAge(k)<18&&b.onderwijs!==2&&chance(.5))k.smarts=clamp((k.smarts||50)+(b.onderwijs>2?1:-1));
   // kredietwaardigheid
   const r=rating(E_.debt)[1];if(E_.rate&&E_.rate!==r)ecoNews(`Kredietbeoordelaars ${RATES.findIndex(x=>x[1]===r)>RATES.findIndex(x=>x[1]===E_.rate)?'verlagen':'verhogen'} de kredietwaardigheid van het land naar ${r}.`,1);E_.rate=r;
-  if(E_.debt>=150&&!E_.imf){E_.imf=y;if(budMine())Q.push({id:'bud_imf'});else{for(const [k] of BPOST)if(k!=='defensie'&&b[k]>0)b[k]--;setLaw('ib',1);ecoNews('Het IMF grijpt in. Het land moet hard bezuinigen en de belastingen verhogen.',1)}}
-  if(E_.imf&&E_.debt<110)E_.imf=0}
+  if(E_.debt>=Math.max(150,(E_.d0||48)+60)&&!E_.imf){E_.imf=y;if(budMine())Q.push({id:'bud_imf'});else{for(const [k] of BPOST)if(k!=='defensie'&&b[k]>0)b[k]--;setLaw('ib',1);ecoNews('Het IMF grijpt in. Het land moet hard bezuinigen en de belastingen verhogen.',1)}}
+  if(E_.imf&&E_.debt<Math.max(110,(E_.d0||48)+20))E_.imf=0}
 /* ---------- Prinsjesdag ---------- */
 E('bud_prinsjes',{sys:1,need:budMine,t:'Prinsjesdag',x:()=>{const E_=ecoW();return `${isPres()?'Het is tijd om je begroting naar het Congres te sturen.':S.p.country==='NL'?'Het is Prinsjesdag. Jij presenteert de begroting.':`Je presenteert de begroting in ${PT().kamer}.`} Staatsschuld: ${E_.debt.toLocaleString('nl-NL')}% van de economie, kredietwaardigheid ${rating(E_.debt)[1]}.`},ch:[
  ['📊 Zelf de begroting maken',()=>({go:()=>{S.budDraft=Object.assign({},budW());openSheet('Begroting',sheetBudget);processQ()}})],
