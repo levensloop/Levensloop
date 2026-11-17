@@ -142,11 +142,11 @@ function sheetBuur(el,p){if(!nbPpl().includes(p)){empty(el,`${p.first} woont hie
   if(p.rel>=75)row(s,{ic:'🫂',t:'Vrienden worden',s:'Ook buiten de straat afspreken',dots:true,on:()=>doAct('Vriendschap',()=>{S.nb.ppl=S.nb.ppl.filter(x=>x!==p);p.role='vriend';S.rel.push(p);return `${p.first} is meer dan een buur: een echte vriend. Je vindt ${p.g==='v'?'haar':'hem'} nu bij je relaties.`},true,'🫂')})}
 const NB=c=>(S.nb&&S.nb.ppl||[]).find(x=>x.id===c.id);
 const nbCtx=f=>()=>{if(ageY()<8)return null;const ps=nbPpl().filter(f||(()=>1));return ps.length?{id:pick(ps).id}:null};
-E('nb_feest',{a:[8,100],cd:3,t:'Feest bij de buren',ctx:nbCtx(p=>p.tr==='luidruchtig'||p.tr==='gezellig'),x:c=>`Het is twee uur 's nachts en ${NB(c).first} geeft een feest. De bas dreunt door je muur.`,ch:[
+E('nb_feest',{need:c=>!!NB(c),a:[8,100],cd:3,t:'Feest bij de buren',ctx:nbCtx(p=>p.tr==='luidruchtig'||p.tr==='gezellig'),x:c=>`Het is twee uur 's nachts en ${NB(c).first} geeft een feest. De bas dreunt door je muur.`,ch:[
  ['🎉 Erbij gaan staan',c=>{const p=NB(c);if(ageY()<16)return 'Je moeder vindt het geen goed idee.';p.rel=clamp(p.rel+12);hap(4);return `${p.first} roept: "Eindelijk iemand die snapt hoe je feest!" Het wordt vijf uur.`}],
  ['🚪 Aanbellen en vragen of het zachter kan',c=>{const p=NB(c);if(chance(.6)){return `${p.first} biedt excuses aan. Het wordt stiller.`}p.rel=clamp(p.rel-8);return 'Ze doen open, lachen en draaien de muziek harder.'}],
  ['👮 De politie bellen',c=>{const p=NB(c);p.rel=clamp(p.rel-20);return `Om half drie is het stil. ${p.first} weet precies wie er belde.`}]]});
-E('nb_hulp',{a:[12,100],cd:4,t:'Een behulpzame buur',ctx:nbCtx(p=>p.tr==='behulpzaam'||p.rel>=60),x:c=>`${NB(c).first} ${pick(['heeft je pakketje aangenomen','heeft je kat gevonden die was weggelopen','ziet dat je verhuisdozen sjouwt en komt helpen','heeft je fietslicht gerepareerd'])}.`,ch:[
+E('nb_hulp',{need:c=>!!NB(c),a:[12,100],cd:4,t:'Een behulpzame buur',ctx:nbCtx(p=>p.tr==='behulpzaam'||p.rel>=60),x:c=>`${NB(c).first} ${pick(['heeft je pakketje aangenomen','heeft je kat gevonden die was weggelopen','ziet dat je verhuisdozen sjouwt en komt helpen','heeft je fietslicht gerepareerd'])}.`,ch:[
  ['🍫 Iets lekkers terugbrengen',c=>{const p=NB(c);p.rel=clamp(p.rel+10);return `${p.first} is er blij mee. Zo hoort het in een straat.`}],
  ['🙏 Bedanken',c=>{const p=NB(c);p.rel=clamp(p.rel+4);return 'Je bedankt hartelijk.'}]]});
 E('nb_tuin',{sys:1,t:'Je tuin',x:'Je buren hebben een briefje in je bus gedaan: je tuin is een jungle en het onkruid groeit bij hen naar binnen.',ch:[

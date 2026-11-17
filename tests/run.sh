@@ -38,6 +38,9 @@ node check.js "$OUT/passive.json" "$OUT/monkey.json" || RC=1
 echo "== regressietests (opgeloste fouten)"
 node regress.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
 
+echo "== fase 8: rondgang langs de nieuwe onderdelen"
+node f8tour.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
+
 echo "== meetscherm en indeling"
 node diag.test.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
 

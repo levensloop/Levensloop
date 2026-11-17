@@ -128,14 +128,80 @@ t('6','buitenland: geen Nederlandse termen, Nederland onveranderd','US',async()=
   const o=S.p.country;S.p.country='NL';const nl=locText(t)===t&&MBR.land.k==='Koninklijke Landmacht';S.p.country=o;
   return {ok:!nlBad&&!q&&nl,msg:`VS: "${us}" · ${st} · NL ongewijzigd ${nl}`}});
 
+t('8.0','social media: gebeurtenis met een influencer die intussen weg is','NL',async()=>{S.m=25*12;smInit();const ps=smPeers();const id=ps[0].id;S.sm.peers=S.sm.peers.filter(p=>p.id!==id);Q.length=0;Q.push({id:'sm_beef',c:{id}});processQ();await sl(30);
+  const shown=!document.querySelector('#modal').hidden;closeModal();const n=errList().filter(e=>/reading/.test(JSON.stringify(e))).length;return {ok:!shown&&n===0,msg:shown?'pop-up verscheen toch':'netjes overgeslagen'}});
+t('8.0b','buren: gebeurtenis na een verhuizing (buren zijn nieuw)','NL',async()=>{S.m=30*12;S.home={k:'huur',name:'Appartement',rent:12000};const ps=nbPpl();const id=ps[0].id;S.nb.key='anders';nbPpl();Q.length=0;Q.push({id:'nb_feest',c:{id}});processQ();await sl(30);
+  const shown=!document.querySelector('#modal').hidden;closeModal();return {ok:!shown,msg:shown?'pop-up verscheen toch':'netjes overgeslagen'}});
+/* ---------------- fase 8: nieuwe onderdelen ---------------- */
+const F8T=(nr,name,cc,afk,run)=>T.push({nr,name,cc,afk,run});
+F8T('8.1a','koningshuis: geboren als prins(es), troonopvolging bij overlijden','NL','kon',async()=>{const R_=S.roy;if(!R_)return {ok:false,msg:'geen S.roy'};
+  const pos0=royPos();const par=living(['moeder','vader']).find(p=>p.job&&/koning|prins/.test(p.job))||living('moeder')[0];
+  S.rel=S.rel.filter(p=>!['broer','zus'].includes(p.role));R_.mon=par.id;R_.gp=null;R_.rp=null;R_.jr=0;S.m=20*12;par.alive=false;Q.length=0;f8Year(20);
+  const crowned=R_.mon==='me'&&Q.some(q=>q.id==='roy_kroning');const inc=f8Inc().find(x=>x[0]==='Toelage koninklijk huis');
+  openSheet('Koninklijk huis',sheetRoyal);await sl(40);const txt=document.querySelector('#sheet-b').textContent;closeSheet();
+  return {ok:pos0>=1&&crowned&&inc&&inc[1]>500000&&/Populariteit/.test(txt)&&/Koning|Vorst/.test(subtitle()),msg:`plek bij geboorte ${pos0}, gekroond ${crowned}, toelage ${inc&&inc[1]}, ondertitel "${subtitle()}"`}});
+F8T('8.1b','koningshuis: huwelijk zonder toestemming kost je plek, politiek geblokkeerd','UK','kon',async()=>{const R_=S.roy;S.m=25*12;R_.mon='gp';R_.gp={first:'Edmund',g:'m',by:year()-60};R_.rp=null;R_.jr=0;R_.out=0;
+  const pt=mkPerson('partner','v',S.m-25*12,{st:'verloofd',rel:80});S.rel.push(pt);Q.length=0;f8Year(25);const asked=Q.some(q=>q.id==='roy_toestemming');
+  pt.st='getrouwd';Q.length=0;f8Year(25);const out=!!R_.out&&royPos()===0;R_.out=0;const el=document.createElement('div');sheetPol(el);const blocked=/Geen partijpolitiek/.test(el.textContent);
+  return {ok:asked&&out&&blocked,msg:`toestemming gevraagd ${asked}, plek kwijt na huwelijk ${out}, politiek geblokkeerd ${blocked}`}});
+F8T('8.1c','koningshuis: oudste kind volgt je op als vorst; adel erft de titel','BE','kon',async()=>{S.m=60*12;S.roy.mon='me';S.roy.reign=year()-20;S.adel={t:'Graaf',tt:['Graaf','Gravin'],fam:'de Hautmont'};
+  const k1=mkPerson('kind','v',S.m-30*12,{rel:80}),k2=mkPerson('kind','m',S.m-25*12,{rel:80});S.rel.push(k1,k2);die('ouderdom');const old=S;inherit(k1.id);closeModal();
+  const ok=S!==old&&S.roy&&S.roy.mon==='me'&&S.adel&&S.adel.t==='Gravin';return {ok,msg:`nieuw leven vorst ${S.roy&&S.roy.mon}, titel ${S.adel&&S.adel.t}, ondertitel "${subtitle()}"`}});
+F8T('8.1d','adel: titel voor je naam en een bal','DE','adel',async()=>{const ok1=!!S.adel&&/^(Freiherr|Freifrau|Graf|Gräfin) $/.test(f8Pre());S.m=17*12;const el=document.createElement('div');sheetAdel(el);
+  return {ok:ok1&&/Naar een bal/.test(el.textContent),msg:`titel "${f8Pre()}", familie ${S.adel&&S.adel.fam}`}});
+F8T('8.2a','astronaut: opleiding, lancering en terugkeer','US','',async()=>{S.m=30*12;S.ast={st:'opl',rank:0,yrs:0,mis:[],fit:80,ag:astAg(),y0:year()};f8Year(30);f8Year(31);const act=S.ast.st==='act'&&S.ast.rank===1;
+  S.ast.next='station';Q.length=0;f8Year(32);const launch=Q.some(q=>q.id==='ast_lancering');const r0=ASTM.station.risk;ASTM.station.risk=0;const t=EV.ast_lancering.ch[0][1]({k:'station'});ASTM.station.risk=r0;
+  const mis=Q.some(q=>q.id==='ast_missie');astBack('station',.8);checkAch();const inc=incomeParts().some(([k])=>k==='Ruimtevaart');
+  return {ok:act&&launch&&mis&&S.ast.mis.length===1&&(S.ach||[]).includes('ruimte')&&inc&&S.alive,msg:`astronaut na 2 jaar ${act}, lancering ${launch}, missie ${mis}, salaris ${inc}, ${t.slice(0,40)}`}});
+F8T('8.2b','geheim agent: dekmantel, salaris, geen gewone baan ernaast','NL','',async()=>{S.m=30*12;S.spy={st:'act',rank:0,yrs:0,perf:80,heat:0,mis:2,cover:'Consultant bij een adviesbureau'};
+  const sub=subtitle();const offers=spyOffers().length;const inc=incomeParts().some(([k])=>k==='Inlichtingendienst');const ub=incomeParts().some(([k])=>k==='Uitkering');
+  hire(JOBS.find(j=>j.id==='kassa')||JOBS[0]);const noJob=!S.job;S.spy.heat=100;Q.length=0;f8Year(31);const burn=Q.some(q=>q.id==='spy_ontmaskerd');
+  return {ok:sub==='Consultant bij een adviesbureau'&&offers===3&&inc&&!ub&&noJob&&burn,msg:`ondertitel "${sub}", ${offers} operaties, salaris ${inc}, uitkering ${ub}, baan geblokkeerd ${noJob}, ontmaskerd ${burn}`}});
+F8T('8.2c','sekteleider: leden, donaties en onderzoek','NL','',async()=>{S.m=35*12;S.sekte={n:'De Sterrenpoort',ty:1,em:'🛸',mem:200,loy:70,insp:85,don:1,yrs:0,lg:0};const inc=f8Inc().find(x=>/Donaties/.test(x[0]));
+  Q.length=0;for(let i=0;i<6&&!Q.some(q=>q.id==='sek_inval');i++)f8Year(35);const inv=Q.some(q=>q.id==='sek_inval');const r=EV.sek_inval.ch[0][1]({});
+  const el=document.createElement('div');sheetSekte(el);return {ok:inc&&inc[1]>0&&inv&&S.sekte.don===0&&/Een preek houden/.test(el.textContent),msg:`donaties ${inc&&inc[1]}, onderzoek ${inv}, na meewerken bijdrage ${S.sekte.don}`}});
+F8T('8.2d','straathandel: zwart geld, politie, rechtszaak','NL','',async()=>{S.m=20*12;S.str={st:'act',lvl:1,rep:20,turf:1,crew:0,yrs:0};const d0=S.crim.dirty||0;Q.length=0;f8Year(20);const d1=S.crim.dirty||0;
+  Q.length=0;const t=EV.str_inval.ch[2][1]({});const trial=Q.some(q=>q.id==='s_trial');
+  openSheet('Activiteiten',sheetAct);await sl(40);const row=/Straathandel/.test(document.querySelector('#sheet-b').textContent);closeSheet();
+  return {ok:d1>d0&&trial&&S.str.st==='gestopt'&&row,msg:`zwart geld ${d0} → ${d1}, rechtszaak ${trial}, rij bij Activiteiten ${row}`}});
+F8T('8.3','schoolleven: populariteit, groep, clubs, jaarboek','NL','',async()=>{S.m=13*12;S.edu.stage='middel';S.edu.lvl='havo';S.edu.len=5;S.edu.yrs=0;const X=sch();X.kl='nerd';X.cl=[{id:'schaak',yrs:0,r:0},{id:'band',yrs:0,r:0}];
+  const el=document.createElement('div');sheetSchool(el);const row=/Schoolleven/.test(el.textContent)&&!/Naschoolse club/.test(el.textContent);
+  const el2=document.createElement('div');sheetSchoolLife(el2);const life=/Populariteit/.test(el2.textContent)&&/Schaakclub/.test(el2.textContent);
+  Q.length=0;f8Year(13);const yrs=X.cl[0].yrs===1;S.edu.yrs=4;Q.length=0;f8Year(17);const jb=Q.some(q=>q.id==='scl_jaarboek');S.edu.stage='klaar';f8Year(18);
+  return {ok:row&&life&&yrs&&jb&&!X.cl.length,msg:`rij op schoolscherm ${row}, scherm ${life}, clubjaar ${yrs}, jaarboek ${jb}, clubs leeg na school ${!X.cl.length}`}});
+F8T('8.4','identiteit: uit de kast, genderidentiteit, paspoort, trouwen per land','NL','',async()=>{S.m=20*12;S.p.g='m';S.flags.pref='mannen';
+  const el=document.createElement('div');sheetIdentity(el);const rows=/Uit de kast komen/.test(el.textContent)&&/Genderidentiteit/.test(el.textContent);
+  outFam();await sl(30);closeModal();const out=!!idn().out.fam;idn().gi='v';const el2=document.createElement('div');sheetIdentity(el2);const leg=/paspoort aanpassen/.test(el2.textContent);
+  S.p.country='IT';const pt=mkPerson('partner','m',S.m-24*12,{st:'verloofd',rel:80});S.rel.push(pt);S.p.g='m';Q.length=0;f8Year(20);const tr=Q.some(q=>q.id==='idn_trouwen');S.p.country='NL';
+  return {ok:rows&&out&&leg&&tr&&orient()==='homo',msg:`rijen ${rows}, uit de kast bij ouders ${out}, paspoortrij ${leg}, trouwvraag in Italië ${tr}, ${orient()}`}});
+F8T('8.6','erfstukken en verzamelingen','NL','',async()=>{S.m=30*12;const C_=coll();C_.fam=[];const mom=living('moeder')[0];const e0=Object.assign(mkErf(3),{hold:mom.id});C_.fam.push(e0);mom.alive=false;Q.length=0;f8Year(30);
+  const q=Q.find(x=>x.id==='erf_erfstuk');EV.erf_erfstuk.ch[0][1](q.c);const got=C_.it.some(x=>x.k==='erf');
+  for(let i=0;i<SETS.steen[2].length;i++)collAdd('steen',i);const done=!!C_.done.steen;const nw=collVal()>0;
+  const k=mkPerson('kind','v',S.m-20*12,{rel:80});S.rel.push(k);die('ouderdom');inherit(k.id);closeModal();const gen=S.coll&&S.coll.it.find(x=>x.k==='erf'&&x.n===e0.n);
+  return {ok:got&&done&&nw&&gen&&gen.gen===4&&!S.coll.it.some(x=>x.k==='steen'),msg:`erfstuk geërfd ${got}, set compleet ${done}, waarde ${nw}, generatie na erven ${gen&&gen.gen}`}});
+F8T('8.7a','spookhuis: kopen, spoken, rust vinden; met Rustig een nuchtere verklaring','NL','',async()=>{S.m=40*12;S.money=2e6;const h=mkListing(5);h.ghost={g:0,lvl:1,rel:30,clue:2,rest:0};const p=buyHouse(h,false);S.home={k:'eigen',pid:p.id};
+  S.settings.chaos=1;Q.length=0;f8Year(40);f8Year(41);const ev=Q.some(q=>/^spk_/.test(q.id));const el=document.createElement('div');sheetProp(el,p);const rows=/Een medium inhuren/.test(el.textContent);
+  S.settings.chaos=0;p.ghost.nu=0;Q.length=0;f8Year(42);const nu=Q.some(q=>q.id==='spk_nuchter');EV.spk_nuchter.ch[0][1]({});
+  return {ok:!!p.ghost&&ev&&rows&&nu&&p.ghost.rest===1,msg:`spook bij koop ${!!p.ghost}, gebeurtenis ${ev}, acties ${rows}, nuchter met Rustig ${nu}`}});
+F8T('8.7b','exotische huisdieren: legaal, vergunning, verboden','NL','',async()=>{S.m=30*12;S.money=50000;const el=document.createElement('div');exoRows(el);const t=el.textContent;
+  const law=/Verboden in dit land/.test(t)&&/vergunning/.test(t);const p=addPet('tijger','Sultan',{k:15000,life:[15,20],br:'Tijger'});p.exo=1;p.ill=1;
+  const face=faceOf(p)==='🐅';Q.length=0;let conf=false;for(let i=0;i<40&&!conf;i++){f8Year(30);conf=Q.some(q=>q.id==='exo_inbeslag');Q.length=conf?Q.length:0}
+  return {ok:law&&face&&conf,msg:`regels per land ${law}, icoon ${face}, inbeslagname ${conf}`}});
+F8T('8.8','editor en God-modus','NL','',async()=>{randomize();CF.country='NL';CF.city='Utrecht';CF.wealth='arm';CF.sibs=0;CF.momN='Truus';CF.afk='';startCreated();closeModal();Q.length=0;
+  const ed=S.flags.wealth==='arm'&&living('moeder')[0].first==='Truus'&&!people(['broer','zus']).length;
+  openSheet('Hoofdmenu',sheetMain);await sl(40);const menu=/God-modus/.test(document.querySelector('#sheet-b').textContent);closeSheet();
+  S.settings.god=1;const mom=living('moeder')[0];const el=document.createElement('div');sheetPerson(el,mom);const sec=/Eigenschappen aanpassen/.test(el.textContent);
+  godSelf();await sl(20);document.querySelector('#gsave').click();await sl(20);const star=S.god===1;const el2=document.createElement('div');sheetAch(el2);
+  return {ok:ed&&menu&&sec&&star&&/God-modus gebruikt/.test(el2.textContent),msg:`editor ${ed}, menu ${menu}, personen ${sec}, ster ${star}`}});
+
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];
   for(const x of T){if(only&&!x.nr.startsWith(only))continue;
     const ctx=await b.newContext({...devices['iPhone 13']});await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1');localStorage.setItem('levensloop.uitleg','1')}catch(e){}});
     const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.goto(URL);
-    let r;try{r=await p.evaluate(async({cc,src,DH})=>{const sl=ms=>new Promise(r=>setTimeout(r,ms));
-      randomize();CF.country=cc;CF.city=COUNTRIES[cc].cities[0];CF.chaos=1;startCreated();closeModal();Q.length=0;
-      const f=eval('('+src+')');return await f()},{cc:x.cc,src:x.run.toString(),DH:debtHelpers})}catch(e){r={ok:false,msg:'test brak af: '+e.message.split('\n')[0]}}
+    let r;try{r=await p.evaluate(async({cc,afk,src,DH})=>{const sl=ms=>new Promise(r=>setTimeout(r,ms));
+      randomize();CF.country=cc;CF.city=COUNTRIES[cc].cities[0];CF.chaos=1;CF.afk=afk||'';startCreated();closeModal();Q.length=0;
+      const f=eval('('+src+')');return await f()},{cc:x.cc,afk:x.afk,src:x.run.toString(),DH:debtHelpers})}catch(e){r={ok:false,msg:'test brak af: '+e.message.split('\n')[0]}}
     const errs2=errs.filter(e=>!/bewuste testfout/.test(e));const ok=r.ok&&!errs2.length;if(!ok)fail++;
     console.log(`${ok?'✓':'✗'} ${x.nr} ${x.name}: ${r.msg}${errs2.length?' · JS-fout: '+[...new Set(errs2)].join(' | '):''}`);await ctx.close()}
   await b.close();console.log(fail?`regressie: ${fail} mislukt`:'regressie: alles in orde');process.exit(fail?1:0)})();

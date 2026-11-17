@@ -133,10 +133,10 @@ E('sm_dm',{c:smOk(2000),cd:3,t:'Een DM',x:()=>pick(['Een fan stuurt je een lang 
  ['💌 Lief terugschrijven',()=>{const b=smBig();b.a.eng=clamp(b.a.eng+3);hap(3);kar(1);smOut();return 'Je fan maakt een screenshot en deelt het. Iedereen vindt je lief.'}],
  ['🙅 Niet op reageren',()=>'Je laat het liggen.'],
  ['⛔ Blokkeren',()=>'Geblokkeerd. Rust.']]});
-E('sm_collab',{c:smOk(1000),cd:2,t:'Samenwerken?',ctx:peerCtx(p=>p.f<=Math.max(5000,S.foll*1.5)),x:c=>`${PR(c).first} (${nf(PR(c).f)} volgers op ${SMP[PR(c).plat].n}) vraagt of je samen een video wilt maken.`,ch:[
+E('sm_collab',{c:smOk(1000),need:c=>!!(S.sm&&PR(c)),cd:2,t:'Samenwerken?',ctx:peerCtx(p=>p.f<=Math.max(5000,S.foll*1.5)),x:c=>`${PR(c).first} (${nf(PR(c).f)} volgers op ${SMP[PR(c).plat].n}) vraagt of je samen een video wilt maken.`,ch:[
  ['🤝 Ja, leuk',c=>{const p=PR(c);const acc=smAcc(p.plat)||smBig().a;const g=Math.round(p.f*.02*(.5+acc.eng/100))+ri(20,200);acc.f+=g;p.rel=clamp(p.rel+12);p.f+=Math.round(acc.f*.02);smOut();return `Jullie video doet het goed. +${nf(g)} volgers, en ${p.first} vond het ook leuk.`}],
  ['❌ Nee, bedankt',c=>{const p=PR(c);p.rel=clamp(p.rel-6);return `${p.first} begrijpt het, maar het voelt een beetje ongemakkelijk.`}]]});
-E('sm_beef',{c:smOk(10000),cd:4,t:'Een beef',ctx:peerCtx(),x:c=>`${PR(c).first} maakt een video over jou. Titel: "${pick(['Waarom niemand meer naar','De waarheid over','Ik moet het even hebben over'])} ${S.p.first}". Hij gaat rond.`,ch:[
+E('sm_beef',{c:smOk(10000),need:c=>!!(S.sm&&PR(c)),cd:4,t:'Een beef',ctx:peerCtx(),x:c=>`${PR(c).first} maakt een video over jou. Titel: "${pick(['Waarom niemand meer naar','De waarheid over','Ik moet het even hebben over'])} ${S.p.first}". Hij gaat rond.`,ch:[
  ['🥊 Terugslaan',c=>{const p=PR(c);const b=smBig();p.rel=clamp(p.rel-30);if(chance(.5+(S.sk.sociaal-50)/200)){const g=Math.round(b.a.f*.06+p.f*.02);b.a.f+=g;smOut();return `Je antwoord is genadeloos en grappig. Het internet kiest jouw kant. +${nf(g)} volgers.`}const l=Math.round(b.a.f*.06);b.a.f-=l;hap(-5);smOut();return `Het maakt alles erger. -${nf(l)} volgers.`}],
  ['🙈 Negeren',c=>{const b=smBig();b.a.f=Math.round(b.a.f*.98);smOut();return 'Je zegt niets. Het waait over, al kost het je een paar volgers.'}],
  ['☎️ Bellen en uitpraten',c=>{const p=PR(c);if(chance(.5)){p.rel=clamp(p.rel+20);return `Jullie praten het uit. Achteraf maken jullie er samen een grap over.`}return `${p.first} neemt niet op.`}]]});

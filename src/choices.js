@@ -18,7 +18,8 @@ function parentPet(sp){const ps=living(['moeder','vader']);const avg=ps.length?p
   hap(-2);return 'Je ouders zeggen nee. Je mokt de hele dag.'}
 function sheetPets(el){const a=ageY();const s=sec(el,'Dierenasiel en fokkers');
   for(const [sp,k] of PETS){const d=PETBR[sp]||{};const lo=d.l?Math.min(...d.l.map(x=>x[1])):k;
-    row(s,{ic:icPet(sp),t:cap(sp),s:d.l?`${d.l.length} ${d.q==='Welk ras?'?'rassen':'soorten'}`:`${d.c.length} kleuren`,r:`${d.l?'vanaf ':''}${fmt(d.l?lo:k)}`,dis:a>=18&&S.money<lo,dots:true,on:()=>d.l?petBreed(sp):petColor(sp,{k},d.c)})}}
+    row(s,{ic:icPet(sp),t:cap(sp),s:d.l?`${d.l.length} ${d.q==='Welk ras?'?'rassen':'soorten'}`:`${d.c.length} kleuren`,r:`${d.l?'vanaf ':''}${fmt(d.l?lo:k)}`,dis:a>=18&&S.money<lo,dots:true,on:()=>d.l?petBreed(sp):petColor(sp,{k},d.c)})}
+  if(typeof exoRows==='function')exoRows(el)}
 function petBreed(sp){const d=PETBR[sp],a=ageY();
   modal({title:`Een ${sp}`,em:icPet(sp),cat:'Huisdieren',text:d.q,choices:opts(d.l.map(([b,k,life,cols])=>({t:b,ic:icPet(sp,b),s:`${fmt(k)} · wordt ${life[0]} tot ${life[1]} jaar`,dis:a>=18&&S.money<k,on:()=>{closeModal();const o={br:b,k,life};cols&&cols.length>1?petColor(sp,o,cols):(o.col=cols?cols[0]:'',petName(sp,o))}})))})}
 function petColor(sp,o,cols){const b=o.br?o.br.replace(/ \(.*\)/,''):sp;

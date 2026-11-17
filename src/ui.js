@@ -16,14 +16,14 @@ const JOBEM={prosport:'🏆',krant:'📰',oppas:'🍼',vakken:'🛒',kassa:'🧾
 const jobEm=id=>JOBEM[id]||NJEM[id]||'💼';
 
 /* ---------- hoofdscherm ---------- */
-function subtitle(){const a=ageY();if(!S.alive)return'Overleden';if(inJail())return'Gevangene';
+function subtitle(){const a=ageY();if(!S.alive)return'Overleden';if(inJail())return'Gevangene';{const x=typeof f8Sub==='function'&&f8Sub();if(x)return x}
   if(S.edu.cur)return`Student ${S.edu.cur.ty==='phd'?'(promovendus)':S.edu.cur.ty}${S.job?' · '+jobTitle():''}`;
   {const P=S.pol;if(P&&P.lvl!=='lid'&&typeof polT==='function'){const t=polTitle(P);if(POLO[P.lvl].ft||!S.job)return t;return jobTitle()+' · '+polTl(P.lvl)}}
   if(S.mil)return milTitle()+(S.mil.st==='opl'?' · '+MBR[S.mil.br].school:' · '+MSPEC(S.mil.spec).n);
   if(S.job)return jobTitle()+(S.job.co?' · '+S.job.co:'');if(S.biz.length)return(S.biz[0].ceo===false?'Aandeelhouder · ':'Directeur-eigenaar · ')+S.biz[0].name;
   if(S.pension)return'Gepensioneerd';if(S.edu.stage==='basis')return'Basisschool';if(S.edu.stage==='middel')return`Middelbare school (${lvlN(S.edu.lvl)})`;
   if(a<4)return a<1?'Baby':'Peuter';return a<18?'Scholier':'Werkzoekend'}
-function profInner(){return `<span class="who"><span class="face">${playerFace()}</span><span class="who-t"><span class="nm">${flag(S.p.country)} <span class="u">${he(S.p.first+' '+S.p.last)}</span></span><span class="sub">${he(subtitle())}</span></span></span><div class="money"><b${S.money<0?' style="color:var(--bad)"':''}>${fmt(S.money)}</b><small>Saldo</small></div>`}
+function profInner(){return `<span class="who"><span class="face">${playerFace()}</span><span class="who-t"><span class="nm">${flag(S.p.country)} <span class="u">${he((typeof f8Pre==='function'?f8Pre():'')+S.p.first+' '+S.p.last)}</span></span><span class="sub">${he(subtitle())}</span></span></span><div class="money"><b${S.money<0?' style="color:var(--bad)"':''}>${fmt(S.money)}</b><small>Saldo</small></div>`}
 function render(){
   if(!S)return;
   $('#h-av').innerHTML=playerFace();$('#h-flag').textContent=flag(S.p.country);$('#h-name').textContent=`${S.p.first} ${S.p.last}`;fitSoon($('#h-name').closest('.nm')||$('#h-name'),13);
@@ -163,6 +163,7 @@ function sheetJob(el){
   if(typeof occMe==='function'&&occMe()&&a>=12){any=1;row(top,{ic:'🕯️',t:'Bezetting',s:S.occ&&S.occ.ond?'Je bent ondergedoken':'Verzet, onderduiken of meewerken',cls:'cur',on:()=>openSheet('Bezetting',sheetOcc,true)})}
   if(S.mil){any=1;row(top,{ic:MSPEC(S.mil.spec).em,t:milTitle(),s:`${MBR[S.mil.br].k} · ${fmt(milSal())} per jaar`,cls:'cur',on:()=>openSheet('Defensie',sheetMil,true)})}
   if(S.pol){polMigrate();any=1;const p=PTY(S.pol.party);row(top,{ic:'🏛️',t:polT(S.pol.lvl),s:`${p.n}${POLO[S.pol.lvl].sal?' · '+fmt(polSal())+' per jaar':''}`,cls:'cur',on:()=>openSheet('Politiek',sheetPol,true)})}
+  if(typeof f8JobRows==='function'&&f8JobRows(top))any=1;
   if(S.pension&&!S.job){any=1;row(top,{ic:'🏖️',t:'Met pensioen',s:`${fmt(S.pension)} per jaar`,cls:'cur'})}
   if(!any&&a<4){empty(el,'Je bent nog te jong voor school of werk.');return}
   // daaronder: de mogelijkheden
@@ -182,7 +183,8 @@ function sheetSpecial(el){const a=ageY();const s=sec(el,'');
   row(s,{ic:'🏛️',t:'Politiek',s:a<12?'Vanaf 12 jaar':S.pol?`${polT(S.pol.lvl)} · ${PTY(S.pol.party).n}`:'Word lid van een partij',dis:a<12,cls:'special',on:()=>openSheet('Politiek',sheetPol,true)});
   const SPN={muzikant:'Muzikant',acteur:'Acteur',model:'Model',politiek:'Politicus'};
   for(const j of JOBS.filter(j=>!j.hide&&j.id!=='voetbal'&&(j.fame||j.pol))){const min=j.req.age[0];
-    row(s,{ic:jobEm(j.id),t:SPN[j.id]||cap(j.lad[0]),s:a<min?`Vanaf ${min} jaar`:S.job&&S.job.id===j.id?'Dit doe je nu':`Begin als ${j.lad[0].toLowerCase()} · ${fmt(jsal(j,0))} per jaar`,dis:a<min||(S.job&&S.job.id===j.id),cls:'special',on:()=>applyJob(j)})}}
+    row(s,{ic:jobEm(j.id),t:SPN[j.id]||cap(j.lad[0]),s:a<min?`Vanaf ${min} jaar`:S.job&&S.job.id===j.id?'Dit doe je nu':`Begin als ${j.lad[0].toLowerCase()} · ${fmt(jsal(j,0))} per jaar`,dis:a<min||(S.job&&S.job.id===j.id),cls:'special',on:()=>applyJob(j)})}
+  if(typeof f8Special==='function')f8Special(s,a)}
 function sheetEdu(el){const a=ageY(),E=S.edu;
   if(E.stage==='basis'||E.stage==='middel'){sheetSchool(el);return}
   if(E.cur){const c=E.cur;
@@ -318,6 +320,7 @@ function sheetPerson(el,p){const a=pAge(p);
   A('🤬','Beledigen',()=>{p.rel=clamp(p.rel-ri(10,25));kar(-3);if(p.rel<=5&&r==='vriend'){p.role='vijand';return `${p.first} is je vijand geworden.`}return `${p.first} is diep gekwetst.`});
   if(r==='vriend')row(s,{ic:'✂️',t:'Vriendschap verbreken',dots:true,on:()=>ask('Vriendschap verbreken?',`Je stopt de vriendschap met ${p.first}.`,'Verbreken',()=>{S.rel=S.rel.filter(x=>x!==p);L(`Je bent geen vrienden meer met ${p.first}.`);backSheet();render()})});
   if(typeof personExtra==='function')personExtra(el,p);
+  if(typeof f8Person==='function')f8Person(el,p);
 }
 function dating(){if(inJail()){toast('Daten kan niet vanuit de gevangenis');return}
   if(!S.flags.pref){modal({title:'Daten',em:'❤️',cat:'Liefde',text:'Op wie val je?',choices:[['Mannen','mannen'],['Vrouwen','vrouwen'],['Iedereen','beide']].map(([t,v])=>({t,on:()=>{S.flags.pref=v;closeModal();dating()}}))});return}
@@ -427,6 +430,7 @@ function sheetMain(el){
   row(s,{ic:'⭐',t:'Favoriete activiteiten',s:`${favs().length} van 5 gekozen · deze staan bovenaan bij Activiteiten`,on:()=>openSheet('Favorieten',sheetFavs,true)});
   row(s,{ic:'🗳️',t:'Stemmen',s:{ask:'Elke keer vragen',same:'Altijd dezelfde partij',none:'Niet stemmen'}[voteMode()]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.vote={ask:'same',same:'none',none:'ask'}[voteMode()];refreshSheet();saveLife()}});
   row(s,{ic:'🌀',t:'Chaos',s:['Rustig','Normaal','Chaos'][S.settings.chaos]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.chaos=(S.settings.chaos+1)%3;refreshSheet();saveLife()}});
+  if(typeof godMenuRow==='function')godMenuRow(s);
   row(s,{ic:'🌪️',t:'Tijdmachine',s:'Spoel 1, 3, 5 of 10 jaar terug',on:()=>openSheet('Tijdmachine',sheetRewind,true)});
   row(s,{ic:'🏳️',t:'Opgeven',s:'Je leven hier laten eindigen',dots:true,on:()=>ask('Opgeven?','Je leven eindigt hier. Je kunt daarna nog terugspoelen of verder als je kind.','Opgeven',()=>{closeSheet();die('opgegeven');afterQ()},'bad','🏳️')});
   s=sec(el,'Verzameling');checkAch();const M=meta();
@@ -525,6 +529,7 @@ function inherit(cid){
   if(age>=aowAge())setPension();if(old.lic&&age>=18)n.lic=true;
   if(takeAssets){n.props=old.props;n.re=old.re||[];if(age>=18&&old.home.k==='eigen'&&old.props.some(p=>p.id===old.home.pid))n.home={k:'eigen',pid:old.home.pid}}
   if(old.will&&old.will.voogd&&age<18){const v=old.rel.find(p=>p.id===old.will.voogd);if(v)L(`${v.first} wordt je voogd, zoals in het testament stond.`)}
+  if(typeof f8Inherit==='function')f8Inherit(old,n,ch,age);
   L(`Je speelt verder als ${ch.first} ${ch.last}, ${age} jaar oud, ${relWord(ch)} van ${old.p.first}.`,'big');
   const sold=[old.props.length?`${old.props.length} ${old.props.length===1?'huis':'huizen'}`:'',old.cars.length?`${old.cars.length} ${old.cars.length===1?'auto':'auto\'s'}`:'',old.items.length?`${old.items.length} bezitting${old.items.length===1?'':'en'}`:''].filter(Boolean);
   L(`Van de nalatenschap van ${old.p.first} erf je ${Math.round(mine.pct*100)}%: ${fmt(share)}${tax?` (na ${fmt(tax)} erfbelasting)`:''}.${takeAssets&&old.props.length?` Je krijgt ook ${old.props.length===1?'het huis':'de huizen'}.`:''}${sold.length&&!takeAssets?` De ${sold.join(', ')} ${sold.length>1||/huizen|auto's|bezittingen/.test(sold[0])?'zijn':'is'} verkocht en verdeeld; hypotheken zijn eerst afgelost.`:''}${age<18?' Je erfdeel staat vast tot je 18 bent.':''}${n.biz.length?' Je neemt ook het familiebedrijf over: '+n.biz.map(b=>b.name).join(', ')+'.':''}`,'good');

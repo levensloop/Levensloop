@@ -48,7 +48,7 @@ function blankState(o){
 }
 function newLife(o){
   S=blankState(o);Q=[];
-  const wealth=pick(['arm','midden','midden','midden','rijk']);S.flags.wealth=wealth;
+  const wealth=o.wealth||pick(['arm','midden','midden','midden','rijk']);S.flags.wealth=wealth;
   const momAge=ri(21,40),dadAge=clamp(momAge+ri(-3,7),18,60);
   const pm=wealth==='arm'?ri(1,15)*1000:wealth==='rijk'?ri(400,3000)*1000:ri(20,150)*1000;
   const mom=mkPerson('moeder','v',-momAge*12-ri(0,11),{money:pm/2,job:pick(PJOBS[wealth])});
@@ -56,8 +56,9 @@ function newLife(o){
   S.rel.push(mom,dad);
   S.ap=o.ap||randAp(o.g);S.talent=o.talent||'geen';const at=o.attr||{};for(const k of ['happy','health','smarts','looks'])if(at[k]!=null)S.st[k]=clamp(at[k]);if(at.karma!=null)S.karma=clamp(at.karma);S.disc=at.disc??ri(30,70);S.fert=at.fert??ri(45,90);if(o.pref)S.flags.pref=o.pref;mom.ap=apParentOf(S.ap,'v','eye');dad.ap=apParentOf(S.ap,'m','hc');
   {const tk=TAL(S.talent)[4];if(tk)S.sk[tk]=clamp(S.sk[tk]+15);if(S.talent==='model')S.st.looks=clamp(S.st.looks+8);if(S.talent==='acteren')S.sk.sociaal=clamp(S.sk.sociaal+5)}
-  const ns=pick([0,0,1,1,1,2,2,3]);
+  const ns=o.sibs??pick([0,0,1,1,1,2,2,3]);
   for(let i=0;i<ns;i++){const older=chance(.5);const off=older?-(ri(1,8)*12+ri(0,11)):ri(1,8)*12+ri(0,11);if(!older&&momAge+off/12>44)continue;const g=pick(['m','v']);S.rel.push(mkPerson(g==='m'?'broer':'zus',g,off,{last:o.last,ap:apMix(mom.ap,dad.ap,g)}))}
+  if(typeof f8Birth==='function')f8Birth(o,mom,dad);
   L(`Je bent geboren in ${o.city}, ${C().n}. Je bent een ${o.g==='m'?'jongen':o.g==='v'?'meisje':'kindje'}: ${o.first} ${o.last}.`,'big');
   L(`Je moeder is ${mom.first} ${mom.last} (${momAge}), ${mom.job}. Je vader is ${dad.first} ${dad.last} (${dadAge}), ${dad.job}.`);
   const sib=living(['broer','zus']);if(sib.length)L(sib.length===1?`Je hebt een oudere ${relWord(sib[0])}: ${sib[0].first}.`:`Je hebt ${sib.length} oudere ${sib.every(x=>x.role==='broer')?'broers':sib.every(x=>x.role==='zus')?'zussen':'broers en zussen'}: ${sib.map(s=>`${relWord(s)} ${s.first}`).join(', ').replace(/, ([^,]*)$/,' en $1')}.`);
@@ -114,10 +115,10 @@ const jsal=(j,l)=>Math.round(j.sal[l]*1000*(S.cpi||1));
 // uitkering dekt levensonderhoud en huur tot een grens (met huurtoeslag), zodat wie niet werkt niet vanzelf steeds dieper rood komt te staan (zie verbeterplan 1.5)
 function bijstand(){const c=S.cpi||1;return Math.round((livingCost()*c+Math.min(S.home.rent||0,16000*c))*law('minloon')*(typeof bijstandF==='function'?bijstandF():1))}
 function livingCost(){const a=ageY();let c=13000;const pt=partner();if(pt&&pt.st==='getrouwd')c=9500;if(a>=aowAge())c*=.85;return c}
-function netWorth(){let n=S.money-S.debt-S.loan+(S.trust||0)+(S.swiss||0);for(const k in S.inv)n+=S.inv[k];for(const p of S.props)n+=p.value-p.mort;for(const p of S.re||[])n+=p.value-p.mort;for(const c of S.cars)n+=c.value;for(const it of S.items||[])n+=it.value;for(const b of S.biz)n+=b.value*b.eq/100;if(typeof angelVal==='function')n+=angelVal();n+=(S.crim&&S.crim.dirty)||0;return Math.round(n)}
+function netWorth(){let n=S.money-S.debt-S.loan+(S.trust||0)+(S.swiss||0);for(const k in S.inv)n+=S.inv[k];for(const p of S.props)n+=p.value-p.mort;for(const p of S.re||[])n+=p.value-p.mort;for(const c of S.cars)n+=c.value;for(const it of S.items||[])n+=it.value;for(const b of S.biz)n+=b.value*b.eq/100;if(typeof angelVal==='function')n+=angelVal();if(typeof collVal==='function')n+=collVal();n+=(S.crim&&S.crim.dirty)||0;return Math.round(n)}
 function sponsor(){if(S.foll<25000)return 0;const act=S.flags.postY!=null&&year()-S.flags.postY<=1;const eng=S.flags.eng??50;return Math.round(S.foll*.03*(eng/60)*(act?1:.25))}
 function taxOn(g){if(g<=0||(typeof noTax==='function'&&noTax()))return 0;const c=S.cpi||1;g/=c;const t=g<=38000?g*.3697:38000*.3697+(g-38000)*law('ib');const cred=Math.max(0,8000-Math.max(0,g-25000)*.08);return Math.max(0,t-cred)*c}
-function taxable(){let g=0;for(const [k,v] of incomeParts())if(['Salaris','Directeurssalaris','Militair salaris','Invaliditeitspensioen','Militaire uitkering','Werk voor de bezetter','WW-uitkering','Politieke functie','Lobbywerk','Commissariaten','Talkshowgast','Pensioen','Sponsordeals','Social media'].includes(k))g+=v;return g}
+function taxable(){let g=0;for(const [k,v] of incomeParts())if(['Salaris','Directeurssalaris','Militair salaris','Invaliditeitspensioen','Militaire uitkering','Werk voor de bezetter','WW-uitkering','Politieke functie','Lobbywerk','Commissariaten','Talkshowgast','Pensioen','Sponsordeals','Social media','Ruimtevaart','Inlichtingendienst'].includes(k))g+=v;return g}
 function econLabel(){const e=S.econ||{s:'normaal'};return {groei:'Hoogconjunctuur',normaal:'Stabiel',recessie:'Recessie'}[e.s]}
 const econ=()=>(S.econ&&S.econ.s)||'normaal';
 function incomeParts(){const a=S.m/12,out=[];
@@ -129,10 +130,11 @@ function incomeParts(){const a=S.m/12,out=[];
   if(typeof milSal==='function'&&S.mil){const x=milSal();if(x)out.push(['Militair salaris',x])}
   if(typeof postMilInc==='function'&&!S.mil)for(const x of postMilInc())out.push(x);
   if(typeof occInc==='function')for(const x of occInc())out.push(x);
+  if(typeof f8Inc==='function')for(const x of f8Inc())out.push(x);
   if(typeof wwInc==='function')for(const x of wwInc())out.push(x);
   if(S.crim.jail&&S.crim.jail.work)out.push(['Gevangeniswerk',1500]);
   if(S.pension)out.push(['Pensioen',S.pension]);
-  else if(a>=18&&!S.job&&!(S.pol&&S.pol.lvl!=='lid')&&!S.mil&&!(S.ww&&S.ww.left>0)&&!(S.pex&&(S.pex.lob||S.pex.com||S.pex.tv))&&!(S.pmil&&(S.pmil.inv||S.pmil.fpu&&a<aowAge()))&&!S.edu.cur&&!S.crim.jail&&!S.biz.length&&S.home.k!=='ouders')out.push(['Uitkering',bijstand()]);
+  else if(a>=18&&!S.job&&!(S.pol&&S.pol.lvl!=='lid')&&!S.mil&&!(S.ww&&S.ww.left>0)&&!(S.pex&&(S.pex.lob||S.pex.com||S.pex.tv))&&!(S.pmil&&(S.pmil.inv||S.pmil.fpu&&a<aowAge()))&&!S.edu.cur&&!S.crim.jail&&!S.biz.length&&S.home.k!=='ouders'&&!(typeof f8Busy==='function'&&f8Busy()))out.push(['Uitkering',bijstand()]);
   const rent=S.props.filter(p=>p.rentOut).reduce((x,p)=>x+pRent(p),0);if(rent)out.push(['Huurinkomsten',rent]);
   const sp=sponsor();if(sp)out.push(['Sponsordeals',sp]);
   {const pt=S.home&&S.home.samen&&partner();if(pt&&pt.id===S.home.samen&&pt.st!=='getrouwd'&&!S.crim.jail){const x=Math.round(Math.min(partnerInc(pt)*.3,(S.home.k==='huur'?S.home.rent/2:0)+3000*(S.cpi||1)));if(x>0)out.push(['Bijdrage '+pt.first,x])}}
@@ -212,6 +214,7 @@ function birthday(){
   healthCheck(a,h0);
   if(a===18&&S.trust>0){cash(S.trust);L(`Je bent 18: het geld dat voor je vaststond (${fmt(S.trust)}) staat nu op je rekening.`,'good');S.trust=0}
   if(a===16&&S.flags.jeugd&&!S.job){setJob('voetbal',0);L('Je jeugdcontract gaat over in een profcontract!','good')}
+  if(typeof f8Year==='function')f8Year(a);
   checkAch();
 }
 // waar je geluk op de lange termijn naartoe beweegt
@@ -393,7 +396,7 @@ function checkAch(){const a=ageY(),nw=netWorth(),f=S.flags;const got=S.ach||(S.a
   if(nw>=1e6)add('miljonair');if(nw>=1e7)add('multi');if(a>=100)add('eeuw');if(a>=90)add('negentig');if(f.getrouwd)add('getrouwd');if(people('kind').length>=4)add('gezin');if(people('kleinkind').length)add('opa');
   if(f.top)add('top');if(f.arts)add('arts');if(f.premier)add('premier');for(const [k,x] of [['kamerlid','po_kamer'],['wetgever','wet'],['eigenpartij','eigenpartij'],['premier3','premier3'],['overleefd','overleefd'],['burgemeester','po_burg'],['draaideur','draaideur'],['commando','mil_kct'],['piloot','mil_f35'],['generaal','generaal'],['cds','cds'],['willemsorde','med_mwo'],['veteraan','veteraan'],['oorlogsvet','oorlogsvet'],['vredestichter','vrede'],['verzet','vhk'],['bevrijd','bevrijd'],['dictator','dictator'],['dynastie','dynastie'],['aanslag','aanslag'],['vreedzaam','vreedzaam'],['gevlucht','gevlucht'],['veroveraar','veroveraar'],['wereldrijk','wereldrijk'],['uspres','uspres'],['pres2','pres2'],['ussen','ussen'],['usgov','po_gov'],['ecwin','ecwin'],['impeach','impeach'],['afgezet','afgezet'],['wpres','wpres']])if(f[x])add(k);if(f.ster)add('ster');if(f.ondernemer)add('ondernemer');if(f.exit)add('exit');if(f.beroemd)add('beroemd');
   if(S.edu.deg.some(d=>['wo','master','phd'].includes(d.ty)))add('academicus');if(S.edu.deg.some(d=>d.ty==='phd'))add('doctor');if(f.huis)add('huis');if(f.vastgoed)add('vastgoed');if(f.wereld)add('wereld');if(f.bajes)add('bajes');if(f.ontsnapt)add('ontsnapt');if(f.jackpot)add('jackpot');
-  if(!S.alive&&S.karma>=85)add('heilig');if((f.pets||0)>=3)add('dieren');if(S.gen>=3)add('dynastie')}
+  if(!S.alive&&S.karma>=85)add('heilig');if((f.pets||0)>=3)add('dieren');if(S.gen>=3)add('dynastie');if(typeof f8Ach==='function')f8Ach(add)}
 function lifeScore(){const a=S.died??ageY();const avgH=S.hist.n?S.hist.happy/S.hist.n:S.st.happy;const nw=Math.max(netWorth(),S.hist.peakNW*.5);
   const wealth=clamp(Math.log10(Math.max(1,nw))/7*100);const ageS=clamp(a/90*100);const kids=people('kind').length;const pt=S.rel.some(p=>p.st==='getrouwd'||p.wid)?25:0;
   const fam=clamp(pt+kids*15+living('vriend').length*5);const career=S.flags.top?100:S.hist.topJob?60:S.jobs.length||S.job?35:10;

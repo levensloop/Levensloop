@@ -42,6 +42,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 - `tests/fixtures/*.json`: ruwe `localStorage` van levens gemaakt met versie 20261105-2229 (kind, werkende van 40, gepensioneerde met huis en politiek, een afgesloten leven met erfgenaam, en `alles.json` met alles samen). `tests/review/migratie.js` laadt ze in de nieuwe versie en controleert dat elk leven opent, een jaar ouder kan worden en na herladen nog bestaat. Niet opnieuw maken: ze moeten oud blijven. `tests/review/fixtures.js` is het script waarmee ze gemaakt zijn.
 - `tests/review/backup.test.js` (reservekopie: exporteren, wissen, importeren) en `perf.js` (snelheid; hoeveel levens van 60 jaar passen, doel 30) draaien in `run.sh` mee.
 - `tests/review/regress.js`: per opgeloste fout een kleine controle in de echte app (`node regress.js 1.5` draait alleen de 1.5-tests). Voeg bij elke opgeloste fout een test toe.
+- `tests/review/f8tour.js`: klikt voor elk fase 8-onderdeel door alle nieuwe rijen en speelt elke nieuwe gebeurtenis een paar keer (draait mee in `run.sh`). De fase 8-controles in `regress.js` heten 8.1a t/m 8.8 (`node regress.js 8`).
 - `build.sh` stopt bij dubbele gebeurtenis-ID's en bij `S.job.perf` zonder controle op `S.job`, en waarschuwt bij dubbele functienamen.
 - `tests/bekende-fouten.txt`: JS-fouten die nog niet opgelost zijn en de test niet rood maken. Haal een regel weg zodra de fout is opgelost.
 - `tests/review/check.js` telt de JS-fouten in de simulatie-uitvoer; uitvoer van `run.sh` staat in `tests/out/` (niet in git).
@@ -52,7 +53,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
+Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, events3, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, f8, royal, careers8, school2, ident, heir, haunt, god, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
 
 | Bestand | Inhoud |
 |---|---|
@@ -75,6 +76,14 @@ Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choi
 | `debt.js` | rood staan (streng): 12% rente, jaarlijkse logregel, grens naar inkomen en bezit (`debtLimit`), gebeurtenis "Schuldeisers" (verkopen, lening, schuldsanering, negeren), faillissement, kredietregistratie (`bkr()`) |
 | `vangnet.js` | vangt JS-fouten op: pop-up dicht, melding "Er ging iets mis. Je leven is bewaard.", laatste 20 fouten in `levensloop.errors`, te zien via Menu → Foutenlog. Ook fouten die `safe()` stil opvangt komen daarin. |
 | `diag.js` | verborgen meetscherm (5× tikken op de versie onderaan het hoofdmenu): schermmaten, proefstanden A–E voor de indeling, hulplijnen. Stand bewaard onder `levensloop.layout`. |
+| `f8.js` | fase 8: haakjes die de kern aanroept (`f8Year`, `f8Inc`, `f8Busy`, `f8Birth`, `f8Inherit`, `f8Sub`, `f8Pre`, `f8Ach`, `f8JobRows`, `f8Special`, `f8Person`). Elk nieuw onderdeel zet zijn functies in `F8.year`, `F8.inc` enz. |
+| `royal.js` | koningshuis (`S.roy`, verzonnen huizen in NL, BE, UK, ES; lijn van troonopvolging `royLine()`/`royPos()`, kroning, aftreden, toestemming voor een huwelijk, referendum) en adel (`S.adel`, titel voor je naam, landgoed). Titels en troon gaan mee bij erven. |
+| `careers8.js` | astronaut (`S.ast`), geheim agent (`S.spy`, dekmantel als ondertitel), sekteleider (`S.sekte`), straathandel (`S.str`, zwart geld via `dirtyIn`). `hire` is omwikkeld: geen gewone baan naast deze loopbanen. |
+| `school2.js` | schoolleven (`S.sch`): populariteit, groepen (`KLIEK`), clubs (`SCLUB`) met jaarhoogtepunt, schoolfeest, jaarboek, galakoning(in). Vervangt de rij Naschoolse club. |
+| `ident.js` | identiteit (`S.idn`): op wie je valt (`S.flags.pref`), uit de kast komen, genderidentiteit en transitie; per land acceptatie, huwelijk en paspoortregels in `IDC`. Activiteit Identiteit vanaf 12 jaar. |
+| `heir.js` | erfstukken en verzamelingen (`S.coll`). Erfstukken tellen niet mee in het vermogen en gaan altijd naar je erfgenaam (generatie +1); verzamelingen tellen wel mee (`collVal` in `netWorth`) en worden bij je dood verkocht. |
+| `haunt.js` | spookhuizen (`p.ghost` op een woning; `mkListing`, `buyHouse` en `sheetProp` zijn omwikkeld; bij Chaos Rustig een nuchtere verklaring) en exotische huisdieren (`EXO`, regels per land, `p.exo`). |
+| `god.js` | editor op het knoppenscherm (familie: rijkdom, broers en zussen, namen ouders; afkomst) en God-modus (`S.settings.god`, Menu → Spel). Gebruik zet `S.god=1` (✱ bij prestaties). Karakter van anderen staat in `p.kt` (niet `p.tr`, die is al in gebruik). |
 | `src/pwa/` | iPhone-app: `meta.html`, `fix.css`, `pwa.js` (updatebalk), `sw.tpl.js` (service worker), manifest |
 
 ## Belangrijkste bouwstenen
