@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');const fs=require('fs');const path=require('path');
 const AUTO=fs.readFileSync(path.join(__dirname,'..','auto.js'),'utf8');
 (async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:390,height:797},deviceScaleFactor:1,isMobile:true,hasTouch:true});
- await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1')}catch(e){}});
+ await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1');localStorage.setItem('levensloop.uitleg','1')}catch(e){}});
  const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message+' @ '+(e.stack||'').split('\n')[1]));let n=50;
  const shot=async(name)=>{await p.waitForTimeout(350);await p.screenshot({path:`shots/${++n}-${name}.png`})};const ev=(f,a)=>p.evaluate(f,a);
  await p.goto('http://localhost:8765/');await p.addScriptTag({content:AUTO});

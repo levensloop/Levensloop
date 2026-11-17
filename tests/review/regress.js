@@ -115,10 +115,18 @@ t('4.1','verkiezingen: één pop-up voor gewone burgers, instelling werkt','NL',
 t('4.4','willekeurige gebeurtenis hooguit 3 keer per leven','NL',async()=>{S.m=40*12;S.evN={griep:3};S.evLast={};let hits=0;for(let i=0;i<400;i++){const e=rollEvent();if(e&&e.id==='griep')hits++}
   return {ok:hits===0,msg:`griep na 3 keer: ${hits}× opnieuw gekozen`}});
 
+t('5.1-5.3','relaties op volgorde, geen dubbele ingangen, opgeven in het menu','NL',async()=>{for(let i=0;i<20;i++){S.st.health=90;Q.length=0;advance();Q.length=0}
+  openSheet('Relaties',sheetRel);await sl(50);const secs=[...document.querySelectorAll('#sheet-b .shead')].map(x=>x.textContent.trim()).filter(Boolean);closeSheet();
+  const li=secs.findIndex(x=>/Liefde/i.test(x)),oi=secs.findIndex(x=>/Ouders/i.test(x));
+  openSheet('Activiteiten',sheetAct);await sl(50);const act=document.querySelector('#sheet-b').textContent;closeSheet();
+  openSheet('Hoofdmenu',sheetMain);await sl(50);const menu=document.querySelector('#sheet-b').textContent;closeSheet();
+  const dup=/Tijdmachine|Winkelen|Financiën|Opgeven/.test(act);
+  return {ok:li>=0&&(oi<0||li<oi)&&!dup&&/Opgeven/.test(menu),msg:`volgorde: ${secs.slice(0,5).join(' > ')} · dubbel in Activiteiten: ${dup} · Opgeven in menu: ${/Opgeven/.test(menu)}`}});
+
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];
   for(const x of T){if(only&&!x.nr.startsWith(only))continue;
-    const ctx=await b.newContext({...devices['iPhone 13']});await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1')}catch(e){}});
+    const ctx=await b.newContext({...devices['iPhone 13']});await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1');localStorage.setItem('levensloop.uitleg','1')}catch(e){}});
     const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.goto(URL);
     let r;try{r=await p.evaluate(async({cc,src,DH})=>{const sl=ms=>new Promise(r=>setTimeout(r,ms));
       randomize();CF.country=cc;CF.city=COUNTRIES[cc].cities[0];CF.chaos=1;startCreated();closeModal();Q.length=0;

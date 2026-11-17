@@ -30,7 +30,6 @@ function sheetAssets(el){const a=ageY();
   const g=sec(el,'Geld');
   row(g,{ic:'💰',t:'Financiën',s:a<18?'Je saldo en zakgeld':'Sparen, beleggen, automatisch beleggen, startups en leningen',on:()=>openSheet('Financiën',sheetFinance,true)});
   if(S.biz.length)row(g,{ic:'🏢',t:'Bedrijven',s:`${S.biz.length} ${S.biz.length>1?'bedrijven':'bedrijf'}`,on:()=>openSheet('Ondernemen',sheetBizList,true)});
-  row(g,{ic:'👥',t:'Social media',s:a<13?'Vanaf 13 jaar':`${Math.round(S.foll).toLocaleString('nl-NL')} volgers`,dis:a<13,on:()=>openSheet('Social media',sheetSocial,true)});
   if(inJail()){empty(el,'Winkelen kan pas weer als je vrij bent.');return}
   const sh=sec(el,'Winkelen');
   row(sh,{ic:'🏡',t:'Huizen',s:a<18?'Vanaf 18 jaar':'Kopen, huren, verhuren en verbouwen',dis:a<18,on:()=>openSheet('Panden',sheetHousing,true)});

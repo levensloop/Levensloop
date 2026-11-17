@@ -31,15 +31,19 @@ E('f_scheiding',{sys:1,t:'Je ouders gaan scheiden',x:()=>`${living('moeder')[0]?
 // ---- het relatiescherm (zelfde opbouw, uitgebreid) ----
 function sheetRel(el){if(bigOn())ensureBigFam();
   const top=sec(el,'');row(top,{ic:'🌳',t:'Stamboom',s:`Generatie ${S.gen} · bekijk je hele familie`,on:()=>openSheet('Stamboom',sheetTree,true)});
-  const groups=[['',['moeder','vader']],['Broers en zussen',['broer','zus']],['Kinderen',['kind']],['Kleinkinderen',['kleinkind']],['Vrienden',['vriend']],['Vijanden',['vijand']]];
-  if(bigOn())groups.splice(2,0,['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus']]);
-  for(const [n,r] of groups){const ps=living(r);if(!ps.length)continue;const s=sec(el,n);if(r[0]==='kind'&&ps.some(k=>pAge(k)<18))row(s,{ic:'🧸',t:'Opvoeding',s:`${PSTY[S.par?.style||'liefdevol'][0]} · zakgeld ${fmt((S.par?.pocket||0)*(S.cpi||1))} per week`,on:()=>openSheet('Opvoeding',sheetParenting,true)});for(const p of ps)personRow(s,p)}
+  // volgorde (verbeterplan 5.1): liefde, kinderen, ouders, broers en zussen, vrienden, huisdieren, dan de overige familie ingeklapt
   const love=sec(el,'Liefde');const pt=partner();if(pt)personRow(love,pt);
   for(const p of living('minnaar'))personRow(love,p);
   if(S.preg)row(love,{ic:'🤰',t:'Baby onderweg',s:`Uitgerekend over ${Math.max(0,S.preg.due-S.m)} maanden`});
   if(ageY()>=18&&!inJail())row(love,{ic:'💋',t:pt?'Vreemdgaan':'Een scharrel zoeken',s:pt?`Riskant: ${pt.first} kan erachter komen`:'Iets kort en vrijblijvends',dots:true,on:fling});
   const exes=people('ex');row(love,{ic:'💔',t:'Exen',s:exes.length?`${exes.length} ex${exes.length>1?'en':''}`:'Bekijk je exen',dis:!exes.length,on:()=>openSheet('Exen',el=>{const s=sec(el,'');for(const p of exes)personRow(s,p)},true)});
+  const groups=[['Kinderen',['kind']],['Kleinkinderen',['kleinkind']],['Ouders',['moeder','vader']],['Broers en zussen',['broer','zus']],['Vrienden',['vriend']]];
+  for(const [n,r] of groups){const ps=living(r);if(!ps.length)continue;const s=sec(el,n);if(r[0]==='kind'&&ps.some(k=>pAge(k)<18))row(s,{ic:'🧸',t:'Opvoeding',s:`${PSTY[S.par?.style||'liefdevol'][0]} · zakgeld ${fmt((S.par?.pocket||0)*(S.cpi||1))} per week`,on:()=>openSheet('Opvoeding',sheetParenting,true)});for(const p of ps)personRow(s,p)}
   const pets=living('huisdier');if(pets.length){const s=sec(el,'Huisdieren');for(const p of pets)personRow(s,p)}
+  if(bigOn()){const other=[['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus']]];
+    const n=other.reduce((x,[,r])=>x+living(r).length,0);
+    if(n)row(sec(el,'Overige familie'),{ic:'👪',t:'Overige familie',s:`${n} ${n===1?'persoon':'mensen'} · ${other.filter(([,r])=>living(r).length).map(([nm])=>nm.toLowerCase()).join(', ')}`,on:()=>openSheet('Overige familie',e2=>{for(const [nm,r] of other){const ps=living(r);if(!ps.length)continue;const s2=sec(e2,nm);for(const p of ps)personRow(s2,p)}},true)})}
+  {const ps=living('vijand');if(ps.length){const s=sec(el,'Vijanden');for(const p of ps)personRow(s,p)}}
   const dead=people().filter(p=>!p.alive&&!p.gone&&!['huisdier','vijand','minnaar'].includes(p.role)&&(p.role!=='ex'||p.lost)&&(p.died==null||p.died>=0)&&(bigOn()||!BIGR[p.role]));if(dead.length){const s=sec(el,'Overleden familie en vrienden');for(const p of dead)personRow(s,p)}
   const dpets=people('huisdier').filter(p=>!p.alive&&!p.gone);if(dpets.length){const s=sec(el,'Overleden huisdieren');for(const p of dpets)personRow(s,p)}
   foot(el,'🕰️','Tijd met iedereen...',()=>doAct('Tijd met iedereen',()=>{const ps=living().filter(p=>!['ex','vijand','minnaar'].includes(p.role)&&(bigOn()||!BIGR[p.role]));if(!ps.length)return 'Er is niemand om tijd mee door te brengen.';const m=use('allen');for(const p of ps)p.rel=clamp(p.rel+Math.round(ri(1,5)*m));hap(3);return `Je brengt tijd door met ${ps.length} ${ps.length===1?'persoon':'mensen'}. Iedereen waardeert het.`},true,'🕰️'),inJail())}

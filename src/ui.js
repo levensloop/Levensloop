@@ -26,7 +26,7 @@ function subtitle(){const a=ageY();if(!S.alive)return'Overleden';if(inJail())ret
 function profInner(){return `<span class="who"><span class="face">${playerFace()}</span><span class="who-t"><span class="nm">${flag(S.p.country)} <span class="u">${he(S.p.first+' '+S.p.last)}</span></span><span class="sub">${he(subtitle())}</span></span></span><div class="money"><b${S.money<0?' style="color:var(--bad)"':''}>${fmt(S.money)}</b><small>Saldo</small></div>`}
 function render(){
   if(!S)return;
-  $('#h-av').innerHTML=playerFace();$('#h-flag').textContent=flag(S.p.country);$('#h-name').textContent=`${S.p.first} ${S.p.last}`;
+  $('#h-av').innerHTML=playerFace();$('#h-flag').textContent=flag(S.p.country);$('#h-name').textContent=`${S.p.first} ${S.p.last}`;fitSoon($('#h-name').closest('.nm')||$('#h-name'),13);
   $('#h-sub').textContent=subtitle();
   $('#h-year').textContent=`${S.settings.mode==='month'?MONTHS[monthIdx()]+' ':''}${year()}`;
   animMoney(S.money);$('#h-money').style.color=S.money<0?'var(--bad)':'';
@@ -37,12 +37,17 @@ function render(){
   {const sch=(S.edu.stage==='basis'||S.edu.stage==='middel'||!!S.edu.cur)&&!(S.job&&!S.job.part),tj=$('#t-job');tj.classList.toggle('school',sch);tj.lastChild.textContent=sch?'School':S.job&&S.job.id==='prosport'?'Sport':S.job||S.biz.length?'Werk':'Beroep'}
   $('#t-age').disabled=!S.alive;
   renderLog();
-  if(!$('#sheet').hidden&&!sheetStack[0]?.dark)$('#sheet-prof').innerHTML=profInner();
+  if(!$('#sheet').hidden&&!sheetStack[0]?.dark){$('#sheet-prof').innerHTML=profInner();fitSoon($('#sheet-prof .nm'),13)}
 }
 let shownMoney=null,moneyFor=null,moneyRaf=0,logSeen={id:null,n:0};
 const RM=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
 // trillen kan niet in een iPhone-webapp (navigator.vibrate doet daar niets); daarom veert de getikte knop even in (verbeterplan 2.4)
 let lastTapEl=null;document.addEventListener('pointerdown',e=>{lastTapEl=e.target},{capture:true,passive:true});
+// lange teksten niet afkappen maar kleiner zetten tot ze passen (verbeterplan 5.4)
+function fitText(el,min){if(!el||!el.clientWidth)return;el.style.fontSize='';el.style.whiteSpace='';el.style.lineHeight='';let fs=parseFloat(getComputedStyle(el).fontSize)||20;let n=0;while(el.scrollWidth>el.clientWidth+1&&fs>min&&n++<30){fs-=1;el.style.fontSize=fs+'px'}
+  // past het nog steeds niet: dan over twee regels in plaats van afkappen
+  if(el.scrollWidth>el.clientWidth+1){el.style.whiteSpace='normal';el.style.lineHeight='1.1';el.style.textOverflow='clip'}}
+function fitSoon(el,min){if(!el)return;requestAnimationFrame(()=>fitText(el,min));setTimeout(()=>fitText(el,min),320)}
 function haptic(ms){try{if(RM)return;const b=lastTapEl&&lastTapEl.closest&&lastTapEl.closest('button,.mrow,.tile');if(!b)return;b.classList.remove('tapfx');void b.offsetWidth;b.classList.add('tapfx');setTimeout(()=>b.classList.remove('tapfx'),220)}catch(e){}}
 function animMoney(to){const el=$('#h-money');el.classList.toggle('long',Math.abs(to)>=1e6);if(moneyFor!==S.id){moneyFor=S.id;shownMoney=to;el.textContent=fmt(to);return}
   const from=shownMoney??to;shownMoney=to;cancelAnimationFrame(moneyRaf);if(RM||Math.abs(to-from)<1){el.textContent=fmt(to);return}
@@ -111,9 +116,9 @@ const XSVG='<svg viewBox="0 0 24 24"><path d="M5 2.9 12 9.9l7-7L21.1 5l-7 7 7 7-
 function openSheet(title,build,push,opt){const sh=$('#sheet');clearTimeout(sheetCloseT);const wasOpen=!sh.hidden&&!sh.classList.contains('closing')&&sheetStack.length>0;sh.classList.remove('closing');
   if(!push)sheetStack.length=0;sheetStack.push({title,build,dark:!!(opt&&opt.dark)});drawSheet(true,wasOpen?(push?'push':''):'up')}
 function drawSheet(top,anim){const t=sheetStack[sheetStack.length-1];if(!t)return closeSheet();const dark=!!sheetStack[0].dark;const sh=$('#sheet');
-  sh.hidden=false;$('#sheet-t').textContent=t.title;$('#sheet-bar').className='ptbar gut'+(dark?' dark':'');
+  sh.hidden=false;$('#sheet-t').textContent=t.title;fitSoon($('#sheet-t'),17);$('#sheet-bar').className='ptbar gut'+(dark?' dark':'');
   const x=$('#sheet-x');if(sheetStack.length>1){x.className='backlink';x.setAttribute('aria-label','Terug');x.innerHTML=BACKSVG+`<span>${he(sheetStack[sheetStack.length-2].title)}</span>`}else{x.className='xbtn';x.setAttribute('aria-label','Sluiten');x.innerHTML=XSVG}
-  const pf=$('#sheet-prof');pf.hidden=dark;if(!dark)pf.innerHTML=profInner();$('#sheet-en').textContent='';
+  const pf=$('#sheet-prof');pf.hidden=dark;if(!dark){pf.innerHTML=profInner();fitSoon($('#sheet-prof .nm'),13)}$('#sheet-en').textContent='';
   const b=$('#sheet-b');const sc=b.scrollTop;b.innerHTML='';t.build(b);b.scrollTop=top?0:sc;
   if(anim==='push'||anim==='pop'){b.classList.remove('nav-push','nav-pop');void b.offsetWidth;b.classList.add('nav-'+anim)}
   if(anim==='up'){const pi=$('#sheet .panel-in');pi.style.transform='';pi.classList.remove('rise');void pi.offsetWidth;pi.classList.add('rise')}}
@@ -434,6 +439,7 @@ function sheetMain(el){
   row(s,{ic:'🗳️',t:'Stemmen',s:{ask:'Elke keer vragen',same:'Altijd dezelfde partij',none:'Niet stemmen'}[voteMode()]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.vote={ask:'same',same:'none',none:'ask'}[voteMode()];refreshSheet();saveLife()}});
   row(s,{ic:'🌀',t:'Chaos',s:['Rustig','Normaal','Chaos'][S.settings.chaos]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.chaos=(S.settings.chaos+1)%3;refreshSheet();saveLife()}});
   row(s,{ic:'🌪️',t:'Tijdmachine',s:'Spoel 1, 3, 5 of 10 jaar terug',on:()=>openSheet('Tijdmachine',sheetRewind,true)});
+  row(s,{ic:'🏳️',t:'Opgeven',s:'Je leven hier laten eindigen',dots:true,on:()=>ask('Opgeven?','Je leven eindigt hier. Je kunt daarna nog terugspoelen of verder als je kind.','Opgeven',()=>{closeSheet();die('opgegeven');afterQ()},'bad','🏳️')});
   s=sec(el,'Verzameling');checkAch();const M=meta();
   row(s,{ic:'🏆',t:`Prestaties (${(S.ach||[]).length}/${ACH.length})`,s:'Behaal ze allemaal',on:()=>openSheet('Prestaties',sheetAch,true)});
   row(s,{ic:'💼',t:`Carrières (${M.careers.length}/${JOBS.length})`,s:'Verzamel ze allemaal, over al je levens',on:()=>openSheet('Carrières',sheetCareers,true)});
@@ -619,10 +625,18 @@ function mgSlots(){const sy=['🍒','🍋','🔔','⭐','7️⃣','💎'],pay={'
 function renderStart(){
   const el=$('#saves');const all=Object.values(STORE.lives).sort((a,b)=>(b.updated||0)-(a.updated||0));
   if(!all.length){el.innerHTML='<p class="muted" style="margin:0">Nog geen levens. Begin je eerste leven hierboven.</p>';return}
-  el.innerHTML=all.map(l=>{if(l.done)return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:#eceef3;font-size:24px">💀</span><span class="meta"><b>${he(l.name)}</b><small>${l.by} · ${l.age} jaar · score ${l.score}${l.ribbon?' · '+he(l.ribbon):''}</small></span><span class="pill dead">Gen ${l.gen}</span></button>`;
+  // startscherm (verbeterplan 5.5): grote kaart "Verder met …", dan lopende levens, begraafplaats en nieuw leven
+  const bn=$('#btn-new');if(bn&&!bn.dataset.moved){el.parentNode.after(bn);bn.dataset.moved=1;bn.style.marginTop='16px'}
+  const lastL=STORE.lives[STORE.last];const cont=lastL&&!lastL.done&&lastL.alive?lastL:all.find(l=>!l.done&&l.alive);
+  const card=l=>{if(l.done)return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:#eceef3;font-size:24px">💀</span><span class="meta"><b>${he(l.name)}</b><small>${l.by} · ${l.age} jaar · score ${l.score}${l.ribbon?' · '+he(l.ribbon):''}</small></span><span class="pill dead">Gen ${l.gen}</span></button>`;
     const a=Math.floor(l.m/12);const sub=l.alive?`${a} jaar · ${COUNTRIES[l.p.country].n}`:`Overleden op ${l.died??a} · terugspoelen kan nog`;
-    return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:${l.alive?'var(--brand-soft)':'#eceef3'};font-size:24px">${l.alive?(l.ap?avatarSvg(l.ap,Math.floor(l.m/12),l.p.g):'🧑'):'💀'}</span><span class="meta"><b>${he(l.p.first+' '+l.p.last)}</b><small>${he(sub)}</small></span><span class="pill ${l.alive?'good':'dead'}">${l.alive?'Gen '+l.gen:'†'}</span></button>`}).join('');
-  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const l=STORE.lives[b.dataset.id];
+    return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:${l.alive?'var(--brand-soft)':'#eceef3'};font-size:24px">${l.alive?(l.ap?avatarSvg(l.ap,Math.floor(l.m/12),l.p.g):'🧑'):'💀'}</span><span class="meta"><b>${he(l.p.first+' '+l.p.last)}</b><small>${he(sub)}</small></span><span class="pill ${l.alive?'good':'dead'}">${l.alive?'Gen '+l.gen:'†'}</span></button>`};
+  const alive=all.filter(l=>!l.done&&l.alive&&l!==cont),dead=all.filter(l=>l.done||!l.alive);let h='';
+  if(cont){const a=Math.floor(cont.m/12);h+=`<button class="savecard cont" data-id="${cont.id}" data-go="1" style="padding:16px 14px;border:2px solid var(--brand);margin-bottom:6px"><span class="av" style="background:var(--brand-soft);font-size:28px;width:56px;height:56px">${cont.ap?avatarSvg(cont.ap,a,cont.p.g):'🧑'}</span><span class="meta"><small style="font-weight:700;color:var(--brand)">Verder met</small><b style="font-size:18px">${he(cont.p.first+' '+cont.p.last)}</b><small>${a} jaar · ${he(COUNTRIES[cont.p.country].n)}</small></span><span class="pill good">▶</span></button>`}
+  if(alive.length)h+=`<p class="sec-l" style="margin:14px 0 8px">Lopende levens</p>`+alive.map(card).join('');
+  if(dead.length)h+=`<p class="sec-l" style="margin:14px 0 8px">Begraafplaats</p>`+dead.map(card).join('');
+  el.innerHTML=h;
+  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const l=STORE.lives[b.dataset.id];if(b.dataset.go){loadLife(l.id);return}
     const del=()=>{modal({title:'Verwijderen?',em:'🗑️',text:`${l.done?l.name:l.p.first+' '+l.p.last} wordt definitief verwijderd.`,choices:opts([{t:'Verwijderen',cls:'bad',on:()=>{closeModal();delete STORE.lives[l.id];lsSave();cloudQueue(l.id);renderStart()}}])})};
     if(l.done)modal({title:l.name,em:'📜',cat:`${l.by} · ${l.age} jaar`,html:l.story.map(p=>`<p style="font-size:15.5px;text-align:left;margin:0">${he(p)}</p>`).join(''),choices:[{t:'Sluiten',cls:'ghost',on:closeModal},{t:'Verwijderen',cls:'bad',on:del}]});
     else modal({title:l.p.first+' '+l.p.last,em:l.alive?'🧑':'💀',cat:l.alive?`${Math.floor(l.m/12)} jaar`:'Overleden',choices:[{t:l.alive?'Verder spelen':'Bekijken',cls:'go',on:()=>{closeModal();loadLife(l.id)}},{t:'Verwijderen',cls:'bad',on:del},{t:'Annuleren',cls:'ghost',on:closeModal}]})})}

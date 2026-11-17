@@ -96,7 +96,7 @@ E('t_eerstekus',{a:[13,17],once:1,c:()=>!!partner(),t:'De eerste kus',ctx:()=>ct
 E('s_tentamen',{a:[17,30],c:()=>!!S.edu.cur&&!['basis','middel'].includes(S.edu.stage),t:'Tentamenweek',ctx:()=>ctxP(circP('school',false)),x:c=>`Morgen is je zwaarste tentamen. ${Pe(c).first} vraagt of je meegaat naar een feest.`,ch:[
  ['📚 Blokken in de bieb 🎮',()=>evMg('Blokken','📚','Studie',f=>mgCode({title:'Blokken',desc:'Onthoud de formules voor morgen.',em:'📚',len:5},(h,n)=>f(h/n)),sc=>{const c=S.edu.cur;if(c)c.perf=clamp(c.perf+Math.round(sc*12));sma(Math.round(sc*2));return sc>=.8?'Je kent alles uit je hoofd. Een 8!':sc>=.4?'Je haalt een voldoende.':'Je zat te gapen. Herkansing in juli.'})],
  ['🍻 Toch naar het feest',c=>{hap(5);rel_(findAny(c.id),6);const s=S.edu.cur;if(s)s.perf=clamp(s.perf-8);return 'Een geweldig feest. Het tentamen ging een stuk minder.'}]]});
-E('s_kamer',{a:[18,24],c:()=>!!S.edu.cur&&S.home.k==='ouders',t:'Op kamers?',x:'Er komt een studentenkamer vrij in de stad: €450 per maand, gedeelde badkamer met zeven huisgenoten.',ch:[
+E('s_kamer',{a:[18,24],c:()=>!!S.edu.cur&&S.home.k==='ouders',t:'Op kamers?',x:()=>`Er komt een studentenkamer vrij in de stad: ${fmt(450*(S.cpi||1))} per maand, gedeelde badkamer met zeven huisgenoten.`,ch:[
  ['🏠 Ja, op kamers!',()=>{setRent('Studentenkamer',Math.round(5400*(S.cpi||1)));hap(6);if(chance(.5))addFriend();return 'Je eigen plek. Met een koelkast vol etiketjes.'}],
  ['🛋️ Thuis blijven wonen',()=>{relAdj('moeder',2);return 'Je spaart een hoop geld. En je moeder kookt.'}]]});
 // ---- werk, per soort baan ----

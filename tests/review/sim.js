@@ -13,7 +13,7 @@ async function life(b,cc,idx){const ctx=await b.newContext({...devices['iPhone 1
   await p.goto(process.env.URL||'http://localhost:8765/');await p.addScriptTag({content:AUTO});
   const r=await p.evaluate(async({cc,MONKEY,MAXAGE})=>{const sl=ms=>new Promise(r=>setTimeout(r,ms));const $=s=>document.querySelector(s);
     const res={cc,years:[],ev:{},stuck:[],acts:{},sizes:[],t0:performance.now()};
-    try{localStorage.setItem('levensloop.hint','1')}catch(e){}
+    try{localStorage.setItem('levensloop.hint','1');localStorage.setItem('levensloop.uitleg','1')}catch(e){}
     const c=COUNTRIES[cc];const g=pick(['m','v','x']);randomize();CF.country=cc;CF.city=pick(c.cities);CF.g=g;CF.chaos=1;startCreated();await sl(30);
     const bad=/verwijder|hoofdmenu|opnieuw beginnen|nieuw leven|afsluiten|stoppen met dit leven|geef je over|tempo|tijdmachine|lopende levens|terugspoelen|begraafplaats|mijn levens/i;
     const auto=async(tag)=>{const lg=await AUTO(45000);for(const t of lg){if(t==='TIMEOUT'){res.stuck.push({tag,age:ageY(),t:(($('#modal .ptitle')||$('#modal h3')||{}).textContent||'').slice(0,60),txt:$('#modal').textContent.slice(0,160)});closeModal()}else if(tag==='age'&&t){const k=t;res.ev[k]=(res.ev[k]||0)+1}}return lg};

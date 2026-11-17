@@ -25,7 +25,15 @@ function renderCreate(){const c=CF,C_=COUNTRIES[c.country],T=TAL(c.talent);
   $('#cbody').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{haptic(6);({name:cName,g:cGender,country:cCountry,city:cCity,by:cYear,mode:cMode,chaos:cChaos,talent:cTalent,ap:cLook,attr:cAttr})[b.dataset.k]()});
   $('#c-start').onclick=startCreated}
 function startCreated(){const c=CF;newLife({first:c.first||'Naamloos',last:c.last||'Onbekend',g:c.g,country:c.country,city:c.city,by:c.by,mode:c.mode,chaos:c.chaos,talent:c.talent,ap:c.ap,attr:c.attr,pref:c.pref});
-  CF=null;saveLife();show('game');render()}
+  CF=null;saveLife();show('game');render();introOnce()}
+// korte uitleg bij het allereerste leven, één keer (verbeterplan 5.6)
+function introOnce(){try{if(localStorage.getItem('levensloop.uitleg'))return;localStorage.setItem('levensloop.uitleg','1')}catch(e){return}
+  if(Object.keys(STORE.lives).length>1)return;
+  const steps=[['👶','Ouder worden','Tik op de grote knop onderin om een jaar (of maand) verder te gaan. Onderweg gebeuren er dingen waar jij een keuze in maakt.'],
+    ['🗂️','De vier tabbladen','Beroep (school en werk), Bezit (geld, huis, winkelen), Relaties (familie, liefde, vrienden) en Activiteiten (alles wat je zelf kunt doen).'],
+    ['☰','Het menu','Linksboven vind je het menu: instellingen, de tijdmachine, je andere levens en de reservekopie.']];
+  const show_=i=>{const [em,t,x]=steps[i];modal({title:t,em,cat:`Uitleg ${i+1} van ${steps.length}`,text:x,choices:[{t:i<steps.length-1?'Volgende':'Aan de slag!',cls:'go',on:()=>{closeModal();if(i<steps.length-1)show_(i+1)}},...(i<steps.length-1?[{t:'Overslaan',cls:'ghost',on:closeModal}]:[])]})};
+  show_(0)}
 const done_=()=>{closeModal();renderCreate()};
 function cName(){modal({title:'Naam',em:'🍼',cat:'Nieuw leven',html:`<label class="lab" for="cn1">Voornaam</label><input class="inp" id="cn1" maxlength="24" value="${he(CF.first)}"><label class="lab" for="cn2" style="margin-top:8px">Achternaam</label><input class="inp" id="cn2" maxlength="28" value="${he(CF.last)}">`,
   choices:[{t:'Opslaan',cls:'go',on:()=>{CF.first=$('#cn1').value.trim()||CF.first;CF.last=$('#cn2').value.trim()||CF.last;done_()}},{t:'🎲 Willekeurige naam',cls:'ghost',on:()=>{const N=NAMES[COUNTRIES[CF.country].r];$('#cn1').value=pick(N[CF.g==='x'?pick(['m','v']):CF.g]);$('#cn2').value=pick(N.l)}}]})}

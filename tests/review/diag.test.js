@@ -4,7 +4,7 @@ const { chromium, devices } = require('playwright');
 const SHOTS=process.env.SHOTS||'';
 (async()=>{const b=await chromium.launch();let fail=0;const errs=[];const ok=(c,m)=>{console.log((c?'✓ ':'✗ ')+m);if(!c)fail++};
   for(const dev of ['iPhone 13','iPhone SE','iPhone 14 Pro Max']){
-    const ctx=await b.newContext({...devices[dev]});await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1')}catch(e){}});
+    const ctx=await b.newContext({...devices[dev]});await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1');localStorage.setItem('levensloop.uitleg','1')}catch(e){}});
     const p=await ctx.newPage();p.on('pageerror',e=>errs.push(e.message));await p.goto('http://localhost:8765/');
     const fill=async scr=>{const r=await p.evaluate(()=>{const ih=innerHeight,a=document.querySelector('#app').getBoundingClientRect();const s=[...document.querySelectorAll('#app>.screen')].find(x=>!x.hidden);const sb=s.getBoundingClientRect();
       const last=s.id==='scr-game'?document.querySelector('#scr-game .bottom2').getBoundingClientRect().bottom:sb.bottom;return {ih,top:a.top,bot:a.bottom,last}});

@@ -39,15 +39,12 @@ const ACTS=[
  ['org','🕶️','Onderwereld',()=>S.crim.org?(S.crim.org.type==='bende'?S.crim.org.name:`${S.crim.org.name} · ${MRANK[S.crim.org.rank]}`):'Een eigen bende of de maffia',16,OS('Onderwereld',el=>sheetOrg(el)),4],
  ['heist','🗺️','Overval plannen','Doelwit, crew en uitrusting',18,OS('Overval plannen',el=>sheetHeist(el,(S.crim.plan||{}).t||'juwelier')),4],
  ['wit','🧼','Witwassen',()=>S.crim.dirty>0?`${fmt(S.crim.dirty)} zwart geld`:'Je hebt geen zwart geld',16,OS('Witwassen',el=>sheetLaunder(el)),4],
- ['shop','🛍️','Winkelen','Huizen, auto\'s, jachten, horloges en meer',12,OS('Bezit',el=>sheetAssets(el)),5],
- ['fin','💸','Financiën','Beleggen, lenen, startups',18,OS('Financiën',el=>sheetFinance(el)),5],
  ['roem','⭐','Roem',()=>S.fame>0?`${Math.round(S.fame)}% roem · ${Math.round(S.foll).toLocaleString('nl-NL')} volgers`:'Word eerst bekend',0,OS('Roem',el=>sheetFame(el)),5,()=>[S.fame>0,'Word eerst bekend']],
  ['social','👥','Social media','Beheer je online identiteit',13,OS('Social media',el=>sheetSocial(el)),5],
  ['recht','⚖️','Rechtszaak','Klaag iemand aan',18,()=>lawsuit(),5],
  ['emig','🌍','Emigreren','Verhuis naar een ander land',18,OS('Emigreren',el=>sheetEmigrate(el)),6],
  ['id','👤','Identiteit','Bepaal wie je bent',18,OS('Identiteit',el=>sheetIdentity(el)),6],
- ['rijb','🚗','Rijbewijzen','Auto, motor en boot · minigame',16,OS('Rijbewijzen',el=>sheetLic(el)),6],
- ['tijd','🌪️','Tijdmachine','Reis terug in de tijd',0,OS('Tijdmachine',el=>sheetRewind(el)),6]];
+ ['rijb','🚗','Rijbewijzen','Auto, motor en boot · minigame',16,OS('Rijbewijzen',el=>sheetLic(el)),6]];
 const FAVDEF=['mind','sport','vecht','liefde','nacht'];
 const favs=()=>{const f=S.settings.favs;return Array.isArray(f)?f.filter(k=>ACTS.some(x=>x[0]===k)):FAVDEF};
 const BANDX=['nacht','fest','conc','reis','emig','quiz','casino'];
@@ -55,10 +52,10 @@ const GAMBLE=['casino','bet','paard','gevbet','lot','kras'];
 function actRow(s,x){const [k,ic,t,sub,min,on,g,ex]=x;const a=ageY();const e=typeof bandOn==='function'&&bandOn()&&BANDX.includes(k)?[false,'Niet met een enkelband']:GAMBLE.includes(k)&&a>=min&&S.money<=0?[false,S.money<0?'Je staat rood':'Je hebt geen geld']:ex?ex():[true];const ok=a>=min&&e[0];const st=typeof sub==='function'?safe(()=>sub())||'':sub;
   row(s,{ic,t,s:a<min?`Vanaf ${min} jaar`:!e[0]?e[1]:st,dis:!ok,on})}
 function sheetAct(el){if(inJail())return jailActs(el);
-  const f=sec(el,'⭐ Favorieten');for(const k of favs()){const x=ACTS.find(y=>y[0]===k);if(x)actRow(f,x)}
-  row(f,{ic:'✏️',t:'Favorieten aanpassen',s:'Kies je eigen 5',on:()=>openSheet('Favorieten',sheetFavs,true)});
+  // favorieten alleen tonen als je ze zelf hebt gekozen (verbeterplan 5.2); kiezen kan via Menu → Favoriete activiteiten
+  if(Array.isArray(S.settings.favs)&&favs().length){const f=sec(el,'⭐ Favorieten');for(const k of favs()){const x=ACTS.find(y=>y[0]===k);if(x)actRow(f,x)}}
   if(typeof postRows==='function')postRows(el);
-  ACTG.forEach((g,i)=>{const s=sec(el,g);for(const x of ACTS.filter(x=>x[6]===i))actRow(s,x)});
-  foot(el,'🏳️','Opgeven...',()=>ask('Opgeven?','Je leven eindigt hier. Je kunt daarna nog terugspoelen of verder als je kind.','Opgeven',()=>{closeSheet();die('opgegeven');afterQ()},'bad','🏳️'))}
+  ACTG.forEach((g,i)=>{const xs=ACTS.filter(x=>x[6]===i);if(!xs.length)return;const s=sec(el,g);for(const x of xs)actRow(s,x)});
+}
 function sheetFavs(el){const cur=favs();card(el,`<span class="muted">Kies maximaal 5 activiteiten die bovenaan staan. Tik nog een keer om er een weg te halen.</span>`);
-  ACTG.forEach((g,i)=>{const s=sec(el,g);for(const [k,ic,t] of ACTS.filter(x=>x[6]===i)){const on=cur.includes(k);row(s,{ic,t,r:on?'⭐':'☆',s:on?`Favoriet ${cur.indexOf(k)+1} van 5`:'',on:()=>{let f=favs().slice();if(f.includes(k))f=f.filter(x=>x!==k);else{if(f.length>=5){toast('Je hebt al 5 favorieten. Haal er eerst een weg.');return}f.push(k)}S.settings.favs=f;saveLife();refreshSheet()}})}})}
+  ACTG.forEach((g,i)=>{if(!ACTS.some(x=>x[6]===i))return;const s=sec(el,g);for(const [k,ic,t] of ACTS.filter(x=>x[6]===i)){const on=cur.includes(k);row(s,{ic,t,r:on?'⭐':'☆',s:on?`Favoriet ${cur.indexOf(k)+1} van 5`:'',on:()=>{let f=favs().slice();if(f.includes(k))f=f.filter(x=>x!==k);else{if(f.length>=5){toast('Je hebt al 5 favorieten. Haal er eerst een weg.');return}f.push(k)}S.settings.favs=f;saveLife();refreshSheet()}})}})}

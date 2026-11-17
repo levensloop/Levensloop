@@ -47,7 +47,7 @@ const SC={
   const errs=[];p.on('pageerror',e=>errs.push(e.message));
   await p.addInitScript(warp);await p.goto(URL);await p.addScriptTag({content:AUTO});
   const ver=await p.evaluate(()=>typeof APP_VERSION!=='undefined'?APP_VERSION:'?');
-  await p.evaluate(()=>{try{localStorage.setItem('levensloop.hint','1')}catch(e){}});
+  await p.evaluate(()=>{try{localStorage.setItem('levensloop.hint','1');localStorage.setItem('levensloop.uitleg','1')}catch(e){}});
   const dump=()=>p.evaluate(()=>{const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);o[k]=localStorage.getItem(k)}return o});
   const ids={};
   for(const [k,sc] of Object.entries(SC)){const before=await p.evaluate(()=>Object.keys(STORE.lives));

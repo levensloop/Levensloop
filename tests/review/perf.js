@@ -3,7 +3,7 @@
 // Eindigt met foutcode 1 als er minder dan MIN (standaard 30) levens passen.
 const { chromium, devices } = require('playwright');
 const MIN=+process.env.MIN||30;
-(async()=>{const b=await chromium.launch();const ctx=await b.newContext({...devices['iPhone 13']});await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1')}catch(e){}});const p=await ctx.newPage();
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({...devices['iPhone 13']});await ctx.addInitScript(()=>{try{localStorage.setItem('levensloop.hint','1');localStorage.setItem('levensloop.uitleg','1')}catch(e){}});const p=await ctx.newPage();
  const cdp=await ctx.newCDPSession(p);await cdp.send('Emulation.setCPUThrottlingRate',{rate:3});
  const t0=Date.now();await p.goto(process.env.URL||'http://localhost:8765/');await p.waitForFunction(()=>typeof STORE!=='undefined');const load=Date.now()-t0;
  const r=await p.evaluate(async()=>{const T=f=>{const t=performance.now();f();return Math.round(performance.now()-t)};const o={};
