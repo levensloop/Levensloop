@@ -72,12 +72,12 @@ Nu: ouders verdienen geld, kinderen gaan op hun 18e het huis uit en krijgen rond
 - **9.8 Grote familiemomenten.** Eén keer per jaar hooguit één groot familiemoment. Voorbeelden: de bruiloft van je kind (speech houden, betalen of niet), een kleinkind geboren, ruzie aan het kerstdiner, een familiefeest, een ruzie om de erfenis tussen broers en zussen.
 - **9.9 Rustiger pop-ups.** Ga alle bestaande gebeurtenissen langs en verdeel ze in klein (wordt een logregel) en groot (blijft een pop-up). Zet een pop-upbudget per jaar in `rollEvent`. Doel: 3,0 naar ongeveer 2.
 
-**Keuze voor Thijmen** (wordt gevraagd bij de start van fase 9):
+**Keuzes van Thijmen (18 nov 2026):**
 
-- Wie krijgt een volledig eigen leven: iedereen, of familie plus vrienden met een goede band (de rest blijft eenvoudiger, scheelt opslag)?
-- Mogen familieleden emigreren, zodat ze verder weg wonen en je ze minder ziet?
-- Moet je aan het eind van je leven kunnen kiezen om verder te spelen als elk familielid, of alleen als je kinderen (zoals nu)?
-- Herinneringen zichtbaar in het scherm van de persoon, of alleen merkbaar aan hoe ze reageren?
+- Een volledig eigen leven krijgen familie, de partner en vrienden met een goede band. De rest (collega's, klasgenoten, exen, buren) blijft eenvoudiger.
+- Familie en vrienden mogen emigreren. Bezoek kost dan een reis, bellen kan altijd.
+- Verder spelen na je dood: met je kinderen zoals nu. Alleen als er geen levend kind meer is, kun je verder als kleinkind.
+- Herinneringen: niet beantwoord. Aangenomen is een zichtbaar kopje "Samen meegemaakt" in het scherm van de persoon. Thijmen kan dit nog omzetten.
 
 ---
 
