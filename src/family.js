@@ -1,6 +1,6 @@
 /* ================= RELATIES: grote familie, liefde, opvoeden, stamboom ================= */
 const BIGR={opa:'Grootouders',oma:'Grootouders',oom:'Ooms en tantes',tante:'Ooms en tantes',neef:'Neven en nichten',nicht:'Neven en nichten',neefje:'Neefjes en nichtjes',nichtje:'Neefjes en nichtjes',
-  schoonmoeder:'Schoonfamilie',schoonvader:'Schoonfamilie',zwager:'Schoonfamilie',schoonzus:'Schoonfamilie',stiefvader:'Stieffamilie',stiefmoeder:'Stieffamilie',stiefbroer:'Stieffamilie',stiefzus:'Stieffamilie'};
+  schoonmoeder:'Schoonfamilie',schoonvader:'Schoonfamilie',zwager:'Schoonfamilie',schoonzus:'Schoonfamilie',schoonzoon:'Schoonfamilie',schoondochter:'Schoonfamilie',stiefvader:'Stieffamilie',stiefmoeder:'Stieffamilie',stiefbroer:'Stieffamilie',stiefzus:'Stieffamilie'};
 const bigOn=()=>!!(S&&S.settings&&S.settings.bigFam);
 const gRole=(g,m,v)=>g==='v'?v:m;
 // grootouders, ooms, tantes en neven/nichten op basis van je ouders
@@ -13,7 +13,8 @@ function ensureBigFam(){if(!bigOn()||S.flags.bigGen)return;S.flags.bigGen=1;cons
       for(let k=ri(0,3);k>0;k--){const g2=pick(['m','v']);S.rel.push(mkPerson(gRole(g2,'neef','nicht'),g2,me+ri(-8,10)*12+ri(0,11),{ap:apMix(apOf(u),null,g2),last:u.g==='m'?u.last:pick(NAMES[C().r].l),rel:ri(35,70),par:u.id}))}}}}
 function famYear(a){if(!bigOn())return;ensureBigFam();
   // broers en zussen krijgen kinderen
-  for(const s of living(['broer','zus'])){const sa=pAge(s);if(sa>=24&&sa<=42&&chance(.1)&&people(['neefje','nichtje']).filter(x=>x.par===s.id).length<3){const g=pick(['m','v']);const k=mkPerson(gRole(g,'neefje','nichtje'),g,S.m,{ap:apMix(apOf(s),null,g),last:s.g==='m'?s.last:pick(NAMES[C().r].l),rel:ri(50,80),par:s.id});S.rel.push(k);L(`Je ${relWord(s)} ${s.first} heeft een ${g==='v'?'dochter':'zoon'} gekregen: ${k.first}. Je bent ${S.p.g==='v'?'tante':'oom'}!`,'good');hap(3)}}
+  // sinds fase 9 krijgen broers en zussen kinderen vanuit hun eigen leven (people9.js)
+  if(typeof PHASE9==='undefined')for(const s of living(['broer','zus'])){const sa=pAge(s);if(sa>=24&&sa<=42&&chance(.1)&&people(['neefje','nichtje']).filter(x=>x.par===s.id).length<3){const g=pick(['m','v']);const k=mkPerson(gRole(g,'neefje','nichtje'),g,S.m,{ap:apMix(apOf(s),null,g),last:s.g==='m'?s.last:pick(NAMES[C().r].l),rel:ri(50,80),par:s.id});S.rel.push(k);L(`Je ${relWord(s)} ${s.first} heeft een ${g==='v'?'dochter':'zoon'} gekregen: ${k.first}. Je bent ${S.p.g==='v'?'tante':'oom'}!`,'good');hap(3)}}
   // schoonfamilie zodra je getrouwd bent
   const pt=partner();if(pt&&pt.st==='getrouwd'&&!pt.inlaws){pt.inlaws=1;const pa=pAge(pt);for(const g of ['m','v']){const age=pa+ri(22,34);if(age>95)continue;S.rel.push(mkPerson(gRole(g,'schoonvader','schoonmoeder'),g,S.m-age*12,{ap:apMix(apOf(pt),null,g),last:g==='m'?pt.last:pick(NAMES[C().r].l),rel:ri(40,75),of:pt.id}))}
     for(let i=ri(0,2);i>0;i--){const g=pick(['m','v']);S.rel.push(mkPerson(gRole(g,'zwager','schoonzus'),g,pt.born+ri(-6,6)*12,{ap:apMix(apOf(pt),null,g),last:pt.last,rel:ri(40,70),of:pt.id}))}
@@ -31,6 +32,7 @@ E('f_scheiding',{sys:1,t:'Je ouders gaan scheiden',x:()=>`${living('moeder')[0]?
 // ---- het relatiescherm (zelfde opbouw, uitgebreid) ----
 function sheetRel(el){if(bigOn())ensureBigFam();
   const top=sec(el,'');row(top,{ic:'🌳',t:'Stamboom',s:`Generatie ${S.gen} · bekijk je hele familie`,on:()=>openSheet('Stamboom',sheetTree,true)});
+  if(typeof f9RelTop==='function')f9RelTop(el);
   // volgorde (verbeterplan 5.1): liefde, kinderen, ouders, broers en zussen, vrienden, huisdieren, dan de overige familie ingeklapt
   const love=sec(el,'Liefde');const pt=partner();if(pt)personRow(love,pt);
   for(const p of living('minnaar'))personRow(love,p);
@@ -39,8 +41,9 @@ function sheetRel(el){if(bigOn())ensureBigFam();
   const exes=people('ex');row(love,{ic:'💔',t:'Exen',s:exes.length?`${exes.length} ex${exes.length>1?'en':''}`:'Bekijk je exen',dis:!exes.length,on:()=>openSheet('Exen',el=>{const s=sec(el,'');for(const p of exes)personRow(s,p)},true)});
   const groups=[['Kinderen',['kind']],['Kleinkinderen',['kleinkind']],['Ouders',['moeder','vader']],['Broers en zussen',['broer','zus']],['Vrienden',['vriend']]];
   for(const [n,r] of groups){const ps=living(r);if(!ps.length)continue;const s=sec(el,n);if(r[0]==='kind'&&ps.some(k=>pAge(k)<18))row(s,{ic:'🧸',t:'Opvoeding',s:`${PSTY[S.par?.style||'liefdevol'][0]} · zakgeld ${fmt((S.par?.pocket||0)*(S.cpi||1))} per week`,on:()=>openSheet('Opvoeding',sheetParenting,true)});for(const p of ps)personRow(s,p)}
+  if(typeof f9FriendRows==='function')f9FriendRows(el);
   const pets=living('huisdier');if(pets.length){const s=sec(el,'Huisdieren');for(const p of pets)personRow(s,p)}
-  if(bigOn()){const other=[['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus']]];
+  if(bigOn()){const other=[['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus','schoonzoon','schoondochter']]];
     const n=other.reduce((x,[,r])=>x+living(r).length,0);
     if(n)row(sec(el,'Overige familie'),{ic:'👪',t:'Overige familie',s:`${n} ${n===1?'persoon':'mensen'} · ${other.filter(([,r])=>living(r).length).map(([nm])=>nm.toLowerCase()).join(', ')}`,on:()=>openSheet('Overige familie',e2=>{for(const [nm,r] of other){const ps=living(r);if(!ps.length)continue;const s2=sec(e2,nm);for(const p of ps)personRow(s2,p)}},true)})}
   {const ps=living('vijand');if(ps.length){const s=sec(el,'Vijanden');for(const p of ps)personRow(s,p)}}

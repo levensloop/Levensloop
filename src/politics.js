@@ -248,12 +248,14 @@ function polWorld(el){const W=polW();const s=sec(el,'Politiek in het land');warC
    Politici krijgen de hele verkiezingsavond. Gewone burgers één pop-up waarin ze stemmen en meteen de uitslag zien,
    of (instelling "altijd dezelfde partij" / "niet stemmen") alleen een regel in het logboek. */
 const voteMode=()=>(S&&S.settings&&S.settings.vote)||'ask';
+// fase 9.9: na het stemmen komt de uitslag in het logboek in plaats van in een tweede pop-up
+const vlog=o=>o.map(([l,f,c])=>[l,x=>{const r=f(x);if(r&&typeof r==='string')L('🗳️ '+r);return ''},c]);
 const polPro=()=>{const P=S.pol;return !!(P&&((P.lvl&&P.lvl!=='lid')||Object.values(P.cand||{}).some(Boolean)))};
 function tkCitizen(pre){const c=runTK();return `${pre?pre+' ':''}${c.news} ${tkOutcome(c)}`.trim()}
 /* ---------- events ---------- */
 E('pol_stem',{sys:1,need:()=>!S.dict,t:'Verkiezingen',x:()=>`Het is verkiezingsdag voor ${PT().kamer}. Op wie stem je?`,ch:[]});
 Object.defineProperty(EV.pol_stem,'ch',{get(){const W=polW();const ids=Object.keys(W.sh).sort((a,b)=>W.sh[b]-W.sh[a]);
-  return ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,c=>{W.vote=k;if(c&&c.run)return tkCitizen(`Je stemt op ${PTY(k).n}.`);L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',c=>{if(c&&c.run)return tkCitizen('Je gaat niet stemmen.');L('Je gaat niet stemmen.');return ''}]])}});
+  return vlog(ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,c=>{W.vote=k;if(c&&c.run)return tkCitizen(`Je stemt op ${PTY(k).n}.`);L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',c=>{if(c&&c.run)return tkCitizen('Je gaat niet stemmen.');L('Je gaat niet stemmen.');return ''}]]))}});
 E('pol_tk',{sys:1,need:()=>!S.dict,t:'Uitslagavond',f:()=>{const c=runTK();return c.news+' '+tkOutcome(c)}});
 E('pol_gr',{sys:1,need:()=>!S.dict,t:'Gemeenteraadsverkiezingen',f:()=>runGR()});
 E('pol_formatie',{sys:1,need:()=>!S.dict,t:'Formatie',x:()=>`Jij bent de formateur. Ga op zoek naar een meerderheid van minstens ${NEED()} zetels.`,ch:[['🤝 Beginnen met de gesprekken',()=>({go:formation})]]});

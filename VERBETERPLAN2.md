@@ -25,6 +25,7 @@ Lees eerst `CLAUDE.md` en de werkwijze in `VERBETERPLAN.md` (die blijft gelden: 
 - 13: **geen verzekeringen**. Beurs met ongeveer 20 verzonnen bedrijven.
 - 14 en 15: **echte namen waar het kan** (echte clubs, competities en prijzen); spelers, films, albums en boeken blijven verzonnen. Roem: acteur, muzikant, model, schrijver en presentator als projecten. Sport: alle 16 sporten krijgen seizoenen of toernooien.
 - 16: misdaad **milder** (meer kans om weg te komen), met verhoor, advocaat en rechtszaak als spel.
+- 16 (00:52): **moord en huurmoord** erbij, zoals in BitLife: alleen als spelmechaniek (doelwit kiezen, een abstracte aanpak, kans op succes), zonder echte methodes of details. Zware gevolgen: karma, recherche-onderzoek, levenslang als je gepakt wordt, en het slachtoffer verdwijnt uit je leven.
 
 ## Volgorde en waarom
 
