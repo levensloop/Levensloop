@@ -14,6 +14,18 @@ Lees eerst `CLAUDE.md` en de werkwijze in `VERBETERPLAN.md` (die blijft gelden: 
 - Volgorde: **grootste impact eerst** (zie hieronder).
 - Online zetten: **na elke fase**, na een "ga door" van Thijmen.
 
+## Keuzes voor alle fases (18 nov 2026, 00:50)
+
+- Claude bouwt fase 9 tot en met 16 achter elkaar door, zonder op "begin" te wachten. **Niets online zetten** tot Thijmen "ga door" zegt; wel alles op branch `bron` en een zip.
+- **Pop-ups: 2 schermen per jaar** (= ongeveer één moment met een keuze per jaar). Gemeten zoals `stats.js` het telt (vraag + uitslag = 2 schermen). Was 3,0.
+- 9: herinneringen zichtbaar ("Samen meegemaakt"). **Erbij (9.10):** ben je getrouwd, dan woon je automatisch samen, ook na het kopen of huren van een ander huis.
+- 10: nieuwe beroepen in alle vier de groepen: vervoer (piloot, steward(ess), buschauffeur, machinist), zorg en dieren (tandarts, apotheker, dierenarts, ambulancebroeder), overheid en veiligheid (ambtenaar, brandweer, rechercheur, douane), ambacht en buiten (boer, hovenier, timmerman, loodgieter, later een eigen zaak). Werkdag: meestal een logregel, soms een moment met een keuze uit je beroep.
+- 11: ziektes **mild** (de meeste gaan over). **Geen dementie en geen keuzes over het levenseinde.**
+- 12: alle vier de groepen nieuwe activiteiten: cultuur (museum, theater, musical, cabaret), buiten (kamperen, volkstuin, wandeltocht, vissen), sport kijken (stadion of kroeg), leren (taal, cursus, geloof en kerk of moskee).
+- 13: **geen verzekeringen**. Beurs met ongeveer 20 verzonnen bedrijven.
+- 14 en 15: **echte namen waar het kan** (echte clubs, competities en prijzen); spelers, films, albums en boeken blijven verzonnen. Roem: acteur, muzikant, model, schrijver en presentator als projecten. Sport: alle 16 sporten krijgen seizoenen of toernooien.
+- 16: misdaad **milder** (meer kans om weg te komen), met verhoor, advocaat en rechtszaak als spel.
+
 ## Volgorde en waarom
 
 | Fase | Onderdeel | Waarom op deze plek |
