@@ -9,7 +9,16 @@ const prTxt=()=>{const W=S.pw;if(!W||!W.pm)return '';return `President: ${W.pm.n
 // presidentsverkiezing (jaarlijks gecontroleerd vanuit polYear)
 function prYear(a){const W=S.pw,P=S.pol,y=year();if(!presL()||!W.nextPR||y<W.nextPR)return;const p=psys().pres;W.nextPR+=p.cyc;
   if(P&&P.lvl==='mp'&&W.pm&&W.pm.n===myName()){if((P.terms||1)>=p.lim||P.noRun)P.lame=1;else P.cand.pres=1}
-  if(a>=18&&!inJail())Q.push({id:'pr_stem'});Q.push({id:'pr_pres'});if(p.same)W.nextTK=y}
+  const mine=polPro()&&prCands().C.some(c=>c.me);
+  if(mine||S.dict){if(a>=18&&!inJail())Q.push({id:'pr_stem'});Q.push({id:'pr_pres'})}
+  else if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'pr_stem',c:{run:1}});
+  else{const t=prQuick();if(a>=12)L(t,'sys')}
+  if(p.same)W.nextTK=y}
+// verkiezing zonder tussenschermen, voor wie zelf geen kandidaat is (verbeterplan 4.1)
+function prQuick(){const p=psys().pres;const {C:Cs}=prCands();const sh=prShares(Cs);Cs.forEach((c,i)=>c.r1=sh[i]);const srt=Cs.slice().sort((a,b)=>b.r1-a.r1);const top=srt[0];const pc=v=>String(v).replace('.',',');
+  let win,pct,txt;if(p.rounds===1||top.r1>50){win=top;pct=top.r1;txt=`${top.n} wint de presidentsverkiezing in de eerste ronde met ${pc(top.r1)}%.`}
+  else{const a=srt[0],b=srt[1];const w1=Math.exp(a.s/8),w2=Math.exp(b.s/8);const pa=Math.round(clamp(w1/(w1+w2)*100+gauss()*2,8,92)*10)/10;win=pa>50?a:b;pct=pa>50?pa:Math.round((100-pa)*10)/10;txt=`Presidentsverkiezing: ${a.n} en ${b.n} gaan door naar de tweede ronde, die ${win.n} wint met ${pc(pct)}%.`}
+  return `${txt} ${prApply(win,pct)}`.trim()}
 function prMyS(){const P=S.pol,W=S.pw;let s=18+P.pop*.45+P.steun*.1+(POLO[P.lvl].r||0)*2.5+Math.max(0,S.fame-40)*.08+Math.min(8,Math.log10(1+(P.kas||0)/(20000*(S.cpi||1)))*3)+(W.sh[P.party]||0)*.5;
   if(P.lvl==='mp')s+=6+prEco();return s}
 const prEco=()=>({hoog:4,groei:2,stabiel:0,recessie:-5,depressie:-9,hyper:-8})[ecoW().ph]||0;
@@ -51,7 +60,7 @@ function prFlow(done){const W=S.pw,P=S.pol,p=psys().pres;const {C:Cs}=prCands();
   if(me)camp(0);else R1()}
 E('pr_pres',{sys:1,need:()=>presL()&&!S.dict&&!(typeof occHere==='function'&&occHere()),t:'Presidentsverkiezingen',x:()=>{const {me,C:Cs}=prCands();const P=S.pol;return me?(P.lvl==='mp'?'Je bent kandidaat voor een nieuwe termijn.':`Je bent kandidaat voor het presidentschap van ${C().n}.`):`${C().n} kiest een nieuwe president. De kandidaten: ${Cs.slice(0,4).map(c=>c.n+' ('+PTY(c.k).k+')').join(', ')}.${P&&P.cand.pres?' Jouw partij heeft iemand anders genomineerd.':''}`},ch:[['🗳️ De verkiezingen volgen',()=>({go:()=>prFlow(processQ)})]]});
 E('pr_stem',{sys:1,need:()=>presL()&&!S.dict,t:'Stemmen voor president',x:'Het is verkiezingsdag. Op wie stem je in de eerste ronde?',ch:[]});
-Object.defineProperty(EV.pr_stem,'ch',{get(){if(!S.pw||!presL())return [['🛋️ Niet stemmen',()=>'']];const {C:Cs}=prCands();return Cs.map(c=>[`${PTY(c.k).em} ${c.me?'Op jezelf':c.n} (${PTY(c.k).k})`,()=>{S.pw.vote=c.k;return c.me?'Je stemt op jezelf.':`Je stemt op ${c.n}.`}]).concat([['🛋️ Niet stemmen',()=>'Je blijft thuis.']])}});
+Object.defineProperty(EV.pr_stem,'ch',{get(){if(!S.pw||!presL())return [['🛋️ Niet stemmen',()=>'']];const {C:Cs}=prCands();return Cs.map(c=>[`${PTY(c.k).em} ${c.me?'Op jezelf':c.n} (${PTY(c.k).k})`,cx=>{S.pw.vote=c.k;const t=c.me?'Je stemt op jezelf.':`Je stemt op ${c.n}.`;return cx&&cx.run?t+' '+prQuick():t}]).concat([['🛋️ Niet stemmen',cx=>cx&&cx.run?'Je blijft thuis. '+prQuick():'Je blijft thuis.']])}});
 Object.assign(EVMETA,{pr_pres:['Verkiezingen','🏛️'],pr_stem:['Verkiezingen','🗳️']});
 function prSheetRows(v,P,a){if(!presL())return;const W=S.pw,p=psys().pres;const yrs=W.nextPR;const age=a+(yrs-year());
   if(P.lvl==='mp'){row(v,{ic:P.noRun||(P.terms||1)>=p.lim?'🚪':'🔁',t:(P.terms||1)>=p.lim?'Geen nieuwe termijn mogelijk':P.noRun?'Je stelt je niet herkiesbaar':'Je stelt je herkiesbaar',s:(P.terms||1)>=p.lim?(p.lim===1?'De grondwet staat maar één termijn toe':'Je zit al je tweede termijn uit')+` · verkiezingen ${yrs}`:`Presidentsverkiezingen ${yrs} · tik om te wisselen`,dis:(P.terms||1)>=p.lim,on:()=>{P.noRun=P.noRun?0:1;refreshSheet()}});return}

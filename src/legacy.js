@@ -53,6 +53,8 @@ E('uv_afscheid',{sys:1,need:()=>S.alive,t:'Afscheid',x:c=>{const p=P(c.id);const
 function uvCost(c){if(c.org&&!c.paid){c.paid=1;const k=Math.round(4000*(S.cpi||1));cash(-k)}}
 function uvOrg(c,k,h,t){c.paid=1;cash(-Math.round(k*(S.cpi||1)));hap(h);for(const x of living(['moeder','vader','broer','zus','kind']))x.rel=clamp(x.rel+Math.round(h/2));return t+` Kosten: ${fmt(Math.round(k*(S.cpi||1)))}.`}
 function uvAfterDeath(p){if(!S.alive||ageY()<6||!AFSCHEID.includes(p.role))return;if(p.role==='vriend'&&p.rel<50)return;
+  // grootouders: een logregel in plaats van een pop-up (verbeterplan 4.2)
+  if(p.role==='opa'||p.role==='oma'){if(!inJail())L(`Je bent op de uitvaart van ${p.role} ${p.first}. ${pick(['Er worden mooie verhalen verteld.','Je hele familie is er.','Na afloop is er koffie en cake.'])}`);return}
   const org=ageY()>=18&&(p.role==='partner'||p.role==='kind'||((p.role==='moeder'||p.role==='vader')&&!living(['moeder','vader']).length));
   if(!Q.some(q=>q.id==='uv_afscheid'))Q.push({id:'uv_afscheid',c:{id:p.id,org}})}
 

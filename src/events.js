@@ -98,7 +98,7 @@ E('vreemdgaan',{a:[18,80],w:.4,c:()=>partner()&&partner().rel<45,t:'Verdacht',x:
  ['Vergeven',()=>{hap(-6);partner().rel=clamp(partner().rel+5);return 'Jullie gaan in relatietherapie.'}],
  ['Uit elkaar',()=>{breakUp();return 'Je zet er een punt achter.'}]]});
 E('verrassing',{a:[18,90],c:()=>partner()&&partner().rel>65,t:'Verrassing',f:()=>{hap(8);partner().rel=clamp(partner().rel+3);return `${partner().first} verrast je met een weekendje weg. Heerlijk.`}});
-E('griep',{a:[0,100],w:1.4,t:'Griep',x:'Je hebt hoge koorts en ligt een week op bed.',ch:[
+E('griep',{a:[0,100],w:1.4,t:'Griep',x:()=>pick(['Je hebt hoge koorts en ligt een week op bed.','Je wordt wakker met spierpijn, een loopneus en 39 graden koorts.','De halve klas is ziek, en nu jij ook: griep.','Je rilt onder twee dekens. Het is griep.']),ch:[
  ['Uitzieken',()=>{hea(-3);return 'Na een week ben je er weer.'}],
  ['Naar de huisarts',()=>{hea(-1);if(!kid())cash(-30);return 'Rust, veel drinken en paracetamol. Je knapt snel op.'}]]});
 E('gevallen',{a:[5,75],w:.6,t:'Gevallen',x:'Je valt van je fiets en je pols doet erg pijn.',ch:[
@@ -132,12 +132,12 @@ E('mantelzorg',{a:[30,80],ctx:()=>{const p=living(['moeder','vader']).filter(p=>
  ['Bij je in huis nemen',c=>{hap(-6);kar(6);P(c.id).rel=clamp(P(c.id).rel+25);return 'Je ouder trekt bij je in.'},()=>S.home.k!=='ouders']]});
 E('lastminute',{a:[18,85],c:()=>S.money>1500,t:'Last-minute aanbieding',x:'Een week Griekenland voor de helft van de prijs. Vertrek overmorgen.',ch:[
  ['Boeken',()=>{cash(-650);hap(8);hea(1);return 'Zon, gyros en blauwe zee.'}],['Nee',()=>'Je blijft thuis.']]});
-E('vrijwilliger',{a:[14,90],t:'Vrijwilligers gezocht',x:'De voedselbank in je buurt zoekt vrijwilligers.',ch:[
+E('vrijwilliger',{a:[14,90],t:'Vrijwilligers gezocht',x:()=>pick(['De voedselbank in je buurt zoekt vrijwilligers.','In de buurtkrant staat een oproep: de voedselbank komt handen tekort.','Een vriendin werkt bij de voedselbank en vraagt of je een paar uur per week wilt helpen.']),ch:[
  ['Aanmelden',()=>{kar(5);hap(3);sk('sociaal',2);return 'Elke zaterdag help je pakketten inpakken.'}],['Geen tijd',()=>{kar(-1);return 'Misschien later.'}]]});
-E('portemonnee',{a:[8,90],t:'Gevonden portemonnee',ctx:()=>({a:ri(4,40)*10}),x:c=>`Je vindt een portemonnee met ${fmt(c.a)} erin.`,ch:[
+E('portemonnee',{a:[8,90],t:'Gevonden portemonnee',ctx:()=>({a:ri(4,40)*10}),x:c=>pick([`Je vindt een portemonnee met ${fmt(c.a)} erin.`,`Op een bankje in het park ligt een portemonnee. Er zit ${fmt(c.a)} in.`,`Bij de pinautomaat ligt een portemonnee op de grond, met ${fmt(c.a)} erin.`]),ch:[
  ['Inleveren bij de politie',c=>{kar(6);if(chance(.3)){cash(Math.round(c.a/2));return 'De eigenaar geeft je een vindersloon!'}return 'Je voelt je goed.'}],
  ['Geld houden',c=>{cash(c.a);kar(-6);return 'Niemand zag het.'}]]});
-E('daklozen',{a:[12,95],t:'Op straat',x:'Iemand vraagt je om wat geld voor een warme maaltijd.',ch:[
+E('daklozen',{a:[12,95],t:'Op straat',x:()=>pick(['Iemand vraagt je om wat geld voor een warme maaltijd.','Bij het station spreekt een man je aan. Hij heeft al twee dagen niet gegeten.','Een vrouw met een slaapzak onder haar arm vraagt of je wat kleingeld hebt.']),ch:[
  ['Geld geven',()=>{cash(-10);kar(3);return 'Je krijgt een dankbare glimlach.'}],
  ['Eten kopen',()=>{cash(-8);kar(4);hap(1);return 'Jullie eten samen een broodje.'}],
  ['Doorlopen',()=>{kar(-2);return 'Je loopt snel door.'}]]});
@@ -180,7 +180,7 @@ E('quiz',{chaos:1,a:[16,85],cd:40,w:.3,t:'Tv-quiz',x:'Je wordt gevraagd als kand
 E('schatkaart',{chaos:1,a:[8,80],once:1,t:'Schatkaart',x:'Op zolder vind je een oude kaart met een kruisje bij het bos verderop.',ch:[
  ['Gaan graven',()=>{const r=R();if(r<.15){const w=ri(20,300)*1000;cash(w);hap(12);MS(`Vond een kist met oude munten, ${fmt(w)} waard`,3);return `Je vindt een kist met oude munten, ${fmt(w)} waard!`}if(r<.5){hea(-2);return 'Je vindt alleen een roestig blikje.'}return 'Een boswachter jaagt je weg.'}],
  ['Weggooien',()=>'Waarschijnlijk niks.']]});
-E('duif',{chaos:1,a:[6,90],t:'Geluk?',x:'Een duif poept op je hoofd. Ze zeggen dat dat geluk brengt.',ch:[
+E('duif',{chaos:1,a:[6,90],t:'Geluk?',x:()=>pick(['Een duif poept op je hoofd. Ze zeggen dat dat geluk brengt.','Precies boven je vliegt een duif over. Splat. Op je schouder. Geluk, zeggen ze.','Een meeuw laat iets vallen, recht op je hoofd. Dat brengt geluk, toch?']),ch:[
  ['Een lot kopen',()=>{cash(-3);if(chance(.08)){const w=ri(1,25)*1000;cash(w);hap(8);return `Het werkt! Je wint ${fmt(w)}.`}return 'Niks gewonnen. Wel nog poep in je haar.'},()=>ageY()>=18],
  ['Haren wassen',()=>'Je wast drie keer.']]});
 E('reality',{chaos:1,a:[18,45],once:1,t:'Realityshow',x:'Je wordt gevraagd voor een datingprogramma op een tropisch eiland.',ch:[

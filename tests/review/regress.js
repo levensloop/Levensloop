@@ -108,6 +108,13 @@ t('3.6','staatsschuld blijft rond het normale niveau en rentenieuws is zeldzaam'
   const jp=(()=>{const o=E_.d0;E_.d0=ECO_D0.JP;const r=rating(ECO_D0.JP)[1];E_.d0=o;return r})();
   return {ok:d0===45&&max<=d0+40&&min>=d0-30&&rn<=Math.ceil(45/3)+1&&jp!=='Junk',msg:`NL begint op ${d0}%, schuld over 45 jaar ${min}–${max}% · rentenieuws ${rn}× · Japan (${ECO_D0.JP}%) krijgt rating ${jp}`}});
 
+t('4.1','verkiezingen: één pop-up voor gewone burgers, instelling werkt','NL',async()=>{S.m=30*12;const W=polW();Q.length=0;W.nextTK=year();polYear(30);const ask=Q.filter(q=>/^pol_/.test(q.id)).map(q=>q.id+(q.c&&q.c.run?'+uitslag':''));
+  Q.length=0;S.settings.vote='none';W.nextTK=year();const n0=S.log.length;polYear(30);const none=Q.filter(q=>/^pol_/.test(q.id)).length;const logged=S.log.slice(n0).some(l=>/Je stemt niet/.test(l.t));Q.length=0;S.settings.vote='ask';
+  return {ok:ask.length===1&&ask[0]==='pol_stem+uitslag'&&none===0&&logged,msg:`vragen: ${ask.join(', ')} · niet stemmen: ${none} pop-ups, logregel ${logged}`}});
+
+t('4.4','willekeurige gebeurtenis hooguit 3 keer per leven','NL',async()=>{S.m=40*12;S.evN={griep:3};S.evLast={};let hits=0;for(let i=0;i<400;i++){const e=rollEvent();if(e&&e.id==='griep')hits++}
+  return {ok:hits===0,msg:`griep na 3 keer: ${hits}× opnieuw gekozen`}});
+
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];
   for(const x of T){if(only&&!x.nr.startsWith(only))continue;

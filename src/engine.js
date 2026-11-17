@@ -266,7 +266,10 @@ function eduYear(a){
     let zit=V[0]==='zitten'||(V[0]==='bespreek'&&chance(.45));
     if(zit&&(E.stay||0)>=1&&E.lvl!=='vmbo'){const nl=E.lvl==='vwo'?'havo':'vmbo';const yr=E.yrs;E.lvl=nl;E.len={vmbo:4,havo:5}[nl];E.yrs=Math.min(yr,E.len-2);E.prof=nl==='vmbo'?null:E.prof;E.stay=0;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+1.2);L(`Je stroomt af naar het ${nl}.`,'bad big');MS(`Stroomde af naar het ${nl}`,0);hap(-6);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v)}`).join(' · ')}. Je bent twee keer blijven zitten en gaat verder op het ${nl}.`}});return}
     if(zit&&(E.stay||0)<2){E.stay=(E.stay||0)+1;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+.8);L('Je bent blijven zitten.','bad');hap(-6);E.perf=clamp(E.perf+12);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v-.8)}`).join(' · ')}. ${V[0]==='bespreek'?'De docentenvergadering vindt het niet genoeg. ':''}Je blijft zitten.`}});return}
-    if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v)}`).join(' · ')}. ${V[0]==='bespreek'?'Je was een bespreekgeval, maar de docenten geven je een kans. ':''}Je gaat over naar jaar ${E.yrs+2}!`}});
+    // rapport als pop-up alleen bij een opvallende verandering; anders een logregel (verbeterplan 4.5)
+    if(rap){const vs=Object.values(E.gr||{});const avg=vs.length?vs.reduce((x,y)=>x+y,0)/vs.length:0;const prev=E.lastAvg;E.lastAvg=avg;
+      const txt=`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v)}`).join(' · ')}. ${V[0]==='bespreek'?'Je was een bespreekgeval, maar de docenten geven je een kans. ':''}Je gaat over naar jaar ${E.yrs+2}!`;
+      if(V[0]==='bespreek'||prev==null||Math.abs(avg-prev)>=.7)Q.push({id:'sc_rapport',c:{txt}});else L(`Je rapport: ${txt}`)}
     E.yrs++;
     if(E.lvl!=='vmbo'&&E.yrs===3&&!E.prof&&typeof PROF!=='undefined')Q.push({id:'sc_profiel'});
     if(E.lvl==='vmbo'&&E.yrs===2&&!E.sect&&typeof VSEC!=='undefined')Q.push({id:'sc_sector'});
@@ -321,7 +324,7 @@ function setJob(id,lvl,co){const j=JOB(id);if(S.mil&&!j.part&&typeof milLeave===
 function jobTitle(){if(!S.job)return'';if(S.job.id==='prosport'&&typeof sportTitle==='function')return sportTitle();return JOB(S.job.id).lad[S.job.lvl]}
 function endJob(){if(!S.job)return;S.jobs.push({t:jobTitle(),co:S.job.co,y:S.job.yrs});S.job=null}
 function jobYear(a){
-  if(!S.job||inJail())return;const j=JOB(S.job.id);S.job.yrs++;S.job.lyrs++;if(S.job.id==='prosport')return;if(!S.job.part&&S.job.yrs>=1)Q.push({id:'w_review'});
+  if(!S.job||inJail())return;const j=JOB(S.job.id);S.job.yrs++;S.job.lyrs++;if(S.job.id==='prosport')return;if(!S.job.part&&S.job.yrs>=1){/* functioneringsgesprek eens per 3 jaar als pop-up, anders een logregel (verbeterplan 4.5) */if(S.job.yrs%3===1)Q.push({id:'w_review'});else L(`Functioneringsgesprek: je prestaties staan op ${Math.round(S.job.perf)}%. ${S.job.perf>=70?'Je leidinggevende is tevreden.':S.job.perf<40?'Je leidinggevende maakt zich zorgen.':'Prima zo.'}`)}
   const hard=(S.lastActs||{}).werk||0;(S.job&&(S.job.perf=clamp(S.job.perf+(S.st.smarts-50)/25+ri(-7,5)-4+Math.min(10,hard*4)+(S.st.happy<25?-5:0)-(econ()==='recessie'?3:0)+(degSec(j)?2:0)+((S.disc??50)-50)/25)));
   if(j.sk)sk(j.sk,ri(1,3));
   S.job.mult*=S.job.perf>60?1.012:1;
@@ -376,13 +379,13 @@ function jail(months,what){if(S.mil&&typeof milLeave==='function')milLeave('Na j
 function release(how){const J=S.crim.jail;if(J&&J.gang)S.flags.gang=J.gang;S.crim.jail=null;L(how==='parole'?'Je bent voorwaardelijk vrijgelaten.':'Je bent vrijgelaten uit de gevangenis.','good big');hap(10);if(typeof afterPrison==='function')afterPrison(J,how)}
 /* ---------- events ---------- */
 function rollEvent(){
-  const ch=S.settings.chaos;const rate=[.15,.18,.22][ch]*(inJail()?2.2:1);if(!chance(rate))return null;
+  const ch=S.settings.chaos;const rate=[.08,.10,.14][ch]*(inJail()?2.2:1);/* minder willekeurige pop-ups (verbeterplan 4) */if(!chance(rate))return null;
   const a=ageY();const pool=[];let tot=0;
   for(const id in EV){const e=EV[id];if(e.sys)continue;if(!!e.jail!==inJail())continue;if(e.a&&(a<e.a[0]||a>e.a[1]))continue;if(e.once&&S.flags['e_'+id])continue;
-    const last=S.evLast[id];if(last!=null&&S.m-last<(e.cd||9)*12)continue;
+    const last=S.evLast[id];if(last!=null&&S.m-last<(e.cd||9)*12)continue;if(!e.many&&((S.evN||{})[id]||0)>=3)continue;
     if(e.c&&!safe(()=>e.c()))continue;let w=(typeof e.w==='function'?e.w():(e.w||1))*(e.chaos?[.12,1,3.2][ch]:1);if(w<=0)continue;pool.push([id,w]);tot+=w}
   if(!pool.length)return null;let r=R()*tot;
-  for(const [id,w] of pool){r-=w;if(r<=0){const e=EV[id];let c={};if(e.ctx){c=safe(()=>e.ctx());if(!c)return null}S.evLast[id]=S.m;if(e.once)S.flags['e_'+id]=1;return{id,c}}}
+  for(const [id,w] of pool){r-=w;if(r<=0){const e=EV[id];let c={};if(e.ctx){c=safe(()=>e.ctx());if(!c)return null}S.evLast[id]=S.m;(S.evN||(S.evN={}))[id]=((S.evN||{})[id]||0)+1;if(e.once)S.flags['e_'+id]=1;return{id,c}}}
   return null}
 function safe(f){try{return f()}catch(e){console.warn(e);if(typeof errLog==='function')errLog(e,'opgevangen');return null}}
 /* ---------- verhaal & score ---------- */

@@ -105,7 +105,9 @@ function polYear(a){polMigrate();if(!S.pw&&!S.pol&&a<18)return;if(isPres()&&type
   if(y>=W.nextEK){W.nextEK=y+4;if(P&&P.cand.ek)Q.push({id:'pol_ek'});else if(P&&P.lvl==='ek')loseOffice(`Je zetel als ${polTl('ek')} loopt af.`)}
   if(y>=W.nextEP){W.nextEP=y+5;if(P&&P.cand.ep)Q.push({id:'pol_ep'});else if(P&&P.lvl==='ep')loseOffice('Je termijn in het Europees Parlement zit erop.')}
   if(typeof prYear==='function')prYear(a);
-  if(y>=W.nextTK){W.nextTK=y+cyc();if(a>=18&&!inJail()){Q.push({id:'pol_stem'});Q.push({id:'pol_tk'})}else if(a>=18||P){Q.push({id:'pol_tk'})}else{const r=runTK();if(presL())prGov(W);else autoForm(r.seats,NS());cabPolicy();L(r.news,'sys')}}
+  if(y>=W.nextTK){W.nextTK=y+cyc();
+    if(!polPro()&&a>=18&&!inJail()&&!S.dict){const vm=voteMode();if(vm==='ask')Q.push({id:'pol_stem',c:{run:1}});else{const pre=vm==='same'&&W.vote&&PTY(W.vote)?`Je stemt weer op ${PTY(W.vote).n}.`:vm==='none'?'Je stemt niet.':'';L(tkCitizen(pre),'sys')}}
+    else if(a>=18&&!inJail()){Q.push({id:'pol_stem'});Q.push({id:'pol_tk'})}else if(P&&polPro()){Q.push({id:'pol_tk'})}else{const r=runTK();if(presL())prGov(W);else autoForm(r.seats,NS());cabPolicy();if(a>=12)L(r.news,'sys')}}
   if(P&&a>=16)polEvents();
   if(typeof regYear==='function')regYear(a);
   pol3Year();
@@ -242,10 +244,16 @@ function polWorld(el){const W=polW();const s=sec(el,'Politiek in het land');warC
   card(s,`<h3>${kName()}</h3><span class="muted">${W.hist.length?`Uitslag ${W.hist[W.hist.length-1].y}`:'Huidige zetelverdeling'}</span>${seatsHtml(W.seats,W.gov,`Kabinet: ${W.gov.map(k=>PTY(k).k).join(', ')} · ${PT().mp.toLowerCase()} ${he(W.pm?W.pm.n:'?')}`)}`);
   lawsCard(s);if(typeof demCard==='function')demCard(s);
   card(s,`<h3>Peiling</h3><span class="muted">Als er nu verkiezingen waren</span>${seatsHtml(pollSeats(),null,'')}`)}
+/* ---------- stemmen als gewone burger (verbeterplan 4.1) ----------
+   Politici krijgen de hele verkiezingsavond. Gewone burgers één pop-up waarin ze stemmen en meteen de uitslag zien,
+   of (instelling "altijd dezelfde partij" / "niet stemmen") alleen een regel in het logboek. */
+const voteMode=()=>(S&&S.settings&&S.settings.vote)||'ask';
+const polPro=()=>{const P=S.pol;return !!(P&&((P.lvl&&P.lvl!=='lid')||Object.values(P.cand||{}).some(Boolean)))};
+function tkCitizen(pre){const c=runTK();return `${pre?pre+' ':''}${c.news} ${tkOutcome(c)}`.trim()}
 /* ---------- events ---------- */
 E('pol_stem',{sys:1,need:()=>!S.dict,t:'Verkiezingen',x:()=>`Het is verkiezingsdag voor ${PT().kamer}. Op wie stem je?`,ch:[]});
 Object.defineProperty(EV.pol_stem,'ch',{get(){const W=polW();const ids=Object.keys(W.sh).sort((a,b)=>W.sh[b]-W.sh[a]);
-  return ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,()=>{W.vote=k;L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',()=>{L('Je gaat niet stemmen.');return ''}]])}});
+  return ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,c=>{W.vote=k;if(c&&c.run)return tkCitizen(`Je stemt op ${PTY(k).n}.`);L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',c=>{if(c&&c.run)return tkCitizen('Je gaat niet stemmen.');L('Je gaat niet stemmen.');return ''}]])}});
 E('pol_tk',{sys:1,need:()=>!S.dict,t:'Uitslagavond',f:()=>{const c=runTK();return c.news+' '+tkOutcome(c)}});
 E('pol_gr',{sys:1,need:()=>!S.dict,t:'Gemeenteraadsverkiezingen',f:()=>runGR()});
 E('pol_formatie',{sys:1,need:()=>!S.dict,t:'Formatie',x:()=>`Jij bent de formateur. Ga op zoek naar een meerderheid van minstens ${NEED()} zetels.`,ch:[['🤝 Beginnen met de gesprekken',()=>({go:formation})]]});

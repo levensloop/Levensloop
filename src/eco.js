@@ -10,7 +10,7 @@ const ecoD0=()=>ECO_D0[S.p&&S.p.country]||60;
 function ecoW(){if(S.eco&&S.eco.d0==null)S.eco.d0=ecoD0();if(!S.eco){const ph=S.econ&&S.econ.s==='groei'?'groei':S.econ&&S.econ.s==='recessie'?'recessie':'stabiel';const T=EPH[ph];
   S.eco={ph,py:0,g:T.g,u:T.u,inf:2.2,r:2.5,hp:100,hreal:1,idx:1000,oil:80,debt:ecoD0(),d0:ecoD0(),wr:1,ret:0,hpg:0,news:[],hist:[]}}return S.eco}
 const ecoPhase=()=>EPH[ecoW().ph];
-function ecoNews(t,big){const E_=ecoW();E_.news.unshift({y:year(),t});if(E_.news.length>12)E_.news.pop();if(big)L(t,'sys')}
+function ecoNews(t,big){const E_=ecoW();E_.news.unshift({y:year(),t});if(E_.news.length>12)E_.news.pop();if(big&&ageY()>=12)L(t,'sys')/* kinderen lezen geen economisch nieuws (verbeterplan 4.7) */}
 function ecoYear(){const E_=ecoW(),W=typeof warW==='function'?warW():{lvl:0,reb:0},WE=typeof warEcon==='function'?warEcon():{infl:0,stk:0,house:0};const occ=typeof occHere==='function'&&occHere();
   const prev={g:E_.g,u:E_.u,inf:E_.inf,r:E_.r,ph:E_.ph};E_.py++;
   // conjunctuurfase

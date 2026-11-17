@@ -94,7 +94,7 @@ function processQ(){
   if(q.id==='s_baby')return babyModal(q);
   const txt=typeof e.x==='function'?safe(()=>e.x(c)):e.x;const meta=evMeta(q.id,c);
   if(e.f&&!e.ch){const b=snapSt();const r=safe(()=>e.f(c))||'';Q.shift();if(r&&!c.nolog)L(r);result(e.t,r,chipsFrom(b),processQ,meta);return}
-  const chs=(e.ch||[]).filter(ch=>!ch[2]||safe(()=>ch[2](c)));const run=ch=>{const b=snapSt();const r=safe(()=>ch[1](c))||'';Q.shift();if(r&&r.go){closeModal();r.go();return}if(r)L(`${e.t.replace(/[?!.]$/,'')}: ${r}`);if(r)result(e.t,r,chipsFrom(b),processQ,meta);else{closeModal();processQ()}};
+  const chs=(e.ch||[]).filter(ch=>!ch[2]||safe(()=>ch[2](c)));const run=ch=>{const b=snapSt();const r=safe(()=>ch[1](c))||'';Q.shift();if(r&&r.go){closeModal();r.go();return}if(r){const lb=String(ch[0]).replace(/^[^\p{L}\p{N}]+/u,'').replace(/\s*🎮$/,'').trim();const lc=lb&&!/^[A-Z]{2}|^[A-Z][a-z]+ [A-Z]/.test(lb)?lb[0].toLowerCase()+lb.slice(1):lb;L(lb&&lb.length<=40?`${e.t.replace(/[?!.]$/,'')} (${lc}): ${r}`:`${e.t.replace(/[?!.]$/,'')}: ${r}`)}if(r)result(e.t,r,chipsFrom(b),processQ,meta);else{closeModal();processQ()}};
   modal({title:e.t,text:txt,...meta,surprise:chs.length>1,choices:chs.map(ch=>({t:ch[0],on:()=>run(ch)}))});
 }
 function afterQ(){render();saveLife();if(!S.alive){showDeath();return}if(afterModal){const f=afterModal;afterModal=null;f()}}
@@ -431,6 +431,7 @@ function sheetMain(el){
   row(s,{ic:'⏱️',t:'Tempo',s:S.settings.mode==='year'?'Per jaar (tik om te wisselen)':'Per maand (tik om te wisselen)',dots:true,on:()=>{S.settings.mode=S.settings.mode==='year'?'month':'year';render();refreshSheet();saveLife();toast(S.settings.mode==='year'?'Je speelt nu per jaar':'Je speelt nu per maand')}});
   row(s,{ic:'👨‍👩‍👧‍👦',t:'Grote familie',s:(S.settings.bigFam?'Aan':'Uit')+' · grootouders, ooms, tantes, neven, nichten, schoonfamilie (tik om te wisselen)',dots:true,on:()=>{S.settings.bigFam=S.settings.bigFam?0:1;if(S.settings.bigFam)ensureBigFam();refreshSheet();saveLife();toast(S.settings.bigFam?'Grote familie staat aan':'Grote familie staat uit')}});
   row(s,{ic:'⭐',t:'Favoriete activiteiten',s:`${favs().length} van 5 gekozen · deze staan bovenaan bij Activiteiten`,on:()=>openSheet('Favorieten',sheetFavs,true)});
+  row(s,{ic:'🗳️',t:'Stemmen',s:{ask:'Elke keer vragen',same:'Altijd dezelfde partij',none:'Niet stemmen'}[voteMode()]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.vote={ask:'same',same:'none',none:'ask'}[voteMode()];refreshSheet();saveLife()}});
   row(s,{ic:'🌀',t:'Chaos',s:['Rustig','Normaal','Chaos'][S.settings.chaos]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.chaos=(S.settings.chaos+1)%3;refreshSheet();saveLife()}});
   row(s,{ic:'🌪️',t:'Tijdmachine',s:'Spoel 1, 3, 5 of 10 jaar terug',on:()=>openSheet('Tijdmachine',sheetRewind,true)});
   s=sec(el,'Verzameling');checkAch();const M=meta();

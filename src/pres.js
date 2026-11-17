@@ -100,9 +100,13 @@ function usFedYear(a,y){const W=S.pw,P=S.pol;const pres=y%4===0;
     if(P&&P.run&&P.run.o==='mp'&&P.run.y===y){if(!['dem','rep'].includes(P.party)){if(P.steun>=40||P.party==='own'){P.nom=y;W.nom[usOther(P.party)]=W.nom.rep}else{P.run=null;L('Je partij kiest iemand anders als presidentskandidaat.')}}
       if(P.run){if(P.nom!==y||P.run.chal)Q.push({id:'us_prim'});Q.push({id:'us_vp'});Q.push({id:'us_gen'})}}
     else if(P&&['dem','rep'].includes(P.party)&&['kamer','ek','gov','min'].includes(P.lvl)&&(P.pop>=45||S.fame>=55)&&chance(.3))Q.push({id:'us_vpoffer'})}
-  if(a>=18&&!inJail())Q.push({id:'us_stem'});
+  if(!polPro()&&!S.dict){// gewone burger (verbeterplan 4.1): hooguit één pop-up, de uitslagen als logregels
+    if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'us_stem'});
+    const lg=id=>{const e=EV[id];if(e&&(!e.need||safe(()=>e.need({}))))try{const t=e.f({});if(t&&a>=12)L(t,'sys')}catch(x){errLog&&errLog(x,'opgevangen')}};
+    if(pres)lg('us_pnpc');lg('us_cong')}
+  else{if(a>=18&&!inJail())Q.push({id:'us_stem'});
   if(pres){Q.push({id:'us_night'});Q.push({id:'us_pnpc'})}
-  Q.push({id:'us_cong'});
+  Q.push({id:'us_cong'})}
   if(P){for(const o of ['stl','kamer','ek','gov'])usQueueRace(o,y)}}
 // kandidaten van beide grote partijen (als jij niet meedoet)
 function usNoms(y){const W=S.pw,P=S.pol;const n={};for(const p of ['dem','rep']){const inc=W.pm&&W.pm.p===p&&W.pm.n!==myName()&&W.pm.t<2&&!W.pm.out;

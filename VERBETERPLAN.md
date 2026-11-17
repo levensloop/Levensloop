@@ -13,6 +13,7 @@ Dit plan is bedoeld om door Claude in een nieuwe chat te worden uitgevoerd. Lees
 | 2.1 Balk onderin | Klaar (11 nov 2026). Thijmen koos stand B (`100vh`, geen `position:fixed`), vast in `src/pwa/fix.css`. Meetscherm blijft (5× tikken op de versie). |
 | 2.2–2.4 Opslag, reservekopie, kleine punten | Klaar (12 nov 2026). Opslag v2 (`src/store.js`), reservekopie (`src/backup.js`), energiesysteem weg (keuze Thijmen), lettertypes gelaten (keuze Thijmen). |
 | 3 Balans | Klaar (17 nov 2026), gemeten met 136 passieve levens. Gezondheid 55/65: 61/48, sterfte mediaan 79 (12% vóór 60, doel 10%), geluk 65: 49. Doping/Herkend/Viraal 0× bij passieve speler; staatsschuld 95% van de jaren binnen ±25 van de startwaarde. Ontdekt: de oude versie verhoogde gezondheid per ongeluk via de zorgbegroting; vervangen door langzaam herstel naar een leeftijdsniveau. |
+| 4 Herhaling | Klaar (17 nov 2026). Pop-upschermen per jaar 4,3 → 3,1 (136 passieve levens). Verkiezingen: één pop-up met uitslag, instelling Stemmen in het menu. Afscheid alleen voor naasten. Wereldnieuws alleen als het je raakt. Elke willekeurige gebeurtenis hooguit 3× per leven. 39 nieuwe gebeurtenissen (`src/events3.js`). Let op: `stats.js` telt schermen (keuze + uitslag = 2). |
 
 ## Hoe je dit plan uitvoert
 
