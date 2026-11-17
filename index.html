@@ -197,7 +197,7 @@ nav.tabs>button:active{color:var(--brand)}
 #toast.on{opacity:1}
 
 /* ---------- death ---------- */
-#scr-death .scroll{padding-block:0 28px}
+#scr-death .scroll{padding-block:0;background:var(--grave)}#scr-death{background:var(--grave)}/* geen witte strook onder de grafsteen (verbeterplan 5.7) */
 .rip{background:var(--ink);color:#fff;padding-block:26px 22px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 .rip small{letter-spacing:.14em;text-transform:uppercase;font-weight:800;font-size:12px;opacity:.7}
 .rip h1{font-size:34px}
@@ -524,7 +524,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .mic .ico.hs{width:42px;height:46px}.bface .ico.hs{width:46px;height:50px}.card h3 .ico.hs{width:34px;height:37px}
 .prof .nm{font-size:21px}.prof .sub{font-size:15px}.prof .money b{font-size:22px}.prof .money small{font-size:14px}
 .age-h{margin:14px 0 2px}.age-h b{font-size:17px;letter-spacing:-.3px}
-.ln{font-size:15px;line-height:1.32;margin:0;letter-spacing:-.15px}.ln.sys{font-size:13.5px}
+.ln{font-size:15px;line-height:1.32;margin:0;letter-spacing:-.15px}.ln.sys{font-size:14px;color:#4a4a4f}
 .agegrp{padding-block:2px;content-visibility:auto;contain-intrinsic-size:auto 160px}
 .agegrp:nth-last-child(-n+20){content-visibility:visible}
 .srows{gap:4px;padding-block:22px max(12px,env(safe-area-inset-bottom,0px))}
@@ -696,7 +696,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261117-0054';
+const APP_VERSION='20261117-0145';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -905,6 +905,84 @@ const INTERVIEW=[
 ['Wat doe je als je een fout maakt?',[['Ik meld het meteen en los het op.',2],['Ik hoop dat niemand het merkt.',0],['Ik schuif het door naar een collega.',0]]]
 ];
 const MONTHS=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+/* ================= BUITENLAND (verbeterplan 6) =================
+   LOC[land] bevat wat per land anders heet. loc(sleutel) zoekt eerst in het land van de speler,
+   valt in Nederland terug op LOC.NL (de oorspronkelijke teksten) en elders op LOC._ (internationaal).
+   Interne waarden (zoals 'vmbo' als niveau) blijven hetzelfde; alleen wat de speler leest verandert. */
+const LOC={
+ NL:{lang:'Nederlands',lvl:{vmbo:'vmbo',havo:'havo',vwo:'vwo',mbo:'mbo',hbo:'hbo',wo:'universiteit'},toets:'Eindtoets',
+   pens:'AOW-leeftijd',zorgEig:'eigen risico in de zorg',gov:'kabinet',
+   fest:[['🎸','Pinkpop','Rock en pop'],['🌾','Lowlands','Alternatief en indie'],['🪩','Mysteryland','Dance en techno']],zaal:'de Ziggo Dome',
+   clubs:['Feyenoord','Ajax','PSV','FC Utrecht','AZ','FC Twente'],
+   army:{land:'Koninklijke Landmacht',zee:'Koninklijke Marine',lucht:'Koninklijke Luchtmacht',mp:'Koninklijke Marechaussee'}},
+ _:{lang:'de landstaal',lvl:{vmbo:'vakschool',havo:'algemene school',vwo:'gymnasium',mbo:'beroepsopleiding',hbo:'hogeschool',wo:'universiteit'},toets:'Schooltoets',
+   pens:'pensioenleeftijd',zorgEig:'eigen bijdrage in de zorg',gov:'regering',
+   fest:[['🎸','Een groot rockfestival','Rock en pop'],['🌾','Een indiefestival','Alternatief en indie'],['🪩','Een dancefestival','Dance en techno']],zaal:'het nationale stadion',
+   clubs:['de stadsclub','de rivaal uit de hoofdstad','de kampioen','de promovendus'],
+   army:{land:'Landmacht',zee:'Marine',lucht:'Luchtmacht',mp:'Militaire politie'}},
+ US:{lang:'Engels',lang2:'Spaans',lvl:{vmbo:'vocational high school',havo:'high school',vwo:'honors high school',mbo:'community college',hbo:'college',wo:'universiteit'},toets:'Toets',
+   pens:'pensioenleeftijd',gov:'regering',fest:[['🎸','Lollapalooza','Rock en pop'],['🌵','Coachella','Pop, indie en hiphop'],['🪩','Ultra Miami','Dance en techno']],zaal:'Madison Square Garden',
+   clubs:['New York Yankees','Boston Red Sox','Los Angeles Dodgers','Chicago Cubs'],army:{land:'US Army',zee:'US Navy',lucht:'US Air Force',mp:'Military Police'}},
+ UK:{lang:'Engels',lang2:'Frans',lvl:{vmbo:'vocational school',havo:'GCSE',vwo:'A-levels',mbo:'college',hbo:'polytechnic',wo:'universiteit'},
+   fest:[['🎸','Glastonbury','Rock en pop'],['📖','Reading Festival','Alternatief en indie'],['🪩','Creamfields','Dance en techno']],zaal:'Wembley',
+   clubs:['Manchester United','Liverpool','Arsenal','Chelsea'],army:{land:'British Army',zee:'Royal Navy',lucht:'Royal Air Force',mp:'Royal Military Police'}},
+ DE:{lang:'Duits',lvl:{vmbo:'Hauptschule',havo:'Realschule',vwo:'Gymnasium',mbo:'Berufsschule',hbo:'Fachhochschule',wo:'universiteit'},
+   fest:[['🎸','Rock am Ring','Rock en pop'],['🤘','Wacken Open Air','Metal'],['🪩','Love Parade','Dance en techno']],zaal:'de Lanxess Arena',
+   clubs:['Bayern München','Borussia Dortmund','RB Leipzig','Bayer Leverkusen'],army:{land:'Heer',zee:'Marine',lucht:'Luftwaffe',mp:'Feldjäger'}},
+ BE:{lang:'Nederlands',lang2:'Frans',lvl:{vmbo:'bso',havo:'tso',vwo:'aso',mbo:'HBO5',hbo:'hogeschool',wo:'universiteit'},
+   fest:[['🎸','Rock Werchter','Rock en pop'],['🌾','Pukkelpop','Alternatief en indie'],['🪩','Tomorrowland','Dance en techno']],zaal:'het Sportpaleis',
+   clubs:['Club Brugge','RSC Anderlecht','KRC Genk','Standard Luik'],army:{land:'Landcomponent',zee:'Marinecomponent',lucht:'Luchtcomponent',mp:'Militaire politie'}},
+ FR:{lang:'Frans',lvl:{vmbo:'lycée professionnel',havo:'lycée technologique',vwo:'lycée général',mbo:'BTS',hbo:'IUT',wo:'université'},
+   fest:[['🎸','Les Vieilles Charrues','Rock en pop'],['🌾','Rock en Seine','Alternatief en indie'],['🪩','Solidays','Pop en dance']],zaal:'het Stade de France',
+   clubs:['Paris Saint-Germain','Olympique Marseille','Olympique Lyon','AS Monaco'],army:{land:'Armée de terre',zee:'Marine nationale',lucht:'Armée de l\'air',mp:'Gendarmerie'}},
+ ES:{lang:'Spaans',lvl:{vmbo:'FP básica',havo:'ESO',vwo:'bachillerato',mbo:'FP grado medio',hbo:'FP grado superior',wo:'universiteit'},
+   fest:[['🎸','Mad Cool','Rock en pop'],['🌾','Primavera Sound','Alternatief en indie'],['🪩','Sónar','Dance en techno']],zaal:'het Santiago Bernabéu',
+   clubs:['Real Madrid','FC Barcelona','Atlético Madrid','Sevilla'],army:{land:'Ejército de Tierra',zee:'Armada',lucht:'Ejército del Aire',mp:'Guardia Civil'}},
+ IT:{lang:'Italiaans',clubs:['Juventus','Inter','AC Milan','AS Roma'],zaal:'de Arena di Verona'},
+ JP:{lang:'Japans',clubs:['Yomiuri Giants','Hanshin Tigers','Urawa Reds','Kashima Antlers'],zaal:'de Tokyo Dome',army:{land:'Landzelfverdedigingsmacht',zee:'Maritieme zelfverdedigingsmacht',lucht:'Luchtzelfverdedigingsmacht',mp:'Militaire politie'}},
+ BR:{lang:'Portugees',clubs:['Flamengo','Corinthians','Palmeiras','São Paulo'],zaal:'het Maracanã'},
+ MX:{lang:'Spaans',clubs:['Club América','Chivas','Cruz Azul','Pumas'],zaal:'het Estadio Azteca'},
+ CA:{lang:'Engels',lang2:'Frans',clubs:['Toronto Maple Leafs','Montreal Canadiens','Edmonton Oilers','Vancouver Canucks'],zaal:'de Scotiabank Arena'},
+ AU:{lang:'Engels',lang2:'Japans',clubs:['Collingwood','Richmond','Sydney Swans','West Coast Eagles'],zaal:'de Melbourne Cricket Ground'},
+ ZA:{lang:'Engels',lang2:'Afrikaans',clubs:['Kaizer Chiefs','Orlando Pirates','Mamelodi Sundowns','SuperSport United'],zaal:'het FNB Stadium'},
+ TR:{lang:'Turks',clubs:['Galatasaray','Fenerbahçe','Beşiktaş','Trabzonspor'],zaal:'het Atatürk Olympisch Stadion'},
+ MA:{lang:'Arabisch',lang2:'Frans',clubs:['Raja Casablanca','Wydad Casablanca','FAR Rabat','RS Berkane'],zaal:'het Stade Mohammed V'},
+ ID:{lang:'Indonesisch',clubs:['Persija Jakarta','Persib Bandung','Arema','Bali United'],zaal:'het Gelora Bung Karno'}};
+const ADJ={BE:'Belgische',DE:'Duitse',FR:'Franse',ES:'Spaanse',US:'Amerikaanse',UK:'Britse',IT:'Italiaanse',JP:'Japanse',BR:'Braziliaanse',MX:'Mexicaanse',CA:'Canadese',AU:'Australische',ZA:'Zuid-Afrikaanse',TR:'Turkse',MA:'Marokkaanse',ID:'Indonesische'};
+const locCC=()=>(S&&S.p&&S.p.country)||'NL';
+function loc(k){const cc=locCC(),L=LOC[cc];if(L&&k in L)return L[k];return cc==='NL'?LOC.NL[k]:LOC._[k]}
+// naam van een schoolniveau of opleiding in het land van de speler
+function lvlN(x){if(!x)return x;const t=loc('lvl')||{};return t[x]||x}
+// naam van een vak: 'Nederlands' wordt de landstaal; is dat Engels, dan wordt 'Engels' de tweede taal
+function subjName(k){if(locCC()==='NL')return k;const lang=loc('lang');if(k==='Nederlands')return lang==='de landstaal'?'Taal':lang;if(k==='Engels'&&lang==='Engels')return loc('lang2')||'Frans';return k}
+// typisch Nederlandse quizvragen buiten Nederland weglaten en aanvullen met algemene vragen
+const NLQ=/Nederland|Willem van Oranje|\bVOC\b|provincie|Den Haag|Amsterdam|Rotterdam|Utrecht|Elfsteden|Afsluitdijk|Deltawerken|Sinterklaas|Koningsdag/;
+const QBW={Wereldoriëntatie:[['Wat is de grootste oceaan?',['De Grote Oceaan','De Atlantische Oceaan','De Indische Oceaan','De Noordelijke IJszee']],['Op welk continent ligt Egypte?',['Afrika','Azië','Europa','Zuid-Amerika']],['Wat is de hoofdstad van Japan?',['Tokio','Osaka','Kyoto','Seoul']],['Welke rivier is de langste van de wereld?',['De Nijl','De Rijn','De Donau','De Theems']],['Hoeveel continenten zijn er?',['7','5','6','8']],['Wat is de hoogste berg ter wereld?',['De Mount Everest','De Mont Blanc','De Kilimanjaro','De Matterhorn']],['Welk land heeft de meeste inwoners?',['India','Rusland','Brazilië','Canada']],['Waar ligt de Sahara?',['In Afrika','In Australië','In Azië','In Zuid-Amerika']]],
+ Geschiedenis:[['Wie was de eerste mens op de maan?',['Neil Armstrong','Joeri Gagarin','Buzz Aldrin','John Glenn']],['Welke muur viel in 1989?',['De Berlijnse Muur','De Chinese Muur','De Muur van Hadrianus','De Klaagmuur']],['Wie schilderde de Mona Lisa?',['Leonardo da Vinci','Michelangelo','Rembrandt','Picasso']],['In welk land stonden de piramiden van Gizeh?',['Egypte','Mexico','Griekenland','Irak']],['Wie ontdekte in 1492 Amerika voor Europa?',['Columbus','Magellaan','Vasco da Gama','Cook']],['Wat was de Koude Oorlog?',['Een spanning tussen de VS en de Sovjet-Unie','Een oorlog op de Noordpool','Een winteroorlog in Finland','Een handelsconflict met China']],['Welk rijk bouwde de Colosseum?',['Het Romeinse Rijk','Het Griekse Rijk','Het Ottomaanse Rijk','Het Perzische Rijk']]]};
+function quizPool(sub){const pool=QB[sub]||[];if(locCC()==='NL')return pool;return pool.filter(q=>!NLQ.test(q[0]+' '+q[1].join(' '))).concat(QBW[sub]||[])}
+// militaire onderdelen
+function armyN(k){const a=loc('army')||LOC._.army;return a[k]||LOC._.army[k]}
+
+// tekstfilter voor alles wat de speler leest (logboek, pop-ups, rijen en kaarten): buiten Nederland neutrale termen
+const LOCREP=[[/\bHet nieuwe kabinet\b/g,'De nieuwe regering'],[/\bhet nieuwe kabinet\b/g,'de nieuwe regering'],[/\bHet kabinet\b/g,'De regering'],[/\bhet kabinet\b/g,'de regering'],[/\bKabinet\b/g,'Regering'],[/\bkabinet\b/g,'regering'],
+ [/AOW-leeftijd/g,'pensioenleeftijd'],[/\bAOW\b/g,'staatspensioen'],[/eigen risico/g,'eigen bijdrage'],[/Prinsjesdag/g,'Begrotingsdag'],[/\bgroep 8\b/g,'het laatste jaar van de basisschool'],[/Ziggo Dome/g,()=>loc('zaal').replace(/^(de|het) /,'')],
+ [/Mbo, hbo of universiteit/g,()=>cap(`${lvlN('mbo')}, ${lvlN('hbo')} of ${lvlN('wo')}`)],[/Mbo, hbo, universiteit/g,()=>cap(`${lvlN('mbo')}, ${lvlN('hbo')}, ${lvlN('wo')}`)],
+ [/\bNederlandse\b/g,()=>ADJ[locCC()]||'nationale'],[/\bNederlands\b/g,()=>{const l=loc('lang');return l==='de landstaal'?'de taal':l}],[/\bin Den Haag\b/g,'in de hoofdstad'],[/\bDen Haag\b/g,'de hoofdstad'],[/\bNederland\b/g,()=>COUNTRIES[locCC()]?COUNTRIES[locCC()].n:'het land'],[/\b(vmbo|havo|vwo|mbo|hbo)\b/g,m=>lvlN(m)],[/\b(Vmbo|Havo|Vwo|Mbo|Hbo)\b/g,m=>cap(lvlN(m.toLowerCase()))],[/De eindtoets/g,'De grote toets'],[/Eindtoets/g,()=>loc('toets')],[/eindtoets/g,'toets'],[/Pinkpop, Lowlands, Tomorrowland/g,()=>festSub()],
+ [/Hollandia B\.V\./g,'Highland Group'],[/ B\.V\./g,' Ltd.'],[/Noordzee Holding/g,'Northsea Holding'],[/De Vries & Zn/g,'Vries & Sons'],[/Tulp Media/g,'Tulip Media'],[/Van Dijk Groep/g,'Van Dyke Group'],[/Kade Groep/g,'Quay Group'],[/Delta Logistiek/g,'Delta Logistics']];
+function locText(t){if(typeof t!=='string'||!t||locCC()==='NL')return t;for(const [re,v] of LOCREP)t=t.replace(re,v);return t}
+// instellingen die pas kunnen als alle bestanden geladen zijn (vanuit boot.js)
+function locPatch(){
+  if(typeof MBR!=='undefined'){const map={land:'land',marine:'zee',lucht:'lucht',kmar:'mp'};for(const [k,b] of Object.entries(MBR)){const nl={k:b.k,n:b.n,school:b.school};
+    Object.defineProperty(b,'k',{configurable:true,get(){return locCC()==='NL'?nl.k:armyN(map[k])}});
+    Object.defineProperty(b,'n',{configurable:true,get(){return locCC()==='NL'||k!=='kmar'?nl.n:'Militaire politie'}});
+    Object.defineProperty(b,'school',{configurable:true,get(){return locCC()==='NL'?nl.school:'de militaire academie'}})}}
+}
+function festSub(){const f=LOC[locCC()]&&LOC[locCC()].fest;return f?f.map(x=>x[1]).join(', ')+', Tomorrowland':'Rock, indie, dance en Tomorrowland'}
+// festivals, voetbalclubs en aandelen per land
+function festList(){if(locCC()==='NL')return FESTS;const f=loc('fest');return FESTS.map((x,i)=>i<3&&f[i]?[f[i][0],f[i][1],f[i][2],x[3],x[4]]:x)}
+function teamList(){if(locCC()==='NL')return TEAMS;return [...new Set([...loc('clubs'),'Real Madrid','FC Barcelona','Bayern München','Manchester City','Liverpool','Inter'])]}
+const NLSTK=['asml','heineken','philips','adyen','ahold'];
+const stkHere=id=>locCC()==='NL'||!NLSTK.includes(id)||!!(S.stk&&S.stk[id]);
 /* ================= EVENTS ================= */
 const EV={};
 function E(id,o){o.id=id;EV[id]=o}
@@ -1005,7 +1083,7 @@ E('vreemdgaan',{a:[18,80],w:.4,c:()=>partner()&&partner().rel<45,t:'Verdacht',x:
  ['Vergeven',()=>{hap(-6);partner().rel=clamp(partner().rel+5);return 'Jullie gaan in relatietherapie.'}],
  ['Uit elkaar',()=>{breakUp();return 'Je zet er een punt achter.'}]]});
 E('verrassing',{a:[18,90],c:()=>partner()&&partner().rel>65,t:'Verrassing',f:()=>{hap(8);partner().rel=clamp(partner().rel+3);return `${partner().first} verrast je met een weekendje weg. Heerlijk.`}});
-E('griep',{a:[0,100],w:1.4,t:'Griep',x:'Je hebt hoge koorts en ligt een week op bed.',ch:[
+E('griep',{a:[0,100],w:1.4,t:'Griep',x:()=>pick(['Je hebt hoge koorts en ligt een week op bed.','Je wordt wakker met spierpijn, een loopneus en 39 graden koorts.','De halve klas is ziek, en nu jij ook: griep.','Je rilt onder twee dekens. Het is griep.']),ch:[
  ['Uitzieken',()=>{hea(-3);return 'Na een week ben je er weer.'}],
  ['Naar de huisarts',()=>{hea(-1);if(!kid())cash(-30);return 'Rust, veel drinken en paracetamol. Je knapt snel op.'}]]});
 E('gevallen',{a:[5,75],w:.6,t:'Gevallen',x:'Je valt van je fiets en je pols doet erg pijn.',ch:[
@@ -1039,12 +1117,12 @@ E('mantelzorg',{a:[30,80],ctx:()=>{const p=living(['moeder','vader']).filter(p=>
  ['Bij je in huis nemen',c=>{hap(-6);kar(6);P(c.id).rel=clamp(P(c.id).rel+25);return 'Je ouder trekt bij je in.'},()=>S.home.k!=='ouders']]});
 E('lastminute',{a:[18,85],c:()=>S.money>1500,t:'Last-minute aanbieding',x:'Een week Griekenland voor de helft van de prijs. Vertrek overmorgen.',ch:[
  ['Boeken',()=>{cash(-650);hap(8);hea(1);return 'Zon, gyros en blauwe zee.'}],['Nee',()=>'Je blijft thuis.']]});
-E('vrijwilliger',{a:[14,90],t:'Vrijwilligers gezocht',x:'De voedselbank in je buurt zoekt vrijwilligers.',ch:[
+E('vrijwilliger',{a:[14,90],t:'Vrijwilligers gezocht',x:()=>pick(['De voedselbank in je buurt zoekt vrijwilligers.','In de buurtkrant staat een oproep: de voedselbank komt handen tekort.','Een vriendin werkt bij de voedselbank en vraagt of je een paar uur per week wilt helpen.']),ch:[
  ['Aanmelden',()=>{kar(5);hap(3);sk('sociaal',2);return 'Elke zaterdag help je pakketten inpakken.'}],['Geen tijd',()=>{kar(-1);return 'Misschien later.'}]]});
-E('portemonnee',{a:[8,90],t:'Gevonden portemonnee',ctx:()=>({a:ri(4,40)*10}),x:c=>`Je vindt een portemonnee met ${fmt(c.a)} erin.`,ch:[
+E('portemonnee',{a:[8,90],t:'Gevonden portemonnee',ctx:()=>({a:ri(4,40)*10}),x:c=>pick([`Je vindt een portemonnee met ${fmt(c.a)} erin.`,`Op een bankje in het park ligt een portemonnee. Er zit ${fmt(c.a)} in.`,`Bij de pinautomaat ligt een portemonnee op de grond, met ${fmt(c.a)} erin.`]),ch:[
  ['Inleveren bij de politie',c=>{kar(6);if(chance(.3)){cash(Math.round(c.a/2));return 'De eigenaar geeft je een vindersloon!'}return 'Je voelt je goed.'}],
  ['Geld houden',c=>{cash(c.a);kar(-6);return 'Niemand zag het.'}]]});
-E('daklozen',{a:[12,95],t:'Op straat',x:'Iemand vraagt je om wat geld voor een warme maaltijd.',ch:[
+E('daklozen',{a:[12,95],t:'Op straat',x:()=>pick(['Iemand vraagt je om wat geld voor een warme maaltijd.','Bij het station spreekt een man je aan. Hij heeft al twee dagen niet gegeten.','Een vrouw met een slaapzak onder haar arm vraagt of je wat kleingeld hebt.']),ch:[
  ['Geld geven',()=>{cash(-10);kar(3);return 'Je krijgt een dankbare glimlach.'}],
  ['Eten kopen',()=>{cash(-8);kar(4);hap(1);return 'Jullie eten samen een broodje.'}],
  ['Doorlopen',()=>{kar(-2);return 'Je loopt snel door.'}]]});
@@ -1087,7 +1165,7 @@ E('quiz',{chaos:1,a:[16,85],cd:40,w:.3,t:'Tv-quiz',x:'Je wordt gevraagd als kand
 E('schatkaart',{chaos:1,a:[8,80],once:1,t:'Schatkaart',x:'Op zolder vind je een oude kaart met een kruisje bij het bos verderop.',ch:[
  ['Gaan graven',()=>{const r=R();if(r<.15){const w=ri(20,300)*1000;cash(w);hap(12);MS(`Vond een kist met oude munten, ${fmt(w)} waard`,3);return `Je vindt een kist met oude munten, ${fmt(w)} waard!`}if(r<.5){hea(-2);return 'Je vindt alleen een roestig blikje.'}return 'Een boswachter jaagt je weg.'}],
  ['Weggooien',()=>'Waarschijnlijk niks.']]});
-E('duif',{chaos:1,a:[6,90],t:'Geluk?',x:'Een duif poept op je hoofd. Ze zeggen dat dat geluk brengt.',ch:[
+E('duif',{chaos:1,a:[6,90],t:'Geluk?',x:()=>pick(['Een duif poept op je hoofd. Ze zeggen dat dat geluk brengt.','Precies boven je vliegt een duif over. Splat. Op je schouder. Geluk, zeggen ze.','Een meeuw laat iets vallen, recht op je hoofd. Dat brengt geluk, toch?']),ch:[
  ['Een lot kopen',()=>{cash(-3);if(chance(.08)){const w=ri(1,25)*1000;cash(w);hap(8);return `Het werkt! Je wint ${fmt(w)}.`}return 'Niks gewonnen. Wel nog poep in je haar.'},()=>ageY()>=18],
  ['Haren wassen',()=>'Je wast drie keer.']]});
 E('reality',{chaos:1,a:[18,45],once:1,t:'Realityshow',x:'Je wordt gevraagd voor een datingprogramma op een tropisch eiland.',ch:[
@@ -1253,11 +1331,11 @@ function fmt(v){const c=COUNTRIES[S?S.p.country:'NL'];let x=v*c.k;const neg=x<0;
   if(x>=1e15)s=sc(1e15,' biljard');else if(x>=1e12)s=sc(1e12,' biljoen');else if(x>=1e9)s=sc(1e9,' miljard');else if(x>=1e6)s=sc(1e6,' miljoen');
   else s=Math.round(x).toLocaleString('nl-NL');
   return (neg?'-':'')+c.cur+' '+s}
-function L(t,c){S.log.push({a:ageY(),y:year(),mo:S.settings.mode==='month'?monthIdx():null,t,c:c||''})}
+function L(t,c){S.log.push({a:ageY(),y:year(),mo:S.settings.mode==='month'?monthIdx():null,t:locText(t),c:c||''})}
 function MS(t,w=1){S.ms.push({a:ageY(),y:year(),t,w})}
 function st(k,d){S.st[k]=clamp(Math.round(S.st[k]+d))}
 const hap=d=>st('happy',d), hea=d=>st('health',d), sma=d=>st('smarts',d), loo=d=>st('looks',d<0&&S.talent==='model'?d/2:d);
-const kar=d=>{S.karma=clamp(Math.round(S.karma+d))}, cash=d=>{if(BUY===1&&d<0&&S.money+d<-.5)throw NOMONEY;S.money+=d};
+const kar=d=>{S.karma=clamp(Math.round(S.karma+d))}, cash=d=>{if(BUY===1&&d<0&&S.money+d<-.5)throw NOMONEY;S.money=Math.round(S.money+d)}/* geld als heel getal (verbeterplan 7.3) */;
 function sk(k,d){if(d>0&&S.talent&&TAL(S.talent)[4]===k)d*=1.75;S.sk[k]=clamp(Math.round(S.sk[k]+d))}
 const P=id=>S.rel.find(p=>p.id===id);
 const pAge=p=>Math.floor((S.m-p.born)/12);
@@ -1402,7 +1480,7 @@ function monthTick(){
   if(S.debt>0&&S.edu.cur==null)S.debt*=1+.025/12;
   if(S.money<0&&a>=18&&!S.wsnp)ex('Rente rood staan',-S.money*.12/12);
   if(typeof insPrem==='function')for(const x of [...S.cars,...(S.items||[])])if(x.ins)ex('Verzekeringen',insPrem(x)/12);
-  S.money+=inc-exp;period.inc+=inc;period.exp+=exp;
+  S.money=Math.round(S.money+inc-exp);period.inc+=inc;period.exp+=exp;
   if(S.auto&&S.auto.pct>0&&a>=18&&!S.crim.jail&&typeof autoInvest==='function')autoInvest(inc-exp);
   for(const il of S.ill)st('health',-il.sev*.5/12);
   if(S.st.health<=0){const n=S.flags.zkh||0;if(a>=82||(n>=2&&chance(.35+n*.1))||(S.ill.some(i=>i.l)&&n>=1&&chance(.5)))return die(deathCause(a));hospital(a);return}
@@ -1498,13 +1576,16 @@ function eduYear(a){
   if(a===12&&E.stage==='basis'&&typeof setAdvice==='function'){if(!Q.some(q=>q.id==='sc_eindtoets'))Q.push({id:'sc_eindtoets'});return}
   if(a>=12&&E.stage==='basis'){
     const sc=S.st.smarts*.6+E.perf*.4;E.lvl=sc>=66?'vwo':sc>=47?'havo':'vmbo';E.stage='middel';E.yrs=0;E.len={vmbo:4,havo:5,vwo:6}[E.lvl];
-    L(`Je basisschooladvies is ${E.lvl}. Je gaat naar de middelbare school.`,'big');MS(`Kreeg ${E.lvl}-advies`,0);return}
+    L(`Je basisschooladvies is ${lvlN(E.lvl)}. Je gaat naar de middelbare school.`,'big');MS(`Kreeg ${lvlN(E.lvl)}-advies`,0);return}
   if(E.stage==='middel'){
     const V=typeof verdict==='function'?verdict(E):[(E.fails||0)>=3?'zitten':'over',''];const rap=typeof rapportHtml==='function'&&E.yrs+1<E.len;
     let zit=V[0]==='zitten'||(V[0]==='bespreek'&&chance(.45));
-    if(zit&&(E.stay||0)>=1&&E.lvl!=='vmbo'){const nl=E.lvl==='vwo'?'havo':'vmbo';const yr=E.yrs;E.lvl=nl;E.len={vmbo:4,havo:5}[nl];E.yrs=Math.min(yr,E.len-2);E.prof=nl==='vmbo'?null:E.prof;E.stay=0;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+1.2);L(`Je stroomt af naar het ${nl}.`,'bad big');MS(`Stroomde af naar het ${nl}`,0);hap(-6);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v)}`).join(' · ')}. Je bent twee keer blijven zitten en gaat verder op het ${nl}.`}});return}
-    if(zit&&(E.stay||0)<2){E.stay=(E.stay||0)+1;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+.8);L('Je bent blijven zitten.','bad');hap(-6);E.perf=clamp(E.perf+12);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v-.8)}`).join(' · ')}. ${V[0]==='bespreek'?'De docentenvergadering vindt het niet genoeg. ':''}Je blijft zitten.`}});return}
-    if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v)}`).join(' · ')}. ${V[0]==='bespreek'?'Je was een bespreekgeval, maar de docenten geven je een kans. ':''}Je gaat over naar jaar ${E.yrs+2}!`}});
+    if(zit&&(E.stay||0)>=1&&E.lvl!=='vmbo'){const nl=E.lvl==='vwo'?'havo':'vmbo';const yr=E.yrs;E.lvl=nl;E.len={vmbo:4,havo:5}[nl];E.yrs=Math.min(yr,E.len-2);E.prof=nl==='vmbo'?null:E.prof;E.stay=0;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+1.2);L(`Je stroomt af naar het ${lvlN(nl)}.`,'bad big');MS(`Stroomde af naar het ${lvlN(nl)}`,0);hap(-6);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${subjName(k)} ${nl1(v)}`).join(' · ')}. Je bent twee keer blijven zitten en gaat verder op het ${lvlN(nl)}.`}});return}
+    if(zit&&(E.stay||0)<2){E.stay=(E.stay||0)+1;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+.8);L('Je bent blijven zitten.','bad');hap(-6);E.perf=clamp(E.perf+12);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${subjName(k)} ${nl1(v-.8)}`).join(' · ')}. ${V[0]==='bespreek'?'De docentenvergadering vindt het niet genoeg. ':''}Je blijft zitten.`}});return}
+    // rapport als pop-up alleen bij een opvallende verandering; anders een logregel (verbeterplan 4.5)
+    if(rap){const vs=Object.values(E.gr||{});const avg=vs.length?vs.reduce((x,y)=>x+y,0)/vs.length:0;const prev=E.lastAvg;E.lastAvg=avg;
+      const txt=`${Object.entries(E.gr).map(([k,v])=>`${subjName(k)} ${nl1(v)}`).join(' · ')}. ${V[0]==='bespreek'?'Je was een bespreekgeval, maar de docenten geven je een kans. ':''}Je gaat over naar jaar ${E.yrs+2}!`;
+      if(V[0]==='bespreek'||prev==null||Math.abs(avg-prev)>=.7)Q.push({id:'sc_rapport',c:{txt}});else L(`Je rapport: ${txt}`)}
     E.yrs++;
     if(E.lvl!=='vmbo'&&E.yrs===3&&!E.prof&&typeof PROF!=='undefined')Q.push({id:'sc_profiel'});
     if(E.lvl==='vmbo'&&E.yrs===2&&!E.sect&&typeof VSEC!=='undefined')Q.push({id:'sc_sector'});
@@ -1559,7 +1640,7 @@ function setJob(id,lvl,co){const j=JOB(id);if(S.mil&&!j.part&&typeof milLeave===
 function jobTitle(){if(!S.job)return'';if(S.job.id==='prosport'&&typeof sportTitle==='function')return sportTitle();return JOB(S.job.id).lad[S.job.lvl]}
 function endJob(){if(!S.job)return;S.jobs.push({t:jobTitle(),co:S.job.co,y:S.job.yrs});S.job=null}
 function jobYear(a){
-  if(!S.job||inJail())return;const j=JOB(S.job.id);S.job.yrs++;S.job.lyrs++;if(S.job.id==='prosport')return;if(!S.job.part&&S.job.yrs>=1)Q.push({id:'w_review'});
+  if(!S.job||inJail())return;const j=JOB(S.job.id);S.job.yrs++;S.job.lyrs++;if(S.job.id==='prosport')return;if(!S.job.part&&S.job.yrs>=1){/* functioneringsgesprek eens per 3 jaar als pop-up, anders een logregel (verbeterplan 4.5) */if(S.job.yrs%3===1)Q.push({id:'w_review'});else L(`Functioneringsgesprek: je prestaties staan op ${Math.round(S.job.perf)}%. ${S.job.perf>=70?'Je leidinggevende is tevreden.':S.job.perf<40?'Je leidinggevende maakt zich zorgen.':'Prima zo.'}`)}
   const hard=(S.lastActs||{}).werk||0;(S.job&&(S.job.perf=clamp(S.job.perf+(S.st.smarts-50)/25+ri(-7,5)-4+Math.min(10,hard*4)+(S.st.happy<25?-5:0)-(econ()==='recessie'?3:0)+(degSec(j)?2:0)+((S.disc??50)-50)/25)));
   if(j.sk)sk(j.sk,ri(1,3));
   S.job.mult*=S.job.perf>60?1.012:1;
@@ -1614,13 +1695,13 @@ function jail(months,what){if(S.mil&&typeof milLeave==='function')milLeave('Na j
 function release(how){const J=S.crim.jail;if(J&&J.gang)S.flags.gang=J.gang;S.crim.jail=null;L(how==='parole'?'Je bent voorwaardelijk vrijgelaten.':'Je bent vrijgelaten uit de gevangenis.','good big');hap(10);if(typeof afterPrison==='function')afterPrison(J,how)}
 /* ---------- events ---------- */
 function rollEvent(){
-  const ch=S.settings.chaos;const rate=[.15,.18,.22][ch]*(inJail()?2.2:1);if(!chance(rate))return null;
+  const ch=S.settings.chaos;const rate=[.08,.10,.14][ch]*(inJail()?2.2:1);/* minder willekeurige pop-ups (verbeterplan 4) */if(!chance(rate))return null;
   const a=ageY();const pool=[];let tot=0;
   for(const id in EV){const e=EV[id];if(e.sys)continue;if(!!e.jail!==inJail())continue;if(e.a&&(a<e.a[0]||a>e.a[1]))continue;if(e.once&&S.flags['e_'+id])continue;
-    const last=S.evLast[id];if(last!=null&&S.m-last<(e.cd||9)*12)continue;
+    const last=S.evLast[id];if(last!=null&&S.m-last<(e.cd||9)*12)continue;if(!e.many&&((S.evN||{})[id]||0)>=3)continue;
     if(e.c&&!safe(()=>e.c()))continue;let w=(typeof e.w==='function'?e.w():(e.w||1))*(e.chaos?[.12,1,3.2][ch]:1);if(w<=0)continue;pool.push([id,w]);tot+=w}
   if(!pool.length)return null;let r=R()*tot;
-  for(const [id,w] of pool){r-=w;if(r<=0){const e=EV[id];let c={};if(e.ctx){c=safe(()=>e.ctx());if(!c)return null}S.evLast[id]=S.m;if(e.once)S.flags['e_'+id]=1;return{id,c}}}
+  for(const [id,w] of pool){r-=w;if(r<=0){const e=EV[id];let c={};if(e.ctx){c=safe(()=>e.ctx());if(!c)return null}S.evLast[id]=S.m;(S.evN||(S.evN={}))[id]=((S.evN||{})[id]||0)+1;if(e.once)S.flags['e_'+id]=1;return{id,c}}}
   return null}
 function safe(f){try{return f()}catch(e){console.warn(e);if(typeof errLog==='function')errLog(e,'opgevangen');return null}}
 /* ---------- verhaal & score ---------- */
@@ -1639,7 +1720,7 @@ function story(){
   const wealth={arm:'een arm gezin',midden:'een gewoon gezin',rijk:'een welgesteld gezin'}[S.flags.wealth]||'een gezin';
   out.push(`${N} ${p.last} werd in ${p.by} geboren in ${p.city}, in ${wealth}. ${a<4?`${Hij} werd maar ${a} jaar oud.`:pick([`Als kind was ${hij} ${S.st.smarts>65?'slim en nieuwsgierig':S.sk.sport>40?'altijd buiten aan het sporten':'een dromer'}.`,`${Hij} groeide op ${living(['broer','zus']).length||people(['broer','zus']).length?'met '+people(['broer','zus']).map(s=>s.first).join(' en '):'als enig kind'}.`])}`);
   const deg=S.edu.deg.filter(d=>d.f).map(d=>`${ENAME[d.ty]} ${STUDIES.find(s=>s.id===d.f).t}`);const sch=S.edu.deg.find(d=>['vmbo','havo','vwo'].includes(d.ty));
-  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){const cl=S.ms.some(m=>/^Haalde het .*-diploma cum laude/.test(m.t));let t=sch?`${Hij} haalde ${zijn} ${sch.ty}-diploma${cl?' cum laude':''}`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
+  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){const cl=S.ms.some(m=>/^Haalde het .*-diploma cum laude/.test(m.t));let t=sch?`${Hij} haalde ${zijn} ${lvlN(sch.ty)}-diploma${cl?' cum laude':''}`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
   const hist=S.jobs.concat(S.job?[{t:jobTitle(),co:S.job.co,y:S.job.yrs}]:[]).filter(j=>j.y>=1&&!j.mil);
   if(hist.length){const best=S.hist.topJob||hist[hist.length-1].t;const ts=[...new Set(hist.map(j=>j.t.toLowerCase()))];out.push(ts.length>2?`${Hij} had ${hist.length} banen en bracht het tot ${best.toLowerCase()}${S.flags.top?', de top van het vak':''}.`:`${Hij} werkte als ${ts.join(' en later als ')}${S.flags.top?' en bereikte daarmee de top':''}.`)}
   else if(a>=25&&!(S.pex&&S.pex.r>=1)&&!S.mil&&!S.pmil)out.push(`Een vaste baan zat er nooit echt in.`);
@@ -1810,7 +1891,7 @@ function mgQuiz(title,qs,cb,free){let i=0,ok=0,left=0,tk=0;
   const step=()=>{clearInterval(tk);if(i>=qs.length){closeModal();cb(ok/qs.length);return}const [q,ans]=qs[i];const right=ans[0];left=12;
     modal({title,em:'📝',cat:`Vraag ${i+1} van ${qs.length}`,text:q,html:'<div class="timer"><i id="qt" style="width:100%;transition:width 1s linear"></i></div>',choices:ans.slice().sort(()=>R()-.5).map(a=>({t:a,on:()=>{if(a===right){ok++;toast('Goed!')}else toast(`Fout, het was: ${right}`);i++;step()}}))});
     tk=setInterval(()=>{if(!$('#qt')){clearInterval(tk);return}left--;const t=$('#qt');if(t)t.style.width=(left/12*100)+'%';if(left<=0){toast(`Te laat! Het was: ${right}`);i++;step()}},1000)};step()}
-const pickQs=(sub,n)=>(QB[sub]||[]).slice().sort(()=>R()-.5).slice(0,n);
+const pickQs=(sub,n)=>quizPool(sub).slice().sort(()=>R()-.5).slice(0,n);
 E('eindexamen',{sys:1,t:'Eindexamens',x:c=>`Het is examentijd voor je ${c.l}-diploma. Je staat gemiddeld een ${nl1(gradeAvg())}.`,ch:[
  ['📝 Examens maken',c=>({go:()=>finalExam(c.l)})],
  ['🕵️ Een spiekbriefje meenemen',c=>{if(chance(.35)){const E=S.edu;E.exF=(E.exF||0)+1;hap(-15);kar(-5);if(E.exF>=3||ageY()>=21){E.stage='klaar';MS('Verliet school zonder diploma',1);return 'Betrapt! Je examen wordt ongeldig verklaard. Je verlaat school zonder diploma.'}E.yrs=E.len-1;return 'Betrapt! Je examen wordt ongeldig verklaard. Je moet het jaar overdoen.'}kar(-3);return{go:()=>finalExam(c.l,1.25)}}]]});
@@ -2705,7 +2786,15 @@ function renderCreate(){const c=CF,C_=COUNTRIES[c.country],T=TAL(c.talent);
   $('#cbody').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{haptic(6);({name:cName,g:cGender,country:cCountry,city:cCity,by:cYear,mode:cMode,chaos:cChaos,talent:cTalent,ap:cLook,attr:cAttr})[b.dataset.k]()});
   $('#c-start').onclick=startCreated}
 function startCreated(){const c=CF;newLife({first:c.first||'Naamloos',last:c.last||'Onbekend',g:c.g,country:c.country,city:c.city,by:c.by,mode:c.mode,chaos:c.chaos,talent:c.talent,ap:c.ap,attr:c.attr,pref:c.pref});
-  CF=null;saveLife();show('game');render()}
+  CF=null;saveLife();show('game');render();introOnce()}
+// korte uitleg bij het allereerste leven, één keer (verbeterplan 5.6)
+function introOnce(){try{if(localStorage.getItem('levensloop.uitleg'))return;localStorage.setItem('levensloop.uitleg','1')}catch(e){return}
+  if(Object.keys(STORE.lives).length>1)return;
+  const steps=[['👶','Ouder worden','Tik op de grote knop onderin om een jaar (of maand) verder te gaan. Onderweg gebeuren er dingen waar jij een keuze in maakt.'],
+    ['🗂️','De vier tabbladen','Beroep (school en werk), Bezit (geld, huis, winkelen), Relaties (familie, liefde, vrienden) en Activiteiten (alles wat je zelf kunt doen).'],
+    ['☰','Het menu','Linksboven vind je het menu: instellingen, de tijdmachine, je andere levens en de reservekopie.']];
+  const show_=i=>{const [em,t,x]=steps[i];modal({title:t,em,cat:`Uitleg ${i+1} van ${steps.length}`,text:x,choices:[{t:i<steps.length-1?'Volgende':'Aan de slag!',cls:'go',on:()=>{closeModal();if(i<steps.length-1)show_(i+1)}},...(i<steps.length-1?[{t:'Overslaan',cls:'ghost',on:closeModal}]:[])]})};
+  show_(0)}
 const done_=()=>{closeModal();renderCreate()};
 function cName(){modal({title:'Naam',em:'🍼',cat:'Nieuw leven',html:`<label class="lab" for="cn1">Voornaam</label><input class="inp" id="cn1" maxlength="24" value="${he(CF.first)}"><label class="lab" for="cn2" style="margin-top:8px">Achternaam</label><input class="inp" id="cn2" maxlength="28" value="${he(CF.last)}">`,
   choices:[{t:'Opslaan',cls:'go',on:()=>{CF.first=$('#cn1').value.trim()||CF.first;CF.last=$('#cn2').value.trim()||CF.last;done_()}},{t:'🎲 Willekeurige naam',cls:'ghost',on:()=>{const N=NAMES[COUNTRIES[CF.country].r];$('#cn1').value=pick(N[CF.g==='x'?pick(['m','v']):CF.g]);$('#cn2').value=pick(N.l)}}]})}
@@ -3046,12 +3135,12 @@ function subtitle(){const a=ageY();if(!S.alive)return'Overleden';if(inJail())ret
   {const P=S.pol;if(P&&P.lvl!=='lid'&&typeof polT==='function'){const t=polTitle(P);if(POLO[P.lvl].ft||!S.job)return t;return jobTitle()+' · '+polTl(P.lvl)}}
   if(S.mil)return milTitle()+(S.mil.st==='opl'?' · '+MBR[S.mil.br].school:' · '+MSPEC(S.mil.spec).n);
   if(S.job)return jobTitle()+(S.job.co?' · '+S.job.co:'');if(S.biz.length)return(S.biz[0].ceo===false?'Aandeelhouder · ':'Directeur-eigenaar · ')+S.biz[0].name;
-  if(S.pension)return'Gepensioneerd';if(S.edu.stage==='basis')return'Basisschool';if(S.edu.stage==='middel')return`Middelbare school (${S.edu.lvl})`;
+  if(S.pension)return'Gepensioneerd';if(S.edu.stage==='basis')return'Basisschool';if(S.edu.stage==='middel')return`Middelbare school (${lvlN(S.edu.lvl)})`;
   if(a<4)return a<1?'Baby':'Peuter';return a<18?'Scholier':'Werkzoekend'}
 function profInner(){return `<span class="who"><span class="face">${playerFace()}</span><span class="who-t"><span class="nm">${flag(S.p.country)} <span class="u">${he(S.p.first+' '+S.p.last)}</span></span><span class="sub">${he(subtitle())}</span></span></span><div class="money"><b${S.money<0?' style="color:var(--bad)"':''}>${fmt(S.money)}</b><small>Saldo</small></div>`}
 function render(){
   if(!S)return;
-  $('#h-av').innerHTML=playerFace();$('#h-flag').textContent=flag(S.p.country);$('#h-name').textContent=`${S.p.first} ${S.p.last}`;
+  $('#h-av').innerHTML=playerFace();$('#h-flag').textContent=flag(S.p.country);$('#h-name').textContent=`${S.p.first} ${S.p.last}`;fitSoon($('#h-name').closest('.nm')||$('#h-name'),13);
   $('#h-sub').textContent=subtitle();
   $('#h-year').textContent=`${S.settings.mode==='month'?MONTHS[monthIdx()]+' ':''}${year()}`;
   animMoney(S.money);$('#h-money').style.color=S.money<0?'var(--bad)':'';
@@ -3062,12 +3151,17 @@ function render(){
   {const sch=(S.edu.stage==='basis'||S.edu.stage==='middel'||!!S.edu.cur)&&!(S.job&&!S.job.part),tj=$('#t-job');tj.classList.toggle('school',sch);tj.lastChild.textContent=sch?'School':S.job&&S.job.id==='prosport'?'Sport':S.job||S.biz.length?'Werk':'Beroep'}
   $('#t-age').disabled=!S.alive;
   renderLog();
-  if(!$('#sheet').hidden&&!sheetStack[0]?.dark)$('#sheet-prof').innerHTML=profInner();
+  if(!$('#sheet').hidden&&!sheetStack[0]?.dark){$('#sheet-prof').innerHTML=profInner();fitSoon($('#sheet-prof .nm'),13)}
 }
 let shownMoney=null,moneyFor=null,moneyRaf=0,logSeen={id:null,n:0};
 const RM=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
 // trillen kan niet in een iPhone-webapp (navigator.vibrate doet daar niets); daarom veert de getikte knop even in (verbeterplan 2.4)
 let lastTapEl=null;document.addEventListener('pointerdown',e=>{lastTapEl=e.target},{capture:true,passive:true});
+// lange teksten niet afkappen maar kleiner zetten tot ze passen (verbeterplan 5.4)
+function fitText(el,min){if(!el||!el.clientWidth)return;el.style.fontSize='';el.style.whiteSpace='';el.style.lineHeight='';let fs=parseFloat(getComputedStyle(el).fontSize)||20;let n=0;while(el.scrollWidth>el.clientWidth+1&&fs>min&&n++<30){fs-=1;el.style.fontSize=fs+'px'}
+  // past het nog steeds niet: dan over twee regels in plaats van afkappen
+  if(el.scrollWidth>el.clientWidth+1){el.style.whiteSpace='normal';el.style.lineHeight='1.1';el.style.textOverflow='clip'}}
+function fitSoon(el,min){if(!el)return;requestAnimationFrame(()=>fitText(el,min));setTimeout(()=>fitText(el,min),320)}
 function haptic(ms){try{if(RM)return;const b=lastTapEl&&lastTapEl.closest&&lastTapEl.closest('button,.mrow,.tile');if(!b)return;b.classList.remove('tapfx');void b.offsetWidth;b.classList.add('tapfx');setTimeout(()=>b.classList.remove('tapfx'),220)}catch(e){}}
 function animMoney(to){const el=$('#h-money');el.classList.toggle('long',Math.abs(to)>=1e6);if(moneyFor!==S.id){moneyFor=S.id;shownMoney=to;el.textContent=fmt(to);return}
   const from=shownMoney??to;shownMoney=to;cancelAnimationFrame(moneyRaf);if(RM||Math.abs(to-from)<1){el.textContent=fmt(to);return}
@@ -3085,7 +3179,7 @@ function renderLog(){
 /* ---------- pop-ups ---------- */
 function openRaw(html,cls){const m=$('#mcard');m.className='mcard'+(cls?' '+cls:'');m.innerHTML=html;m.scrollTop=0;$('#modal').hidden=false}
 function closeModal(){$('#modal').hidden=true;$('#mcard').innerHTML=''}
-function modal(o){
+function modal(o){o.title=locText(o.title);o.text=locText(o.text);if(o.cat)o.cat=locText(o.cat);if(Array.isArray(o.choices))for(const c of o.choices){if(c&&c.t)c.t=locText(c.t);if(c&&c.s)c.s=locText(c.s)}
   const pr=o.person,green=o.green||!!pr;const label=o.cat||o.sub||'';
   let h='';if(o.close)h+=`<button class="pclose" id="pclose" aria-label="Sluiten">✕</button>`;
   if(label||pr)h+=`<div class="band">${pr?`<span class="bface">${o.pface||faceOf(pr)}</span><span class="bname">${he(pr.first+' '+(pr.last||''))}</span>`:''}<i>${he(label)}</i></div>`;
@@ -3119,7 +3213,7 @@ function processQ(){
   if(q.id==='s_baby')return babyModal(q);
   const txt=typeof e.x==='function'?safe(()=>e.x(c)):e.x;const meta=evMeta(q.id,c);
   if(e.f&&!e.ch){const b=snapSt();const r=safe(()=>e.f(c))||'';Q.shift();if(r&&!c.nolog)L(r);result(e.t,r,chipsFrom(b),processQ,meta);return}
-  const chs=(e.ch||[]).filter(ch=>!ch[2]||safe(()=>ch[2](c)));const run=ch=>{const b=snapSt();const r=safe(()=>ch[1](c))||'';Q.shift();if(r&&r.go){closeModal();r.go();return}if(r)L(`${e.t.replace(/[?!.]$/,'')}: ${r}`);if(r)result(e.t,r,chipsFrom(b),processQ,meta);else{closeModal();processQ()}};
+  const chs=(e.ch||[]).filter(ch=>!ch[2]||safe(()=>ch[2](c)));const run=ch=>{const b=snapSt();const r=safe(()=>ch[1](c))||'';Q.shift();if(r&&r.go){closeModal();r.go();return}if(r){const lb=String(ch[0]).replace(/^[^\p{L}\p{N}]+/u,'').replace(/\s*🎮$/,'').trim();const lc=lb&&!/^[A-Z]{2}|^[A-Z][a-z]+ [A-Z]/.test(lb)?lb[0].toLowerCase()+lb.slice(1):lb;L(lb&&lb.length<=40?`${e.t.replace(/[?!.]$/,'')} (${lc}): ${r}`:`${e.t.replace(/[?!.]$/,'')}: ${r}`)}if(r)result(e.t,r,chipsFrom(b),processQ,meta);else{closeModal();processQ()}};
   modal({title:e.t,text:txt,...meta,surprise:chs.length>1,choices:chs.map(ch=>({t:ch[0],on:()=>run(ch)}))});
 }
 function afterQ(){render();saveLife();if(!S.alive){showDeath();return}if(afterModal){const f=afterModal;afterModal=null;f()}}
@@ -3136,9 +3230,9 @@ const XSVG='<svg viewBox="0 0 24 24"><path d="M5 2.9 12 9.9l7-7L21.1 5l-7 7 7 7-
 function openSheet(title,build,push,opt){const sh=$('#sheet');clearTimeout(sheetCloseT);const wasOpen=!sh.hidden&&!sh.classList.contains('closing')&&sheetStack.length>0;sh.classList.remove('closing');
   if(!push)sheetStack.length=0;sheetStack.push({title,build,dark:!!(opt&&opt.dark)});drawSheet(true,wasOpen?(push?'push':''):'up')}
 function drawSheet(top,anim){const t=sheetStack[sheetStack.length-1];if(!t)return closeSheet();const dark=!!sheetStack[0].dark;const sh=$('#sheet');
-  sh.hidden=false;$('#sheet-t').textContent=t.title;$('#sheet-bar').className='ptbar gut'+(dark?' dark':'');
+  sh.hidden=false;$('#sheet-t').textContent=t.title;fitSoon($('#sheet-t'),17);$('#sheet-bar').className='ptbar gut'+(dark?' dark':'');
   const x=$('#sheet-x');if(sheetStack.length>1){x.className='backlink';x.setAttribute('aria-label','Terug');x.innerHTML=BACKSVG+`<span>${he(sheetStack[sheetStack.length-2].title)}</span>`}else{x.className='xbtn';x.setAttribute('aria-label','Sluiten');x.innerHTML=XSVG}
-  const pf=$('#sheet-prof');pf.hidden=dark;if(!dark)pf.innerHTML=profInner();$('#sheet-en').textContent='';
+  const pf=$('#sheet-prof');pf.hidden=dark;if(!dark){pf.innerHTML=profInner();fitSoon($('#sheet-prof .nm'),13)}$('#sheet-en').textContent='';
   const b=$('#sheet-b');const sc=b.scrollTop;b.innerHTML='';t.build(b);b.scrollTop=top?0:sc;
   if(anim==='push'||anim==='pop'){b.classList.remove('nav-push','nav-pop');void b.offsetWidth;b.classList.add('nav-'+anim)}
   if(anim==='up'){const pi=$('#sheet .panel-in');pi.style.transform='';pi.classList.remove('rise');void pi.offsetWidth;pi.classList.add('rise')}}
@@ -3152,12 +3246,12 @@ function initSwipe(){const pi=$('#sheet .panel-in');let y0=null,dy=0,t0=0;
   pi.addEventListener('touchstart',start,{passive:true});pi.addEventListener('touchmove',move,{passive:true});pi.addEventListener('touchend',end);pi.addEventListener('touchcancel',end)}
 function closeSheetLevel(){if(sheetStack.length>1)sheetStack.pop()}
 function sec(el,label){const d=document.createElement('div');if(label){const h=document.createElement('div');h.className='shead';h.textContent=label;d.appendChild(h)}el.appendChild(d);return d}
-function row(el,o){const b=document.createElement('button');b.className='mrow'+(o.cls?' '+o.cls:'');if(o.dis)b.disabled=true;
+function row(el,o){o.t=locText(o.t);if(typeof o.s==='string')o.s=locText(o.s);const b=document.createElement('button');b.className='mrow'+(o.cls?' '+o.cls:'');if(o.dis)b.disabled=true;
   const sub=o.bar?`<small class="rbar">${he(o.bar.l)} <span class="minibar"><i style="width:${clamp(o.bar.v)}%;background:${o.bar.c||'var(--good)'}"></i></span></small>`:o.s?`<small>${he(o.s)}</small>`:'';
   b.innerHTML=`<span class="mic">${o.ic||'•'}</span><span class="mtx"><b>${he(o.t)}${o.role?` <em>(${he(o.role)})</em>`:''}</b>${sub}</span>${o.r!=null?`<span class="rt">${o.r}</span>`:''}${o.on&&!o.dis?(o.dots?'<span class="mdots">•••</span>':'<span class="mchev"></span>'):''}`;
   if(o.on&&!o.dis)b.onclick=o.on;el.appendChild(b);return b}
 function foot(el,ic,t,on,dis){const b=document.createElement('button');b.className='mfoot';b.innerHTML=`<span>${ic}</span>${he(t)}`;if(dis)b.disabled=true;else b.onclick=on;el.appendChild(b)}
-function card(el,html){const d=document.createElement('div');d.className='card';d.innerHTML=html;el.appendChild(d);return d}
+function card(el,html){html=locText(html);const d=document.createElement('div');d.className='card';d.innerHTML=html;el.appendChild(d);return d}
 function empty(el,t){const p=document.createElement('p');p.className='empty';p.textContent=t;el.appendChild(p)}
 const kv=pairs=>`<dl class="kv">${pairs.map(([k,v])=>`<dt>${he(k)}</dt><dd>${v}</dd>`).join('')}</dl>`;
 const pkv=pairs=>`<dl class="pkv">${pairs.map(([k,v])=>`<dt>${he(k)}</dt><dd>${v}</dd>`).join('')}</dl>`;
@@ -3168,7 +3262,7 @@ const once=k=>{if(S.acts[k])return false;S.acts[k]=1;return true};
 const opts=(list,cancel=true)=>list.concat(cancel?[{t:'Annuleren',cls:'ghost',on:closeModal}]:[]);
 
 /* ================= BEROEP ================= */
-function eduSub(){const E=S.edu;if(E.cur)return cap(E.cur.name);if(E.stage==='basis')return'Basisschool';if(E.stage==='middel')return`Middelbare school (${E.lvl})`;return ageY()<4?'Vanaf 4 jaar':'Ga (weer) naar school'}
+function eduSub(){const E=S.edu;if(E.cur)return cap(E.cur.name);if(E.stage==='basis')return'Basisschool';if(E.stage==='middel')return`Middelbare school (${lvlN(E.lvl)})`;return ageY()<4?'Vanaf 4 jaar':'Ga (weer) naar school'}
 function sheetJob(el){
   const a=ageY();if(typeof polMigrate==='function')polMigrate();if(typeof milMigrate==='function')milMigrate();
   if(a<4){card(el,`<h3>👶 Nog even geduld</h3><p class="muted" style="margin:0">Je bent nog te klein voor school of werk. Vanaf 4 jaar ga je naar de basisschool, en later kies je zelf een opleiding en een baan.</p>`);return}
@@ -3243,8 +3337,6 @@ function recruiter(){if(S.acts.rec){toast('Het uitzendbureau belt je volgend jaa
   if(!list.length){modal({title:'Uitzendbureau',em:'📞',cat:'Beroep',text:'De recruiter heeft niets voor je. Haal eerst een diploma of bouw ervaring op.',choices:[{t:'OK',cls:'go',on:closeModal}]});return}
   const mine=list.filter(inMySector);const j=mine.length&&chance(.7)?pick(mine):pick(list),co=company(),st=startFor(j),lvl=st?st.lvl:0;
   modal({title:'Uitzendbureau',em:jobEm(j.id),cat:'Beroep',text:`De recruiter heeft een vacature${inMySector(j)?' in jouw vakgebied':''}: ${j.lad[lvl].toLowerCase()} bij ${co}, voor ${fmt(jsal(j,lvl))} per jaar.${st&&lvl>0?` Je start op dat niveau dankzij ${st.why}.`:''}${S.job?' Je stopt dan met je huidige baan.':''}`,choices:opts([{t:'Ik doe het',on:()=>{closeModal();doAct('Uitzendbureau',()=>{if(chance(.8)){if(S.job)endJob();setJob(j.id,lvl,co);hap(5);return `Aangenomen! Je begint als ${j.lad[lvl].toLowerCase()}.`}return 'Op het laatste moment kiezen ze toch iemand anders.'},false,'📞')}}],true)})}
-function foldSec(el,label,n,build,openNow){const s=sec(el,'');const box=document.createElement('div');let open=!!openNow;box.hidden=!open;
-  const r=row(s,{ic:open?'▾':'▸',t:`${label} (${n})`,s:open?'Tik om te verbergen':'Tik om te tonen',on:()=>{open=!open;box.hidden=!open;r.querySelector('.mic').textContent=open?'▾':'▸';r.querySelector('small').textContent=open?'Tik om te verbergen':'Tik om te tonen'}});s.appendChild(box);build(box)}
 // vacatures van dit jaar: elk jaar een andere selectie, zoals in BitLife
 function vacList(kind){const y=year();if(!S.vac||S.vac.y!==y)S.vac={y,co:{}};
   const f=j=>kind==='part'?j.part:kind==='mil'?j.id==='soldaat':(!j.part&&!j.fame&&!j.pol&&j.id!=='soldaat');
@@ -3291,19 +3383,10 @@ function finPopup(){const inv=Object.values(S.inv).reduce((x,y)=>x+y,0),pr=S.pro
       {t:'Lening aflossen',dis:S.loan<=0||S.money<=0,on:()=>{closeModal();amountModal('Lening aflossen',Math.min(S.money,S.loan),x=>doAct('Afgelost',()=>{cash(-x);S.loan-=x;return `${fmt(x)} afgelost.`},true,'✅'))}},
       {t:'Sluiten',cls:'ghost',on:closeModal}]})}
 const invIn=k=>S.invIn&&S.invIn[k]!=null?S.invIn[k]:S.inv[k];
-function sheetInv(el){const s=sec(el,'Je rekeningen');const em={spaar:'🐷',index:'📊',aandelen:'📈',crypto:'🪙'};
-  for(const [k,[n,mu,sd]] of Object.entries(INV))row(s,{ic:em[k],t:n,s:`Gemiddeld ${Math.round(mu*100)}% per jaar · risico ${sd<.01?'geen':sd<.2?'gemiddeld':sd<.5?'hoog':'extreem'}`,r:fmt(S.inv[k]),dots:true,on:()=>modal({title:n,em:em[k],cat:'Beleggingen',html:pkv([['Ingelegd',fmt(invIn(k))],['Waarde nu',fmt(S.inv[k])],...(S.inv[k]>0?plRow(S.inv[k],invIn(k)):[])]),choices:opts([{t:'Storten',dis:S.money<=0,on:()=>{closeModal();amountModal('Storten',S.money,x=>doAct(n,()=>{cash(-x);S.invIn=S.invIn||{};S.invIn[k]=invIn(k)+x;S.inv[k]+=x;return `${fmt(x)} gestort.`},true,em[k]))}},{t:'Opnemen',dis:S.inv[k]<=0,on:()=>{closeModal();amountModal('Opnemen',S.inv[k],x=>doAct(n,()=>{const basis=invIn(k)*(x/Math.max(1,S.inv[k]));cash(x);S.invIn=S.invIn||{};S.invIn[k]=Math.max(0,invIn(k)-basis);S.inv[k]-=x;const d=Math.round(x-basis);return `${fmt(x)} opgenomen. Daarvan was ${fmt(basis)} ingelegd: ${d>=0?'winst':'verlies'} van ${fmt(Math.abs(d))}.`},true,em[k]))}}])})})}
 const boughtFor=x=>x.buy!=null?fmt(x.buy):'onbekend';
 const plTxt=(now,buy)=>{if(buy==null)return'';const d=Math.round(now-buy);return d===0?'Quitte':`${d>0?'+':'-'}${fmt(Math.abs(d))} (${d>0?'+':''}${Math.round(d/Math.max(1,buy)*100)}%)`};
 const plRow=(now,buy)=>buy==null?[]:[[now-buy>=0?'Winst bij verkoop':'Verlies bij verkoop',`<span style="color:${now-buy>=0?'var(--good)':'var(--bad)'}">${plTxt(now,buy)}</span>`]];
 const soldTxt=(sale,buy)=>buy==null?'':` Je kocht het voor ${fmt(buy)}: ${sale>=buy?'winst':'verlies'} van ${fmt(Math.abs(sale-buy))}.`;
-function carPopup(c){const cond=c.cond??100;const rep=Math.round((100-cond)*c.value*.004+80);const sale=Math.round(c.value*(.5+cond/200));
-  modal({title:c.name,em:carEm(c),cat:'Voertuig',html:pkv([['Gekocht voor',boughtFor(c)],['Waarde nu',fmt(c.value)],['Verkoopprijs',fmt(sale)],...plRow(sale,c.buy),['Conditie',cond+'%']]),choices:opts([{t:`Laten repareren (${fmt(rep)})`,dis:cond>=98||S.money<rep,on:()=>{closeModal();doAct('Garage',()=>{cash(-rep);c.cond=100;return `Je ${c.name} is weer als nieuw.`},true,'🔧')}},{t:`Verkopen (${fmt(sale)})`,on:()=>{closeModal();doAct('Verkocht',()=>{cash(sale);S.cars=S.cars.filter(x=>x!==c);return `Je hebt je ${c.name} verkocht voor ${fmt(sale)}.${soldTxt(sale,c.buy)}`},true,'🏷️')}}])})}
-function itemPopup(it){const sale=Math.round(it.value*(.7+(it.cond??100)/400));
-  modal({title:it.name,em:itemIcon(it),cat:'Bezitting',html:pkv([...(it.variant?[['Uitvoering',he(it.variant)]]:[]),['Gekocht voor',boughtFor(it)],['Waarde nu',fmt(it.value)],['Verkoopprijs',fmt(sale)],...plRow(sale,it.buy),['Conditie',(it.cond??100)+'%']]),choices:opts([{t:`Verkopen (${fmt(sale)})`,on:()=>{closeModal();doAct('Verkocht',()=>{cash(sale);S.items=S.items.filter(x=>x!==it);return `Je hebt je ${it.name} verkocht voor ${fmt(sale)}.${soldTxt(sale,it.buy)}`},true,'🏷️')}}])})}
-function sheetShop(el,kind){if(inJail()){empty(el,'Winkelen kan pas weer als je vrij bent.');return}const a=ageY();const s=sec(el,kind==='luxe'?'Luxe':'Categorieën');
-  for(const [k,c] of Object.entries(CATALOG)){if(kind==='luxe'&&!c.lux)continue;const n=Object.values(c.brands).reduce((x,b)=>x+b.length,0);
-    row(s,{ic:catIcon(k),t:c.n,s:a<(c.min||0)?`Vanaf ${c.min} jaar`:`${Object.keys(c.brands).length} merken · ${n} modellen`,dis:a<(c.min||0),on:()=>openSheet(c.n,el=>sheetBrands(el,k),true)})}}
 const BRANDEM={autos:b=>b==='Klassiekers'?'🚙':['Ferrari','Lamborghini','Porsche'].includes(b)?'🏎️':b==='Tesla'?'🔋':'🚗'};
 const catEm=(k,b)=>BRANDEM[k]?BRANDEM[k](b):CATALOG[k].em;
 function sheetBrands(el,k){const c=CATALOG[k];const s=sec(el,'Merken');
@@ -3456,8 +3539,10 @@ function sheetMain(el){
   row(s,{ic:'⏱️',t:'Tempo',s:S.settings.mode==='year'?'Per jaar (tik om te wisselen)':'Per maand (tik om te wisselen)',dots:true,on:()=>{S.settings.mode=S.settings.mode==='year'?'month':'year';render();refreshSheet();saveLife();toast(S.settings.mode==='year'?'Je speelt nu per jaar':'Je speelt nu per maand')}});
   row(s,{ic:'👨‍👩‍👧‍👦',t:'Grote familie',s:(S.settings.bigFam?'Aan':'Uit')+' · grootouders, ooms, tantes, neven, nichten, schoonfamilie (tik om te wisselen)',dots:true,on:()=>{S.settings.bigFam=S.settings.bigFam?0:1;if(S.settings.bigFam)ensureBigFam();refreshSheet();saveLife();toast(S.settings.bigFam?'Grote familie staat aan':'Grote familie staat uit')}});
   row(s,{ic:'⭐',t:'Favoriete activiteiten',s:`${favs().length} van 5 gekozen · deze staan bovenaan bij Activiteiten`,on:()=>openSheet('Favorieten',sheetFavs,true)});
+  row(s,{ic:'🗳️',t:'Stemmen',s:{ask:'Elke keer vragen',same:'Altijd dezelfde partij',none:'Niet stemmen'}[voteMode()]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.vote={ask:'same',same:'none',none:'ask'}[voteMode()];refreshSheet();saveLife()}});
   row(s,{ic:'🌀',t:'Chaos',s:['Rustig','Normaal','Chaos'][S.settings.chaos]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.chaos=(S.settings.chaos+1)%3;refreshSheet();saveLife()}});
   row(s,{ic:'🌪️',t:'Tijdmachine',s:'Spoel 1, 3, 5 of 10 jaar terug',on:()=>openSheet('Tijdmachine',sheetRewind,true)});
+  row(s,{ic:'🏳️',t:'Opgeven',s:'Je leven hier laten eindigen',dots:true,on:()=>ask('Opgeven?','Je leven eindigt hier. Je kunt daarna nog terugspoelen of verder als je kind.','Opgeven',()=>{closeSheet();die('opgegeven');afterQ()},'bad','🏳️')});
   s=sec(el,'Verzameling');checkAch();const M=meta();
   row(s,{ic:'🏆',t:`Prestaties (${(S.ach||[]).length}/${ACH.length})`,s:'Behaal ze allemaal',on:()=>openSheet('Prestaties',sheetAch,true)});
   row(s,{ic:'💼',t:`Carrières (${M.careers.length}/${JOBS.length})`,s:'Verzamel ze allemaal, over al je levens',on:()=>openSheet('Carrières',sheetCareers,true)});
@@ -3478,7 +3563,6 @@ function sheetCemetery(el){const s=sec(el,'');const ls=Object.values(STORE.lives
   if(!ls.length)empty(s,'Nog niemand begraven.');for(const l of ls)row(s,{ic:'💀',t:l.name,s:`${l.by} · ${l.age} jaar · score ${l.score}${l.ribbon?' · '+l.ribbon:''}`,on:l.story?()=>storyModal(l):null})}
 function sheetRewind(el){const s=sec(el,'Hoe ver terug?');for(const n of [1,3,5,10]){const t=rewindTarget(n);row(s,{ic:'⏪',t:`${n} jaar terug`,s:t?`Terug naar je ${t.m/12}e verjaardag`:'Nog niet zo ver mogelijk',dis:!t,dots:true,on:()=>{rewind(n);closeSheet();show('game');render();saveLife();toast(`Teruggespoeld naar je ${ageY()}e`)}})}
   empty(el,'Je kunt tot 10 jaar terugspoelen, ook nadat je overleden bent.')}
-function sheetTree(el){const s=sec(el,'Generaties');for(const g of S.gens)row(s,{ic:'💀',t:g.name,s:`${g.by} · ${g.age} jaar · score ${g.score}`,on:STORE.lives[g.id]&&STORE.lives[g.id].done?()=>storyModal(STORE.lives[g.id]):null});row(s,{ic:faceEmoji(),t:`${S.p.first} ${S.p.last}`,s:`${S.p.by} · nu ${ageY()} jaar`})}
 
 /* ================= DOOD ================= */
 const RIB=[['Opgegeven','🏳️','Geef het op'],['Staatsman','🏛️','Word minister-president'],['Legende','⭐','Sterf zeer beroemd'],['Crimineel','🦹','Word drie keer veroordeeld'],['Steenrijk','💎','Sterf met 10 miljoen of meer'],['Familiemens','👨‍👩‍👧‍👦','Krijg 4 of meer kinderen'],['Heilige','😇','Sterf met heel veel karma'],['Schurk','😈','Sterf met heel weinig karma'],['Ongelukkig','😢','Leef een ongelukkig leven'],['Gelukzalig','😊','Leef een heel gelukkig leven'],['Jong gestorven','🥀','Sterf voor je 30e'],['Taai','🐢','Word 95 of ouder'],['Topper','🏆','Bereik de top van je vak'],['Blut','🪙','Sterf met schulden'],['Gewoon','🙂','Leef een doodgewoon leven']];
@@ -3643,14 +3727,22 @@ function mgSlots(){const sy=['🍒','🍋','🔔','⭐','7️⃣','💎'],pay={'
 function renderStart(){
   const el=$('#saves');const all=Object.values(STORE.lives).sort((a,b)=>(b.updated||0)-(a.updated||0));
   if(!all.length){el.innerHTML='<p class="muted" style="margin:0">Nog geen levens. Begin je eerste leven hierboven.</p>';return}
-  el.innerHTML=all.map(l=>{if(l.done)return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:#eceef3;font-size:24px">💀</span><span class="meta"><b>${he(l.name)}</b><small>${l.by} · ${l.age} jaar · score ${l.score}${l.ribbon?' · '+he(l.ribbon):''}</small></span><span class="pill dead">Gen ${l.gen}</span></button>`;
+  // startscherm (verbeterplan 5.5): grote kaart "Verder met …", dan lopende levens, begraafplaats en nieuw leven
+  const bn=$('#btn-new');if(bn&&!bn.dataset.moved){el.parentNode.after(bn);bn.dataset.moved=1;bn.style.marginTop='16px'}
+  const lastL=STORE.lives[STORE.last];const cont=lastL&&!lastL.done&&lastL.alive?lastL:all.find(l=>!l.done&&l.alive);
+  const card=l=>{if(l.done)return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:#eceef3;font-size:24px">💀</span><span class="meta"><b>${he(l.name)}</b><small>${l.by} · ${l.age} jaar · score ${l.score}${l.ribbon?' · '+he(l.ribbon):''}</small></span><span class="pill dead">Gen ${l.gen}</span></button>`;
     const a=Math.floor(l.m/12);const sub=l.alive?`${a} jaar · ${COUNTRIES[l.p.country].n}`:`Overleden op ${l.died??a} · terugspoelen kan nog`;
-    return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:${l.alive?'var(--brand-soft)':'#eceef3'};font-size:24px">${l.alive?(l.ap?avatarSvg(l.ap,Math.floor(l.m/12),l.p.g):'🧑'):'💀'}</span><span class="meta"><b>${he(l.p.first+' '+l.p.last)}</b><small>${he(sub)}</small></span><span class="pill ${l.alive?'good':'dead'}">${l.alive?'Gen '+l.gen:'†'}</span></button>`}).join('');
-  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const l=STORE.lives[b.dataset.id];
+    return `<button class="savecard" data-id="${l.id}"><span class="av" style="background:${l.alive?'var(--brand-soft)':'#eceef3'};font-size:24px">${l.alive?(l.ap?avatarSvg(l.ap,Math.floor(l.m/12),l.p.g):'🧑'):'💀'}</span><span class="meta"><b>${he(l.p.first+' '+l.p.last)}</b><small>${he(sub)}</small></span><span class="pill ${l.alive?'good':'dead'}">${l.alive?'Gen '+l.gen:'†'}</span></button>`};
+  const alive=all.filter(l=>!l.done&&l.alive&&l!==cont),dead=all.filter(l=>l.done||!l.alive);let h='';
+  if(cont){const a=Math.floor(cont.m/12);h+=`<button class="savecard cont" data-id="${cont.id}" data-go="1" style="padding:16px 14px;border:2px solid var(--brand);margin-bottom:6px"><span class="av" style="background:var(--brand-soft);font-size:28px;width:56px;height:56px">${cont.ap?avatarSvg(cont.ap,a,cont.p.g):'🧑'}</span><span class="meta"><small style="font-weight:700;color:var(--brand)">Verder met</small><b style="font-size:18px">${he(cont.p.first+' '+cont.p.last)}</b><small>${a} jaar · ${he(COUNTRIES[cont.p.country].n)}</small></span><span class="pill good">▶</span></button>`}
+  if(alive.length)h+=`<p class="sec-l" style="margin:14px 0 8px">Lopende levens</p>`+alive.map(card).join('');
+  if(dead.length)h+=`<p class="sec-l" style="margin:14px 0 8px">Begraafplaats</p>`+dead.map(card).join('');
+  el.innerHTML=h;
+  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const l=STORE.lives[b.dataset.id];if(b.dataset.go){loadLife(l.id);return}
     const del=()=>{modal({title:'Verwijderen?',em:'🗑️',text:`${l.done?l.name:l.p.first+' '+l.p.last} wordt definitief verwijderd.`,choices:opts([{t:'Verwijderen',cls:'bad',on:()=>{closeModal();delete STORE.lives[l.id];lsSave();cloudQueue(l.id);renderStart()}}])})};
     if(l.done)modal({title:l.name,em:'📜',cat:`${l.by} · ${l.age} jaar`,html:l.story.map(p=>`<p style="font-size:15.5px;text-align:left;margin:0">${he(p)}</p>`).join(''),choices:[{t:'Sluiten',cls:'ghost',on:closeModal},{t:'Verwijderen',cls:'bad',on:del}]});
     else modal({title:l.p.first+' '+l.p.last,em:l.alive?'🧑':'💀',cat:l.alive?`${Math.floor(l.m/12)} jaar`:'Overleden',choices:[{t:l.alive?'Verder spelen':'Bekijken',cls:'go',on:()=>{closeModal();loadLife(l.id)}},{t:'Verwijderen',cls:'bad',on:del},{t:'Annuleren',cls:'ghost',on:closeModal}]})})}
-function migrate(s){delete s.energy;s.cpi=s.cpi||1;s.econ=s.econ||{s:'normaal',y:0};s.crim=Object.assign({heat:0,open:[]},s.crim||{});if(s.crim.jail)s.crim.jail=Object.assign({resp:10,gb:50,gang:null,work:false,tunnel:0,study:0,cell:null,contra:0},s.crim.jail);s.items=s.items||[];s.fights=s.fights||{w:0,l:0};for(const c of s.cars||[])if(c.cond==null)c.cond=100;s.flags=s.flags||{};if(!s.ap)s.ap=randAp(s.p.g);if(s.disc==null)s.disc=50;if(s.fert==null)s.fert=65;if(!s.talent)s.talent='geen';if(!s.flags.ingMig){if(s.job&&s.job.id==='ingenieur')s.job.lvl=Math.min(s.job.lvl+1,3);s.flags.ingMig=1}if(!s.flags.salCpi){if(s.job&&s.cpi>1)s.job.mult/=s.cpi;s.flags.salCpi=1}return s}
+function migrate(s){delete s.energy;s.money=Math.round(s.money||0);s.cpi=s.cpi||1;s.econ=s.econ||{s:'normaal',y:0};s.crim=Object.assign({heat:0,open:[]},s.crim||{});if(s.crim.jail)s.crim.jail=Object.assign({resp:10,gb:50,gang:null,work:false,tunnel:0,study:0,cell:null,contra:0},s.crim.jail);s.items=s.items||[];s.fights=s.fights||{w:0,l:0};for(const c of s.cars||[])if(c.cond==null)c.cond=100;s.flags=s.flags||{};if(!s.ap)s.ap=randAp(s.p.g);if(s.disc==null)s.disc=50;if(s.fert==null)s.fert=65;if(!s.talent)s.talent='geen';if(!s.flags.ingMig){if(s.job&&s.job.id==='ingenieur')s.job.lvl=Math.min(s.job.lvl+1,3);s.flags.ingMig=1}if(!s.flags.salCpi){if(s.job&&s.cpi>1)s.job.mult/=s.cpi;s.flags.salCpi=1}return s}
 function loadLife(id){S=STORE.lives[id];if(!S||S.done)return;migrate(S);Q=S.q||[];STORE.last=id;
   if(!S.alive){showDeath();return}show('game');render();if(Q.length)processQ()}
 /* ================= OPSLAAN (lsLoad, lsSave, saveLife: zie src/store.js) ================= */
@@ -3877,7 +3969,6 @@ function sheetAssets(el){const a=ageY();
   const g=sec(el,'Geld');
   row(g,{ic:'💰',t:'Financiën',s:a<18?'Je saldo en zakgeld':'Sparen, beleggen, automatisch beleggen, startups en leningen',on:()=>openSheet('Financiën',sheetFinance,true)});
   if(S.biz.length)row(g,{ic:'🏢',t:'Bedrijven',s:`${S.biz.length} ${S.biz.length>1?'bedrijven':'bedrijf'}`,on:()=>openSheet('Ondernemen',sheetBizList,true)});
-  row(g,{ic:'👥',t:'Social media',s:a<13?'Vanaf 13 jaar':`${Math.round(S.foll).toLocaleString('nl-NL')} volgers`,dis:a<13,on:()=>openSheet('Social media',sheetSocial,true)});
   if(inJail()){empty(el,'Winkelen kan pas weer als je vrij bent.');return}
   const sh=sec(el,'Winkelen');
   row(sh,{ic:'🏡',t:'Huizen',s:a<18?'Vanaf 18 jaar':'Kopen, huren, verhuren en verbouwen',dis:a<18,on:()=>openSheet('Panden',sheetHousing,true)});
@@ -3999,7 +4090,7 @@ function sheetFinance(el){const a=ageY(),inv=Object.values(S.inv).reduce((x,y)=>
   row(au,{ic:'🔁',t:A.pct?`${A.pct}% van wat je overhoudt → ${destName(A.to)}`:'Uit',s:A.pct?`Elke maand automatisch · dit jaar al ${fmt(period.auto||0)}`:'Laat elke maand een deel van je netto inkomsten automatisch beleggen',dots:true,on:autoMenu});
   const b=sec(el,'Sparen en fondsen');
   for(const k of ['spaar','index']){const [n,mu,sd]=INV[k];row(b,{ic:k==='spaar'?'🐷':'📊',t:n,s:k==='spaar'&&S.eco?`Rente nu ${Math.max(0,S.eco.r-.8).toLocaleString('nl-NL')}% · risico geen`:`${Math.round(mu*100)}% per jaar gemiddeld · risico ${sd<.01?'geen':'gemiddeld'}`,r:fmt(S.inv[k]),on:()=>holdMenu(k)})}
-  const st=sec(el,'Aandelen');for(const [id,H] of Object.entries(HOLD).filter(([id,H])=>H[5]==='aandelen'&&(id!=='mixA'||S.stk.mixA))){const h=S.stk[id];row(st,{ic:H[1],t:H[0],s:h?`Ingelegd ${fmt(h.in)} · ${plTxt(h.v,h.in)}`:`Gem. ${Math.round(H[2]*100)}% per jaar · risico ${H[3]<.2?'laag':H[3]<.4?'gemiddeld':'hoog'}${H[4]?` · ${Math.round(H[4]*1000)/10}% dividend`:''}`,r:h?fmt(h.v):'',on:()=>holdMenu(id)})}
+  const st=sec(el,'Aandelen');for(const [id,H] of Object.entries(HOLD).filter(([id,H])=>H[5]==='aandelen'&&(id!=='mixA'||S.stk.mixA)&&stkHere(id))){const h=S.stk[id];row(st,{ic:H[1],t:H[0],s:h?`Ingelegd ${fmt(h.in)} · ${plTxt(h.v,h.in)}`:`Gem. ${Math.round(H[2]*100)}% per jaar · risico ${H[3]<.2?'laag':H[3]<.4?'gemiddeld':'hoog'}${H[4]?` · ${Math.round(H[4]*1000)/10}% dividend`:''}`,r:h?fmt(h.v):'',on:()=>holdMenu(id)})}
   const cr=sec(el,'Crypto');for(const [id,H] of Object.entries(HOLD).filter(([id,H])=>H[5]==='crypto'&&(id!=='mixC'||S.stk.mixC))){const h=S.stk[id];row(cr,{ic:H[1],t:H[0],s:h?`Ingelegd ${fmt(h.in)} · ${plTxt(h.v,h.in)}`:`Risico ${H[3]>1?'extreem':'zeer hoog'}`,r:h?fmt(h.v):'',on:()=>holdMenu(id)})}
   const su=sec(el,'Investeren in startups');
   for(const x of (S.angel||[]).filter(x=>x.st==='actief'))row(su,{ic:x.em,t:x.n,s:`Ingelegd ${fmt(x.in)} · ${plTxt(x.v,x.in)}`,r:fmt(x.v)});
@@ -4017,7 +4108,7 @@ function holdMenu(id){const isB=INV[id]&&id!=='aandelen'&&id!=='crypto';const H=
 function autoMenu(){const A=S.auto||{pct:0,to:'index'};
   modal({title:'Automatisch beleggen',em:'🔁',cat:'Financiën',html:`<p class="muted" style="margin:0 0 8px">Elke maand gaat dit deel van wat je overhoudt (inkomen min vaste lasten) automatisch naar je belegging. In maanden dat je niets overhoudt, gebeurt er niets.</p><label class="sl"><span>Percentage</span><b id="apv">${A.pct}%</b><input type="range" min="0" max="100" step="5" value="${A.pct}" id="apr"></label><p style="margin:10px 0 4px;font-weight:700">Naar: <span id="ato">${he(destName(A.to))}</span></p>`,
     choices:opts([{t:'Opslaan',cls:'go',on:()=>{S.auto={pct:+$('#apr').value,to:A.to};closeModal();toast(S.auto.pct?`${S.auto.pct}% gaat elke maand naar ${destName(S.auto.to)}`:'Automatisch beleggen staat uit');refreshSheet()}},
-      {t:'Bestemming kiezen',on:()=>{const pct=+$('#apr').value;closeModal();modal({title:'Waar naartoe?',em:'🔁',cat:'Automatisch beleggen',choices:opts(['spaar','index',...Object.keys(HOLD).filter(k=>!k.startsWith('mix'))].map(k=>({t:destName(k),ic:k==='spaar'?'🐷':k==='index'?'📊':HOLD[k][1],on:()=>{S.auto={pct,to:k};closeModal();autoMenu()}})))})}}])});
+      {t:'Bestemming kiezen',on:()=>{const pct=+$('#apr').value;closeModal();modal({title:'Waar naartoe?',em:'🔁',cat:'Automatisch beleggen',choices:opts(['spaar','index',...Object.keys(HOLD).filter(k=>stkHere(k)&&!k.startsWith('mix'))].map(k=>({t:destName(k),ic:k==='spaar'?'🐷':k==='index'?'📊':HOLD[k][1],on:()=>{S.auto={pct,to:k};closeModal();autoMenu()}})))})}}])});
   const r=$('#apr');if(r)r.oninput=()=>{$('#apv').textContent=r.value+'%'}}
 function sheetPitch(el){const L_=pitches();card(el,`<span class="muted">Startups zijn een gok: veel gaan failliet, een paar worden enorm. Na een paar jaar kan een startup worden overgenomen, dan krijg je je deel uitbetaald.</span>`);const s=sec(el,`Pitches in ${year()}`);
   for(const p of L_)row(s,{ic:p.em,t:p.n,s:`${cap(p.w)} · waardering ${fmt(p.val)} · risico ${p.risk}`,dis:!!p.done,dots:true,on:()=>{const max=Math.min(S.money,p.val*.2);if(max<1000){toast('Je hebt minimaal '+fmt(1000)+' nodig');return}
@@ -4117,15 +4208,19 @@ E('f_scheiding',{sys:1,t:'Je ouders gaan scheiden',x:()=>`${living('moeder')[0]?
 // ---- het relatiescherm (zelfde opbouw, uitgebreid) ----
 function sheetRel(el){if(bigOn())ensureBigFam();
   const top=sec(el,'');row(top,{ic:'🌳',t:'Stamboom',s:`Generatie ${S.gen} · bekijk je hele familie`,on:()=>openSheet('Stamboom',sheetTree,true)});
-  const groups=[['',['moeder','vader']],['Broers en zussen',['broer','zus']],['Kinderen',['kind']],['Kleinkinderen',['kleinkind']],['Vrienden',['vriend']],['Vijanden',['vijand']]];
-  if(bigOn())groups.splice(2,0,['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus']]);
-  for(const [n,r] of groups){const ps=living(r);if(!ps.length)continue;const s=sec(el,n);if(r[0]==='kind'&&ps.some(k=>pAge(k)<18))row(s,{ic:'🧸',t:'Opvoeding',s:`${PSTY[S.par?.style||'liefdevol'][0]} · zakgeld ${fmt((S.par?.pocket||0)*(S.cpi||1))} per week`,on:()=>openSheet('Opvoeding',sheetParenting,true)});for(const p of ps)personRow(s,p)}
+  // volgorde (verbeterplan 5.1): liefde, kinderen, ouders, broers en zussen, vrienden, huisdieren, dan de overige familie ingeklapt
   const love=sec(el,'Liefde');const pt=partner();if(pt)personRow(love,pt);
   for(const p of living('minnaar'))personRow(love,p);
   if(S.preg)row(love,{ic:'🤰',t:'Baby onderweg',s:`Uitgerekend over ${Math.max(0,S.preg.due-S.m)} maanden`});
   if(ageY()>=18&&!inJail())row(love,{ic:'💋',t:pt?'Vreemdgaan':'Een scharrel zoeken',s:pt?`Riskant: ${pt.first} kan erachter komen`:'Iets kort en vrijblijvends',dots:true,on:fling});
   const exes=people('ex');row(love,{ic:'💔',t:'Exen',s:exes.length?`${exes.length} ex${exes.length>1?'en':''}`:'Bekijk je exen',dis:!exes.length,on:()=>openSheet('Exen',el=>{const s=sec(el,'');for(const p of exes)personRow(s,p)},true)});
+  const groups=[['Kinderen',['kind']],['Kleinkinderen',['kleinkind']],['Ouders',['moeder','vader']],['Broers en zussen',['broer','zus']],['Vrienden',['vriend']]];
+  for(const [n,r] of groups){const ps=living(r);if(!ps.length)continue;const s=sec(el,n);if(r[0]==='kind'&&ps.some(k=>pAge(k)<18))row(s,{ic:'🧸',t:'Opvoeding',s:`${PSTY[S.par?.style||'liefdevol'][0]} · zakgeld ${fmt((S.par?.pocket||0)*(S.cpi||1))} per week`,on:()=>openSheet('Opvoeding',sheetParenting,true)});for(const p of ps)personRow(s,p)}
   const pets=living('huisdier');if(pets.length){const s=sec(el,'Huisdieren');for(const p of pets)personRow(s,p)}
+  if(bigOn()){const other=[['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus']]];
+    const n=other.reduce((x,[,r])=>x+living(r).length,0);
+    if(n)row(sec(el,'Overige familie'),{ic:'👪',t:'Overige familie',s:`${n} ${n===1?'persoon':'mensen'} · ${other.filter(([,r])=>living(r).length).map(([nm])=>nm.toLowerCase()).join(', ')}`,on:()=>openSheet('Overige familie',e2=>{for(const [nm,r] of other){const ps=living(r);if(!ps.length)continue;const s2=sec(e2,nm);for(const p of ps)personRow(s2,p)}},true)})}
+  {const ps=living('vijand');if(ps.length){const s=sec(el,'Vijanden');for(const p of ps)personRow(s,p)}}
   const dead=people().filter(p=>!p.alive&&!p.gone&&!['huisdier','vijand','minnaar'].includes(p.role)&&(p.role!=='ex'||p.lost)&&(p.died==null||p.died>=0)&&(bigOn()||!BIGR[p.role]));if(dead.length){const s=sec(el,'Overleden familie en vrienden');for(const p of dead)personRow(s,p)}
   const dpets=people('huisdier').filter(p=>!p.alive&&!p.gone);if(dpets.length){const s=sec(el,'Overleden huisdieren');for(const p of dpets)personRow(s,p)}
   foot(el,'🕰️','Tijd met iedereen...',()=>doAct('Tijd met iedereen',()=>{const ps=living().filter(p=>!['ex','vijand','minnaar'].includes(p.role)&&(bigOn()||!BIGR[p.role]));if(!ps.length)return 'Er is niemand om tijd mee door te brengen.';const m=use('allen');for(const p of ps)p.rel=clamp(p.rel+Math.round(ri(1,5)*m));hap(3);return `Je brengt tijd door met ${ps.length} ${ps.length===1?'persoon':'mensen'}. Iedereen waardeert het.`},true,'🕰️'),inJail())}
@@ -4517,7 +4612,7 @@ const company_=()=>{const ps=living().filter(p=>['partner','vriend','broer','zus
 // ---- festivals ----
 const FESTS=[['🎸','Pinkpop','Rock en pop',16,180],['🌾','Lowlands','Alternatief en indie',16,260],['🪩','Mysteryland','Dance en techno',18,220],['🌈','Tomorrowland','De grootste dj\'s ter wereld',18,450],['🌴','Coachella','Woestijn, sterren en influencers',18,1400]];
 function sheetFestivals(el){const a=ageY();const s=sec(el,'Festivals');
-  for(const [ic,t,d,min,k] of FESTS)row(s,{ic,t,s:a<min?`Vanaf ${min} jaar`:`${d} · ${fmt(cpM(k))}`,dis:a<min||S.money<cpM(k),dots:true,on:()=>festival(ic,t,k)})}
+  for(const [ic,t,d,min,k] of festList())row(s,{ic,t,s:a<min?`Vanaf ${min} jaar`:`${d} · ${fmt(cpM(k))}`,dis:a<min||S.money<cpM(k),dots:true,on:()=>festival(ic,t,k)})}
 function festival(ic,t,k){const w=company_();
   mgRhythm({title:t,desc:'Je favoriete act staat op het podium. Dans mee op de maat!',em:ic,notes:['🎵','🎶','🔊','✨'],btn:'Springen!'},sc=>{
     doAct(t,()=>{cash(-cpM(k));const m=use('fest');hap(Math.round((4+sc*6)*m));if(w)w.rel=clamp(w.rel+ri(4,9));addUp('alcohol',3);
@@ -4593,7 +4688,7 @@ function scratch(){if(ageY()<18){toast('Vanaf 18 jaar');return}const k=cpM(5);if
   const draw=()=>{openRaw(`<div class="mhead dark"><small>Kraslot · ${fmt(k)}</small><h3>🎟️ Kras 3 vakjes</h3></div><div class="mbody"><p class="muted" style="margin:0 0 8px">Drie dezelfde? Dan win je.</p><div class="kras">${grid.map((x,i)=>`<button data-i="${i}" class="${shown.has(i)?'open':''}">${shown.has(i)?x:'❔'}</button>`).join('')}</div></div>`);
     document.querySelectorAll('.kras button').forEach(b=>b.onclick=()=>{if(shown.size>=3)return;shown.add(+b.dataset.i);haptic(5);draw();if(shown.size===3){const v=[...shown].map(i=>grid[i]);setTimeout(()=>{closeModal();doAct('Kraslot',()=>{if(v[0]===v[1]&&v[1]===v[2]){const g=cpM(5*w[v[0]]);cash(g);hap(g>1000?10:4);if(g>=1e4)MS(`Won ${fmt(g)} met een kraslot`,2);return `Drie keer ${v[0]}! Je wint ${fmt(g)}.`}return `${v.join(' ')}. Niets gewonnen.`},true,'🎟️')},700)}})};draw()}
 const TEAMS=['Ajax','PSV','Feyenoord','AZ','FC Twente','FC Utrecht','Real Madrid','FC Barcelona','Bayern München','Manchester City','Liverpool','Inter'];
-function sportsBet(){if(ageY()<18){toast('Vanaf 18 jaar');return}const ms=Array.from({length:3},()=>{const [a,b]=TEAMS.slice().sort(()=>R()-.5);const pa=.3+R()*.4;return {a,b,pa,oa:+(1/pa*.92).toFixed(2),od:3.3,ob:+(1/(1-pa-.24)*.92).toFixed(2)}});
+function sportsBet(){if(ageY()<18){toast('Vanaf 18 jaar');return}const ms=Array.from({length:3},()=>{const [a,b]=teamList().slice().sort(()=>R()-.5);const pa=.3+R()*.4;return {a,b,pa,oa:+(1/pa*.92).toFixed(2),od:3.3,ob:+(1/(1-pa-.24)*.92).toFixed(2)}});
   modal({title:'Sportweddenschap',em:'⚽',cat:'Gokken',text:'Kies een wedstrijd.',choices:opts(ms.map(m=>({t:`${m.a} – ${m.b}`,s:`1: ${m.oa}× · X: ${m.od}× · 2: ${m.ob}×`,on:()=>{closeModal();modal({title:`${m.a} – ${m.b}`,em:'⚽',cat:'Gokken',text:'Waar zet je op in?',choices:opts([[`1 · ${m.a} wint`,m.oa,0],[`X · gelijkspel`,m.od,1],[`2 · ${m.b} wint`,m.ob,2]].map(([t,o,k])=>({t:`${t} (${o}×)`,on:()=>{closeModal();amountModal('Inzet',Math.min(S.money,100000*(S.cpi||1)),v=>doAct('Weddenschap',()=>{cash(-v);addUp('gokken',2);const r=R();const res=r<m.pa?0:r<m.pa+.24?1:2;const ga=res===0?ri(1,4):res===1?ri(0,2):ri(0,2),gb=res===2?ga+ri(1,3):res===1?ga:Math.max(0,ga-ri(1,ga));const sc=res===1?`${ga}-${ga}`:res===0?`${ga}-${Math.min(gb,ga-1)}`:`${Math.min(ga,gb-1)}-${gb}`;if(res===k){const w=Math.round(v*o);cash(w);hap(5);return `Uitslag ${sc}. Je wint ${fmt(w)}!`}return `Uitslag ${sc}. Je weddenschap is verloren.`},true,'⚽'))}})))})}})))})}
 function sheetCasino(el){const s=sec(el,'Casino');row(s,{ic:'🃏',t:'Blackjack',s:'Kom zo dicht mogelijk bij 21',dots:true,on:mgBlackjack});row(s,{ic:'🎰',t:'Gokkast',s:'Drie op een rij',dots:true,on:()=>{addUp('gokken',1);mgSlots()}});
   row(s,{ic:'🎡',t:'Roulette',s:'Rood, zwart of één getal',dots:true,on:roulette});row(s,{ic:'♠️',t:'Poker',s:'Vijf kaarten tegen de bank',dots:true,on:poker});row(s,{ic:'🎲',t:'Dobbelen',s:'Hoog of laag',dots:true,on:dice});
@@ -4641,15 +4736,12 @@ const ACTS=[
  ['org','🕶️','Onderwereld',()=>S.crim.org?(S.crim.org.type==='bende'?S.crim.org.name:`${S.crim.org.name} · ${MRANK[S.crim.org.rank]}`):'Een eigen bende of de maffia',16,OS('Onderwereld',el=>sheetOrg(el)),4],
  ['heist','🗺️','Overval plannen','Doelwit, crew en uitrusting',18,OS('Overval plannen',el=>sheetHeist(el,(S.crim.plan||{}).t||'juwelier')),4],
  ['wit','🧼','Witwassen',()=>S.crim.dirty>0?`${fmt(S.crim.dirty)} zwart geld`:'Je hebt geen zwart geld',16,OS('Witwassen',el=>sheetLaunder(el)),4],
- ['shop','🛍️','Winkelen','Huizen, auto\'s, jachten, horloges en meer',12,OS('Bezit',el=>sheetAssets(el)),5],
- ['fin','💸','Financiën','Beleggen, lenen, startups',18,OS('Financiën',el=>sheetFinance(el)),5],
  ['roem','⭐','Roem',()=>S.fame>0?`${Math.round(S.fame)}% roem · ${Math.round(S.foll).toLocaleString('nl-NL')} volgers`:'Word eerst bekend',0,OS('Roem',el=>sheetFame(el)),5,()=>[S.fame>0,'Word eerst bekend']],
  ['social','👥','Social media','Beheer je online identiteit',13,OS('Social media',el=>sheetSocial(el)),5],
  ['recht','⚖️','Rechtszaak','Klaag iemand aan',18,()=>lawsuit(),5],
  ['emig','🌍','Emigreren','Verhuis naar een ander land',18,OS('Emigreren',el=>sheetEmigrate(el)),6],
  ['id','👤','Identiteit','Bepaal wie je bent',18,OS('Identiteit',el=>sheetIdentity(el)),6],
- ['rijb','🚗','Rijbewijzen','Auto, motor en boot · minigame',16,OS('Rijbewijzen',el=>sheetLic(el)),6],
- ['tijd','🌪️','Tijdmachine','Reis terug in de tijd',0,OS('Tijdmachine',el=>sheetRewind(el)),6]];
+ ['rijb','🚗','Rijbewijzen','Auto, motor en boot · minigame',16,OS('Rijbewijzen',el=>sheetLic(el)),6]];
 const FAVDEF=['mind','sport','vecht','liefde','nacht'];
 const favs=()=>{const f=S.settings.favs;return Array.isArray(f)?f.filter(k=>ACTS.some(x=>x[0]===k)):FAVDEF};
 const BANDX=['nacht','fest','conc','reis','emig','quiz','casino'];
@@ -4657,13 +4749,13 @@ const GAMBLE=['casino','bet','paard','gevbet','lot','kras'];
 function actRow(s,x){const [k,ic,t,sub,min,on,g,ex]=x;const a=ageY();const e=typeof bandOn==='function'&&bandOn()&&BANDX.includes(k)?[false,'Niet met een enkelband']:GAMBLE.includes(k)&&a>=min&&S.money<=0?[false,S.money<0?'Je staat rood':'Je hebt geen geld']:ex?ex():[true];const ok=a>=min&&e[0];const st=typeof sub==='function'?safe(()=>sub())||'':sub;
   row(s,{ic,t,s:a<min?`Vanaf ${min} jaar`:!e[0]?e[1]:st,dis:!ok,on})}
 function sheetAct(el){if(inJail())return jailActs(el);
-  const f=sec(el,'⭐ Favorieten');for(const k of favs()){const x=ACTS.find(y=>y[0]===k);if(x)actRow(f,x)}
-  row(f,{ic:'✏️',t:'Favorieten aanpassen',s:'Kies je eigen 5',on:()=>openSheet('Favorieten',sheetFavs,true)});
+  // favorieten alleen tonen als je ze zelf hebt gekozen (verbeterplan 5.2); kiezen kan via Menu → Favoriete activiteiten
+  if(Array.isArray(S.settings.favs)&&favs().length){const f=sec(el,'⭐ Favorieten');for(const k of favs()){const x=ACTS.find(y=>y[0]===k);if(x)actRow(f,x)}}
   if(typeof postRows==='function')postRows(el);
-  ACTG.forEach((g,i)=>{const s=sec(el,g);for(const x of ACTS.filter(x=>x[6]===i))actRow(s,x)});
-  foot(el,'🏳️','Opgeven...',()=>ask('Opgeven?','Je leven eindigt hier. Je kunt daarna nog terugspoelen of verder als je kind.','Opgeven',()=>{closeSheet();die('opgegeven');afterQ()},'bad','🏳️'))}
+  ACTG.forEach((g,i)=>{const xs=ACTS.filter(x=>x[6]===i);if(!xs.length)return;const s=sec(el,g);for(const x of xs)actRow(s,x)});
+}
 function sheetFavs(el){const cur=favs();card(el,`<span class="muted">Kies maximaal 5 activiteiten die bovenaan staan. Tik nog een keer om er een weg te halen.</span>`);
-  ACTG.forEach((g,i)=>{const s=sec(el,g);for(const [k,ic,t] of ACTS.filter(x=>x[6]===i)){const on=cur.includes(k);row(s,{ic,t,r:on?'⭐':'☆',s:on?`Favoriet ${cur.indexOf(k)+1} van 5`:'',on:()=>{let f=favs().slice();if(f.includes(k))f=f.filter(x=>x!==k);else{if(f.length>=5){toast('Je hebt al 5 favorieten. Haal er eerst een weg.');return}f.push(k)}S.settings.favs=f;saveLife();refreshSheet()}})}})}
+  ACTG.forEach((g,i)=>{if(!ACTS.some(x=>x[6]===i))return;const s=sec(el,g);for(const [k,ic,t] of ACTS.filter(x=>x[6]===i)){const on=cur.includes(k);row(s,{ic,t,r:on?'⭐':'☆',s:on?`Favoriet ${cur.indexOf(k)+1} van 5`:'',on:()=>{let f=favs().slice();if(f.includes(k))f=f.filter(x=>x!==k);else{if(f.length>=5){toast('Je hebt al 5 favorieten. Haal er eerst een weg.');return}f.push(k)}S.settings.favs=f;saveLife();refreshSheet()}})}})}
 /* ================= GEBEURTENISSEN: echte mensen, passend bij je leven en leeftijd ================= */
 const anyP=roles=>{const l=living(roles).filter(p=>p.born<=S.m);return l.length?pick(l):null};
 function circFindId(id){for(const x of (S.pol&&S.pol.ppl)||[])if(x.id===id)return x;for(const x of (S.mil&&S.mil.ppl)||[])if(x.id===id)return x;if(S.nb&&S.nb.ppl)for(const x of S.nb.ppl)if(x.id===id)return x;if(S.sm&&S.sm.peers)for(const x of S.sm.peers)if(x.id===id)return x;for(const b of S.biz||[])for(const x of b.emp||[])if(x.id===id)return x;for(const k in (S.circ||{})){const c=S.circ[k];if(!c||!c.ppl)continue;for(const x of c.ppl)if(x.id===id)return x}return null}
@@ -4741,7 +4833,7 @@ E('k_sint',{a:[6,9],once:1,c:()=>S.p.country==='NL'||S.p.country==='BE',t:'Sinte
  ['🙉 Gewoon niet geloven',()=>{hap(2);return 'Je zet gewoon je schoen. Je krijgt chocoladeletters. Zie je wel.'}]]});
 E('k_zakgeld',{a:[8,12],c:()=>living(['moeder','vader']).length,t:'Meer zakgeld?',ctx:()=>ctxP(anyP(['moeder','vader'])),x:c=>'Al je vrienden krijgen meer zakgeld dan jij.',ch:[
  ['📝 Een overtuigend plan presenteren',c=>{if(chance(.4+S.st.smarts/250)){rel_(findAny(c.id),3);cash(50);return `${Pe(c).first} is onder de indruk. Je krijgt meer zakgeld.`}return `${Pe(c).first} lacht en zegt nee.`}],
- ['🧹 Klusjes aanbieden',c=>{rel_(findAny(c.id),5);cash(30);return 'Voor elk klusje krijg je een euro. Je stofzuigt het hele huis.'}],
+ ['🧹 Klusjes aanbieden',c=>{rel_(findAny(c.id),5);cash(30);return `Voor elk klusje krijg je ${fmt(1)}. Je stofzuigt het hele huis.`}],
  ['😭 Zeuren',c=>{rel_(findAny(c.id),-3);return 'Zeuren werkt niet. Nooit.'}]]});
 // ---- tieners ----
 E('t_bijbaan',{a:[13,16],c:()=>!S.job,t:'Een klusje in de buurt',ctx:()=>({w:pick(['De buurvrouw zoekt een oppas voor vrijdagavond.','Iemand zoekt een krantenbezorger voor de zaterdag.','De buurman wil dat je zijn auto wast.'])}),x:c=>c.w,ch:[
@@ -4762,7 +4854,7 @@ E('t_eerstekus',{a:[13,17],once:1,c:()=>!!partner(),t:'De eerste kus',ctx:()=>ct
 E('s_tentamen',{a:[17,30],c:()=>!!S.edu.cur&&!['basis','middel'].includes(S.edu.stage),t:'Tentamenweek',ctx:()=>ctxP(circP('school',false)),x:c=>`Morgen is je zwaarste tentamen. ${Pe(c).first} vraagt of je meegaat naar een feest.`,ch:[
  ['📚 Blokken in de bieb 🎮',()=>evMg('Blokken','📚','Studie',f=>mgCode({title:'Blokken',desc:'Onthoud de formules voor morgen.',em:'📚',len:5},(h,n)=>f(h/n)),sc=>{const c=S.edu.cur;if(c)c.perf=clamp(c.perf+Math.round(sc*12));sma(Math.round(sc*2));return sc>=.8?'Je kent alles uit je hoofd. Een 8!':sc>=.4?'Je haalt een voldoende.':'Je zat te gapen. Herkansing in juli.'})],
  ['🍻 Toch naar het feest',c=>{hap(5);rel_(findAny(c.id),6);const s=S.edu.cur;if(s)s.perf=clamp(s.perf-8);return 'Een geweldig feest. Het tentamen ging een stuk minder.'}]]});
-E('s_kamer',{a:[18,24],c:()=>!!S.edu.cur&&S.home.k==='ouders',t:'Op kamers?',x:'Er komt een studentenkamer vrij in de stad: €450 per maand, gedeelde badkamer met zeven huisgenoten.',ch:[
+E('s_kamer',{a:[18,24],c:()=>!!S.edu.cur&&S.home.k==='ouders',t:'Op kamers?',x:()=>`Er komt een studentenkamer vrij in de stad: ${fmt(450*(S.cpi||1))} per maand, gedeelde badkamer met zeven huisgenoten.`,ch:[
  ['🏠 Ja, op kamers!',()=>{setRent('Studentenkamer',Math.round(5400*(S.cpi||1)));hap(6);if(chance(.5))addFriend();return 'Je eigen plek. Met een koelkast vol etiketjes.'}],
  ['🛋️ Thuis blijven wonen',()=>{relAdj('moeder',2);return 'Je spaart een hoop geld. En je moeder kookt.'}]]});
 // ---- werk, per soort baan ----
@@ -4888,6 +4980,142 @@ E('m_overval',{a:[16,70],w:.35,t:'Overval in de winkel',x:'Terwijl je boodschapp
  ['📱 Stiekem 112 bellen',()=>{if(chance(.5)){kar(4);return 'Dankzij jou staat de politie al buiten als hij naar buiten komt.'}return 'De overvaller is al weg voordat de politie er is.'}]]});
 // vervang de algemene "Ingebroken" door de nieuwe met keuze
 if(EV.inbraakthuis)EV.inbraakthuis.c=()=>false;
+/* ================= NIEUWE GEBEURTENISSEN (verbeterplan 4.6) =================
+   Voor 30 tot 60 jaar en 60-plus, waar het aanbod het dunst was. Elke gebeurtenis komt hooguit 3 keer per leven
+   (zie rollEvent). Bedragen schalen mee met het prijspeil. */
+const K3=n=>Math.round(n*(S.cpi||1)/10)*10;
+// ---------- 30 tot 60 ----------
+E('m3_marathon',{a:[30,55],t:'Een marathon?',x:'Een collega daagt je uit om over een half jaar een marathon te lopen.',ch:[
+ ['🏃 Uitdaging aangenomen',()=>{if(S.st.health>=60&&chance(.7)){hea(4);hap(8);MS('Liep een marathon',1);return 'Na 42 kilometer en vier uur lijden kom je over de finish. Je huilt een beetje.'}hea(-2);hap(-2);return 'Bij kilometer 28 gaat je knie op slot. Je neemt de bezemwagen.'}],
+ ['🛋️ Ik kijk wel vanaf de bank',()=>'Je juicht vanaf de bank. Ook een sport.']]});
+E('m3_cursus',{a:[30,60],t:'Avondcursus',ctx:()=>({k:K3(350)}),x:c=>`Het buurthuis biedt een avondcursus aan. Tien lessen voor ${fmt(c.k)}.`,ch:[
+ ['🍳 Italiaans koken',c=>{cash(-c.k);hap(5);return 'Je maakt nu verse pasta. Iedereen wil bij je eten.'},c=>S.money>=c.k],
+ ['🗣️ Spaans',c=>{cash(-c.k);sma(2);hap(3);return '¡Ya puedes pedir una cerveza! Meer dan dat nog niet.'},c=>S.money>=c.k],
+ ['🏺 Pottenbakken',c=>{cash(-c.k);hap(6);return 'Je eerste vaas is scheef. Je tweede ook. Je bent er trots op.'},c=>S.money>=c.k],
+ ['🙅 Geen tijd',()=>'Misschien volgend jaar.']]});
+E('m3_midlife',{a:[40,52],t:'Midlifecrisis?',x:'Je kijkt in de spiegel en denkt: was dit het nou?',ch:[
+ ['🏍️ Een motor kopen',()=>{const k=K3(9000);if(S.money<k){hap(-2);return 'Je bekijkt motoren online, maar je bankrekening is het niet met je eens.'}cash(-k);hap(10);return `Voor ${fmt(k)} rijd je nu op een glimmende motor. Je partner rolt met de ogen.`}],
+ ['🎸 Een band oprichten',()=>{hap(7);return 'Je speelt elke donderdag met drie andere veertigers in een garage. Jullie zijn verschrikkelijk en het is geweldig.'}],
+ ['🧘 Het gewoon voelen',()=>{hap(3);sma(1);return 'Je praat erover met een vriend. Het lucht op. Het leven is best goed.'}]]});
+E('m3_ouderavond',{a:[30,55],c:()=>living('kind').some(k=>pAge(k)>=5&&pAge(k)<=16),t:'Ouderavond',ctx:()=>ctxP(pick(living('kind').filter(k=>pAge(k)>=5&&pAge(k)<=16))),x:c=>`De leraar van ${Pe(c).first} wil je spreken.`,ch:[
+ ['🙂 Gezellig gaan',c=>{const k=Pe(c);if(chance(.6)){k.rel=clamp(k.rel+3);return `Goed nieuws: ${k.first} doet het prima en is erg behulpzaam in de klas.`}k.rel=clamp(k.rel-2);return `${k.first} praat volgens de leraar 'iets te veel'. Thuis volgt een gesprek.`}],
+ ['🙈 Smoesje verzinnen',c=>{const k=Pe(c);k.rel=clamp(k.rel-3);return 'Je komt niet. De leraar stuurt een lange e-mail.'}]]});
+E('m3_reorganisatie',{a:[30,62],c:()=>!!S.job&&!S.job.part&&S.job.id!=='prosport',t:'Reorganisatie',x:'Er hangt een reorganisatie in de lucht. Op de gang wordt gefluisterd.',ch:[
+ ['💪 Extra hard werken',()=>{(S.job&&(S.job.perf=clamp(S.job.perf+8)));hap(-3);return 'Je bent de eerste die komt en de laatste die gaat. Je baan lijkt veilig.'}],
+ ['🤝 Netwerken met de nieuwe baas',()=>{if(chance(.55)){(S.job&&(S.job.perf=clamp(S.job.perf+5)));return 'De nieuwe baas vindt je sympathiek. Je hoort bij het nieuwe team.'}return 'Je grap over de vorige baas valt verkeerd. Pijnlijke stilte.'}],
+ ['😌 Afwachten',()=>'Uiteindelijk verandert er vooral van naam wie wat doet.']]});
+E('m3_klusjes',{a:[30,70],c:()=>S.home.k==='eigen',t:'Klussen',ctx:()=>({k:K3(1800)}),x:'De badkamer is aan vervanging toe.',ch:[
+ ['🔨 Zelf doen',()=>{if(chance(.5)){hap(6);return 'Na drie weekenden is hij klaar. Bijna recht.'}const k=K3(2500);cash(-k);hap(-4);return `Je boort door een waterleiding. De loodgieter kost ${fmt(k)}.`}],
+ ['👷 Een vakman inhuren',c=>{cash(-c.k*3);hap(3);return `Een mooie nieuwe badkamer voor ${fmt(c.k*3)}.`},c=>S.money>=c.k*3],
+ ['🛁 Laten zoals het is',()=>'De tegels uit de jaren tachtig blijven. Retro is weer in.']]});
+E('m3_schoonouders',{a:[30,65],c:()=>{const p=partner();return !!p},t:'Schoonfamilie',x:()=>`Je schoonouders komen een week logeren.`,ch:[
+ ['🤗 Gezellig',()=>{const p=partner();if(p)p.rel=clamp(p.rel+4);hap(-1);return 'Je houdt het een week gezellig. Je partner is je dankbaar.'}],
+ ['🏨 Zeggen dat er een hotel om de hoek is',()=>{const p=partner();if(p)p.rel=clamp(p.rel-6);return 'Dat valt niet goed. Het wordt een koude week.'}]]});
+E('m3_loterijcollega',{a:[25,65],c:()=>!!S.job,t:'De loterij op kantoor',ctx:()=>({k:K3(20)}),x:c=>`Je collega's doen samen mee met de loterij. Inleg: ${fmt(c.k)}.`,ch:[
+ ['🎟️ Meedoen',c=>{cash(-c.k);if(chance(.02)){const w=K3(ri(20,200)*1000);cash(w);hap(15);MS('Won met collega\'s de loterij',2);return `Jullie winnen! Jouw deel: ${fmt(w)}.`}return 'Geen prijs. Wel gezellig.'},c=>S.money>=c.k],
+ ['🙅 Niet meedoen',()=>{if(chance(.05)){hap(-10);return 'Jullie... nee, zíj winnen. Jij niet. Je zegt een week lang niets.'}return 'Ze winnen niets. Jij hebt gelijk gekregen.'}]]});
+E('m3_huisdierweg',{a:[20,80],c:()=>living('huisdier').length>0,t:'Weggelopen',ctx:()=>ctxP(pick(living('huisdier'))),x:c=>`${Pe(c).first} is al een dag niet thuisgekomen.`,ch:[
+ ['📄 Posters ophangen',c=>{const p=Pe(c);if(chance(.8)){hap(4);return `Een buurvrouw belt: ${p.first} zit bij haar in de schuur. Wat een opluchting.`}hap(-8);return `${p.first} komt niet meer terug. Je hoopt dat het ergens goed terecht is gekomen.`}],
+ ['⏳ Afwachten',c=>{const p=Pe(c);if(chance(.6))return `Na drie dagen staat ${p.first} gewoon weer voor de deur, alsof er niets gebeurd is.`;hap(-8);return `${p.first} komt niet meer terug.`}]]});
+E('m3_verjaardag',{a:[30,70],t:'Je verjaardag',x:()=>`Je wordt ${ageY()}. Hoe vier je het?`,ch:[
+ ['🎉 Groot feest',()=>{const k=K3(600);if(S.money<k)return 'Je wilt een groot feest, maar je houdt het bij taart.';cash(-k);hap(6);return 'Je hele familie en al je vrienden zijn er. Het wordt laat.'}],
+ ['🍽️ Uit eten met je liefste mensen',()=>{hap(4);return 'Een klein, fijn etentje. Precies goed.'}],
+ ['🙈 Doen alsof het niet zo is',()=>{hap(-1);return 'Je collega\'s komen er toch achter. Er hangen ballonnen aan je bureau.'}]]});
+E('m3_rug',{a:[35,70],t:'Je rug',x:'Je bukt om een sok op te rapen en voelt een scheut in je onderrug.',ch:[
+ ['🧑‍⚕️ Naar de fysiotherapeut',()=>{payMed(250);hea(2);return 'Zes behandelingen en een velletje oefeningen later gaat het een stuk beter.'}],
+ ['💊 Pijnstillers en doorgaan',()=>{hea(-2);return 'Het trekt na een paar weken weg. Je bukt nu voorzichtiger.'}]]});
+E('m3_ruzieburen',{a:[30,80],c:()=>S.home.k!=='ouders',t:'De schutting',x:'Je buurman wil een nieuwe schutting en vindt dat jij de helft moet betalen.',ch:[
+ ['🤝 Samen betalen',()=>{const k=K3(700);cash(-k);hap(1);return `Het kost je ${fmt(k)}, maar de vrede blijft bewaard.`},()=>S.money>=K3(700)],
+ ['📏 Het is niet eens jouw grond',()=>{if(chance(.5)){hap(2);return 'Je pakt de kadasterkaart erbij. De buurman betaalt zelf.'}hap(-4);return 'Hij praat al een jaar niet meer tegen je.'}],
+ ['🌳 Een heg voorstellen',()=>{hap(3);return 'Een heg! Goedkoper, groener, en er komen merels in.'}]]});
+E('m3_volksfeest',{a:[30,85],t:'Straatfeest',x:'De straat organiseert een straatfeest. Iedereen neemt iets mee.',ch:[
+ ['🥗 Een salade maken',()=>{hap(4);return 'Je salade is in tien minuten op. Je krijgt drie keer de vraag om het recept.'}],
+ ['🎵 De muziek regelen',()=>{hap(5);return 'Je draait de hele middag hits van vroeger. De straat danst.'}],
+ ['🚪 Thuisblijven',()=>'Je hoort het feest door het raam. Gezellig klinkt het wel.']]});
+E('m3_oudmaatje',{a:[35,75],t:'Een oude bekende',x:'In de supermarkt staat ineens iemand die je al twintig jaar niet hebt gezien.',ch:[
+ ['☕ Koffie drinken',()=>{hap(5);return 'Jullie praten drie uur. Je spreekt af om het vaker te doen.'}],
+ ['👋 Kort groeten',()=>'Een snelle "hoe is het", en jullie lopen weer verder.'],
+ ['🫣 Snel een ander pad in',()=>{hap(-1);return 'Je duikt weg achter de pindakaas. Gered.'}]]});
+E('m3_dierenasiel',{a:[25,75],c:()=>S.home.k!=='ouders'&&!living('huisdier').length,t:'Het asiel',x:'Je loopt langs het dierenasiel. Een hond kijkt je door het hek aan.',ch:[
+ ['🐕 Meenemen',()=>{if(typeof addPet==='function'){addPet('hond','Bram');hap(8);return 'Hij heet nu Bram. Hij slaapt op je voeten.'}hap(4);return 'Je gaat elke week wandelen met de asielhonden.'}],
+ ['🚶 Doorlopen',()=>'Je denkt er de hele dag nog aan.']]});
+E('m3_reis',{a:[30,75],c:()=>S.money>K3(3000),t:'Een verre reis',ctx:()=>({k:K3(ri(25,60)*100),w:pick(['Japan','Peru','Zuid-Afrika','IJsland','Vietnam','Canada'])}),x:c=>`Een vriend stelt voor om samen naar ${c.w} te gaan. Kosten: ${fmt(c.k)}.`,ch:[
+ ['✈️ Ja!',c=>{cash(-c.k);hap(10);MS(`Reisde naar ${c.w}`,0);return `${c.w} is overweldigend. Je komt terug met duizend foto's en een nieuwe kijk op dingen.`},c=>S.money>=c.k],
+ ['🏡 Te duur, te ver',()=>'Je kijkt een documentaire over het land. Bijna hetzelfde.']]});
+E('m3_snurken',{a:[35,80],c:()=>!!partner(),t:'Gesnurk',x:'Je partner klaagt dat je snurkt als een kettingzaag.',ch:[
+ ['😴 Naar de huisarts',()=>{payMed(60);hea(1);return 'Een neusspray en een ander kussen. Het helpt.'}],
+ ['🛏️ Aparte slaapkamers',()=>{const p=partner();if(p)p.rel=clamp(p.rel-3);return 'Jullie slapen beter. Het voelt wel een beetje als opgeven.'}],
+ ['🙄 Ontkennen',()=>{const p=partner();if(p)p.rel=clamp(p.rel-2);return 'Je partner neemt je op met de telefoon. Er valt niets meer te ontkennen.'}]]});
+E('m3_bril',{a:[40,60],cd:30,t:'Kleine lettertjes',x:'Je houdt je telefoon steeds verder van je af om iets te kunnen lezen.',ch:[
+ ['👓 Een leesbril halen',()=>{cash(-K3(80));return 'Je kunt weer lezen. Je ziet er ineens erg wijs uit.'}],
+ ['📱 De letters groter zetten',()=>'Je telefoon toont nu vier woorden per scherm. Werkt prima.']]});
+E('m3_vrijwilligerbrand',{a:[25,60],t:'Brandweer zoekt mensen',x:'De vrijwillige brandweer in je dorp zoekt nieuwe mensen.',ch:[
+ ['🚒 Aanmelden',()=>{if(S.st.health<50)return 'Je haalt de keuring niet. Jammer.';kar(4);hap(6);hea(2);MS('Werd vrijwillig brandweerman',1);return 'Na de opleiding rijd je mee. Je eerste uitruk: een kat in een boom. Het blijft een klassieker.'}],
+ ['🙅 Niet voor mij',()=>'Je doneert wel aan hun jaarlijkse actie.']]});
+E('m3_erfstukzolder',{a:[30,75],t:'Op zolder',x:'Bij het opruimen van de zolder vind je een oude doos met spullen van vroeger.',ch:[
+ ['📸 Foto\'s bekijken',()=>{hap(5);return 'Je vindt foto\'s van je jeugd. Je stuurt er een paar naar je familie. De groepsapp ontploft.'}],
+ ['💰 Op een veiling zetten',()=>{const k=K3(ri(2,40)*10);cash(k);return `Een oud speelgoedautootje blijkt ${fmt(k)} waard. Niet slecht.`}],
+ ['🗑️ Alles weggooien',()=>{hap(-2);return 'Opgeruimd. Een dag later heb je er spijt van.'}]]});
+E('m3_kookwedstrijd',{a:[25,70],t:'Kookwedstrijd',x:'De buurt houdt een kookwedstrijd. Thema: oma\'s recept.',ch:[
+ ['👩‍🍳 Meedoen',()=>{if(chance(.3+S.st.smarts/400)){hap(8);return 'Je stoofpot wint! Je krijgt een gouden pollepel.'}hap(1);return 'Je eindigt als vierde. De jury vond het "iets te zout".'}],
+ ['🍴 Alleen komen proeven',()=>{hap(3);return 'Je eet van elk gerecht. Je bent de grote winnaar van de avond.'}]]});
+E('m3_wifi',{a:[30,80],c:()=>S.home.k!=='ouders',t:'Geen internet',x:'Je internet ligt al twee dagen plat.',ch:[
+ ['📞 De helpdesk bellen',()=>{hap(-3);return 'Na 47 minuten in de wacht vraagt iemand of je het modem al uit en aan hebt gezet. Dat werkt.'}],
+ ['📚 Een boek lezen',()=>{hap(3);sma(1);return 'Je leest een heel boek uit. Het internet komt vanzelf terug. Je mist het eerlijk gezegd niet.'}]]});
+E('m3_jubileum',{a:[30,65],c:()=>!!S.job&&S.job.lyrs>=10,t:'Jubileum',x:()=>`Je werkt alweer ${S.job.lyrs} jaar bij dit bedrijf. Er staat taart.`,ch:[
+ ['🎂 Een speech houden',()=>{hap(5);(S.job&&(S.job.perf=clamp(S.job.perf+3)));return 'Je bedankt iedereen. Iemand pinkt een traantje weg.'}],
+ ['🍰 Gewoon taart eten',()=>{hap(3);return 'Lekkere taart. En een bos bloemen. Fijn.'}]]});
+E('m3_opa_oma_oppas',{a:[50,80],c:()=>living('kleinkind').length>0,t:'Oppassen',ctx:()=>ctxP(pick(living('kleinkind'))),x:c=>`Of je dit weekend op ${Pe(c).first} wilt passen.`,ch:[
+ ['🧸 Natuurlijk!',c=>{const k=Pe(c);k.rel=clamp(k.rel+6);hap(6);return `Jullie bakken pannenkoeken en kijken drie keer dezelfde film. ${k.first} wil nooit meer naar huis.`}],
+ ['😴 Even niet',c=>{const k=Pe(c);k.rel=clamp(k.rel-2);return 'Je hebt dit weekend rust nodig. Volgende keer.'}]]});
+// ---------- 60-plus ----------
+E('o_pensioenfeest',{a:[60,70],c:()=>!S.job&&ageY()>=62,cd:30,t:'Eindelijk vrij',x:'Je hoeft niet meer elke ochtend de wekker te zetten. Wat ga je doen met al die tijd?',ch:[
+ ['🌍 Reizen',()=>{hap(8);return 'Je koopt een wereldkaart en prikt er spelden in. De eerste reis is al geboekt.'}],
+ ['🌱 Een volkstuin',()=>{hap(6);hea(2);return 'Je kweekt tomaten, courgettes en vriendschappen met de andere tuinders.'}],
+ ['🤝 Vrijwilligerswerk',()=>{hap(5);kar(3);return 'Je leest drie ochtenden per week voor op de basisschool.'}]]});
+E('o_kleinkindbel',{a:[60,95],c:()=>living('kleinkind').some(k=>pAge(k)>=12),t:'Een telefoontje',ctx:()=>ctxP(pick(living('kleinkind').filter(k=>pAge(k)>=12))),x:c=>`${Pe(c).first} belt. Gewoon, om te vragen hoe het met je gaat.`,ch:[
+ ['📞 Lekker kletsen',c=>{const k=Pe(c);k.rel=clamp(k.rel+5);hap(6);return 'Jullie praten een uur. Je loopt de rest van de dag te glimlachen.'}],
+ ['📖 Een verhaal van vroeger vertellen',c=>{const k=Pe(c);k.rel=clamp(k.rel+4);hap(4);return `${k.first} vindt het prachtig en vraagt of je het wilt opschrijven.`}]]});
+E('o_computerles',{a:[62,90],t:'De tablet',x:'Je hebt een tablet gekregen, maar je snapt er niets van.',ch:[
+ ['🧑‍🏫 Les nemen in de bibliotheek',()=>{sma(2);hap(4);return 'Na vier lessen videobel je met je familie. Je bent de held van de cursus.'}],
+ ['👦 Een kleinkind vragen',()=>{hap(3);return 'Je kleinkind legt het in vijf minuten uit, met veel zuchten. Het werkt.'}],
+ ['📦 In de kast leggen',()=>'Hij ligt er nog. In de doos.']]});
+E('o_reunieklas',{a:[60,85],cd:20,t:'Klassenreünie',x:'Er is een reünie van je oude klas. Vijftig jaar na dato.',ch:[
+ ['🎉 Gaan',()=>{hap(7);return 'Je herkent de helft niet meer. De andere helft is precies hetzelfde gebleven. Wat een avond.'}],
+ ['🏠 Thuisblijven',()=>'Je kijkt later de foto\'s. Iedereen is zo oud geworden. Jij natuurlijk niet.']]});
+E('o_valpartij',{a:[65,100],t:'Uitgegleden',x:'Je glijdt uit in de badkamer.',ch:[
+ ['🚑 Laten nakijken',()=>{payMed(400);if(chance(.3)){hea(-6);return 'Je pols is gebroken. Zes weken gips. Je laat een handgreep in de badkamer zetten.'}hea(-1);return 'Een flinke blauwe plek, verder niets. Gelukkig.'}],
+ ['😤 Het gaat wel',()=>{if(chance(.4)){hea(-8);return 'Het gaat niet. Na drie dagen blijkt je heup gekneusd.'}hea(-2);return 'Het trekt bij. Je loopt wel voorzichtiger.'}]]});
+E('o_bingo',{a:[60,100],t:'Bingoavond',x:'In het buurthuis is elke dinsdag bingo.',ch:[
+ ['🎱 Meespelen',()=>{hap(4);if(chance(.15)){const k=K3(50);cash(k);return `BINGO! Je wint een fruitmand en ${fmt(k)}.`}return 'Je mist steeds één nummer. Volgende week beter.'}],
+ ['🙅 Niets voor mij',()=>'Je kijkt liever een quiz op tv.']]});
+E('o_rijbewijs',{a:[75,100],c:()=>S.cars.length>0,cd:40,t:'Het rijbewijs',x:'Je moet een medische keuring doen om je rijbewijs te verlengen.',ch:[
+ ['🩺 Keuring doen',()=>{if(S.st.health>=45)return 'Goedgekeurd. Je mag nog vijf jaar.';hap(-6);return 'Afgekeurd. Je auto blijft voortaan staan. Je neemt de bus.'}],
+ ['🔑 Zelf stoppen met rijden',()=>{hap(-2);kar(1);return 'Je geeft de sleutels aan je familie. Een moeilijk moment, maar wel verstandig.'}]]});
+E('o_moestuin',{a:[60,90],c:()=>S.home.k!=='ouders',t:'Groene vingers',x:'Je tomatenplanten doen het dit jaar fantastisch.',ch:[
+ ['🍅 Uitdelen aan de buren',()=>{hap(5);kar(1);return 'De hele straat eet jouw tomaten. Je bent een buurtberoemdheid.'}],
+ ['🏆 Meedoen aan de oogstwedstrijd',()=>{if(chance(.35)){hap(8);return 'Je tomaat wint de prijs voor de mooiste van de streek.'}hap(1);return 'Een eervolle vermelding. De tomaat van de winnaar was "duidelijk gekocht", vind je.'}]]});
+E('o_memoires',{a:[65,95],cd:30,t:'Je memoires',x:'Je kleinkinderen vragen of je je levensverhaal wilt opschrijven.',ch:[
+ ['✍️ Beginnen',()=>{hap(6);sma(1);MS('Schreef memoires',1);return 'Het wordt een dik schrift vol verhalen. Sommige zijn zelfs waar.'}],
+ ['🎙️ Inspreken',()=>{hap(4);return 'Je vertelt een avond lang. Je kleinkind neemt alles op.'}],
+ ['🤐 Sommige dingen kun je beter vergeten',()=>'Je glimlacht geheimzinnig.']]});
+E('o_dansles',{a:[60,90],t:'Dansles',x:'In het buurthuis begint een cursus stijldansen voor 60-plussers.',ch:[
+ ['💃 Aanmelden',()=>{hap(7);hea(2);return 'De wals gaat je goed af. De tango iets minder. Je hebt de tijd van je leven.'}],
+ ['🪑 Liever toekijken',()=>'Je kijkt vanaf de zijkant en tikt mee met je voet.']]});
+E('o_oplichter',{a:[65,100],t:'Een vreemd telefoontje',x:'Iemand belt die zegt dat hij je kleinzoon is. Hij zit in de problemen en heeft snel geld nodig.',ch:[
+ ['💸 Geld overmaken',()=>{const k=K3(ri(10,40)*100);if(S.money<k)return 'Je hebt het geld niet. Achteraf maar goed ook: het blijkt een oplichter.';cash(-k);hap(-10);return `Je maakt ${fmt(k)} over. Je echte kleinzoon blijkt gewoon thuis te zitten. Het was een oplichter.`}],
+ ['🕵️ Terugbellen op het oude nummer',()=>{hap(2);kar(1);return 'Je echte kleinzoon neemt op en weet van niets. Je meldt het bij de politie.'}]]});
+E('o_wandelclub',{a:[60,90],t:'De wandelclub',x:'Een buurvrouw vraagt of je mee wilt met haar wandelclub.',ch:[
+ ['🥾 Mee!',()=>{hea(3);hap(5);return 'Elke zaterdag tien kilometer en daarna appeltaart. Je voelt je fitter dan in jaren.'}],
+ ['🙅 Te vroeg op zaterdag',()=>'Je slaapt uit. Ook gezond.']]});
+E('o_verhuizen',{a:[70,95],c:()=>S.home.k==='eigen',cd:30,t:'Te groot huis',x:'De trap wordt steeds zwaarder en het huis voelt groot.',ch:[
+ ['🏢 Een appartement zoeken',()=>{hap(2);return 'Je bekijkt een paar gelijkvloerse appartementen. Er is er een met een balkon op het zuiden. Je denkt erover na.'}],
+ ['🏡 Blijven waar ik ben',()=>{hap(1);return 'Hier liggen al je herinneringen. Je laat een traplift plaatsen.'}]]});
+E('o_honderd',{a:[90,110],cd:5,t:'Een kaart van de burgemeester',x:()=>`Je bent ${ageY()} geworden. De burgemeester stuurt een kaart.`,ch:[
+ ['🎂 Een klein feestje',()=>{hap(6);return 'De hele familie komt langs. Vier generaties op één foto.'}],
+ ['🛋️ Rustig aan',()=>{hap(3);return 'Een kopje thee en een gebakje. Meer hoeft niet.'}]]});
+Object.assign(EVMETA,{m3_marathon:['Sport','🏃'],m3_cursus:['Vrije tijd','🎓'],m3_midlife:['Leven','🪞'],m3_ouderavond:['Familie','🏫'],m3_reorganisatie:['Werk','🏢'],m3_klusjes:['Huis','🔨'],m3_schoonouders:['Familie','🧳'],m3_loterijcollega:['Werk','🎟️'],m3_huisdierweg:['Huisdier','🐾'],m3_verjaardag:['Leven','🎂'],m3_rug:['Gezondheid','🦴'],m3_ruzieburen:['Buren','🪵'],m3_volksfeest:['Buren','🎪'],m3_oudmaatje:['Vrienden','👋'],m3_dierenasiel:['Huisdier','🐕'],m3_reis:['Vrije tijd','✈️'],m3_snurken:['Relatie','😴'],m3_bril:['Gezondheid','👓'],m3_vrijwilligerbrand:['Vrije tijd','🚒'],m3_erfstukzolder:['Huis','📦'],m3_kookwedstrijd:['Vrije tijd','🍲'],m3_wifi:['Huis','📶'],m3_jubileum:['Werk','🎂'],m3_opa_oma_oppas:['Familie','🧸'],
+ o_pensioenfeest:['Pensioen','🌅'],o_kleinkindbel:['Familie','📞'],o_computerles:['Vrije tijd','📱'],o_reunieklas:['Vrienden','🎓'],o_valpartij:['Gezondheid','🩹'],o_bingo:['Vrije tijd','🎱'],o_rijbewijs:['Pensioen','🚗'],o_moestuin:['Vrije tijd','🍅'],o_memoires:['Pensioen','✍️'],o_dansles:['Vrije tijd','💃'],o_oplichter:['Geld','☎️'],o_wandelclub:['Vrije tijd','🥾'],o_verhuizen:['Huis','🏢'],o_honderd:['Leven','💌']});
 /* ================= GEVANGENIS ================= */
 // soorten: jeugdinrichting, open inrichting, gesloten gevangenis, zwaarbeveiligd
 const PTYPE={jeugd:{n:'Jeugdinrichting',em:'🏫',d:1},open:{n:'Open inrichting',em:'🏡',d:0},gesloten:{n:'Gesloten gevangenis',em:'🏢',d:2},zwaar:{n:'Zwaarbeveiligde gevangenis',em:'🏰',d:3}};
@@ -5169,9 +5397,6 @@ function startPick(k){const T=BIZ[k];const def=pick(BIZPRE)+' '+pick(BIZSUF[k]);
   function mk(fund){const n=$('#bzn').value.trim()||def;closeModal();if(fund==='lening')S.loan+=price;else cash(-price);
     const b={id:uid(),type:k,name:n,buy:price,eq:100,demand:T.rev0*cpi_(),rev:0,staff:0,rep:50,age:0,cash:Math.round(price*.15),value:Math.round(price*.6),profit:0,mkt:0,loc:1,locs:[S.p.city||'je stad'],emp:[],sal:0};
     b.lo=[year()];b.v2=1;bizAddStaff(b,T.s0);S.biz.push(b);S.flags.ondernemer=1;L(`Je hebt ${n} opgericht, een ${T.t.toLowerCase()}.`,'good big');MS(`Richtte ${n} op`,2);hap(6);saveLife();render();sheetStack.pop();openSheet(b.name,el=>sheetBiz(el,b),true)}}
-function startBiz(type,name,fund){const T=BIZ[type];const price=Math.round(T.start*cpi_());if(fund==='lening')S.loan+=price;else cash(-price);
-  const b={id:uid(),type,name,buy:price,eq:100,demand:T.rev0*cpi_(),rev:0,staff:0,rep:50,age:0,cash:Math.round(price*.15),value:Math.round(price*.6),profit:0,mkt:0,loc:1,locs:[],emp:[],sal:0};
-  b.lo=[year()];b.v2=1;bizAddStaff(b,T.s0);S.biz.push(b);S.flags.ondernemer=1;L(`Je hebt ${name} opgericht, een ${T.t.toLowerCase()}.`,'good big');MS(`Richtte ${name} op`,2);return b}
 // te koop: elk jaar een nieuwe lijst
 function bizMarket(){if(S.bizMkt&&S.bizMkt.y===year())return S.bizMkt.l;const l=[];const ks=Object.keys(BIZ).filter(k=>!bizReq(k));
   for(let i=0;i<5;i++){const k=pick(ks),T=BIZ[k];const age=ri(2,25),rep=ri(30,88);const dem=Math.round(T.rev0*cpi_()*(.6+R()*2.4)*(.7+rep/150));const staff=Math.max(T.s0,Math.round(dem/(T.cap*cpi_()))-1+ri(0,1));
@@ -5612,7 +5837,6 @@ function reMarket(){const y=year();if(S.reMkt&&S.reMkt.y===y)return S.reMkt.l;co
     else{o.price=Math.round(ri(k==='winkel'?40:k==='kantoor'?100:60,k==='winkel'?300:k==='kantoor'?1200:400)*10000*c/1000)*1000;const y_=k==='winkel'?.065:k==='kantoor'?.07:.075;
       o.ten=chance(k==='kantoor'?.6:.8)?{n:pick(k==='winkel'?SHOPS_:k==='kantoor'?FIRMS:HALL),rent:Math.round(o.price*y_*(.9+R()*.2)),left:ri(1,9)}:null;o.name=REK[k][0]}
     l.push(o)}S.reMkt={y,l};return l}
-function reVal(o){return o.value??o.price}
 function sheetREMarket(el){card(el,kv([['Saldo',fmt(S.money)],['Rente voor beleggers',pct(rente()+.015)]])+'<span class="muted">Bij beleggingsvastgoed betaal je 10,4% overdrachtsbelasting. De bank financiert maximaal 70%.</span>');
   const s=sec(el,'Te koop');const l=reMarket().filter(x=>!x.sold);if(!l.length)empty(s,'Alles is verkocht. Volgend jaar is er nieuw aanbod.');
   for(const o of l)row(s,{ic:REK[o.kind][1],t:`${REK[o.kind][0]} · ${o.city}`,s:o.kind==='complex'?`${o.units} appartementen · ${Math.round(o.occ*100)}% verhuurd · huur ± ${fmt(o.units*o.uRent*o.occ)} per jaar`:o.kind==='grond'?`${o.name}${o.zon==='agrarisch'?' · nog geen bouwvergunning':' · je mag hier bouwen'}`:o.ten?`Verhuurd aan ${o.ten.n} · ${fmt(o.ten.rent)} per jaar · nog ${o.ten.left} jaar`:'Staat leeg',r:fmt(o.price),dots:true,on:()=>reBuy(o)})}
@@ -5721,7 +5945,7 @@ E('nb_tuin',{sys:1,t:'Je tuin',x:'Je buren hebben een briefje in je bus gedaan: 
 E('nb_vve',{a:[18,100],c:()=>{const hp=S.home.k==='eigen'&&pp(S.home.pid);return !!(hp&&VVE.includes(hp.name))},cd:4,t:'Vergadering van de VvE',x:()=>`De Vereniging van Eigenaren wil ${pick(['het dak vervangen','de lift vernieuwen','zonnepanelen op het dak','de gevel laten schilderen'])}. Jouw deel: ${fmt(Math.round(ri(3,12)*1000*(S.cpi||1)))}.`,ch:[
  ['✅ Voor stemmen en betalen',()=>{const hp=pp(S.home.pid);const k=Math.round(ri(3,12)*1000*(S.cpi||1));cash(-k);if(hp){setCond(hp,8);hp.value=Math.round(hp.value*1.01)}return `Je betaalt ${fmt(k)}. Het gebouw wordt er beter van.`}],
  ['❌ Tegen stemmen',()=>{if(chance(.5))return 'De meerderheid stemt ook tegen. Het blijft zoals het is.';const k=Math.round(ri(3,12)*1000*(S.cpi||1));cash(-k);return `Je wordt overstemd en moet toch ${fmt(k)} betalen.`}]]});
-E('nb_nieuw',{a:[8,100],cd:5,w:.6,t:'Nieuwe buren',ctx:()=>ageY()>=8&&nbPpl().length?{}:null,x:'Er stopt een verhuiswagen voor de deur. Er komen nieuwe buren wonen.',ch:[
+E('nb_nieuw',{a:[8,100],cd:5,w:.6,t:'Nieuwe buren',ctx:()=>ageY()>=8&&nbPpl().length?{}:null,x:()=>pick(['Er stopt een verhuiswagen voor de deur. Er komen nieuwe buren wonen.','Het huis naast je staat niet meer leeg: er zijn nieuwe buren.','Je ziet dozen naar binnen gaan bij de buren. Er is iemand nieuw komen wonen.']),ch:[
  ['🌷 Een plantje brengen',()=>{const ps=nbPpl();const old=ps[ps.length-1];if(old)old.role='weg';const p=mkPerson('buur',pick(['m','v']),S.m-ri(25,60)*12,{rel:ri(55,70)});p.tr=pick(NBTR.filter(x=>x!=='oud en alleen'));p.side=old?old.side:'tegenover';S.nb.ppl=S.nb.ppl.filter(x=>x.role==='buur');S.nb.ppl.push(p);return `${p.first} is blij met je welkom. Een goed begin.`}],
  ['👀 Achter het gordijn kijken',()=>{const ps=nbPpl();const old=ps[ps.length-1];if(old)old.role='weg';const p=mkPerson('buur',pick(['m','v']),S.m-ri(25,60)*12,{rel:ri(35,50)});p.tr=pick(NBTR);p.side=old?old.side:'tegenover';S.nb.ppl=S.nb.ppl.filter(x=>x.role==='buur');S.nb.ppl.push(p);return `Je ziet een ${p.tr} type. Je bent benieuwd.`}]]});
 Object.assign(EVMETA,{re_klaar:['Vastgoed','🏗️'],re_contract:['Vastgoed','📝'],re_klacht:['Vastgoed','😡'],h_rente:['Hypotheek','🏦'],h_executie:['Hypotheek','🔨'],nb_feest:['Buren','🎉'],nb_hulp:['Buren','🤝'],nb_tuin:['Buren','🌿'],nb_vve:['Wonen','🏢'],nb_nieuw:['Buren','📦']});
@@ -5748,7 +5972,7 @@ function verdict(E){const g=Object.values(E.gr||{});const f=g.filter(v=>v<5.5);c
   if(!f.length)return['over','Je gaat over!'];if(f.length===1&&!deep)return['over','Je gaat over, met één onvoldoende.'];if(f.length<=2&&avg>=6&&deep<=1)return['bespreek','Je bent een bespreekgeval.'];return['zitten','Te veel onvoldoendes.']}
 function gradesYear(E){ensureGrades();for(const s of Object.keys(E.gr)){const gym=s==='Gym',st=gym?Math.max(S.sk.sport,S.sport?S.sport.sk:0):S.st.smarts;E.gr[s]=clampG(E.gr[s]+(gym?(st-30)/50:(st-55)/50)+((S.disc??50)-50)/150+gauss()*.45-.05+(E.bijles===s?.6:0))}E.bijles=null;
   E.fails=Object.values(E.gr).filter(v=>v<5.5).length;E.perf=gradesPerf()}
-const rapportHtml=E=>`<div class="rapport">${Object.entries(E.gr).map(([s,v])=>`<div><span>${SUBEM[s]||'📘'} ${s}</span><b style="color:${v<5.5?'var(--bad)':v>=7.5?'var(--good)':'inherit'}">${nl1(v)}</b></div>`).join('')}</div>`;
+const rapportHtml=E=>`<div class="rapport">${Object.entries(E.gr).map(([s,v])=>`<div><span>${SUBEM[s]||'📘'} ${subjName(s)}</span><b style="color:${v<5.5?'var(--bad)':v>=7.5?'var(--good)':'inherit'}">${nl1(v)}</b></div>`).join('')}</div>`;
 E('sc_rapport',{sys:1,t:'Je rapport',x:c=>c.txt,f:c=>c.txt});
 
 /* ---------- het schoolscherm ---------- */
@@ -5757,7 +5981,7 @@ function sheetSchool(el){const E=S.edu,a=ageY();if(E.stage!=='basis'&&E.stage!==
   card(el,`<h3>${E.stage==='basis'?'🏫 Basisschool · groep '+Math.min(8,Math.max(1,a-3)):'🏫 Middelbare school · '+E.lvl}</h3><span class="muted">${E.stage==='middel'?`Jaar ${Math.min(E.yrs+1,E.len)} van ${E.len}${pr?` · ${pr[1]} ${pr[0]}`:sc?` · ${sc[1]} ${sc[0]}`:''} · `:''}gemiddeld ${nl1(avg)}${E.stage==='middel'&&E.yrs+1>=E.len?' · examenjaar':''}</span>${rapportHtml(E)}${V?`<div class="${V[0]==='over'?'bizok':V[0]==='bespreek'?'bizwarn soft':'bizwarn'}">${V[0]==='over'?'✅':V[0]==='bespreek'?'⚖️':'⚠️'} ${E.yrs+1>=E.len?'Als het examen zo gaat: ':'Als het rapport zo blijft: '}${V[1]}</div>`:''}`);
   circRow(el,'school');
   const s=sec(el,'Leren');row(s,{ic:'📚',t:'Harder leren',s:'Huiswerk maken in plaats van gamen',on:()=>doAct('Harder leren',()=>{const m=use('studie');for(const k in E.gr)E.gr[k]=clampG(E.gr[k]+.25*m);E.perf=gradesPerf();sma(1*m);return 'Je maakt al je huiswerk. Je cijfers gaan omhoog.'},true,'📚')});
-  for(const sub of subs)row(s,{ic:SUBEM[sub]||'📘',t:sub,s:`${nl1(E.gr[sub])} · bij ${tchOf(sub)} · ${sub==='Gym'?'sportopdracht':MATHS.includes(sub)?'sommen tegen de klok':'toets van 4 vragen'}`,dots:true,on:()=>studySubject(sub)});
+  for(const sub of subs)row(s,{ic:SUBEM[sub]||'📘',t:subjName(sub),s:`${nl1(E.gr[sub])} · bij ${tchOf(sub)} · ${sub==='Gym'?'sportopdracht':MATHS.includes(sub)?'sommen tegen de klok':'toets van 4 vragen'}`,dots:true,on:()=>studySubject(sub)});
   const low=subs.filter(x=>E.gr[x]<6&&x!=='Gym');
   if(low.length)row(s,{ic:'👩‍🏫',t:'Bijles nemen',s:S.acts.bijles?'Dit jaar al geregeld':`${fmt(Math.round(400*(S.cpi||1)))} · voor ${low.join(', ')}`,dis:!!S.acts.bijles,dots:true,on:()=>modal({title:'Bijles',em:'👩‍🏫',cat:'School',text:'Voor welk vak neem je bijles? Je ouders betalen.',choices:opts(low.map(x=>({t:`${SUBEM[x]||'📘'} ${x} (${nl1(E.gr[x])})`,on:()=>{closeModal();doAct('Bijles',()=>{S.acts.bijles=1;E.bijles=x;E.gr[x]=clampG(E.gr[x]+.5);if(a>=18)cash(-Math.round(400*(S.cpi||1)));return `Een student komt elke week langs voor ${x}. Het begint te landen.`},true,'👩‍🏫')}})))})});
   const o=sec(el,'Op school');
@@ -5769,12 +5993,12 @@ function sheetSchool(el){const E=S.edu,a=ageY();if(E.stage!=='basis'&&E.stage!==
 function mathQ(){const t=ri(0,4);let q,a;if(t===0){const x=ri(2,9),b=ri(1,20),c_=x*ri(2,9)+b;q=`Los op: ${x}x + ${b} = ${c_}`;a=(c_-b)/x}else if(t===1){const p=pick([10,15,20,25,40]),n=ri(4,40)*10;q=`Hoeveel is ${p}% van ${n}?`;a=n*p/100}else if(t===2){const x=ri(3,12);q=`Wat is ${x}²?`;a=x*x}else if(t===3){const a_=ri(3,9),b=ri(4,12);q=`Rechthoekige driehoek met rechthoekszijden ${a_*3} en ${a_*4}. Hoe lang is de schuine zijde?`;a=a_*5}else{const x=ri(2,6);q=`De helling van y = ${x}x + ${ri(1,9)} is…`;a=x}
   const w=[a+ri(1,5),Math.max(0,a-ri(1,5)),a*2===a?a+7:a*2].map(v=>Math.round(v*10)/10);return [q,[String(a),...[...new Set(w.map(String))].filter(v=>v!==String(a)).slice(0,3)]]}
 function studySubject(sub){const E=S.edu;const apply=sc=>doAct(sub,()=>{use('leren');ensureGrades();const d=(sc-.4)*2.4;E.gr[sub]=clampG(E.gr[sub]+d);if(sub==='Gym')sk('sport',Math.round(1+sc*3));else if(sc>.7)sma(1);E.perf=gradesPerf();
-    return `${sc>=.8?'Uitstekend gedaan!':sc>=.5?'Voldoende.':'Dat ging niet best.'} Je cijfer voor ${sub} is nu ${nl1(E.gr[sub])}.${sc>=.8&&chance(.3)?` ${cap(tchOf(sub))} schrijft "Goed gedaan!" op je toets.`:''}`},true,SUBEM[sub]);
+    return `${sc>=.8?'Uitstekend gedaan!':sc>=.5?'Voldoende.':'Dat ging niet best.'} Je cijfer voor ${subjName(sub)} is nu ${nl1(E.gr[sub])}.${sc>=.8&&chance(.3)?` ${cap(tchOf(sub))} schrijft "Goed gedaan!" op je toets.`:''}`},true,SUBEM[sub]);
   if(sub==='Rekenen'||sub==='Wiskunde')mgExam(apply);else if(sub==='Wiskunde A'||sub==='Wiskunde B')mgQuiz(sub,[mathQ(),mathQ(),mathQ(),mathQ()],apply);else if(sub==='Gym')mgTap('Gymles','Tik zo snel als je kunt tijdens de bleeptest.',sc=>apply(sc));else mgQuiz(sub,pickQs(sub,4),apply)}
 
 /* ---------- eindtoets en profielkeuze ---------- */
 function setAdvice(score){const E=S.edu;const sc=S.st.smarts*.4+E.perf*.3+(score-500)*1.2;E.lvl=sc>=62?'vwo':sc>=45?'havo':'vmbo';E.stage='middel';E.yrs=0;E.len={vmbo:4,havo:5,vwo:6}[E.lvl];E.gr={};E.tch={};E.eind=score;
-  L(`Je eindtoetsscore is ${score}. Je basisschooladvies is ${E.lvl}. Je gaat naar de middelbare school.`,'big');MS(`Kreeg ${E.lvl}-advies (eindtoets ${score})`,0);return `Score: ${score}. Je advies wordt ${E.lvl}!`}
+  L(`Je eindtoetsscore is ${score}. Je basisschooladvies is ${lvlN(E.lvl)}. Je gaat naar de middelbare school.`,'big');MS(`Kreeg ${lvlN(E.lvl)}-advies (eindtoets ${score})`,0);return `Score: ${score}. Je advies wordt ${lvlN(E.lvl)}!`}
 E('sc_eindtoets',{sys:1,need:()=>S.edu.stage==='basis',t:'De eindtoets',x:'Je zit in groep 8. Vandaag is de eindtoets: rekenen, taal en wereldoriëntatie. De uitslag telt mee voor je advies.',ch:[
  ['📝 Mijn best doen 🎮',()=>({go:()=>{const qs=[...pickQs('Taal',2),...pickQs('Wereldoriëntatie',2),mathQ()];mgQuiz('Eindtoets',qs,sc=>{const score=Math.round(clamp(501+sc*30+(S.st.smarts-50)*.25+ri(-3,3),501,550));const t=setAdvice(score);result('Eindtoets',t,'',processQ,{cat:'School',em:'📝'})})}})],
  ['😴 Gewoon invullen',()=>{const score=Math.round(clamp(510+(S.st.smarts-50)*.45+ri(-6,6),501,550));return setAdvice(score)}]]});
@@ -5793,7 +6017,7 @@ function finalExam(l,boost){const E=S.edu;ensureGrades();const subs=subjList(E).
   const calc=()=>{const fin={};for(const s of subs)fin[s]=Math.round((E.gr[s]+ce[s])/2);const vals=Object.values(fin);const avgCE=Object.values(ce).reduce((a,b)=>a+b,0)/subs.length;const fails=vals.filter(v=>v<6);const sumF=fails.reduce((a,b)=>a+(6-b),0);
     const ok=avgCE>=5.5&&!vals.some(v=>v<4)&&(fails.length===0||(fails.length===1&&fails[0]>=5)||(fails.length<=2&&sumF<=2&&vals.reduce((a,b)=>a+b,0)/vals.length>=6));
     const avg=vals.reduce((a,b)=>a+b,0)/vals.length;const cl=ok&&avg>=8&&!vals.some(v=>v<6);return {fin,ok,cl,avg,avgCE}};
-  const table=r=>`<div class="rapport">${subs.map(s=>`<div><span>${SUBEM[s]||'📘'} ${s}</span><b style="color:${r.fin[s]<6?'var(--bad)':r.fin[s]>=8?'var(--good)':'inherit'}">${r.fin[s]}</b></div>`).join('')}</div><p class="muted" style="margin:6px 0 0">Gemiddeld centraal examen: ${nl1(r.avgCE)}</p>`;
+  const table=r=>`<div class="rapport">${subs.map(s=>`<div><span>${SUBEM[s]||'📘'} ${subjName(s)}</span><b style="color:${r.fin[s]<6?'var(--bad)':r.fin[s]>=8?'var(--good)':'inherit'}">${r.fin[s]}</b></div>`).join('')}</div><p class="muted" style="margin:6px 0 0">Gemiddeld centraal examen: ${nl1(r.avgCE)}</p>`;
   const finish=r=>{if(r.ok){E.stage='klaar';E.deg.push({ty:l,prof:E.prof||E.sect||null,avg:Math.round(r.avg*10)/10,cl:r.cl?1:0});L(`Geslaagd voor je ${l}-examen met gemiddeld een ${nl1(r.avg)}${r.cl?', cum laude':''}!`,'good big');MS(`Haalde het ${l}-diploma${r.cl?' cum laude':''}`,r.cl?2:1);hap(r.cl?14:10);Q.push({id:'s_klaar',c:{l}});
       result(r.cl?'Cum laude!':'Geslaagd!',`Je hebt je ${l}-diploma${r.cl?' met lof':''}! De vlag met je schooltas gaat uit.`,'',()=>processQ(),{cat:'Eindexamen',em:'🎓',green:1})}
     else{E.exF=(E.exF||0)+1;hap(-12);if(E.exF>=3||ageY()>=21){E.stage='klaar';L(`Opnieuw gezakt voor je ${l}-examen. Je verlaat school zonder diploma.`,'bad big');MS('Verliet school zonder diploma',1);result('Gezakt','Na drie pogingen stop je met school. De avondschool blijft een optie.','',()=>processQ(),{cat:'Eindexamen',em:'😞'})}
@@ -5912,6 +6136,8 @@ E('uv_afscheid',{sys:1,need:()=>S.alive,t:'Afscheid',x:c=>{const p=P(c.id);const
 function uvCost(c){if(c.org&&!c.paid){c.paid=1;const k=Math.round(4000*(S.cpi||1));cash(-k)}}
 function uvOrg(c,k,h,t){c.paid=1;cash(-Math.round(k*(S.cpi||1)));hap(h);for(const x of living(['moeder','vader','broer','zus','kind']))x.rel=clamp(x.rel+Math.round(h/2));return t+` Kosten: ${fmt(Math.round(k*(S.cpi||1)))}.`}
 function uvAfterDeath(p){if(!S.alive||ageY()<6||!AFSCHEID.includes(p.role))return;if(p.role==='vriend'&&p.rel<50)return;
+  // grootouders: een logregel in plaats van een pop-up (verbeterplan 4.2)
+  if(p.role==='opa'||p.role==='oma'){if(!inJail())L(`Je bent op de uitvaart van ${p.role} ${p.first}. ${pick(['Er worden mooie verhalen verteld.','Je hele familie is er.','Na afloop is er koffie en cake.'])}`);return}
   const org=ageY()>=18&&(p.role==='partner'||p.role==='kind'||((p.role==='moeder'||p.role==='vader')&&!living(['moeder','vader']).length));
   if(!Q.some(q=>q.id==='uv_afscheid'))Q.push({id:'uv_afscheid',c:{id:p.id,org}})}
 
@@ -6037,7 +6263,9 @@ function polYear(a){polMigrate();if(!S.pw&&!S.pol&&a<18)return;if(isPres()&&type
   if(y>=W.nextEK){W.nextEK=y+4;if(P&&P.cand.ek)Q.push({id:'pol_ek'});else if(P&&P.lvl==='ek')loseOffice(`Je zetel als ${polTl('ek')} loopt af.`)}
   if(y>=W.nextEP){W.nextEP=y+5;if(P&&P.cand.ep)Q.push({id:'pol_ep'});else if(P&&P.lvl==='ep')loseOffice('Je termijn in het Europees Parlement zit erop.')}
   if(typeof prYear==='function')prYear(a);
-  if(y>=W.nextTK){W.nextTK=y+cyc();if(a>=18&&!inJail()){Q.push({id:'pol_stem'});Q.push({id:'pol_tk'})}else if(a>=18||P){Q.push({id:'pol_tk'})}else{const r=runTK();if(presL())prGov(W);else autoForm(r.seats,NS());cabPolicy();L(r.news,'sys')}}
+  if(y>=W.nextTK){W.nextTK=y+cyc();
+    if(!polPro()&&a>=18&&!inJail()&&!S.dict){const vm=voteMode();if(vm==='ask')Q.push({id:'pol_stem',c:{run:1}});else{const pre=vm==='same'&&W.vote&&PTY(W.vote)?`Je stemt weer op ${PTY(W.vote).n}.`:vm==='none'?'Je stemt niet.':'';L(tkCitizen(pre),'sys')}}
+    else if(a>=18&&!inJail()){Q.push({id:'pol_stem'});Q.push({id:'pol_tk'})}else if(P&&polPro()){Q.push({id:'pol_tk'})}else{const r=runTK();if(presL())prGov(W);else autoForm(r.seats,NS());cabPolicy();if(a>=12)L(r.news,'sys')}}
   if(P&&a>=16)polEvents();
   if(typeof regYear==='function')regYear(a);
   pol3Year();
@@ -6174,10 +6402,16 @@ function polWorld(el){const W=polW();const s=sec(el,'Politiek in het land');warC
   card(s,`<h3>${kName()}</h3><span class="muted">${W.hist.length?`Uitslag ${W.hist[W.hist.length-1].y}`:'Huidige zetelverdeling'}</span>${seatsHtml(W.seats,W.gov,`Kabinet: ${W.gov.map(k=>PTY(k).k).join(', ')} · ${PT().mp.toLowerCase()} ${he(W.pm?W.pm.n:'?')}`)}`);
   lawsCard(s);if(typeof demCard==='function')demCard(s);
   card(s,`<h3>Peiling</h3><span class="muted">Als er nu verkiezingen waren</span>${seatsHtml(pollSeats(),null,'')}`)}
+/* ---------- stemmen als gewone burger (verbeterplan 4.1) ----------
+   Politici krijgen de hele verkiezingsavond. Gewone burgers één pop-up waarin ze stemmen en meteen de uitslag zien,
+   of (instelling "altijd dezelfde partij" / "niet stemmen") alleen een regel in het logboek. */
+const voteMode=()=>(S&&S.settings&&S.settings.vote)||'ask';
+const polPro=()=>{const P=S.pol;return !!(P&&((P.lvl&&P.lvl!=='lid')||Object.values(P.cand||{}).some(Boolean)))};
+function tkCitizen(pre){const c=runTK();return `${pre?pre+' ':''}${c.news} ${tkOutcome(c)}`.trim()}
 /* ---------- events ---------- */
 E('pol_stem',{sys:1,need:()=>!S.dict,t:'Verkiezingen',x:()=>`Het is verkiezingsdag voor ${PT().kamer}. Op wie stem je?`,ch:[]});
 Object.defineProperty(EV.pol_stem,'ch',{get(){const W=polW();const ids=Object.keys(W.sh).sort((a,b)=>W.sh[b]-W.sh[a]);
-  return ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,()=>{W.vote=k;L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',()=>{L('Je gaat niet stemmen.');return ''}]])}});
+  return ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,c=>{W.vote=k;if(c&&c.run)return tkCitizen(`Je stemt op ${PTY(k).n}.`);L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',c=>{if(c&&c.run)return tkCitizen('Je gaat niet stemmen.');L('Je gaat niet stemmen.');return ''}]])}});
 E('pol_tk',{sys:1,need:()=>!S.dict,t:'Uitslagavond',f:()=>{const c=runTK();return c.news+' '+tkOutcome(c)}});
 E('pol_gr',{sys:1,need:()=>!S.dict,t:'Gemeenteraadsverkiezingen',f:()=>runGR()});
 E('pol_formatie',{sys:1,need:()=>!S.dict,t:'Formatie',x:()=>`Jij bent de formateur. Ga op zoek naar een meerderheid van minstens ${NEED()} zetels.`,ch:[['🤝 Beginnen met de gesprekken',()=>({go:formation})]]});
@@ -6386,7 +6620,16 @@ const prTxt=()=>{const W=S.pw;if(!W||!W.pm)return '';return `President: ${W.pm.n
 // presidentsverkiezing (jaarlijks gecontroleerd vanuit polYear)
 function prYear(a){const W=S.pw,P=S.pol,y=year();if(!presL()||!W.nextPR||y<W.nextPR)return;const p=psys().pres;W.nextPR+=p.cyc;
   if(P&&P.lvl==='mp'&&W.pm&&W.pm.n===myName()){if((P.terms||1)>=p.lim||P.noRun)P.lame=1;else P.cand.pres=1}
-  if(a>=18&&!inJail())Q.push({id:'pr_stem'});Q.push({id:'pr_pres'});if(p.same)W.nextTK=y}
+  const mine=polPro()&&prCands().C.some(c=>c.me);
+  if(mine||S.dict){if(a>=18&&!inJail())Q.push({id:'pr_stem'});Q.push({id:'pr_pres'})}
+  else if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'pr_stem',c:{run:1}});
+  else{const t=prQuick();if(a>=12)L(t,'sys')}
+  if(p.same)W.nextTK=y}
+// verkiezing zonder tussenschermen, voor wie zelf geen kandidaat is (verbeterplan 4.1)
+function prQuick(){const p=psys().pres;const {C:Cs}=prCands();const sh=prShares(Cs);Cs.forEach((c,i)=>c.r1=sh[i]);const srt=Cs.slice().sort((a,b)=>b.r1-a.r1);const top=srt[0];const pc=v=>String(v).replace('.',',');
+  let win,pct,txt;if(p.rounds===1||top.r1>50){win=top;pct=top.r1;txt=`${top.n} wint de presidentsverkiezing in de eerste ronde met ${pc(top.r1)}%.`}
+  else{const a=srt[0],b=srt[1];const w1=Math.exp(a.s/8),w2=Math.exp(b.s/8);const pa=Math.round(clamp(w1/(w1+w2)*100+gauss()*2,8,92)*10)/10;win=pa>50?a:b;pct=pa>50?pa:Math.round((100-pa)*10)/10;txt=`Presidentsverkiezing: ${a.n} en ${b.n} gaan door naar de tweede ronde, die ${win.n} wint met ${pc(pct)}%.`}
+  return `${txt} ${prApply(win,pct)}`.trim()}
 function prMyS(){const P=S.pol,W=S.pw;let s=18+P.pop*.45+P.steun*.1+(POLO[P.lvl].r||0)*2.5+Math.max(0,S.fame-40)*.08+Math.min(8,Math.log10(1+(P.kas||0)/(20000*(S.cpi||1)))*3)+(W.sh[P.party]||0)*.5;
   if(P.lvl==='mp')s+=6+prEco();return s}
 const prEco=()=>({hoog:4,groei:2,stabiel:0,recessie:-5,depressie:-9,hyper:-8})[ecoW().ph]||0;
@@ -6428,7 +6671,7 @@ function prFlow(done){const W=S.pw,P=S.pol,p=psys().pres;const {C:Cs}=prCands();
   if(me)camp(0);else R1()}
 E('pr_pres',{sys:1,need:()=>presL()&&!S.dict&&!(typeof occHere==='function'&&occHere()),t:'Presidentsverkiezingen',x:()=>{const {me,C:Cs}=prCands();const P=S.pol;return me?(P.lvl==='mp'?'Je bent kandidaat voor een nieuwe termijn.':`Je bent kandidaat voor het presidentschap van ${C().n}.`):`${C().n} kiest een nieuwe president. De kandidaten: ${Cs.slice(0,4).map(c=>c.n+' ('+PTY(c.k).k+')').join(', ')}.${P&&P.cand.pres?' Jouw partij heeft iemand anders genomineerd.':''}`},ch:[['🗳️ De verkiezingen volgen',()=>({go:()=>prFlow(processQ)})]]});
 E('pr_stem',{sys:1,need:()=>presL()&&!S.dict,t:'Stemmen voor president',x:'Het is verkiezingsdag. Op wie stem je in de eerste ronde?',ch:[]});
-Object.defineProperty(EV.pr_stem,'ch',{get(){if(!S.pw||!presL())return [['🛋️ Niet stemmen',()=>'']];const {C:Cs}=prCands();return Cs.map(c=>[`${PTY(c.k).em} ${c.me?'Op jezelf':c.n} (${PTY(c.k).k})`,()=>{S.pw.vote=c.k;return c.me?'Je stemt op jezelf.':`Je stemt op ${c.n}.`}]).concat([['🛋️ Niet stemmen',()=>'Je blijft thuis.']])}});
+Object.defineProperty(EV.pr_stem,'ch',{get(){if(!S.pw||!presL())return [['🛋️ Niet stemmen',()=>'']];const {C:Cs}=prCands();return Cs.map(c=>[`${PTY(c.k).em} ${c.me?'Op jezelf':c.n} (${PTY(c.k).k})`,cx=>{S.pw.vote=c.k;const t=c.me?'Je stemt op jezelf.':`Je stemt op ${c.n}.`;return cx&&cx.run?t+' '+prQuick():t}]).concat([['🛋️ Niet stemmen',cx=>cx&&cx.run?'Je blijft thuis. '+prQuick():'Je blijft thuis.']])}});
 Object.assign(EVMETA,{pr_pres:['Verkiezingen','🏛️'],pr_stem:['Verkiezingen','🗳️']});
 function prSheetRows(v,P,a){if(!presL())return;const W=S.pw,p=psys().pres;const yrs=W.nextPR;const age=a+(yrs-year());
   if(P.lvl==='mp'){row(v,{ic:P.noRun||(P.terms||1)>=p.lim?'🚪':'🔁',t:(P.terms||1)>=p.lim?'Geen nieuwe termijn mogelijk':P.noRun?'Je stelt je niet herkiesbaar':'Je stelt je herkiesbaar',s:(P.terms||1)>=p.lim?(p.lim===1?'De grondwet staat maar één termijn toe':'Je zit al je tweede termijn uit')+` · verkiezingen ${yrs}`:`Presidentsverkiezingen ${yrs} · tik om te wisselen`,dis:(P.terms||1)>=p.lim,on:()=>{P.noRun=P.noRun?0:1;refreshSheet()}});return}
@@ -6778,9 +7021,13 @@ function usFedYear(a,y){const W=S.pw,P=S.pol;const pres=y%4===0;
     if(P&&P.run&&P.run.o==='mp'&&P.run.y===y){if(!['dem','rep'].includes(P.party)){if(P.steun>=40||P.party==='own'){P.nom=y;W.nom[usOther(P.party)]=W.nom.rep}else{P.run=null;L('Je partij kiest iemand anders als presidentskandidaat.')}}
       if(P.run){if(P.nom!==y||P.run.chal)Q.push({id:'us_prim'});Q.push({id:'us_vp'});Q.push({id:'us_gen'})}}
     else if(P&&['dem','rep'].includes(P.party)&&['kamer','ek','gov','min'].includes(P.lvl)&&(P.pop>=45||S.fame>=55)&&chance(.3))Q.push({id:'us_vpoffer'})}
-  if(a>=18&&!inJail())Q.push({id:'us_stem'});
+  if(!polPro()&&!S.dict){// gewone burger (verbeterplan 4.1): hooguit één pop-up, de uitslagen als logregels
+    if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'us_stem'});
+    const lg=id=>{const e=EV[id];if(e&&(!e.need||safe(()=>e.need({}))))try{const t=e.f({});if(t&&a>=12)L(t,'sys')}catch(x){errLog&&errLog(x,'opgevangen')}};
+    if(pres)lg('us_pnpc');lg('us_cong')}
+  else{if(a>=18&&!inJail())Q.push({id:'us_stem'});
   if(pres){Q.push({id:'us_night'});Q.push({id:'us_pnpc'})}
-  Q.push({id:'us_cong'});
+  Q.push({id:'us_cong'})}
   if(P){for(const o of ['stl','kamer','ek','gov'])usQueueRace(o,y)}}
 // kandidaten van beide grote partijen (als jij niet meedoet)
 function usNoms(y){const W=S.pw,P=S.pol;const n={};for(const p of ['dem','rep']){const inc=W.pm&&W.pm.p===p&&W.pm.n!==myName()&&W.pm.t<2&&!W.pm.out;
@@ -7011,7 +7258,6 @@ function presBudVote(b,nm){const W=S.pw,P=S.pol;const def=budSpend(b)+budTax();l
 /* ---------- het scherm ---------- */
 const US_HOW='De Verenigde Staten hebben een presidentieel stelsel met twee grote partijen: de Democraten en de Republikeinen. Je stemt niet op een lijst, maar op een persoon. Voor elke functie win je eerst de voorverkiezing binnen je eigen partij en daarna de echte verkiezing in je stad, district of staat.\n\nDe president wordt elke vier jaar gekozen en mag maximaal twee termijnen blijven. Het gaat niet om de meeste stemmen, maar om het kiescollege: elke staat levert kiesmannen, en wie er 270 haalt, wint. Daardoor draait de campagne om een handvol swing states.\n\nHet Congres maakt de wetten. Het Huis van Afgevaardigden (435 leden, elke twee jaar gekozen) en de Senaat (100 senatoren, voor zes jaar) moeten allebei instemmen. In de Senaat zijn voor de meeste wetten 60 stemmen nodig, anders blokkeert een filibuster het. De president kan een veto uitspreken; alleen een tweederdemeerderheid kan dat breken.\n\nDe president benoemt ministers en rechters, maar de Senaat moet ze goedkeuren. Het Huis kan een president aanklagen (impeachment). Met twee derde van de Senaat wordt een president afgezet.';
 function usHowRow(el){const s=sec(el,'');row(s,{ic:'❓',t:'Hoe werkt de politiek hier?',s:'Het Amerikaanse stelsel in het kort',dots:true,on:()=>modal({title:'Politiek in de VS',em:'🇺🇸',cat:'Uitleg',text:US_HOW,choices:[{t:'Duidelijk',cls:'go',on:closeModal}]})})}
-function usOffLbl(o){const y=usNextFor(o,year()-1)<=year()?usNextFor(o):usNextFor(o,year()-1);return y}
 function usRunMenu(){const P=S.pol,a=ageY();const L_=['raad','burg','stl','kamer','ek','gov','mp'];
   modal({title:'Kandidaat stellen',em:'🗳️',cat:PTY(P.party).n,text:'Voor welke functie stel je je kandidaat? Je kunt maar voor één functie tegelijk meedoen.',choices:opts(L_.filter(o=>o!==P.lvl).map(o=>{const y=usNextFor(o);const age=a+(y-year());let why='';
     if(age<US_AGE[o])why=`Vanaf ${US_AGE[o]} jaar`;else if(o==='mp'&&!usNatBorn())why='Alleen wie in de VS is geboren';else if(o==='mp'&&POLO[P.lvl].r<3&&P.pop<40&&S.fame<55)why='Je bent nog te onbekend';
@@ -7502,7 +7748,7 @@ function warYear(){const W=warW(),y=year(),a=ageY();W.y++;const P=S.pol;
   W.ten=clamp(Math.round(W.ten+ri(-6,6)+(20-W.ten)*.12+(chance(.05)?ri(15,35):0)+W.push+(W.lvl===1||W.lvl===2?1:0)-(W.lvl>=3?4:0)+(lawIdx('defb')===2&&W.lvl<2?-1:0)));
   const pushed=W.push;W.push=0;
   if(W.lvl===0&&W.ten>=40){warSet(1,`Wereldnieuws: de spanningen tussen de NAVO en ${W.foe} lopen hoog op.`);if(pushed>=8)W.blameY=y}
-  else if(W.lvl===1){if(W.ten>=60&&chance(.4)){warSet(2,`Oorlog! ${cap(W.foe)} valt een buurland aan. Europa houdt de adem in.`,1);Q.push({id:'war_nieuws',c:{t:'Oorlog in de buurt',txt:`${cap(W.foe)} is een buurland binnengevallen. De NAVO stuurt troepen naar de grens. De beurs stort in, de energieprijzen schieten omhoog.`}});if(pushed>=8)W.blameY=y}else if(W.ten<25)warSet(0,'De spanningen in de wereld zijn weer afgenomen.')}
+  else if(W.lvl===1){if(W.ten>=60&&chance(.4)){warSet(2,`Oorlog! ${cap(W.foe)} valt een buurland aan. Europa houdt de adem in.`,1);L(`${cap(W.foe)} is een buurland binnengevallen. De NAVO stuurt troepen naar de grens. De beurs stort in, de energieprijzen schieten omhoog.`,'sys');if(pushed>=8)W.blameY=y}else if(W.ten<25)warSet(0,'De spanningen in de wereld zijn weer afgenomen.')}
   else if(W.lvl===2){if(W.ten>=70&&chance(.45)){warSet(3,`Een NAVO-land is aangevallen. Artikel 5 wordt ingeroepen: Nederland is in oorlog met ${W.foe}.`,1);Q.push({id:'war_nieuws',c:{t:'Nederland in oorlog',txt:`Een NAVO-bondgenoot is aangevallen. De regering kondigt aan dat Nederland meevecht. Op televisie spreekt de koning het land toe.`}});if(pushed>=8)W.blameY=y}else if(W.ten<40||chance(.12)){W.ten=Math.min(W.ten,40);warSet(1,'Er is een staakt-het-vuren gesloten. Het conflict is voorbij, maar de spanning blijft.');}}
   else if(W.lvl>=3){const P2=S.pol;W.front=clamp(Math.round(W.front+gauss()*6+(lawIdx('defb')-1)*3+1+W.op+W.arms-(lawIdx('dienst')?0:(W.lvl===4?2:0))));W.op=0;W.arms=0;
     W.cas+=W.lvl===4?ri(1500,9000):ri(60,450);
@@ -7948,7 +8194,7 @@ const ecoD0=()=>ECO_D0[S.p&&S.p.country]||60;
 function ecoW(){if(S.eco&&S.eco.d0==null)S.eco.d0=ecoD0();if(!S.eco){const ph=S.econ&&S.econ.s==='groei'?'groei':S.econ&&S.econ.s==='recessie'?'recessie':'stabiel';const T=EPH[ph];
   S.eco={ph,py:0,g:T.g,u:T.u,inf:2.2,r:2.5,hp:100,hreal:1,idx:1000,oil:80,debt:ecoD0(),d0:ecoD0(),wr:1,ret:0,hpg:0,news:[],hist:[]}}return S.eco}
 const ecoPhase=()=>EPH[ecoW().ph];
-function ecoNews(t,big){const E_=ecoW();E_.news.unshift({y:year(),t});if(E_.news.length>12)E_.news.pop();if(big)L(t,'sys')}
+function ecoNews(t,big){const E_=ecoW();E_.news.unshift({y:year(),t});if(E_.news.length>12)E_.news.pop();if(big&&ageY()>=12)L(t,'sys')/* kinderen lezen geen economisch nieuws (verbeterplan 4.7) */}
 function ecoYear(){const E_=ecoW(),W=typeof warW==='function'?warW():{lvl:0,reb:0},WE=typeof warEcon==='function'?warEcon():{infl:0,stk:0,house:0};const occ=typeof occHere==='function'&&occHere();
   const prev={g:E_.g,u:E_.u,inf:E_.inf,r:E_.r,ph:E_.ph};E_.py++;
   // conjunctuurfase
@@ -8068,8 +8314,8 @@ function weStart(id){const D=WEV[id],E_=ecoW();const ev={id,y:0,dur:ri(D.dur[0],
    ai:'Een doorbraak in kunstmatige intelligentie verandert alles. Bedrijven zetten massaal AI in.',vloed:'Na dagen van extreme regen breken de dijken op meerdere plekken. Duizenden huizen staan onder water.',hitte:'Een ongekende hittegolf: weken boven de 35 graden. Rivieren staan droog.',energie:'De gas- en olieprijzen exploderen. Energierekeningen verdrievoudigen.',handel:'Een grote handelsoorlog breekt uit. Landen heffen hoge importtarieven op elkaars producten.'}[id];
   ecoNews(txt,1);if(id==='bub')ev.kind=/crypto/.test(txt)?'crypto':'tech';
   if(weIsMine(id))Q.push({id:'we_beleid',c:{ev:id}});else{ev.pol=weNpc(id);ev.by='npc';ecoNews(`Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`,1)}
-  // nolog: het nieuws staat al als nieuwsregel in het logboek (verbeterplan 1.7)
-  Q.push({id:'war_nieuws',c:{t:D.n,nolog:1,txt:txt+(ev.pol?` Het kabinet kiest: ${weOpt(ev)[1].toLowerCase()}.`:'')}})}
+  // geen pop-up meer: het nieuws staat als nieuwsregel in het logboek; wat jou raakt komt als eigen gebeurtenis (verbeterplan 4.3)
+}
 E('we_beleid',{sys:1,t:'Jij beslist',x:c=>{const D=WEV[c.ev];return `${D.em} ${D.n}. Als ${S.pol.lvl==='dict'?'leider van het land':polTl(S.pol.lvl)} moet jij kiezen hoe het land hierop reageert.`},ch:[]});
 Object.defineProperty(EV.we_beleid,'ch',{get(){const out=[];for(const id of Object.keys(WEV))for(const o of WEV[id].pol)out.push([`${o[1]}`,c=>{const ev=weList().find(e=>e.id===c.ev&&!e.pol);if(ev){ev.pol=o[0];ev.by='me'}ecoNews(`Jouw besluit: ${o[1].toLowerCase()}.`,1);return `${o[2]}.`},c=>c.ev===id]);return out}});
 EVMETA.we_beleid=['Crisis','🏛️'];
@@ -8087,7 +8333,7 @@ function weYear(E_){const sh=E_.sh;E_.def=0;const y=year();E_.wlast=E_.wlast||{}
       if(ageY()>=75&&chance(.02*x.dth*(S.st.health<50?2:1)*(S.flags.vax?.3:1))){die('het virus');return}}
     if(ev.id==='bank'&&ev.y===1){sh.ret-=.25;sh.hpg-=.06;E_.force=x.dep&&chance(x.dep)?'depressie':'recessie';const sav=S.money+(S.inv.spaar||0),gar=100000*(S.cpi||1);
       if(sav>gar){if(x.save)Q.push({id:'war_nieuws',c:{t:'Je spaargeld',txt:`Jouw bank is een van de banken in problemen. Dankzij de reddingsoperatie blijft al je geld veilig.`}});else{const loss=Math.round((sav-gar)*.4);const fromS=Math.min(S.inv.spaar||0,loss);S.inv.spaar-=fromS;S.money-=loss-fromS;hap(-12);MS(`Verloor ${fmt(loss)} bij een bankfaillissement`,1);Q.push({id:'war_nieuws',c:{t:'Je bank is failliet',txt:`Jouw bank gaat failliet. Alles boven de garantie van ${fmt(gar)} is voor 40% weg. Je verliest ${fmt(loss)}.`}})}}}
-    if(ev.id==='bub'){const crash=ev.y>=ev.dur;if(!crash){sh.ret+=x.mild?.08:.18;sh.crypto+=ev.kind==='crypto'?(x.mild?.35:.9):0;sh.hpg+=.02;if(ev.y===1)Q.push({id:'pe_bubbel',c:{k:ev.kind}})}else{sh.ret-=x.mild?.15:.38;sh.crypto-=ev.kind==='crypto'?(x.mild?.4:.75):.1;sh.g-=x.mild?.8:2;E_.bubCrash=1;ecoNews(`De bubbel knapt! ${ev.kind==='crypto'?'Crypto':'De beurs'} stort in.`,1)}}
+    if(ev.id==='bub'){const crash=ev.y>=ev.dur;if(!crash){sh.ret+=x.mild?.08:.18;sh.crypto+=ev.kind==='crypto'?(x.mild?.35:.9):0;sh.hpg+=.02;if(ev.y===1&&Object.values(S.inv||{}).some(v=>v>0))Q.push({id:'pe_bubbel',c:{k:ev.kind}})/* alleen als je zelf belegt (verbeterplan 4.3) */}else{sh.ret-=x.mild?.15:.38;sh.crypto-=ev.kind==='crypto'?(x.mild?.4:.75):.1;sh.g-=x.mild?.8:2;E_.bubCrash=1;ecoNews(`De bubbel knapt! ${ev.kind==='crypto'?'Crypto':'De beurs'} stort in.`,1)}}
     if(ev.id==='ai'){const f=x.aiF;sh.g+=ev.y>=3?.5*f:0;sh.ret+=.04*f;if(S.job&&!inJail()){const gpp=jobGroup(S.job.id);if(gpp==='kantoor'&&chance(.12*f))Q.push({id:'pe_ai_baan'});if(gpp==='tech'&&!S.flags.aiTech){S.flags.aiTech=1;S.job.mult*=1.12;L('Door de AI-revolutie zijn mensen zoals jij gewild. Je krijgt 12% loonsverhoging.','good')}}}
     if(ev.id==='vloed'&&ev.y===1){sh.g-=.4;if(S.home.k==='eigen'&&chance(E_.dyke?.12:.35))Q.push({id:'pe_vloed'})}
     if(ev.id==='hitte'&&ev.y===1){if(ageY()>=70&&!x.clim)hea(-ri(3,8));for(const p of living(['moeder','vader','opa','oma']))if(pAge(p)>=80&&chance(x.clim?.02:.06)){p.alive=false;p.died=pAge(p);onDeath(p)}}
@@ -8526,6 +8772,7 @@ function sheetErrors(el){const l=errList();
   foot(el,'🧹','Foutenlog wissen',()=>{try{localStorage.removeItem(ERR_KEY)}catch(e){}refreshSheet();toast('Foutenlog gewist')})}
 /* Start het spel pas als alle bestanden geladen zijn (voorheen gebeurde dat halverwege, aan het eind van ui.js,
    waardoor gebeurtenissen uit latere bestanden bij het openen nog niet bestonden). */
+if(typeof locPatch==='function')locPatch();
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 </script><script>
 /* ================= OFFLINE-APP (alleen in de iPhone-versie) ================= */
