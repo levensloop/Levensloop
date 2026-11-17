@@ -193,6 +193,9 @@ F8T('8.8','editor en God-modus','NL','',async()=>{randomize();CF.country='NL';CF
   S.settings.god=1;const mom=living('moeder')[0];const el=document.createElement('div');sheetPerson(el,mom);const sec=/Eigenschappen aanpassen/.test(el.textContent);
   godSelf();await sl(20);document.querySelector('#gsave').click();await sl(20);const star=S.god===1;const el2=document.createElement('div');sheetAch(el2);
   return {ok:ed&&menu&&sec&&star&&/God-modus gebruikt/.test(el2.textContent),msg:`editor ${ed}, menu ${menu}, personen ${sec}, ster ${star}`}});
+F8T('8.10','Leeftijd-knop blijft op zijn plek bij tikken','NL','',async()=>{const b=document.querySelector('#t-age');const r0=b.getBoundingClientRect();
+  lastTapEl=b;haptic(12);await sl(60);const r1=b.getBoundingClientRect();const dx=Math.abs((r1.left+r1.width/2)-(r0.left+r0.width/2)),dy=Math.abs((r1.top+r1.height/2)-(r0.top+r0.height/2));
+  return {ok:dx<1&&dy<1,msg:`midden verschoof ${Math.round(dx)} px opzij en ${Math.round(dy)} px omlaag tijdens het tik-effect`}});
 
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];
