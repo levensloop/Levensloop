@@ -121,9 +121,6 @@ function startPick(k){const T=BIZ[k];const def=pick(BIZPRE)+' '+pick(BIZSUF[k]);
   function mk(fund){const n=$('#bzn').value.trim()||def;closeModal();if(fund==='lening')S.loan+=price;else cash(-price);
     const b={id:uid(),type:k,name:n,buy:price,eq:100,demand:T.rev0*cpi_(),rev:0,staff:0,rep:50,age:0,cash:Math.round(price*.15),value:Math.round(price*.6),profit:0,mkt:0,loc:1,locs:[S.p.city||'je stad'],emp:[],sal:0};
     b.lo=[year()];b.v2=1;bizAddStaff(b,T.s0);S.biz.push(b);S.flags.ondernemer=1;L(`Je hebt ${n} opgericht, een ${T.t.toLowerCase()}.`,'good big');MS(`Richtte ${n} op`,2);hap(6);saveLife();render();sheetStack.pop();openSheet(b.name,el=>sheetBiz(el,b),true)}}
-function startBiz(type,name,fund){const T=BIZ[type];const price=Math.round(T.start*cpi_());if(fund==='lening')S.loan+=price;else cash(-price);
-  const b={id:uid(),type,name,buy:price,eq:100,demand:T.rev0*cpi_(),rev:0,staff:0,rep:50,age:0,cash:Math.round(price*.15),value:Math.round(price*.6),profit:0,mkt:0,loc:1,locs:[],emp:[],sal:0};
-  b.lo=[year()];b.v2=1;bizAddStaff(b,T.s0);S.biz.push(b);S.flags.ondernemer=1;L(`Je hebt ${name} opgericht, een ${T.t.toLowerCase()}.`,'good big');MS(`Richtte ${name} op`,2);return b}
 // te koop: elk jaar een nieuwe lijst
 function bizMarket(){if(S.bizMkt&&S.bizMkt.y===year())return S.bizMkt.l;const l=[];const ks=Object.keys(BIZ).filter(k=>!bizReq(k));
   for(let i=0;i<5;i++){const k=pick(ks),T=BIZ[k];const age=ri(2,25),rep=ri(30,88);const dem=Math.round(T.rev0*cpi_()*(.6+R()*2.4)*(.7+rep/150));const staff=Math.max(T.s0,Math.round(dem/(T.cap*cpi_()))-1+ri(0,1));

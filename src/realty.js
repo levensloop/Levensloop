@@ -48,7 +48,6 @@ function reMarket(){const y=year();if(S.reMkt&&S.reMkt.y===y)return S.reMkt.l;co
     else{o.price=Math.round(ri(k==='winkel'?40:k==='kantoor'?100:60,k==='winkel'?300:k==='kantoor'?1200:400)*10000*c/1000)*1000;const y_=k==='winkel'?.065:k==='kantoor'?.07:.075;
       o.ten=chance(k==='kantoor'?.6:.8)?{n:pick(k==='winkel'?SHOPS_:k==='kantoor'?FIRMS:HALL),rent:Math.round(o.price*y_*(.9+R()*.2)),left:ri(1,9)}:null;o.name=REK[k][0]}
     l.push(o)}S.reMkt={y,l};return l}
-function reVal(o){return o.value??o.price}
 function sheetREMarket(el){card(el,kv([['Saldo',fmt(S.money)],['Rente voor beleggers',pct(rente()+.015)]])+'<span class="muted">Bij beleggingsvastgoed betaal je 10,4% overdrachtsbelasting. De bank financiert maximaal 70%.</span>');
   const s=sec(el,'Te koop');const l=reMarket().filter(x=>!x.sold);if(!l.length)empty(s,'Alles is verkocht. Volgend jaar is er nieuw aanbod.');
   for(const o of l)row(s,{ic:REK[o.kind][1],t:`${REK[o.kind][0]} · ${o.city}`,s:o.kind==='complex'?`${o.units} appartementen · ${Math.round(o.occ*100)}% verhuurd · huur ± ${fmt(o.units*o.uRent*o.occ)} per jaar`:o.kind==='grond'?`${o.name}${o.zon==='agrarisch'?' · nog geen bouwvergunning':' · je mag hier bouwen'}`:o.ten?`Verhuurd aan ${o.ten.n} · ${fmt(o.ten.rent)} per jaar · nog ${o.ten.left} jaar`:'Staat leeg',r:fmt(o.price),dots:true,on:()=>reBuy(o)})}

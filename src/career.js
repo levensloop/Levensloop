@@ -150,7 +150,7 @@ function mgQuiz(title,qs,cb,free){let i=0,ok=0,left=0,tk=0;
   const step=()=>{clearInterval(tk);if(i>=qs.length){closeModal();cb(ok/qs.length);return}const [q,ans]=qs[i];const right=ans[0];left=12;
     modal({title,em:'📝',cat:`Vraag ${i+1} van ${qs.length}`,text:q,html:'<div class="timer"><i id="qt" style="width:100%;transition:width 1s linear"></i></div>',choices:ans.slice().sort(()=>R()-.5).map(a=>({t:a,on:()=>{if(a===right){ok++;toast('Goed!')}else toast(`Fout, het was: ${right}`);i++;step()}}))});
     tk=setInterval(()=>{if(!$('#qt')){clearInterval(tk);return}left--;const t=$('#qt');if(t)t.style.width=(left/12*100)+'%';if(left<=0){toast(`Te laat! Het was: ${right}`);i++;step()}},1000)};step()}
-const pickQs=(sub,n)=>(QB[sub]||[]).slice().sort(()=>R()-.5).slice(0,n);
+const pickQs=(sub,n)=>quizPool(sub).slice().sort(()=>R()-.5).slice(0,n);
 E('eindexamen',{sys:1,t:'Eindexamens',x:c=>`Het is examentijd voor je ${c.l}-diploma. Je staat gemiddeld een ${nl1(gradeAvg())}.`,ch:[
  ['📝 Examens maken',c=>({go:()=>finalExam(c.l)})],
  ['🕵️ Een spiekbriefje meenemen',c=>{if(chance(.35)){const E=S.edu;E.exF=(E.exF||0)+1;hap(-15);kar(-5);if(E.exF>=3||ageY()>=21){E.stage='klaar';MS('Verliet school zonder diploma',1);return 'Betrapt! Je examen wordt ongeldig verklaard. Je verlaat school zonder diploma.'}E.yrs=E.len-1;return 'Betrapt! Je examen wordt ongeldig verklaard. Je moet het jaar overdoen.'}kar(-3);return{go:()=>finalExam(c.l,1.25)}}]]});

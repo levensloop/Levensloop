@@ -52,7 +52,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
+Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
 
 | Bestand | Inhoud |
 |---|---|
@@ -71,6 +71,7 @@ Volgorde: data, events, engine, career, sectors, icons, avatar, house, choices, 
 | `mil*.js`, `war.js`, `occ.js` | leger, missies, oorlog, bezetting |
 | `eco*.js` | economie, rente, staatsschuld, wereldnieuws |
 | `coup.js`, `coup2.js` | staatsgreep en dictatuur |
+| `loc.js` | buitenland (fase 6): `LOC[land]` met schoolniveaus, landstaal, festivals, clubs, legeronderdelen; `loc()`, `lvlN()`, `subjName()`, `quizPool()`; `locText()` vervangt buiten Nederland typisch Nederlandse termen in logboek, pop-ups, rijen en kaarten. Nederland houdt exact de oude teksten. |
 | `debt.js` | rood staan (streng): 12% rente, jaarlijkse logregel, grens naar inkomen en bezit (`debtLimit`), gebeurtenis "Schuldeisers" (verkopen, lening, schuldsanering, negeren), faillissement, kredietregistratie (`bkr()`) |
 | `vangnet.js` | vangt JS-fouten op: pop-up dicht, melding "Er ging iets mis. Je leven is bewaard.", laatste 20 fouten in `levensloop.errors`, te zien via Menu → Foutenlog. Ook fouten die `safe()` stil opvangt komen daarin. |
 | `diag.js` | verborgen meetscherm (5× tikken op de versie onderaan het hoofdmenu): schermmaten, proefstanden A–E voor de indeling, hulplijnen. Stand bewaard onder `levensloop.layout`. |

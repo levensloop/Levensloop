@@ -75,7 +75,7 @@ E('k_sint',{a:[6,9],once:1,c:()=>S.p.country==='NL'||S.p.country==='BE',t:'Sinte
  ['🙉 Gewoon niet geloven',()=>{hap(2);return 'Je zet gewoon je schoen. Je krijgt chocoladeletters. Zie je wel.'}]]});
 E('k_zakgeld',{a:[8,12],c:()=>living(['moeder','vader']).length,t:'Meer zakgeld?',ctx:()=>ctxP(anyP(['moeder','vader'])),x:c=>'Al je vrienden krijgen meer zakgeld dan jij.',ch:[
  ['📝 Een overtuigend plan presenteren',c=>{if(chance(.4+S.st.smarts/250)){rel_(findAny(c.id),3);cash(50);return `${Pe(c).first} is onder de indruk. Je krijgt meer zakgeld.`}return `${Pe(c).first} lacht en zegt nee.`}],
- ['🧹 Klusjes aanbieden',c=>{rel_(findAny(c.id),5);cash(30);return 'Voor elk klusje krijg je een euro. Je stofzuigt het hele huis.'}],
+ ['🧹 Klusjes aanbieden',c=>{rel_(findAny(c.id),5);cash(30);return `Voor elk klusje krijg je ${fmt(1)}. Je stofzuigt het hele huis.`}],
  ['😭 Zeuren',c=>{rel_(findAny(c.id),-3);return 'Zeuren werkt niet. Nooit.'}]]});
 // ---- tieners ----
 E('t_bijbaan',{a:[13,16],c:()=>!S.job,t:'Een klusje in de buurt',ctx:()=>({w:pick(['De buurvrouw zoekt een oppas voor vrijdagavond.','Iemand zoekt een krantenbezorger voor de zaterdag.','De buurman wil dat je zijn auto wast.'])}),x:c=>c.w,ch:[

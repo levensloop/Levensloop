@@ -15,11 +15,11 @@ function fmt(v){const c=COUNTRIES[S?S.p.country:'NL'];let x=v*c.k;const neg=x<0;
   if(x>=1e15)s=sc(1e15,' biljard');else if(x>=1e12)s=sc(1e12,' biljoen');else if(x>=1e9)s=sc(1e9,' miljard');else if(x>=1e6)s=sc(1e6,' miljoen');
   else s=Math.round(x).toLocaleString('nl-NL');
   return (neg?'-':'')+c.cur+' '+s}
-function L(t,c){S.log.push({a:ageY(),y:year(),mo:S.settings.mode==='month'?monthIdx():null,t,c:c||''})}
+function L(t,c){S.log.push({a:ageY(),y:year(),mo:S.settings.mode==='month'?monthIdx():null,t:locText(t),c:c||''})}
 function MS(t,w=1){S.ms.push({a:ageY(),y:year(),t,w})}
 function st(k,d){S.st[k]=clamp(Math.round(S.st[k]+d))}
 const hap=d=>st('happy',d), hea=d=>st('health',d), sma=d=>st('smarts',d), loo=d=>st('looks',d<0&&S.talent==='model'?d/2:d);
-const kar=d=>{S.karma=clamp(Math.round(S.karma+d))}, cash=d=>{if(BUY===1&&d<0&&S.money+d<-.5)throw NOMONEY;S.money+=d};
+const kar=d=>{S.karma=clamp(Math.round(S.karma+d))}, cash=d=>{if(BUY===1&&d<0&&S.money+d<-.5)throw NOMONEY;S.money=Math.round(S.money+d)}/* geld als heel getal (verbeterplan 7.3) */;
 function sk(k,d){if(d>0&&S.talent&&TAL(S.talent)[4]===k)d*=1.75;S.sk[k]=clamp(Math.round(S.sk[k]+d))}
 const P=id=>S.rel.find(p=>p.id===id);
 const pAge=p=>Math.floor((S.m-p.born)/12);
@@ -164,7 +164,7 @@ function monthTick(){
   if(S.debt>0&&S.edu.cur==null)S.debt*=1+.025/12;
   if(S.money<0&&a>=18&&!S.wsnp)ex('Rente rood staan',-S.money*.12/12);
   if(typeof insPrem==='function')for(const x of [...S.cars,...(S.items||[])])if(x.ins)ex('Verzekeringen',insPrem(x)/12);
-  S.money+=inc-exp;period.inc+=inc;period.exp+=exp;
+  S.money=Math.round(S.money+inc-exp);period.inc+=inc;period.exp+=exp;
   if(S.auto&&S.auto.pct>0&&a>=18&&!S.crim.jail&&typeof autoInvest==='function')autoInvest(inc-exp);
   for(const il of S.ill)st('health',-il.sev*.5/12);
   if(S.st.health<=0){const n=S.flags.zkh||0;if(a>=82||(n>=2&&chance(.35+n*.1))||(S.ill.some(i=>i.l)&&n>=1&&chance(.5)))return die(deathCause(a));hospital(a);return}
@@ -260,15 +260,15 @@ function eduYear(a){
   if(a===12&&E.stage==='basis'&&typeof setAdvice==='function'){if(!Q.some(q=>q.id==='sc_eindtoets'))Q.push({id:'sc_eindtoets'});return}
   if(a>=12&&E.stage==='basis'){
     const sc=S.st.smarts*.6+E.perf*.4;E.lvl=sc>=66?'vwo':sc>=47?'havo':'vmbo';E.stage='middel';E.yrs=0;E.len={vmbo:4,havo:5,vwo:6}[E.lvl];
-    L(`Je basisschooladvies is ${E.lvl}. Je gaat naar de middelbare school.`,'big');MS(`Kreeg ${E.lvl}-advies`,0);return}
+    L(`Je basisschooladvies is ${lvlN(E.lvl)}. Je gaat naar de middelbare school.`,'big');MS(`Kreeg ${lvlN(E.lvl)}-advies`,0);return}
   if(E.stage==='middel'){
     const V=typeof verdict==='function'?verdict(E):[(E.fails||0)>=3?'zitten':'over',''];const rap=typeof rapportHtml==='function'&&E.yrs+1<E.len;
     let zit=V[0]==='zitten'||(V[0]==='bespreek'&&chance(.45));
-    if(zit&&(E.stay||0)>=1&&E.lvl!=='vmbo'){const nl=E.lvl==='vwo'?'havo':'vmbo';const yr=E.yrs;E.lvl=nl;E.len={vmbo:4,havo:5}[nl];E.yrs=Math.min(yr,E.len-2);E.prof=nl==='vmbo'?null:E.prof;E.stay=0;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+1.2);L(`Je stroomt af naar het ${nl}.`,'bad big');MS(`Stroomde af naar het ${nl}`,0);hap(-6);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v)}`).join(' · ')}. Je bent twee keer blijven zitten en gaat verder op het ${nl}.`}});return}
-    if(zit&&(E.stay||0)<2){E.stay=(E.stay||0)+1;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+.8);L('Je bent blijven zitten.','bad');hap(-6);E.perf=clamp(E.perf+12);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v-.8)}`).join(' · ')}. ${V[0]==='bespreek'?'De docentenvergadering vindt het niet genoeg. ':''}Je blijft zitten.`}});return}
+    if(zit&&(E.stay||0)>=1&&E.lvl!=='vmbo'){const nl=E.lvl==='vwo'?'havo':'vmbo';const yr=E.yrs;E.lvl=nl;E.len={vmbo:4,havo:5}[nl];E.yrs=Math.min(yr,E.len-2);E.prof=nl==='vmbo'?null:E.prof;E.stay=0;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+1.2);L(`Je stroomt af naar het ${lvlN(nl)}.`,'bad big');MS(`Stroomde af naar het ${lvlN(nl)}`,0);hap(-6);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${subjName(k)} ${nl1(v)}`).join(' · ')}. Je bent twee keer blijven zitten en gaat verder op het ${lvlN(nl)}.`}});return}
+    if(zit&&(E.stay||0)<2){E.stay=(E.stay||0)+1;if(E.gr)for(const k in E.gr)E.gr[k]=Math.min(10,E.gr[k]+.8);L('Je bent blijven zitten.','bad');hap(-6);E.perf=clamp(E.perf+12);if(rap)Q.push({id:'sc_rapport',c:{txt:`${Object.entries(E.gr).map(([k,v])=>`${subjName(k)} ${nl1(v-.8)}`).join(' · ')}. ${V[0]==='bespreek'?'De docentenvergadering vindt het niet genoeg. ':''}Je blijft zitten.`}});return}
     // rapport als pop-up alleen bij een opvallende verandering; anders een logregel (verbeterplan 4.5)
     if(rap){const vs=Object.values(E.gr||{});const avg=vs.length?vs.reduce((x,y)=>x+y,0)/vs.length:0;const prev=E.lastAvg;E.lastAvg=avg;
-      const txt=`${Object.entries(E.gr).map(([k,v])=>`${k} ${nl1(v)}`).join(' · ')}. ${V[0]==='bespreek'?'Je was een bespreekgeval, maar de docenten geven je een kans. ':''}Je gaat over naar jaar ${E.yrs+2}!`;
+      const txt=`${Object.entries(E.gr).map(([k,v])=>`${subjName(k)} ${nl1(v)}`).join(' · ')}. ${V[0]==='bespreek'?'Je was een bespreekgeval, maar de docenten geven je een kans. ':''}Je gaat over naar jaar ${E.yrs+2}!`;
       if(V[0]==='bespreek'||prev==null||Math.abs(avg-prev)>=.7)Q.push({id:'sc_rapport',c:{txt}});else L(`Je rapport: ${txt}`)}
     E.yrs++;
     if(E.lvl!=='vmbo'&&E.yrs===3&&!E.prof&&typeof PROF!=='undefined')Q.push({id:'sc_profiel'});
@@ -404,7 +404,7 @@ function story(){
   const wealth={arm:'een arm gezin',midden:'een gewoon gezin',rijk:'een welgesteld gezin'}[S.flags.wealth]||'een gezin';
   out.push(`${N} ${p.last} werd in ${p.by} geboren in ${p.city}, in ${wealth}. ${a<4?`${Hij} werd maar ${a} jaar oud.`:pick([`Als kind was ${hij} ${S.st.smarts>65?'slim en nieuwsgierig':S.sk.sport>40?'altijd buiten aan het sporten':'een dromer'}.`,`${Hij} groeide op ${living(['broer','zus']).length||people(['broer','zus']).length?'met '+people(['broer','zus']).map(s=>s.first).join(' en '):'als enig kind'}.`])}`);
   const deg=S.edu.deg.filter(d=>d.f).map(d=>`${ENAME[d.ty]} ${STUDIES.find(s=>s.id===d.f).t}`);const sch=S.edu.deg.find(d=>['vmbo','havo','vwo'].includes(d.ty));
-  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){const cl=S.ms.some(m=>/^Haalde het .*-diploma cum laude/.test(m.t));let t=sch?`${Hij} haalde ${zijn} ${sch.ty}-diploma${cl?' cum laude':''}`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
+  const inSch=S.alive&&(S.edu.stage==='middel'||S.edu.stage==='basis');if(a>=12&&(sch||!inSch)){const cl=S.ms.some(m=>/^Haalde het .*-diploma cum laude/.test(m.t));let t=sch?`${Hij} haalde ${zijn} ${lvlN(sch.ty)}-diploma${cl?' cum laude':''}`:`${Hij} maakte de middelbare school niet af`;t+=deg.length?` en studeerde later ${deg.join(', daarna ')}.`:'.';out.push(t)}
   const hist=S.jobs.concat(S.job?[{t:jobTitle(),co:S.job.co,y:S.job.yrs}]:[]).filter(j=>j.y>=1&&!j.mil);
   if(hist.length){const best=S.hist.topJob||hist[hist.length-1].t;const ts=[...new Set(hist.map(j=>j.t.toLowerCase()))];out.push(ts.length>2?`${Hij} had ${hist.length} banen en bracht het tot ${best.toLowerCase()}${S.flags.top?', de top van het vak':''}.`:`${Hij} werkte als ${ts.join(' en later als ')}${S.flags.top?' en bereikte daarmee de top':''}.`)}
   else if(a>=25&&!(S.pex&&S.pex.r>=1)&&!S.mil&&!S.pmil)out.push(`Een vaste baan zat er nooit echt in.`);

@@ -61,7 +61,7 @@ t('1.11','tijdmachine sluit na terugspoelen','NL',async()=>{for(let i=0;i<6;i++)
   const tryIt=async(open,label)=>{await open();await sl(350);const r=[...document.querySelectorAll('#sheet-b .mrow')].find(x=>/1 jaar terug/.test(x.textContent));if(!r){res.push(label+': geen knop');return}r.click();await sl(450);res.push(`${label}: ${document.querySelector('#sheet').hidden?'dicht':'OPEN'}`);closeSheet();await sl(350);Q.length=0;advance();Q.length=0;render()};
   await tryIt(async()=>document.querySelector('#t-back').click(),'knop Terug');
   await tryIt(async()=>{document.querySelector('#h-menu').click();await sl(300);[...document.querySelectorAll('#sheet-b .mrow')].find(x=>/Tijdmachine/.test(x.textContent)).click()},'menu');
-  await tryIt(async()=>{document.querySelector('#t-act').click();await sl(300);[...document.querySelectorAll('#sheet-b .mrow')].find(x=>/Tijdmachine/.test(x.textContent)).click()},'activiteiten');
+  /* sinds fase 5 staat de tijdmachine niet meer onder Activiteiten */
   return {ok:res.every(x=>/dicht/.test(x)),msg:res.join(' · ')}});
 
 t('1.12','geen dubbele gebeurtenissen meer','NL',async()=>{const ids=['collegaflirt','feestje','onlinedrama','ouderruzie','overwerk','scheiding','spieken','spijbelen','tip','verliefd'];const bad=ids.filter(id=>!EV[id]);return {ok:!bad.length,msg:bad.length?'ontbreekt: '+bad:'alle tien bestaan nog, in één versie'}});
@@ -122,6 +122,11 @@ t('5.1-5.3','relaties op volgorde, geen dubbele ingangen, opgeven in het menu','
   openSheet('Hoofdmenu',sheetMain);await sl(50);const menu=document.querySelector('#sheet-b').textContent;closeSheet();
   const dup=/Tijdmachine|Winkelen|Financiën|Opgeven/.test(act);
   return {ok:li>=0&&(oi<0||li<oi)&&!dup&&/Opgeven/.test(menu),msg:`volgorde: ${secs.slice(0,5).join(' > ')} · dubbel in Activiteiten: ${dup} · Opgeven in menu: ${/Opgeven/.test(menu)}`}});
+
+t('6','buitenland: geen Nederlandse termen, Nederland onveranderd','US',async()=>{const t='Het kabinet verhoogt de AOW-leeftijd. Je hebt je vwo-diploma. Popconcert in de Ziggo Dome.';const us=locText(t);
+  const nlBad=/kabinet|AOW|vwo|Ziggo/.test(us);const q=quizPool('Wereldoriëntatie').some(x=>/Nederland/.test(x[0]));const st=festList()[0][1]+', '+teamList()[0]+', '+MBR.land.k;
+  const o=S.p.country;S.p.country='NL';const nl=locText(t)===t&&MBR.land.k==='Koninklijke Landmacht';S.p.country=o;
+  return {ok:!nlBad&&!q&&nl,msg:`VS: "${us}" · ${st} · NL ongewijzigd ${nl}`}});
 
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];

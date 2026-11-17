@@ -21,7 +21,7 @@ function subtitle(){const a=ageY();if(!S.alive)return'Overleden';if(inJail())ret
   {const P=S.pol;if(P&&P.lvl!=='lid'&&typeof polT==='function'){const t=polTitle(P);if(POLO[P.lvl].ft||!S.job)return t;return jobTitle()+' · '+polTl(P.lvl)}}
   if(S.mil)return milTitle()+(S.mil.st==='opl'?' · '+MBR[S.mil.br].school:' · '+MSPEC(S.mil.spec).n);
   if(S.job)return jobTitle()+(S.job.co?' · '+S.job.co:'');if(S.biz.length)return(S.biz[0].ceo===false?'Aandeelhouder · ':'Directeur-eigenaar · ')+S.biz[0].name;
-  if(S.pension)return'Gepensioneerd';if(S.edu.stage==='basis')return'Basisschool';if(S.edu.stage==='middel')return`Middelbare school (${S.edu.lvl})`;
+  if(S.pension)return'Gepensioneerd';if(S.edu.stage==='basis')return'Basisschool';if(S.edu.stage==='middel')return`Middelbare school (${lvlN(S.edu.lvl)})`;
   if(a<4)return a<1?'Baby':'Peuter';return a<18?'Scholier':'Werkzoekend'}
 function profInner(){return `<span class="who"><span class="face">${playerFace()}</span><span class="who-t"><span class="nm">${flag(S.p.country)} <span class="u">${he(S.p.first+' '+S.p.last)}</span></span><span class="sub">${he(subtitle())}</span></span></span><div class="money"><b${S.money<0?' style="color:var(--bad)"':''}>${fmt(S.money)}</b><small>Saldo</small></div>`}
 function render(){
@@ -65,7 +65,7 @@ function renderLog(){
 /* ---------- pop-ups ---------- */
 function openRaw(html,cls){const m=$('#mcard');m.className='mcard'+(cls?' '+cls:'');m.innerHTML=html;m.scrollTop=0;$('#modal').hidden=false}
 function closeModal(){$('#modal').hidden=true;$('#mcard').innerHTML=''}
-function modal(o){
+function modal(o){o.title=locText(o.title);o.text=locText(o.text);if(o.cat)o.cat=locText(o.cat);if(Array.isArray(o.choices))for(const c of o.choices){if(c&&c.t)c.t=locText(c.t);if(c&&c.s)c.s=locText(c.s)}
   const pr=o.person,green=o.green||!!pr;const label=o.cat||o.sub||'';
   let h='';if(o.close)h+=`<button class="pclose" id="pclose" aria-label="Sluiten">✕</button>`;
   if(label||pr)h+=`<div class="band">${pr?`<span class="bface">${o.pface||faceOf(pr)}</span><span class="bname">${he(pr.first+' '+(pr.last||''))}</span>`:''}<i>${he(label)}</i></div>`;
@@ -132,12 +132,12 @@ function initSwipe(){const pi=$('#sheet .panel-in');let y0=null,dy=0,t0=0;
   pi.addEventListener('touchstart',start,{passive:true});pi.addEventListener('touchmove',move,{passive:true});pi.addEventListener('touchend',end);pi.addEventListener('touchcancel',end)}
 function closeSheetLevel(){if(sheetStack.length>1)sheetStack.pop()}
 function sec(el,label){const d=document.createElement('div');if(label){const h=document.createElement('div');h.className='shead';h.textContent=label;d.appendChild(h)}el.appendChild(d);return d}
-function row(el,o){const b=document.createElement('button');b.className='mrow'+(o.cls?' '+o.cls:'');if(o.dis)b.disabled=true;
+function row(el,o){o.t=locText(o.t);if(typeof o.s==='string')o.s=locText(o.s);const b=document.createElement('button');b.className='mrow'+(o.cls?' '+o.cls:'');if(o.dis)b.disabled=true;
   const sub=o.bar?`<small class="rbar">${he(o.bar.l)} <span class="minibar"><i style="width:${clamp(o.bar.v)}%;background:${o.bar.c||'var(--good)'}"></i></span></small>`:o.s?`<small>${he(o.s)}</small>`:'';
   b.innerHTML=`<span class="mic">${o.ic||'•'}</span><span class="mtx"><b>${he(o.t)}${o.role?` <em>(${he(o.role)})</em>`:''}</b>${sub}</span>${o.r!=null?`<span class="rt">${o.r}</span>`:''}${o.on&&!o.dis?(o.dots?'<span class="mdots">•••</span>':'<span class="mchev"></span>'):''}`;
   if(o.on&&!o.dis)b.onclick=o.on;el.appendChild(b);return b}
 function foot(el,ic,t,on,dis){const b=document.createElement('button');b.className='mfoot';b.innerHTML=`<span>${ic}</span>${he(t)}`;if(dis)b.disabled=true;else b.onclick=on;el.appendChild(b)}
-function card(el,html){const d=document.createElement('div');d.className='card';d.innerHTML=html;el.appendChild(d);return d}
+function card(el,html){html=locText(html);const d=document.createElement('div');d.className='card';d.innerHTML=html;el.appendChild(d);return d}
 function empty(el,t){const p=document.createElement('p');p.className='empty';p.textContent=t;el.appendChild(p)}
 const kv=pairs=>`<dl class="kv">${pairs.map(([k,v])=>`<dt>${he(k)}</dt><dd>${v}</dd>`).join('')}</dl>`;
 const pkv=pairs=>`<dl class="pkv">${pairs.map(([k,v])=>`<dt>${he(k)}</dt><dd>${v}</dd>`).join('')}</dl>`;
@@ -148,7 +148,7 @@ const once=k=>{if(S.acts[k])return false;S.acts[k]=1;return true};
 const opts=(list,cancel=true)=>list.concat(cancel?[{t:'Annuleren',cls:'ghost',on:closeModal}]:[]);
 
 /* ================= BEROEP ================= */
-function eduSub(){const E=S.edu;if(E.cur)return cap(E.cur.name);if(E.stage==='basis')return'Basisschool';if(E.stage==='middel')return`Middelbare school (${E.lvl})`;return ageY()<4?'Vanaf 4 jaar':'Ga (weer) naar school'}
+function eduSub(){const E=S.edu;if(E.cur)return cap(E.cur.name);if(E.stage==='basis')return'Basisschool';if(E.stage==='middel')return`Middelbare school (${lvlN(E.lvl)})`;return ageY()<4?'Vanaf 4 jaar':'Ga (weer) naar school'}
 function sheetJob(el){
   const a=ageY();if(typeof polMigrate==='function')polMigrate();if(typeof milMigrate==='function')milMigrate();
   if(a<4){card(el,`<h3>👶 Nog even geduld</h3><p class="muted" style="margin:0">Je bent nog te klein voor school of werk. Vanaf 4 jaar ga je naar de basisschool, en later kies je zelf een opleiding en een baan.</p>`);return}
@@ -223,8 +223,6 @@ function recruiter(){if(S.acts.rec){toast('Het uitzendbureau belt je volgend jaa
   if(!list.length){modal({title:'Uitzendbureau',em:'📞',cat:'Beroep',text:'De recruiter heeft niets voor je. Haal eerst een diploma of bouw ervaring op.',choices:[{t:'OK',cls:'go',on:closeModal}]});return}
   const mine=list.filter(inMySector);const j=mine.length&&chance(.7)?pick(mine):pick(list),co=company(),st=startFor(j),lvl=st?st.lvl:0;
   modal({title:'Uitzendbureau',em:jobEm(j.id),cat:'Beroep',text:`De recruiter heeft een vacature${inMySector(j)?' in jouw vakgebied':''}: ${j.lad[lvl].toLowerCase()} bij ${co}, voor ${fmt(jsal(j,lvl))} per jaar.${st&&lvl>0?` Je start op dat niveau dankzij ${st.why}.`:''}${S.job?' Je stopt dan met je huidige baan.':''}`,choices:opts([{t:'Ik doe het',on:()=>{closeModal();doAct('Uitzendbureau',()=>{if(chance(.8)){if(S.job)endJob();setJob(j.id,lvl,co);hap(5);return `Aangenomen! Je begint als ${j.lad[lvl].toLowerCase()}.`}return 'Op het laatste moment kiezen ze toch iemand anders.'},false,'📞')}}],true)})}
-function foldSec(el,label,n,build,openNow){const s=sec(el,'');const box=document.createElement('div');let open=!!openNow;box.hidden=!open;
-  const r=row(s,{ic:open?'▾':'▸',t:`${label} (${n})`,s:open?'Tik om te verbergen':'Tik om te tonen',on:()=>{open=!open;box.hidden=!open;r.querySelector('.mic').textContent=open?'▾':'▸';r.querySelector('small').textContent=open?'Tik om te verbergen':'Tik om te tonen'}});s.appendChild(box);build(box)}
 // vacatures van dit jaar: elk jaar een andere selectie, zoals in BitLife
 function vacList(kind){const y=year();if(!S.vac||S.vac.y!==y)S.vac={y,co:{}};
   const f=j=>kind==='part'?j.part:kind==='mil'?j.id==='soldaat':(!j.part&&!j.fame&&!j.pol&&j.id!=='soldaat');
@@ -271,19 +269,10 @@ function finPopup(){const inv=Object.values(S.inv).reduce((x,y)=>x+y,0),pr=S.pro
       {t:'Lening aflossen',dis:S.loan<=0||S.money<=0,on:()=>{closeModal();amountModal('Lening aflossen',Math.min(S.money,S.loan),x=>doAct('Afgelost',()=>{cash(-x);S.loan-=x;return `${fmt(x)} afgelost.`},true,'✅'))}},
       {t:'Sluiten',cls:'ghost',on:closeModal}]})}
 const invIn=k=>S.invIn&&S.invIn[k]!=null?S.invIn[k]:S.inv[k];
-function sheetInv(el){const s=sec(el,'Je rekeningen');const em={spaar:'🐷',index:'📊',aandelen:'📈',crypto:'🪙'};
-  for(const [k,[n,mu,sd]] of Object.entries(INV))row(s,{ic:em[k],t:n,s:`Gemiddeld ${Math.round(mu*100)}% per jaar · risico ${sd<.01?'geen':sd<.2?'gemiddeld':sd<.5?'hoog':'extreem'}`,r:fmt(S.inv[k]),dots:true,on:()=>modal({title:n,em:em[k],cat:'Beleggingen',html:pkv([['Ingelegd',fmt(invIn(k))],['Waarde nu',fmt(S.inv[k])],...(S.inv[k]>0?plRow(S.inv[k],invIn(k)):[])]),choices:opts([{t:'Storten',dis:S.money<=0,on:()=>{closeModal();amountModal('Storten',S.money,x=>doAct(n,()=>{cash(-x);S.invIn=S.invIn||{};S.invIn[k]=invIn(k)+x;S.inv[k]+=x;return `${fmt(x)} gestort.`},true,em[k]))}},{t:'Opnemen',dis:S.inv[k]<=0,on:()=>{closeModal();amountModal('Opnemen',S.inv[k],x=>doAct(n,()=>{const basis=invIn(k)*(x/Math.max(1,S.inv[k]));cash(x);S.invIn=S.invIn||{};S.invIn[k]=Math.max(0,invIn(k)-basis);S.inv[k]-=x;const d=Math.round(x-basis);return `${fmt(x)} opgenomen. Daarvan was ${fmt(basis)} ingelegd: ${d>=0?'winst':'verlies'} van ${fmt(Math.abs(d))}.`},true,em[k]))}}])})})}
 const boughtFor=x=>x.buy!=null?fmt(x.buy):'onbekend';
 const plTxt=(now,buy)=>{if(buy==null)return'';const d=Math.round(now-buy);return d===0?'Quitte':`${d>0?'+':'-'}${fmt(Math.abs(d))} (${d>0?'+':''}${Math.round(d/Math.max(1,buy)*100)}%)`};
 const plRow=(now,buy)=>buy==null?[]:[[now-buy>=0?'Winst bij verkoop':'Verlies bij verkoop',`<span style="color:${now-buy>=0?'var(--good)':'var(--bad)'}">${plTxt(now,buy)}</span>`]];
 const soldTxt=(sale,buy)=>buy==null?'':` Je kocht het voor ${fmt(buy)}: ${sale>=buy?'winst':'verlies'} van ${fmt(Math.abs(sale-buy))}.`;
-function carPopup(c){const cond=c.cond??100;const rep=Math.round((100-cond)*c.value*.004+80);const sale=Math.round(c.value*(.5+cond/200));
-  modal({title:c.name,em:carEm(c),cat:'Voertuig',html:pkv([['Gekocht voor',boughtFor(c)],['Waarde nu',fmt(c.value)],['Verkoopprijs',fmt(sale)],...plRow(sale,c.buy),['Conditie',cond+'%']]),choices:opts([{t:`Laten repareren (${fmt(rep)})`,dis:cond>=98||S.money<rep,on:()=>{closeModal();doAct('Garage',()=>{cash(-rep);c.cond=100;return `Je ${c.name} is weer als nieuw.`},true,'🔧')}},{t:`Verkopen (${fmt(sale)})`,on:()=>{closeModal();doAct('Verkocht',()=>{cash(sale);S.cars=S.cars.filter(x=>x!==c);return `Je hebt je ${c.name} verkocht voor ${fmt(sale)}.${soldTxt(sale,c.buy)}`},true,'🏷️')}}])})}
-function itemPopup(it){const sale=Math.round(it.value*(.7+(it.cond??100)/400));
-  modal({title:it.name,em:itemIcon(it),cat:'Bezitting',html:pkv([...(it.variant?[['Uitvoering',he(it.variant)]]:[]),['Gekocht voor',boughtFor(it)],['Waarde nu',fmt(it.value)],['Verkoopprijs',fmt(sale)],...plRow(sale,it.buy),['Conditie',(it.cond??100)+'%']]),choices:opts([{t:`Verkopen (${fmt(sale)})`,on:()=>{closeModal();doAct('Verkocht',()=>{cash(sale);S.items=S.items.filter(x=>x!==it);return `Je hebt je ${it.name} verkocht voor ${fmt(sale)}.${soldTxt(sale,it.buy)}`},true,'🏷️')}}])})}
-function sheetShop(el,kind){if(inJail()){empty(el,'Winkelen kan pas weer als je vrij bent.');return}const a=ageY();const s=sec(el,kind==='luxe'?'Luxe':'Categorieën');
-  for(const [k,c] of Object.entries(CATALOG)){if(kind==='luxe'&&!c.lux)continue;const n=Object.values(c.brands).reduce((x,b)=>x+b.length,0);
-    row(s,{ic:catIcon(k),t:c.n,s:a<(c.min||0)?`Vanaf ${c.min} jaar`:`${Object.keys(c.brands).length} merken · ${n} modellen`,dis:a<(c.min||0),on:()=>openSheet(c.n,el=>sheetBrands(el,k),true)})}}
 const BRANDEM={autos:b=>b==='Klassiekers'?'🚙':['Ferrari','Lamborghini','Porsche'].includes(b)?'🏎️':b==='Tesla'?'🔋':'🚗'};
 const catEm=(k,b)=>BRANDEM[k]?BRANDEM[k](b):CATALOG[k].em;
 function sheetBrands(el,k){const c=CATALOG[k];const s=sec(el,'Merken');
@@ -460,7 +449,6 @@ function sheetCemetery(el){const s=sec(el,'');const ls=Object.values(STORE.lives
   if(!ls.length)empty(s,'Nog niemand begraven.');for(const l of ls)row(s,{ic:'💀',t:l.name,s:`${l.by} · ${l.age} jaar · score ${l.score}${l.ribbon?' · '+l.ribbon:''}`,on:l.story?()=>storyModal(l):null})}
 function sheetRewind(el){const s=sec(el,'Hoe ver terug?');for(const n of [1,3,5,10]){const t=rewindTarget(n);row(s,{ic:'⏪',t:`${n} jaar terug`,s:t?`Terug naar je ${t.m/12}e verjaardag`:'Nog niet zo ver mogelijk',dis:!t,dots:true,on:()=>{rewind(n);closeSheet();show('game');render();saveLife();toast(`Teruggespoeld naar je ${ageY()}e`)}})}
   empty(el,'Je kunt tot 10 jaar terugspoelen, ook nadat je overleden bent.')}
-function sheetTree(el){const s=sec(el,'Generaties');for(const g of S.gens)row(s,{ic:'💀',t:g.name,s:`${g.by} · ${g.age} jaar · score ${g.score}`,on:STORE.lives[g.id]&&STORE.lives[g.id].done?()=>storyModal(STORE.lives[g.id]):null});row(s,{ic:faceEmoji(),t:`${S.p.first} ${S.p.last}`,s:`${S.p.by} · nu ${ageY()} jaar`})}
 
 /* ================= DOOD ================= */
 const RIB=[['Opgegeven','🏳️','Geef het op'],['Staatsman','🏛️','Word minister-president'],['Legende','⭐','Sterf zeer beroemd'],['Crimineel','🦹','Word drie keer veroordeeld'],['Steenrijk','💎','Sterf met 10 miljoen of meer'],['Familiemens','👨‍👩‍👧‍👦','Krijg 4 of meer kinderen'],['Heilige','😇','Sterf met heel veel karma'],['Schurk','😈','Sterf met heel weinig karma'],['Ongelukkig','😢','Leef een ongelukkig leven'],['Gelukzalig','😊','Leef een heel gelukkig leven'],['Jong gestorven','🥀','Sterf voor je 30e'],['Taai','🐢','Word 95 of ouder'],['Topper','🏆','Bereik de top van je vak'],['Blut','🪙','Sterf met schulden'],['Gewoon','🙂','Leef een doodgewoon leven']];
@@ -640,7 +628,7 @@ function renderStart(){
     const del=()=>{modal({title:'Verwijderen?',em:'🗑️',text:`${l.done?l.name:l.p.first+' '+l.p.last} wordt definitief verwijderd.`,choices:opts([{t:'Verwijderen',cls:'bad',on:()=>{closeModal();delete STORE.lives[l.id];lsSave();cloudQueue(l.id);renderStart()}}])})};
     if(l.done)modal({title:l.name,em:'📜',cat:`${l.by} · ${l.age} jaar`,html:l.story.map(p=>`<p style="font-size:15.5px;text-align:left;margin:0">${he(p)}</p>`).join(''),choices:[{t:'Sluiten',cls:'ghost',on:closeModal},{t:'Verwijderen',cls:'bad',on:del}]});
     else modal({title:l.p.first+' '+l.p.last,em:l.alive?'🧑':'💀',cat:l.alive?`${Math.floor(l.m/12)} jaar`:'Overleden',choices:[{t:l.alive?'Verder spelen':'Bekijken',cls:'go',on:()=>{closeModal();loadLife(l.id)}},{t:'Verwijderen',cls:'bad',on:del},{t:'Annuleren',cls:'ghost',on:closeModal}]})})}
-function migrate(s){delete s.energy;s.cpi=s.cpi||1;s.econ=s.econ||{s:'normaal',y:0};s.crim=Object.assign({heat:0,open:[]},s.crim||{});if(s.crim.jail)s.crim.jail=Object.assign({resp:10,gb:50,gang:null,work:false,tunnel:0,study:0,cell:null,contra:0},s.crim.jail);s.items=s.items||[];s.fights=s.fights||{w:0,l:0};for(const c of s.cars||[])if(c.cond==null)c.cond=100;s.flags=s.flags||{};if(!s.ap)s.ap=randAp(s.p.g);if(s.disc==null)s.disc=50;if(s.fert==null)s.fert=65;if(!s.talent)s.talent='geen';if(!s.flags.ingMig){if(s.job&&s.job.id==='ingenieur')s.job.lvl=Math.min(s.job.lvl+1,3);s.flags.ingMig=1}if(!s.flags.salCpi){if(s.job&&s.cpi>1)s.job.mult/=s.cpi;s.flags.salCpi=1}return s}
+function migrate(s){delete s.energy;s.money=Math.round(s.money||0);s.cpi=s.cpi||1;s.econ=s.econ||{s:'normaal',y:0};s.crim=Object.assign({heat:0,open:[]},s.crim||{});if(s.crim.jail)s.crim.jail=Object.assign({resp:10,gb:50,gang:null,work:false,tunnel:0,study:0,cell:null,contra:0},s.crim.jail);s.items=s.items||[];s.fights=s.fights||{w:0,l:0};for(const c of s.cars||[])if(c.cond==null)c.cond=100;s.flags=s.flags||{};if(!s.ap)s.ap=randAp(s.p.g);if(s.disc==null)s.disc=50;if(s.fert==null)s.fert=65;if(!s.talent)s.talent='geen';if(!s.flags.ingMig){if(s.job&&s.job.id==='ingenieur')s.job.lvl=Math.min(s.job.lvl+1,3);s.flags.ingMig=1}if(!s.flags.salCpi){if(s.job&&s.cpi>1)s.job.mult/=s.cpi;s.flags.salCpi=1}return s}
 function loadLife(id){S=STORE.lives[id];if(!S||S.done)return;migrate(S);Q=S.q||[];STORE.last=id;
   if(!S.alive){showDeath();return}show('game');render();if(Q.length)processQ()}
 /* ================= OPSLAAN (lsLoad, lsSave, saveLife: zie src/store.js) ================= */
