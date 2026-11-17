@@ -12,6 +12,11 @@ Levensloop is een persoonlijke, Nederlandstalige BitLife-kloon van Thijmen. Eén
 - Bestaande levens op Thijmens iPhone mogen nooit stukgaan. Elke wijziging aan de opslag of aan de vorm van `S` krijgt een migratie die oude gegevens omzet.
 - Thijmens e-mailadres is privé en gaat nooit naar externe diensten.
 
+## Plannen
+
+- `VERBETERPLAN.md`: fase 0 tot en met 8 (klaar), met de vaste werkwijze per fase.
+- `VERBETERPLAN2.md`: fase 9 tot en met 16 (dieper en beter), met Thijmens keuzes van 18 november 2026. Daar gaat het werk verder.
+
 ## Waar alles staat
 
 | Wat | Waar |
