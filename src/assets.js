@@ -23,10 +23,11 @@ const ownById=id=>owned().find(x=>x.id===id);
 // ---- het tabblad ----
 function sheetAssets(el){const a=ageY();
   card(el,kv([['Saldo',fmt(S.money)],['Netto vermogen',fmt(netWorth())]]));
-  const own=sec(el,'Je bezit');let n=0;
-  for(const p of S.props){n++;row(own,{ic:hIcon(p.name),t:p.name,s:`${S.home.pid===p.id?'Je woont hier · ':''}waarde ${fmt(p.value)}`,on:()=>openSheet(p.name,el=>sheetProp(el,p),true)})}
-  for(const x of owned()){n++;const c=x.cond??100;row(own,{ic:vIcon(x),t:x.name,s:`Waarde ${fmt(x.value)}${x.ins?' · verzekerd':''}${x.classic?' · klassieker':''}`,r:`<span class="minibar" style="width:56px;display:block"><i style="width:${c}%;background:${statCol(c)}"></i></span>`,on:()=>openSheet(x.name,el=>sheetOwned(el,x),true)})}
-  if(!n)empty(own,a<12?'Je hebt nog niets. Vanaf 12 jaar kun je winkelen.':'Je hebt nog niets gekocht.');
+  // je bezit per categorie: tik op een categorie om te zien wat erin zit (één ding? dan meteen dat ding)
+  const own=sec(el,'Je bezit');const groups=ownGroups();
+  for(const g of groups){const one=g.list.length===1?g.list[0]:null;
+    row(own,{ic:g.ic,t:g.n,s:`${g.list.length===1?"1 stuk":g.list.length+" stuks"} · waarde ${fmt(g.val)}`,on:()=>one?openOwn(one):openSheet(g.n,el=>sheetOwnCat(el,g.k),true)})}
+  if(!groups.length)empty(own,a<12?'Je hebt nog niets. Vanaf 12 jaar kun je winkelen.':'Je hebt nog niets gekocht.');
   const g=sec(el,'Geld');
   row(g,{ic:'💰',t:'Financiën',s:a<18?'Je saldo en zakgeld':'Sparen, beleggen, automatisch beleggen, startups en leningen',on:()=>openSheet('Financiën',sheetFinance,true)});
   if(S.biz.length)row(g,{ic:'🏢',t:'Bedrijven',s:`${S.biz.length} ${S.biz.length>1?'bedrijven':'bedrijf'}`,on:()=>openSheet('Ondernemen',sheetBizList,true)});
@@ -35,6 +36,18 @@ function sheetAssets(el){const a=ageY();
   const sh=sec(el,'Winkelen');
   row(sh,{ic:'🏡',t:'Huizen',s:a<18?'Vanaf 18 jaar':'Kopen, huren, verhuren en verbouwen',dis:a<18,on:()=>openSheet('Panden',sheetHousing,true)});
   for(const [k,t] of SHOPS){const c=CATALOG[k];if(!c)continue;const min=c.min||0;row(sh,{ic:catIcon(k),t,s:a<min?`Vanaf ${min} jaar`:`${Object.keys(c.brands).length} merken · vanaf ${fmt(Math.min(...Object.entries(c.brands).flatMap(([b,ms])=>ms.map(m=>m[1]*Math.min(...c.vars(b).map(v=>v[1]))))))}`,dis:a<min,on:()=>openSheet(t,el=>sheetBrands(el,k),true)})}}
+// ---- bezit in categorieën ----
+const ownCat=x=>S.cars.includes(x)?(x.kind==='motoren'?'motoren':'autos'):(CATALOG[catOf(x)]?catOf(x):'overig');
+function ownGroups(){const G=[];if(S.props.length)G.push({k:'huizen',n:S.props.length>1?'Huizen en panden':'Huis',ic:'🏡',list:S.props.slice(),val:S.props.reduce((t,p)=>t+(p.value||0),0)});
+  const by={};for(const x of owned()){const k=ownCat(x);(by[k]=by[k]||[]).push(x)}
+  const order=SHOPS.map(([k])=>k).concat(Object.keys(by).filter(k=>!SHOPS.some(([s])=>s===k)));
+  for(const k of order)if(by[k]){const sh=SHOPS.find(([s])=>s===k);G.push({k,n:sh?sh[1]:'Overig',ic:k==='autos'?'🚗':k==='overig'?'📦':catIcon(k),list:by[k],val:by[k].reduce((t,x)=>t+(x.value||0),0)})}
+  return G}
+function openOwn(x){if(S.props.includes(x))openSheet(x.name,el=>sheetProp(el,x),true);else openSheet(x.name,el=>sheetOwned(el,x),true)}
+function sheetOwnCat(el,k){const g=ownGroups().find(g=>g.k===k);if(!g||!g.list.length){empty(el,'Hier heb je niets meer van.');return}
+  card(el,kv([['Aantal',String(g.list.length)],['Totale waarde',fmt(g.val)]]));const s=sec(el,g.n);
+  if(k==='huizen'){for(const p of g.list)row(s,{ic:hIcon(p.name),t:p.name,s:`${S.home.pid===p.id?'Je woont hier · ':''}waarde ${fmt(p.value)}`,on:()=>openOwn(p)});return}
+  for(const x of g.list.sort((a,b)=>(b.value||0)-(a.value||0))){const c=x.cond??100;row(s,{ic:vIcon(x),t:x.name,s:`Waarde ${fmt(x.value)}${x.ins?' · verzekerd':''}${x.classic?' · klassieker':''}`,r:`<span class="minibar" style="width:56px;display:block"><i style="width:${c}%;background:${statCol(c)}"></i></span>`,on:()=>openOwn(x)})}}
 // ---- kopen ----
 function buyCat(k,b,m,v,p,col,adj){if(inJail()){toast('Winkelen kan niet vanuit de gevangenis');return}const c=CATALOG[k];const name=['kunst','verzamel','goud'].includes(k)?m[0]:`${b} ${m[0]}`;const used=v==='Tweedehands';
   doAct('Gekocht!',()=>{cash(-p);

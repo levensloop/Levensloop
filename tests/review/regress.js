@@ -333,6 +333,9 @@ F8T('17.6','doodsoorzaak: geen "een slechte gezondheid" meer','NL','',async()=>{
   return {ok:!c.includes('een slechte gezondheid')&&['longkanker','COPD'].includes(r),msg:`oorzaken ${[...new Set(c)].slice(0,5).join(', ')}; roker: ${r}`}});
 F8T('17.7','schooladvies volgt je cijfers: een 1 gemiddeld en alles fout geeft geen vwo','NL','',async()=>{S.m=12*12;S.edu.stage='basis';S.edu.gr={Rekenen:1,Taal:1.2};S.st.smarts=100;setAdvice(Math.round(clamp(501+0*44+(100-50)*.04+2,501,550)));const low=S.edu.lvl;
   S.edu.stage='basis';S.edu.gr={Rekenen:8.5,Taal:8.1};setAdvice(530);const high=S.edu.lvl;return {ok:low==='vmbo'&&high==='vwo',msg:`1 gemiddeld: ${low}, 8,3 gemiddeld: ${high}`}});
+F8T('17.8','bezit in categorieën: elke spullen-soort één rij, tik toont de inhoud','NL','',async()=>{S.m=30*12;S.items=S.items||[];for(const [k,n] of [['horloges','Rolex A'],['horloges','Rolex B'],['kunst','Schilderij']])S.items.push({id:uid(),em:'x',ico:[k,'b',n,'Nieuw'],name:n,value:1000,cond:100,yr:year()});
+  const G=ownGroups();const h=G.find(g=>g.k==='horloges');openSheet('Bezit',sheetAssets,true);await sl(50);const rows=document.querySelectorAll('#sheet .row, .sheet .row').length;openSheet('Horloges',el=>sheetOwnCat(el,'horloges'),true);await sl(50);const txt=document.body.textContent;closeSheet();
+  return {ok:!!h&&h.list.length===2&&txt.includes('Rolex A')&&txt.includes('Rolex B')&&!G.some(g=>g.k==='overig'),msg:`groepen ${G.map(g=>g.k+':'+g.list.length).join(', ')}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 

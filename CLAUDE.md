@@ -15,7 +15,8 @@ Levensloop is een persoonlijke, Nederlandstalige BitLife-kloon van Thijmen. Eén
 ## Plannen
 
 - `VERBETERPLAN.md`: fase 0 tot en met 8 (klaar), met de vaste werkwijze per fase.
-- `VERBETERPLAN2.md`: fase 9 tot en met 16 (dieper en beter), met Thijmens keuzes van 18 november 2026. Daar gaat het werk verder.
+- `VERBETERPLAN2.md`: fase 9 tot en met 16 (dieper en beter), klaar.
+- `VERBETERPLAN3.md`: fase 18 tot en met 23 (realisme, liefde, wonen, minigames, huisdieren, bedrijf). Daar gaat het werk verder.
 
 ## Waar alles staat
 
