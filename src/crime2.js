@@ -30,7 +30,7 @@ function crime(cr,em){if(cr.id==='bank'){openSheet('Overval plannen',el=>sheetHe
 function resolveCrime(cr,pl,hits,em){const a=ageY();use('crime');kar(-ri(3,8));
   const risk=(typeof pl[2]==='function'?pl[2]():pl[2])*(S.talent==='misdaad'?.65:1);
   let p=cr.p*risk*(1+(S.crim.heat||0)/90)*(1+S.crim.rec.length*.12)*(1-S.sk.sport/400);
-  if(hits!=null)p*=hits>=3?.55:hits===2?.9:1.5;p=clamp(p,.08,.95);
+  if(hits!=null)p*=hits>=3?.55:hits===2?.9:1.5;p=clamp(p*(typeof CRIMEMILD!=='undefined'?CRIMEMILD:1),.06,.95);
   if(chance(p)){const m=Math.max(1,Math.round(ri(cr.jail[0],cr.jail[1])*(1+S.crim.rec.length*.25)*risk));const minor=cr.jail[1]===0;
     closeSheet();L(`Betrapt tijdens ${cr.t.toLowerCase()}.`,'bad');Q.push({id:'s_arrest',c:{w:cr.t,m,minor,fine:ri(1,5)*100}});processQ();return}
   if(hits!=null&&hits<2&&chance(.5)){doAct(cr.t,()=>{S.crim.heat=Math.min(100,(S.crim.heat||0)+Math.round(cr.heat/2));hap(-1);return 'Het gaat mis. Je gaat er met lege handen vandoor, maar niemand heeft je gezien.'},true,'😬');return}

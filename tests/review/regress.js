@@ -280,6 +280,38 @@ F8T('12.4','hobby wordt beroep, taal leren tot vloeiend','NL','',async()=>{S.m=3
   S.lang={Spaans:95};S.acts={};const el2=document.createElement('div');sheetLearn(el2);const r=[...el2.querySelectorAll('.mrow')].find(x=>/Spaans/.test(x.textContent));r.click();await sl(30);closeModal();
   return {ok:/beroep van maken/.test(el.textContent)&&S.lang.Spaans===100,msg:`beroep-rij ${/beroep van maken/.test(el.textContent)}, Spaans ${S.lang.Spaans}`}});
 
+// ---------- fase 13 ----------
+F8T('13.1','beurs: 20 bedrijven; aangifte, lijfrente en stichting in Financiën','NL','',async()=>{S.m=40*12;S.money=3e6;setJob('ambtenaar',2);const n=Object.values(HOLD).filter(h=>h[5]==='aandelen'&&!/mix/i.test(h[0])).length;
+  const el=document.createElement('div');sheetFinance(el);const t=el.textContent;aangifte();await sl(30);const b=[...document.querySelectorAll('#modal .btn')].find(x=>/Netjes/.test(x.textContent));b.click();await sl(30);closeModal();
+  return {ok:n>=20&&/Belastingaangifte/.test(t)&&/Lijfrente/.test(t)&&/stichting/i.test(t)&&S.acts.ib===1,msg:`${n} bedrijven, rijen ${/Lijfrente/.test(t)}, aangifte gedaan ${S.acts.ib===1}`}});
+F8T('13.2','lijfrente wordt extra pensioen; personeel kost geld','NL','',async()=>{S.m=60*12;setJob('ambtenaar',2);S.money=1e6;S.lijf={v:0,pct:10};for(let i=0;i<5;i++)lijfYear();const v=S.lijf.v;S.m=70*12;endJob();S.pension=20000;lijfYear();const p=S.pension;
+  S.staff={kok:1};const m0=S.money;staffYear();return {ok:v>0&&p>20000&&S.money<m0,msg:`spaarpot ${v}, pensioen ${p}, personeel betaald ${S.money<m0}`}});
+F8T('13.3','auto: onderhoud en APK','NL','',async()=>{S.m=30*12;S.money=50000;S.lic=1;S.cars.push({id:uid(),kind:'autos',name:'Testauto',buy:20000,value:15000,cond:30,yr:year()-5});const c=S.cars[S.cars.length-1];carYear();const af=c.apk===0;
+  const el=document.createElement('div');sheetOwned(el,c);return {ok:af&&/Onderhoud laten doen/.test(el.textContent),msg:`afgekeurd ${af}, onderhoud-rij ${/Onderhoud/.test(el.textContent)}`}});
+// ---------- fase 14 ----------
+F8T('14.1','acteur: auditie, rol, release met recensie','NL','',async()=>{S.m=30*12;S.st.looks=95;S.sk.kunst=90;setJob('acteur',1);S.fame=40;let got=false;for(let i=0;i<20&&!got;i++){S.acts={};audition('film');await sl(10);closeModal();got=P14().act.length>0}
+  P14().act.forEach(a=>a.y=year()-1);const n0=S.log.length;releaseAct();const rel=S.log.slice(n0).some(l=>/Recensies/.test(l.t||''));return {ok:got&&rel,msg:`rol ${got}, recensie ${rel}`}});
+F8T('14.2','muzikant: nummers, album, hitlijst; presentator bestaat','NL','',async()=>{S.m=25*12;S.sk.muziek=80;setJob('muzikant',1);for(let i=0;i<8;i++)P14().songs.push(70);const el=document.createElement('div');circRow(el,'work');const t=el.textContent;
+  album();await sl(30);const txt=(document.querySelector('#modal .pbody')||{}).textContent||'';closeModal();return {ok:/Een album uitbrengen/.test(t)&&/Top 40/.test(txt)&&!!JOB('presentator'),msg:`rij ${/album/.test(t)}, hitlijst ${/Top 40/.test(txt)}`}});
+F8T('14.3','prijs als groot moment met echte naam','NL','',async()=>{S.m=40*12;S.fame=50;Q.length=0;Q.push({id:'f14_prijs',c:{k:'film',t:'"Test"'}});processQ();await sl(30);const t=(document.querySelector('#modal .pbody')||{}).textContent||'';closeModal();Q.length=0;
+  return {ok:/Gouden Kalf/.test(t),msg:t.slice(0,80)}});
+// ---------- fase 15 ----------
+F8T('15.1','sport: echte club, competitie en eindstand','NL','',async()=>{S.m=24*12;joinSport('voetbal');const P=S.sport;P.sk=85;signPro(1,'NL','Ajax',200);const club=proClub('voetbal','NL');
+  P.seasons.push({a:ageY(),st:'pro',team:'Ajax',perf:85,num:20});const n0=S.log.length;sportSeason();const line=S.log.slice(n0).map(l=>l.t).join(' ');
+  return {ok:RCLUB.voetbal.NL.includes(club)&&/Eredivisie/.test(line),msg:`club ${club}, ${line.slice(0,70)}`}});
+F8T('15.2','individuele sport: wereldranglijst en toernooi met echte naam','NL','',async()=>{S.m=24*12;joinSport('tennis');const P=S.sport;P.sk=90;signPro(2,'NL','',500);let won=false;for(let i=0;i<30&&!won;i++){P.seasons.push({a:ageY(),st:'pro',team:'',perf:95,num:3});sportSeason();won=(P.majors||[]).length>0}
+  return {ok:P.rank>0&&won&&TOURN.tennis.includes(P.majors[0][1]),msg:`ranglijst ${P.rank}, gewonnen ${won?P.majors[0][1]:'-'}`}});
+F8T('15.3','na je carrière: keuze','NL','',async()=>{S.m=36*12;joinSport('voetbal');signPro(1,'NL','PSV',200);Q.length=0;retireSport();const q=Q.some(x=>x.id==='s15_nacarriere');Q.length=0;return {ok:q,msg:`keuze ${q}`}});
+// ---------- fase 16 ----------
+F8T('16.1','verhoor komt voor de rechtszaak; schikking mogelijk','NL','',async()=>{S.m=30*12;S.money=50000;Q.length=0;Q.push({id:'s_trial',c:{w:'Inbreken',m:12}});processQ();await sl(30);const t=(document.querySelector('#modal .ptitle')||{}).textContent||'';
+  const b=[...document.querySelectorAll('#modal .btn')].find(x=>/Bekennen/.test(x.textContent));b.click();await sl(30);closeModal();await sl(20);processQ();await sl(30);const t2=(document.querySelector('#modal .pbody')||{}).textContent||'';const sch=[...document.querySelectorAll('#modal .btn')].some(x=>/schikking/.test(x.textContent));closeModal();Q.length=0;
+  return {ok:/verhoor/i.test(t)&&sch,msg:`verhoor ${/verhoor/i.test(t)}, schikking ${sch}`}});
+F8T('16.2','moord: alleen spelregel, met onderzoek achteraf','NL','',async()=>{S.m=40*12;S.money=100000;const v=mkPerson('vijand','m',S.m-40*12,{rel:5});S.rel.push(v);let done=false;for(let i=0;i<20&&!done;i++){if(!v.alive)break;murderGo(v,'huur',1000);await sl(20);closeModal();Q.length=0;done=!v.alive}
+  S.crim.moord=[{w:'moord op test',a:ageY(),fam:1,h:'zelf'}];let q=false;for(let i=0;i<60&&!q;i++){Q.length=0;murderYear();q=Q.some(x=>x.id==='c16_moordzaak');if(!q)S.crim.moord=[{w:'moord op test',a:ageY(),fam:1,h:'zelf'}]}Q.length=0;
+  const el=document.createElement('div');sheetCrime(el);return {ok:done&&q&&/uit de weg ruimen/.test(el.textContent)&&!killable().some(p=>pAge(p)<16),msg:`gelukt ${done}, recherche ${q}`}});
+F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
+  return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
+
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];
   for(const x of T){if(only&&!x.nr.startsWith(only))continue;
