@@ -20,7 +20,7 @@ Object.assign(CRMG,{hacken:'cijfers',heling:'straat'});
 const qNext=it=>Q.splice(1,0,it);
 // ---------- 16.1 verhoor (voor elke rechtszaak) ----------
 E('c16_verhoor',{sys:1,t:'Het verhoor',x:c=>`Je zit in een kale verhoorkamer. Twee rechercheurs willen weten wat er gebeurd is: ${c.w.toLowerCase()}.`,ch:[
- ['🤐 Zwijgen',c=>{if(chance(.22)){S.crim.heat=clamp((S.crim.heat||0)-10);return 'Je zegt geen woord. Na 48 uur moeten ze je laten gaan: te weinig bewijs.'}qNext({id:'s_trial',c:Object.assign({},c,{vh:1})});return 'Je zegt geen woord. Het OM zet de zaak toch door.'}],
+ ['🤐 Zwijgen',c=>{if(chance(.22)){S.crim.heat=clamp((S.crim.heat||0)-10);return 'Je zegt geen woord. Na 48 uur moeten ze je laten gaan: te weinig bewijs.'}qNext({id:'s_trial',c:Object.assign({},c,{vh:1})});return 'Je zegt geen woord. De aanklager zet de zaak toch door.'}],
  ['🗣️ Bekennen',c=>{kar(2);qNext({id:'s_trial',c:Object.assign({},c,{vh:1,m:Math.max(1,Math.round(c.m*.7))})});return 'Je vertelt alles. De rechercheurs knikken. Dat scheelt straks in je straf.'}],
  ['🤥 Een verhaal verzinnen',c=>{if(chance(.4)){S.crim.heat=clamp((S.crim.heat||0)+5);return 'Je verhaal klopt precies. Ze moeten je laten gaan.'}qNext({id:'s_trial',c:Object.assign({},c,{vh:1,m:Math.round(c.m*1.25)})});return 'Je verhaal rammelt aan alle kanten. Dat maakt het erger.'}],
  ['🧑‍⚖️ Eerst je advocaat bellen',c=>{const k=Math.round(1500*(S.cpi||1));cash(-Math.min(k,Math.max(0,S.money)));if(chance(.3))return 'Je advocaat vindt een vormfout. Je staat binnen een uur weer buiten.';qNext({id:'s_trial',c:Object.assign({},c,{vh:1,m:Math.max(1,Math.round(c.m*.9))})});return 'Je advocaat zit naast je. De zaak gaat door, maar je staat sterker.'}]]});
@@ -29,7 +29,7 @@ processQ=(f=>function(){if(Q.length&&Q[0].id==='s_trial'&&!(Q[0].c&&Q[0].c.vh)&&
 
 // ---------- 16.2 rechtszaak: schikking, jury ----------
 if(EV.s_trial){const x0=EV.s_trial.x;EV.s_trial.x=c=>(typeof x0==='function'?x0(c):x0)+(S.p.country==='US'?' Een jury van twaalf burgers beslist.':'');
-  EV.s_trial.ch.push(['🤝 Een schikking voorstellen',c=>{const k=Math.round((2500+c.m*900)*(S.cpi||1));cash(-Math.min(k,Math.max(0,S.money)));if(chance(.55)){S.crim.rec.push({w:c.w+' (schikking)',a:ageY()});hap(-2);return `Het OM gaat akkoord met een schikking van ${fmt(k)}. Geen gevangenis, wel een aantekening.`}jail(c.m,c.w);return `Het OM wil niet schikken. Je krijgt ${c.m} maanden.`},c=>c.m<=36&&!/moord/i.test(c.w)]);}
+  EV.s_trial.ch.push(['🤝 Een schikking voorstellen',c=>{const k=Math.round((2500+c.m*900)*(S.cpi||1));cash(-Math.min(k,Math.max(0,S.money)));if(chance(.55)){S.crim.rec.push({w:c.w+' (schikking)',a:ageY()});hap(-2);return `De aanklager gaat akkoord met een schikking van ${fmt(k)}. Geen gevangenis, wel een aantekening.`}jail(c.m,c.w);return `De aanklager wil niet schikken. Je krijgt ${c.m} maanden.`},c=>c.m<=36&&!/moord/i.test(c.w)]);}
 
 // ---------- moord en huurmoord (spelregel, geen details) ----------
 const killable=()=>living().filter(p=>isHuman(p)&&!p.gone&&pAge(p)>=16&&!(typeof abroad==='function'&&abroad(p))&&!['influencer','celgenoot'].includes(p.role));
@@ -58,7 +58,7 @@ EVMETA.c16_moordzaak=['Misdaad','🕵️'];
 
 // ---------- 16.4 een nieuwe start ----------
 function newStart(){doAct('Een nieuwe start',()=>{S.flags.ns16=ageY();S.crim.heat=0;kar(10);hap(4);if(S.crim.org&&S.crim.org.type==='bende')S.crim.org=null;
-  return pick(['Je verbreekt het contact met je oude vrienden uit het milieu en zoekt hulp bij de reclassering.','Je schrijft je in voor een opleiding en begint met een schone lei.','Je vertelt je familie eerlijk over je verleden. Het lucht op.'])},true,'🌱')}
+  return pick(['Je verbreekt het contact met je oude vrienden uit het milieu en zoekt hulp om het anders te gaan doen.','Je schrijft je in voor een opleiding en begint met een schone lei.','Je vertelt je familie eerlijk over je verleden. Het lucht op.'])},true,'🌱')}
 // ---------- 16.5 slachtoffer ----------
 E('c16_slachtoffer',{a:[16,90],w:.35,cd:12,t:'Bestolen',x:()=>pick(['Er is ingebroken in je schuur. Je fiets en gereedschap zijn weg.','Iemand heeft met jouw gegevens online spullen gekocht.','Je portemonnee is gerold in de trein.']),ch:[
  ['📝 Aangifte doen',()=>{if(chance(.35)){const k=Math.round(ri(2,8)*100*(S.cpi||1));cash(k);hap(3);return `De dader wordt gepakt. Je krijgt ${fmt(k)} schadevergoeding.`}return 'Je doet aangifte. Je hoort er nooit meer iets van.'}],

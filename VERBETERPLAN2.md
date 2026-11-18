@@ -4,6 +4,19 @@ Opgesteld op 18 november 2026, na fase 8. Doel: wat er al is gedetailleerder en 
 
 Lees eerst `CLAUDE.md` en de werkwijze in `VERBETERPLAN.md` (die blijft gelden: per fase een kort plan, vragen alleen bij "Keuze voor Thijmen", fouten eerst reproduceren, een test per oplossing, migratie bij elke wijziging aan `S`, afsluiten met bouwen, simulaties en cijfers).
 
+## Voortgang
+
+| Fase | Stand (18 nov 2026, nacht) |
+|---|---|
+| 9 Mensen | Gebouwd: `people9.js`, `family9.js`, `calm9.js`. Karakter en geheugen voor iedereen, eigen levens (familie, partner, goede vrienden), berichten bij Relaties, buitenland, kinderen per leeftijd, samen beslissen, vriendengroepen, één groot familiemoment per jaar, verder als kleinkind, getrouwd = samenwonen. Pop-ups 3,0 → 2,2 schermen per jaar (fase 9 alleen). |
+| 10 Werk en school | Gebouwd: `work10.js`. 16 beroepen, 8 studies, werkdag, jaargesprek, werktijden, burn-out, verlof, sabbatical, docenten, klas overslaan, stage, buitenlandsemester. |
+| 11 Gezondheid | Gebouwd: `health11.js` (mild; Alzheimer niet meer in nieuwe ziektes; geen levenseinde). |
+| 12 Activiteiten | Gebouwd: `acts12.js`. |
+| 13 Geld | Gebouwd: `money13.js` (geen nieuwe verzekeringen; de bestaande auto- en spullenverzekering bleef). |
+| 14 Roem | Gebouwd: `fame14.js`. |
+| 15 Sport | Gebouwd: `sport15.js`. |
+| 16 Misdaad | Gebouwd: `crime16.js` (moord: doelwit vanaf 16 jaar). |
+
 ## Wat Thijmen al koos (18 nov 2026)
 
 - Alles mag dieper: activiteiten, relaties en familie, werk en school, gezondheid en ouderdom, roem en social media, misdaad en gevangenis, geld en bezit en auto's, sport.

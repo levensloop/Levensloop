@@ -39,8 +39,9 @@ function zkhVisit(){const ps=living(['partner','kind','moeder','vader','broer','
 // ---------- 11.2 leefstijl en 11.6 fitheid ----------
 function lsYear(){const A=S.lastActs||{},a=ageY();let s=50;const sp=['gym','run','klim'].filter(k=>A[k]).length+(S.sport&&S.sport.st&&S.sport.st!=='gestopt'?1:0);
   s+=sp*9+(A.eten?8:0)+(A.med?4:0)-(addLvl('roken')>=50?25:0)-(addLvl('alcohol')>=50?15:0)-(addLvl('drugs')>=50?20:0)-(S.job&&S.job.wl==='over'?8:0);S.ls=clamp(Math.round(s));
-  S.fit=clamp(Math.round((S.fit??(a<30?60:50))+(sp?sp*4:-3)-(a>50?2:0)-(a>70?2:0)+(S.ls-50)/20));
-  if(a>=12){hea(Math.round((S.ls-50)/25+(S.fit-50)/40))}}
+  // fitheid: sporten maakt fitter; zonder sport zak je langzaam naar een normale basis (die met de jaren iets lager ligt)
+  const base=a<40?45:a<60?40:a<75?35:30;let f=S.fit??(a<30?55:45);if(sp)f+=sp*4;else if(f>base)f-=2;else if(f<base)f+=1;S.fit=clamp(Math.round(f+(S.ls-50)/25));
+  if(a>=12){const d=(S.ls-50)/30+(S.fit-base)/50;hea(d>=.8?1:d<=-.8?-1:0)}}
 function lsTips(){const t=[],A=S.lastActs||{};if(!['gym','run','klim'].some(k=>A[k]))t.push('meer bewegen (Geest & lichaam)');if(!A.eten)t.push('gezonder eten');if(addLvl('roken')>=50)t.push('stoppen met roken');if(addLvl('alcohol')>=50)t.push('minder drinken');if(S.job&&S.job.wl==='over')t.push('minder overuren');return t}
 sheetDoctor=(f=>function(el){const r=f.apply(this,arguments);const ls=S.ls??50,fit=S.fit??50;const t=lsTips();
   card(el,`<h3>🍎 Je leefstijl</h3><div class="stat"><span>Leefstijl</span><span></span><span class="v">${ls}%</span>${bar(ls)}</div><div class="stat"><span>Fitheid</span><span></span><span class="v">${fit}%</span>${bar(fit,'var(--brand)')}</div><span class="muted">${t.length?'Tip: '+he(f8List(t))+'.':'Goed bezig! Zo blijf je langer gezond.'}</span>`);return r})(sheetDoctor);

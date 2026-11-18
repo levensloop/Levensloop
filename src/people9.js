@@ -73,7 +73,7 @@ function lifeOne(p){const pa=pAge(p),r=p.role,x=lfInit(p),cp=S.cpi||1,kt=ktOf(p)
   const say=(t,c)=>{if(close)L(t,c||'sys')};
   // opleiding (eigen kinderen, kleinkinderen, broers en zussen)
   if(['kind','kleinkind','broer','zus'].includes(r)){
-    if(pa===18&&!x.ed){const go=r==='kind'?!!p.study:chance(clamp(((p.smarts||50)-20)/70,.1,.9));if(go){const sm=p.smarts||50;x.ed=sm>=66?'wo':sm>=48?'hbo':'mbo';const st=pick(STUDIES.filter(s=>s.ty.includes(x.ed)))||STUDIES[0];x.st=st.t;x.end=18+(x.ed==='mbo'?3:x.ed==='hbo'?4:5);lfLog(p,`Begon aan ${EDN[x.ed]==='universiteit'?'de universiteit':'het '+EDN[x.ed]}: ${st.t.toLowerCase()}`);p.job='student'}}
+    if(pa===18&&!x.ed){const go=r==='kind'?!!p.study:chance(clamp(((p.smarts||50)-20)/70,.1,.9));if(go){const sm=p.smarts||50;x.ed=sm>=66?'wo':sm>=48?'hbo':'mbo';const st=pick(STUDIES.filter(s=>s.ty.includes(x.ed)))||STUDIES[0];x.st=st.t;x.end=18+(x.ed==='mbo'?3:x.ed==='hbo'?4:5);lfLog(p,`Begon aan ${x.ed==='wo'?'de universiteit':x.ed==='hbo'?'de hogeschool':'een vakopleiding'}: ${st.t.toLowerCase()}`);p.job='student'}}
     if(x.end&&pa===x.end&&!x.done){x.done=1;if(chance(.85)){lfLog(p,`Haalde ${f8Zijn(p.g)} diploma ${(x.st||'').toLowerCase()}`);if(r==='kind'){L(`🎓 ${Who(p)} heeft ${f8Zijn(p.g)} diploma ${(x.st||'').toLowerCase()} gehaald!`,'good');hap(3)}}else{lfLog(p,'Stopte met de studie');x.ed=null}if(p.job==='student')p.job=''}}
   // werk
   const studying=x.end&&pa<x.end&&!x.done;
