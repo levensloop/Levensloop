@@ -496,7 +496,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .rapport{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:4px}
 .rapport div{display:flex;justify-content:space-between;gap:8px;font-size:15px;border-bottom:.5px solid var(--sep);padding:4px 0}
 .rapport b{font-variant-numeric:tabular-nums}
-@keyframes tapfx{0%{scale:1}35%{scale:.94}100%{scale:1}}@keyframes agetap{0%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-50%) scale(.94)}100%{transform:translate(-50%,-50%) scale(1)}}.agebig.tapfx{animation:agetap .2s ease-out}.tabbar button{position:relative}.ib9{position:absolute;top:2px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff3b30;color:#fff;font-size:11px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px #fff}.tapfx{animation:tapfx .2s ease-out}
+@keyframes tapfx{0%{scale:1}35%{scale:.94}100%{scale:1}}@keyframes agetap{0%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-50%) scale(.94)}100%{transform:translate(-50%,-50%) scale(1)}}.agebig.tapfx{animation:agetap .2s ease-out}.tabbar>button{position:relative}.ib9{position:absolute;top:2px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff3b30;color:#fff;font-size:11px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px #fff}.tapfx{animation:tapfx .2s ease-out}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .choices .btn.sub{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;text-align:left;padding-block:9px}.choices .btn.sub .ctx{display:flex;flex-direction:column;gap:2px;min-width:0}.choices .btn.sub .ctx>span{font-weight:700}.cic{flex:none;width:42px;height:42px;border-radius:11px;background:#fff;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.12)}.cic .ico{width:36px;height:36px}.ico{display:block}.mic .ico{width:44px;height:44px;margin:auto}.ptitle .ico{width:48px;height:48px}.card h3 .ico{width:36px;height:36px;display:inline-block;vertical-align:-10px}.bface .ico,.face .ico{width:44px;height:44px}.choices .btn.sub small{font-size:13px;font-weight:500;opacity:.72;line-height:1.3}
 [hidden]{display:none!important}
@@ -696,7 +696,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261118-1040';
+const APP_VERSION='20261118-1236';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -10592,8 +10592,8 @@ if(EV.s_trial){const x0=EV.s_trial.x;EV.s_trial.x=c=>(typeof x0==='function'?x0(
 // ---------- moord en huurmoord (spelregel, geen details) ----------
 const killable=()=>living().filter(p=>isHuman(p)&&!p.gone&&pAge(p)>=16&&!(typeof abroad==='function'&&abroad(p))&&!['influencer','celgenoot'].includes(p.role));
 const FAMR=['moeder','vader','partner','kind','broer','zus','opa','oma','kleinkind','schoonzoon','schoondochter'];
-function murderMenu(){if(ageY()<18||inJail())return;const ps=killable().sort((a,b)=>a.rel-b.rel).slice(0,12);if(!ps.length){toast('Er is niemand');return}
-  modal({title:'Iemand uit de weg ruimen',em:'🔪',cat:'Misdaad',text:'Wie? Dit kun je niet terugdraaien.',choices:opts(ps.map(p=>({t:p.first+' '+(p.last||''),ic:faceOf(p),s:`${roleLabel(p)} · relatie ${Math.round(p.rel)}%`,on:()=>{closeModal();murderHow(p)}})))})}
+function murderMenu(){if(ageY()<18||inJail())return;const all=killable(),fo=r=>{const i=FAMR.indexOf(r);return i<0?99:i};const fam=all.filter(p=>FAMR.includes(p.role)).sort((a,b)=>fo(a.role)-fo(b.role));const ps=fam.concat(all.filter(p=>!FAMR.includes(p.role)).sort((a,b)=>a.rel-b.rel).slice(0,10));if(!ps.length){toast('Er is niemand');return}
+  modal({title:'Iemand uit de weg ruimen',em:'🔪',cat:'Misdaad',text:'Wie? Dit kun je niet terugdraaien.',choices:opts(ps.map(p=>({t:p.first+' '+(p.last||''),ic:faceOf(p),s:`${FAMR.includes(p.role)?'👪 ':''}${roleLabel(p)} · relatie ${Math.round(p.rel)}%`,on:()=>{closeModal();murderHow(p)}})))})}
 function murderHow(p){const k=Math.round(ri(20,60)*1000*(S.cpi||1));
   modal({title:'Hoe?',em:'🔪',cat:p.first,person:p,text:'Je denkt na over een plan.',choices:opts([
     {t:'🧩 Een plan waarbij het op een ongeluk lijkt',on:()=>{closeModal();murderGo(p,'plan',0)}},
