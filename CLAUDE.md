@@ -16,7 +16,7 @@ Levensloop is een persoonlijke, Nederlandstalige BitLife-kloon van Thijmen. Eén
 
 - `VERBETERPLAN.md`: fase 0 tot en met 8 (klaar), met de vaste werkwijze per fase.
 - `VERBETERPLAN2.md`: fase 9 tot en met 16 (dieper en beter), klaar.
-- `VERBETERPLAN3.md`: fase 18 tot en met 23 (realisme, liefde, wonen, minigames, huisdieren, bedrijf). Daar gaat het werk verder.
+- `VERBETERPLAN3.md`: fase 18 tot en met 23 (realisme, liefde, wonen, minigames, huisdieren, bedrijf), klaar op 18 november 2026.
 
 ## Waar alles staat
 
@@ -62,7 +62,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, events3, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, f8, royal, careers8, school2, ident, heir, haunt, god, people9, family9, calm9, work10, health11, acts12, money13, fame14, sport15, crime16, looks17, vote17, real18, love19, home20, mg21, pets22, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
+Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, events3, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, f8, royal, careers8, school2, ident, heir, haunt, god, people9, family9, calm9, work10, health11, acts12, money13, fame14, sport15, crime16, looks17, vote17, real18, love19, home20, mg21, pets22, biz23, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
 
 | Bestand | Inhoud |
 |---|---|
@@ -110,6 +110,7 @@ Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choi
 | `home20.js` | fase 20 wonen: steden (`CITY20` ligging en prijsniveau, `cityKm`, `cityIdx`; `mkListing` en `sheetRent` omwikkeld), verhuizen (`moveCity`→`moveJob`→`moveHouse`→`moveGo`; reizen `S.cmt`, thuiswerken `S.job.rem`, rijen in het werkscherm via `circRow`), inrichten (`inrMenu`, `S.home.inr`), buren `nb_schutting`/`nb_oppas`/`nb_app`, studentenhuis `st20_*` (`S.sth`, `setRent` omwikkeld). |
 | `mg21.js` | fase 21 minigames: aan/uit (`mgOn`, `S.settings.mg`, rij in `sheetMain`); alle vaardigheids-minigames omwikkeld met `mgW` (automatische uitslag `MGAUTO`); rijexamen `drivingExam` (`S.flags.rijles`, `S.flags.theorie`), sollicitatie `mgInterview` vervangen, sportwedstrijd `sportMatch` + `mgPenalty`, vragen `QB21`/`QB21H`. Nieuwe minigames: voeg ze toe aan `MGAUTO` en omwikkel ze met `mgW`. |
 | `pets22.js` | fase 22 huisdieren: extra rijen in het scherm van een dier via een wrapper om `sheetPerson` (`pet22Rows`; het gewone `F8.person` komt bij huisdieren niet aan de beurt), gezondheid `p.hl`, karakter `p.pkt`, geslacht `p.pg`, trucjes `p.tr22`, bekers `p.cups`, `p.fix`; nieuwe soorten in `PETS`/`PETBR`/`PETEM`; momenten `p22_nest`, `p22_oud`, `p22_afscheid`. |
+| `biz23.js` | fase 23 bedrijf: concurrent `b.rv` (`rvName`, `b23_rival`, `rvPrice`, `buyRival`; drukt elk jaar `b.demand`), producten `b.prods` (`launchMenu`, `doLaunch`, `prodResolve`; hit geeft `b.mkt`), medewerker van het jaar (`empOfYear`); rijen via een wrapper om `sheetBiz`. |
 | `src/pwa/` | iPhone-app: `meta.html`, `fix.css`, `pwa.js` (updatebalk), `sw.tpl.js` (service worker), manifest |
 
 ## Belangrijkste bouwstenen
