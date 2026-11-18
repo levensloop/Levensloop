@@ -55,8 +55,8 @@ F8.birth.push((o,mom,dad)=>{const cc=o.country;
     const rp=chance(.5)?mom:dad,sp=rp===mom?dad:mom;const r=R();
     S.roy={cc,h:H.h,pop:ri(58,74),sc:0,y0:year(),mon:'gp',gp:null,rp:null,jr:0,nk:0,tw:{}};
     if(r<.4){S.roy.mon=rp.id;rp.job=monT(rp.g).toLowerCase();sp.job=rp.g==='v'?'prins-gemaal':'koningin-gemalin'}
-    else if(r<.8){S.roy.gp={first:f8Name(rp.g==='v'?pick(['m','v']):pick(['m','v'])),g:pick(['m','v']),by:year()-ri(58,76)};S.roy.rp=rp.id;rp.job=ROYH[cc].heir[gi(rp.g)].toLowerCase();sp.job='lid van het koninklijk huis'}
-    else{S.roy.gp={first:f8Name(pick(['m','v'])),g:pick(['m','v']),by:year()-ri(40,58)};S.roy.jr=ri(4,9);rp.job=rp.g==='v'?'prinses':'prins';sp.job='lid van het koninklijk huis'}
+    else if(r<.8){const gg=pick(['m','v']);S.roy.gp={first:f8Name(gg),g:gg,by:year()-ri(58,76)};S.roy.rp=rp.id;rp.job=ROYH[cc].heir[gi(rp.g)].toLowerCase();sp.job='lid van het koninklijk huis'}
+    else{const gg=pick(['m','v']);S.roy.gp={first:f8Name(gg),g:gg,by:year()-ri(40,58)};S.roy.jr=ri(4,9);rp.job=rp.g==='v'?'prinses':'prins';sp.job='lid van het koninklijk huis'}
     S.fame=Math.max(S.fame||0,35);
     Q.push({id:'roy_geboren'});return}
   if((o.afk==='adel'||o.afk==='kon')&&adelLand(cc)){const A=ADEL[cc];const t=pick(A.t);S.adel={t:t[gi(o.g)===1?1:0],tt:t,fam:pick(A.f),lg:chance(.45)?1:0};

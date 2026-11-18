@@ -61,7 +61,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, events3, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, f8, royal, careers8, school2, ident, heir, haunt, god, people9, family9, calm9, work10, health11, acts12, money13, fame14, sport15, crime16, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
+Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, events3, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, f8, royal, careers8, school2, ident, heir, haunt, god, people9, family9, calm9, work10, health11, acts12, money13, fame14, sport15, crime16, looks17, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
 
 | Bestand | Inhoud |
 |---|---|
@@ -102,6 +102,7 @@ Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choi
 | `fame14.js` | fase 14: presentator (nieuw beroep), projecten (`S.p14`: rollen, nummers en albums, castings, boeken, programma), echte prijzen en hitlijsten per land (`AWARD`, `CHART`, `BSL`), manager, eigen merk (`S.brand14`), gecanceld. |
 | `sport15.js` | fase 15: echte clubs en competities (`RCLUB`, `LEAGUE`), eindstand of wereldranglijst, toernooien (`TOURN`), nationaal team, EK/WK/Olympische Spelen, bekerfinale, zaakwaarnemer, na de carrière. |
 | `crime16.js` | fase 16 (milder): verhoor vóór elke rechtszaak (`c16_verhoor`, `qNext`), schikking, hacken/afpersing/heling, moord en huurmoord als spelregel (`murderMenu`, `S.crim.moord`, recherche `c16_moordzaak`; doelwit vanaf 16 jaar), een nieuwe start, slachtoffer (`c16_slachtoffer`). |
+| `looks17.js` | namen en uiterlijk passen bij het geslacht: `nameG(naam)` (engine.js), `looksMigrate` zet oude levens recht (rol met vast geslacht → nieuwe naam; anders volgt geslacht de naam). Vrouwenkapsels `FHAIR` (Bob, Lang, Knot, Paardenstaart, Lange krullen) en `fixHair` in avatar.js; vrouwen hebben wimpers en gekleurde lippen. Familie staat altijd bovenaan in het moordmenu. |
 | `src/pwa/` | iPhone-app: `meta.html`, `fix.css`, `pwa.js` (updatebalk), `sw.tpl.js` (service worker), manifest |
 
 ## Belangrijkste bouwstenen

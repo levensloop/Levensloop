@@ -268,14 +268,14 @@ E('s_trial',{sys:1,t:'Rechtszaak',x:c=>`Je staat terecht voor ${c.w.toLowerCase(
  ['Taakstraf vragen',c=>{if(chance(.6)){S.crim.rec.push({w:c.w+' (taakstraf)',a:ageY()});hap(-4);if(S.job)S.job.perf=clamp(S.job.perf-10);return 'De rechter geeft je 240 uur taakstraf. Je ruimt een jaar lang zwerfafval op.'}jail(c.m,c.w);return `De rechter wil er niets van weten: ${c.m} maanden.`},c=>c.m<=8]]});
 /* --- gevangenis --- */
 const JL=()=>S.crim.jail;
-E('j_cel',{jail:1,c:()=>!JL().cell,w:3,t:'Nieuwe celgenoot',ctx:()=>({n:rname(),w:pick(['autodiefstal','fraude','een overval','een vechtpartij','heling','inbraak'])}),x:c=>`${c.n} wordt je celgenoot. Zit hier voor ${c.w}.`,ch:[
- ['Jezelf netjes voorstellen',c=>{JL().cell={first:c.n,w:c.w,rel:60,ap:randAp('m')};return `${c.n} knikt. Jullie kunnen het goed vinden.`}],
- ['Meteen grenzen stellen',c=>{JL().cell={first:c.n,w:c.w,rel:35,ap:randAp('m')};JL().resp+=8;return `${c.n} snapt dat je niet over je heen laat lopen.`}],
- ['Negeren',c=>{JL().cell={first:c.n,w:c.w,rel:20,ap:randAp('m')};return 'Het blijft ongemakkelijk stil in de cel.'}]]});
+E('j_cel',{jail:1,c:()=>!JL().cell,w:3,t:'Nieuwe celgenoot',ctx:()=>({n:rname(S.p.g==='v'?'v':'m'),w:pick(['autodiefstal','fraude','een overval','een vechtpartij','heling','inbraak'])}),x:c=>`${c.n} wordt je celgenoot. Zit hier voor ${c.w}.`,ch:[
+ ['Jezelf netjes voorstellen',c=>{JL().cell={first:c.n,w:c.w,rel:60,ap:randAp(nameG(c.n)||'m')};return `${c.n} knikt. Jullie kunnen het goed vinden.`}],
+ ['Meteen grenzen stellen',c=>{JL().cell={first:c.n,w:c.w,rel:35,ap:randAp(nameG(c.n)||'m')};JL().resp+=8;return `${c.n} snapt dat je niet over je heen laat lopen.`}],
+ ['Negeren',c=>{JL().cell={first:c.n,w:c.w,rel:20,ap:randAp(nameG(c.n)||'m')};return 'Het blijft ongemakkelijk stil in de cel.'}]]});
 E('j_bende',{jail:1,c:()=>!JL().gang,cd:2,t:'Een bende',ctx:()=>({g:pick(['De Noorderlingen','Club 13','De Havenjongens','Los Lobos','De IJzeren Vuist'])}),x:c=>`${c.g} wil dat je bij ze komt. Bescherming in ruil voor loyaliteit.`,ch:[
  ['Aansluiten',c=>{JL().gang=c.g;JL().resp+=15;JL().gb-=10;kar(-3);return `Je hoort nu bij ${c.g}. Niemand valt je meer lastig.`}],
  ['Beleefd weigeren',()=>{if(chance(.4)){hea(-ri(5,15));JL().resp-=4;return 'Ze nemen het niet. Je wordt in de douche in elkaar geslagen.'}JL().resp+=3;return 'Ze laten je voorlopig met rust.'}]]});
-E('j_yard',{jail:1,w:1.4,t:'Op de luchtplaats',ctx:()=>({n:rname()}),x:c=>`${c.n} duwt je opzij bij de halterbank en daagt je uit.`,ch:[
+E('j_yard',{jail:1,w:1.4,t:'Op de luchtplaats',ctx:()=>({n:rname(S.p.g==='v'?'v':'m')}),x:c=>`${c.n} duwt je opzij bij de halterbank en daagt je uit.`,ch:[
  ['Terugvechten',c=>{if(chance(.3+S.sk.sport/150+(JL().gang?.15:0))){JL().resp+=12;hap(3);return `Je wint. ${c.n} kijkt je niet meer aan.`}hea(-ri(8,20));JL().resp-=5;JL().gb-=5;if(chance(.4)){JL().left+=ri(1,4);return 'Je verliest en krijgt ook nog extra straf voor vechten.'}return 'Je ligt een week in de ziekenboeg.'}],
  ['Weglopen',()=>{JL().resp-=6;return 'Je loopt weg. Er wordt gelachen.'}],
  ['Een bewaker roepen',()=>{JL().resp-=12;JL().gb+=4;return 'Je staat nu bekend als verklikker. Dat is gevaarlijk hier.'}]]});

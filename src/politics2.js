@@ -54,7 +54,7 @@ const MEDIA=['De Dagkrant','Het Ochtendblad','NOS-achtig journaal','Politieke po
 function mkPolP(kind,party){const age=kind==='pers'?ri(26,60):ri(28,64);const p=mkPerson('polit',pick(['m','v']),S.m-age*12-ri(0,11),{rel:kind==='rivaal'?ri(20,40):ri(40,60),smarts:ri(45,95)});p.kind=kind;p.party=party||S.pol.party;
   p.role={leider:isPres()?'partijvoorzitter':'partijleider',fractie:'partijgenoot',rivaal:'rivaal',pers:'journalist',lobby:'lobbyist',amb:'topambtenaar'}[kind];if(kind==='pers')p.media=pick(MEDIA);if(kind==='lobby')p.co=pick(['Big Oil Nederland','de bouwlobby','een tabaksfabrikant','een grote bank','de vliegbranche','een techgigant']);return p}
 function polPpl(){const P=S.pol;if(!P)return[];P.ppl=(P.ppl||[]).filter(p=>p.alive!==false&&pAge(p)<82);const W=polW();const has=k=>P.ppl.some(p=>p.kind===k);
-  const ld=P.ppl.find(p=>p.kind==='leider');if(P.lead){if(ld)P.ppl=P.ppl.filter(p=>p!==ld)}else{const nm=W.lead[P.party]||lnm();if(!ld||`${ld.first} ${ld.last}`!==nm||ld.party!==P.party){if(ld)P.ppl=P.ppl.filter(p=>p!==ld);const p=mkPolP('leider');const [f,...l]=nm.split(' ');p.first=f;p.last=l.join(' ');P.ppl.unshift(p)}}
+  const ld=P.ppl.find(p=>p.kind==='leider');if(P.lead){if(ld)P.ppl=P.ppl.filter(p=>p!==ld)}else{const nm=W.lead[P.party]||lnm();if(!ld||`${ld.first} ${ld.last}`!==nm||ld.party!==P.party){if(ld)P.ppl=P.ppl.filter(p=>p!==ld);const p=mkPolP('leider');const [f,...l]=nm.split(' ');p.first=f;p.last=l.join(' ');const ng=nameG(f);if(ng&&ng!==p.g){p.g=ng;p.ap=randAp(ng)}P.ppl.unshift(p)}}
   P.ppl=P.ppl.filter(p=>!(p.kind==='fractie'||p.kind==='rivaal')||p.party===P.party);
   while(P.ppl.filter(p=>p.kind==='fractie').length<2)P.ppl.push(mkPolP('fractie'));
   if(!has('rivaal'))P.ppl.push(mkPolP('rivaal'));

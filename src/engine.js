@@ -28,6 +28,8 @@ const living=role=>people(role).filter(p=>p.alive);
 const partner=()=>S.rel.find(p=>p.role==='partner'&&p.alive);
 const pickLiving=role=>{const a=living(role);return a.length?pick(a):null};
 function relAdj(role,d){const p=living(role)[0];if(p)p.rel=clamp(p.rel+d)}
+// geslacht bij een voornaam (null als de naam bij allebei kan of onbekend is)
+function nameG(n){let m=0,v=0;for(const k in NAMES){if(NAMES[k].m.includes(n))m=1;if(NAMES[k].v.includes(n))v=1}return m&&!v?'m':v&&!m?'v':null}
 function rname(g){const N=NAMES[C().r];return pick(N[g||pick(['m','v'])])}
 function company(){return pick(COMPANIES)}
 const isAdult=()=>ageY()>=18;

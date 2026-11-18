@@ -22,7 +22,7 @@ function jailActs(el){const J=prisonPeople(S.crim.jail);J.resp=clamp(Math.round(
   const A=(s,ic,t,sub,fn,o={})=>row(s,{ic,t,s:sub,dis:o.dis,dots:o.dots,on:()=>doAct(t,fn,true,ic)});
   // mensen
   let s=sec(el,'Mensen');
-  if(J.cell)row(s,{ic:J.cell.ap?avatarSvg(J.cell.ap,35,'m',{head:1}):'🧑',t:J.cell.first,role:'celgenoot',bar:{l:'Relatie',v:J.cell.rel,c:statCol(J.cell.rel)},dots:true,on:cellmate});
+  if(J.cell)row(s,{ic:J.cell.ap?avatarSvg(J.cell.ap,35,J.cell.g||nameG(J.cell.first)||'m',{head:1}):'🧑',t:J.cell.first,role:'celgenoot',bar:{l:'Relatie',v:J.cell.rel,c:statCol(J.cell.rel)},dots:true,on:cellmate});
   row(s,{ic:'👥',t:'Medegevangenen',s:`${J.ppl.length} mensen op je afdeling`,on:()=>openSheet('Medegevangenen',el=>sheetInmates(el,'ppl'),true)});
   row(s,{ic:'👮',t:'Bewakers',s:anyBribed(J)?'Eén bewaker kijkt de andere kant op':`${J.guards.length} bewakers`,on:()=>openSheet('Bewakers',el=>sheetInmates(el,'guards'),true)});
   const fam=living(['moeder','vader','partner','kind','broer','zus']);

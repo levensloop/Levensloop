@@ -2,12 +2,13 @@
 const SKINS=['#fbe3d0','#f6d2b8','#efc29f','#e6b48c','#d9a074','#c88a5e','#b0714a','#8f5838','#6e4129','#4d2c1c'];
 const HAIRC=['#1f1a17','#3b2a1f','#5a3a24','#7a4a2a','#a0612f','#c98f4f','#e3c07a','#b3401f','#9aa0a8','#e9e9e6'];
 const EYEC=['#4a2e1c','#6b4423','#8a6a3a','#6b7f3a','#3f8a4f','#3a7ca5','#5aa9e6','#7b8794','#2b2b2b','#8b5cf6'];
-const HAIRN=['Kaal','Kort','Stekeltjes','Zijscheiding','Kuif','Krullen','Afro','Bob','Lang','Knot'];
+const HAIRN=['Kaal','Kort','Stekeltjes','Zijscheiding','Kuif','Krullen','Afro','Bob','Lang','Knot','Paardenstaart','Lange krullen'];
+const FHAIR=[7,8,9,10,11];
 const BEARDN=['Geen','Stoppels','Snor','Sik','Ringbaard','Korte baard','Volle baard','Kinbaard','Krulsnor','Lange baard'];
 const SKINN=['Porselein','Licht','Licht-beige','Beige','Gebronsd','Olijf','Karamel','Bruin','Donkerbruin','Diep donker'];
 const HAIRCN=['Zwart','Donkerbruin','Bruin','Kastanje','Koper','Donkerblond','Blond','Rood','Grijs','Wit'];
 const EYECN=['Donkerbruin','Bruin','Hazelnoot','Olijf','Groen','Blauw','Lichtblauw','Grijs','Zwart','Violet'];
-function randAp(g){return {skin:ri(0,9),eye:ri(0,9),hc:ri(0,7),hair:g==='v'?pick([7,8,9,5,3,6]):pick([1,2,3,4,5,6,0,1]),beard:g==='m'&&chance(.4)?ri(1,9):0}}
+function randAp(g){return {skin:ri(0,9),eye:ri(0,9),hc:ri(0,7),hair:g==='v'?pick([8,8,7,10,11,9]):pick([1,2,3,4,5,6,0,1]),beard:g==='m'&&chance(.4)?ri(1,9):0}}
 function mixHex(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
 // tekent een gezicht; age bepaalt grijs haar, rimpels en of er een baard is
 function avatarSvg(ap,age=30,g='m',o={}){ap=ap||{skin:2,eye:1,hc:2,hair:1,beard:0};
@@ -19,6 +20,8 @@ function avatarSvg(ap,age=30,g='m',o={}){ap=ap||{skin:2,eye:1,hc:2,hair:1,beard:
   if(hair===8)s+=`<path d="M22 48C20 26 34 14 50 14S80 26 78 48L82 92C72 96 64 94 62 90L64 56H36L38 90C36 94 28 96 18 92Z" fill="${hc}"/>`;
   if(hair===6)s+=`<circle cx="50" cy="38" r="35" fill="${hc}"/>`+[...Array(14)].map((_,i)=>{const a=i/14*Math.PI*2;return `<circle cx="${(50+Math.cos(a)*33).toFixed(1)}" cy="${(38+Math.sin(a)*33).toFixed(1)}" r="5" fill="${hc}"/>`}).join('');
   if(hair===9)s+=`<circle cx="50" cy="12" r="10" fill="${hc}"/><circle cx="50" cy="12" r="10" fill="none" stroke="${hd}" stroke-width="1"/>`;
+  if(hair===10)s+=`<path d="M62 20C80 14 90 28 86 44C84 56 88 66 81 78C79 66 74 56 72 46C70 36 68 28 62 20Z" fill="${hc}"/><path d="M76 30C80 40 80 52 82 64" stroke="${hd}" stroke-width="1.2" fill="none" opacity=".6"/><circle cx="66" cy="21" r="3.6" fill="${shade(hc,-.45)}"/>`;
+  if(hair===11)s+=`<path d="M23 48C21 26 34 15 50 15S79 26 77 48L78 74C72 78 64 77 61 73L61 56H39V73C36 77 28 78 22 74Z" fill="${hc}"/>`+[[22,34],[19,44],[18,54],[19,64],[22,73],[29,77],[37,75]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="6.5" fill="${hc}"/><circle cx="${100-x}" cy="${y}" r="6.5" fill="${hc}"/>`).join('');
   // nek, schouders, oren, hoofd
   if(!o.head)s+=`<path d="M12 100C14 86 28 80 40 78H60C72 80 86 86 88 100Z" fill="${shirt}"/><path d="M40 70H60V82C56 86 44 86 40 82Z" fill="${skd}"/>`;
   else s+=`<path d="M42 70H58V80C55 83 45 83 42 80Z" fill="${skd}"/>`;
@@ -38,9 +41,10 @@ function avatarSvg(ap,age=30,g='m',o={}){ap=ap||{skin:2,eye:1,hc:2,hair:1,beard:
   // ogen, wenkbrauwen, neus, mond
   const ey=kid?51:52,er=kid?6:5.4;
   for(const x of [39,61])s+=`<ellipse cx="${x}" cy="${ey}" rx="${er}" ry="${er*.72}" fill="#fff"/><circle cx="${x}" cy="${ey}" r="${er*.55}" fill="${ec}"/><circle cx="${x}" cy="${ey}" r="${er*.26}" fill="#111"/><circle cx="${x+1.2}" cy="${ey-1.2}" r="${er*.14}" fill="#fff"/>`;
+  if(g==='v'&&!baby)for(const x of [39,61]){const d=x<50?-1:1,ox=x+d*er;s+=`<path d="M${x-er} ${ey}Q${x} ${ey-er*1.15} ${x+er} ${ey}" stroke="#2a1d17" stroke-width="1.3" fill="none"/><path d="M${ox} ${ey-.4}l${d*2.4} -1.6M${ox-d*1.6} ${ey-er*.62}l${d*1.8} -2.1" stroke="#2a1d17" stroke-width="1.1" stroke-linecap="round"/>`}
   s+=`<path d="M32 ${ey-8}Q39 ${ey-11.5} 46 ${ey-8}M54 ${ey-8}Q61 ${ey-11.5} 68 ${ey-8}" stroke="${baby?shade(sk,-.12):hd}" stroke-width="${kid?2:2.6}" fill="none" stroke-linecap="round"/>`;
   s+=`<path d="M50 ${ey+3}Q47 ${ey+11} 50 ${ey+12}Q52.5 ${ey+12} 54 ${ey+10.5}" stroke="${skd}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
-  s+=beard===6||beard===9?`<path d="M43 68Q50 72 57 68" stroke="#7a3a2e" stroke-width="2" fill="none" stroke-linecap="round"/>`:`<path d="M42 67Q50 74 58 67Q50 71 42 67Z" fill="#fff" stroke="#9b4a3c" stroke-width="1.6" stroke-linejoin="round"/>`;
+  s+=beard===6||beard===9?`<path d="M43 68Q50 72 57 68" stroke="#7a3a2e" stroke-width="2" fill="none" stroke-linecap="round"/>`:`<path d="M42 67Q50 74 58 67Q50 71 42 67Z" fill="#fff" stroke="${g==='v'&&!kid?'#d24f6a':'#9b4a3c'}" stroke-width="${g==='v'&&!kid?2.2:1.6}" stroke-linejoin="round"/>`;
   if(o.sad)s=s.replace(/M42 67Q50 74 58 67Q50 71 42 67Z/,'M43 71Q50 66 57 71');
   if(age>=60)s+=`<path d="M30 44q3-1 5 0M65 44q3-1 5 0M33 60q-2 3-1 6M67 60q2 3 1 6" stroke="${skd}" stroke-width="1" fill="none" opacity=".7"/>`;
   if(!kid)s+=`<ellipse cx="34" cy="62" rx="4" ry="2.4" fill="#e88b84" opacity=".25"/><ellipse cx="66" cy="62" rx="4" ry="2.4" fill="#e88b84" opacity=".25"/>`;
@@ -53,7 +57,9 @@ function avatarSvg(ap,age=30,g='m',o={}){ap=ap||{skin:2,eye:1,hc:2,hair:1,beard:
     6:`<path d="M24 44C26 34 34 30 50 30S74 34 76 44C76 30 66 18 50 18S24 30 24 44Z" fill="${hc}"/>`,
     7:`<path d="M22 60C18 30 34 15 50 15S82 30 78 60C76 46 72 36 64 32C56 36 42 36 36 32C28 36 24 46 22 60Z" fill="${hc}"/>`,
     8:`<path d="M23 54C20 28 34 15 50 15S80 28 77 54C75 40 70 33 62 31C54 35 40 34 33 29C27 34 24 42 23 54Z" fill="${hc}"/>`,
-    9:`<path d="M24 46C22 24 36 17 50 17S78 24 76 46C74 36 68 30 60 30C54 32 46 32 40 30C32 30 26 36 24 46Z" fill="${hc}"/>`};
+    9:`<path d="M24 46C22 24 36 17 50 17S78 24 76 46C74 36 68 30 60 30C54 32 46 32 40 30C32 30 26 36 24 46Z" fill="${hc}"/><path d="M25 42C22 50 23 60 27 66C27 58 28 50 31 42ZM75 42C78 50 77 60 73 66C73 58 72 50 69 42Z" fill="${hc}"/>`,
+    10:`<path d="M24 47C22 24 36 16 50 16S78 24 76 47C74 37 70 31 62 29C52 27 40 30 33 35C29 39 26 43 24 47Z" fill="${hc}"/><path d="M36 22C46 17 60 17 68 24" stroke="${shade(hc,.22)}" stroke-width="1.4" fill="none"/>`,
+    11:[...Array(9)].map((_,i)=>{const a=Math.PI*(.98+i*.13);return `<circle cx="${(50+Math.cos(a)*25).toFixed(1)}" cy="${(41+Math.sin(a)*22).toFixed(1)}" r="7.5" fill="${hc}"/>`}).join('')+`<circle cx="24" cy="50" r="6.5" fill="${hc}"/><circle cx="76" cy="50" r="6.5" fill="${hc}"/><circle cx="23" cy="59" r="6" fill="${hc}"/><circle cx="77" cy="59" r="6" fill="${hc}"/>`};
   if(baby)s+=`<path d="M47 22q3-6 6 0q-3-3-6 0" fill="${hc}"/>`;else if(H[hair])s+=H[hair];
   if(o.head)return SVG_(s,'13 4 74 80').replace('class="ico"','class="ico hs"');
   return SVG_(s,'0 0 100 100')}
@@ -62,7 +68,11 @@ function apMix(a,b,g){a=a||randAp('m');b=b||randAp('v');const r=randAp(g);r.skin
 // ouders afleiden van een kind (de speler kiest zelf zijn uiterlijk): de een geeft de ogen, de ander de haarkleur
 function apParentOf(c,g,share){const x=randAp(g);x.skin=clamp(c.skin+ri(-1,1),0,9);if(share==='eye')x.eye=c.eye;if(share==='hc')x.hc=c.hc;return x}
 // voor oude saves: personen zonder uiterlijk krijgen er alsnog een dat bij de familie past
-function apOf(p){if(p.ap)return p.ap;const me=S.ap||randAp(S.p.g);const par=r=>(S.rel.find(x=>x.role===r)||{}).ap;
+function apOf(p){return fixHair(p,apOf0(p))}
+// bestaande levens: vrouwen krijgen een duidelijk vrouwenkapsel, mannen geen lang haar (eenmalig per persoon)
+function fixHair(p,a){if(!a||a.h12||!p)return a;a.h12=1;const h=String(p.id||p.first||'').split('').reduce((x,c)=>x+c.charCodeAt(0),0);
+  if(p.g==='v'&&!FHAIR.includes(a.hair))a.hair=a.hair===5||a.hair===6?11:[8,7,10,8,11][h%5];else if(p.g==='m'&&FHAIR.includes(a.hair))a.hair=[1,3,4][h%3];return a}
+function apOf0(p){if(p.ap)return p.ap;const me=S.ap||randAp(S.p.g);const par=r=>(S.rel.find(x=>x.role===r)||{}).ap;
   if(p.role==='moeder'||p.role==='vader'){const o=S.rel.find(x=>x!==p&&(x.role==='moeder'||x.role==='vader')&&x.ap);p.ap=apParentOf(me,p.g,o&&o.ap.eye===me.eye?'hc':p.role==='moeder'?'eye':'hc')}
   else if(p.role==='broer'||p.role==='zus'){const m=par('moeder')||apOf(S.rel.find(x=>x.role==='moeder')||{role:'x',g:'v'}),d=par('vader');p.ap=apMix(m||me,d||me,p.g)}
   else if(p.role==='kind'){const o=p.op&&S.rel.find(x=>x.id===p.op);p.ap=apMix(me,o&&o.alive!==undefined?apOf(o):null,p.g)}

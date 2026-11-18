@@ -313,6 +313,15 @@ F8T('16.4','moord: directe familie staat altijd in het menu (16+)','NL','',async
   const ma=S.rel.find(p=>p.role==='moeder'&&p.alive);Q.length=0;murderMenu();await sl(30);const txt=document.querySelector('#modal').textContent;closeModal();
   const inMenu=!!ma&&txt.includes(ma.first)&&/👪/.test(txt)&&!txt.includes(kid.first+' ');let dead=false;for(let i=0;i<20&&ma&&!dead;i++){murderGo(ma,'huur',1000);await sl(20);closeModal();Q.length=0;dead=!ma.alive}
   return {ok:inMenu&&dead,msg:`moeder in menu ${inMenu}, kind van 10 niet in menu, moeder vermoord ${dead}`}});
+F8T('17.1','namen passen bij het geslacht (vorst, partijleider, celgenoot)','NL','',async()=>{let ok=true;for(let i=0;i<300;i++){const g=pick(['m','v']);const n=f8Name(g);if(nameG(n)&&nameG(n)!==g)ok=false}
+  const src=F8.birth.map(f=>f.toString()).join('');const roy=!/first:f8Name\(pick/.test(src);let cel=true;for(let i=0;i<50;i++){const c=EV.j_cel.ctx();if(S.p.g!=='x'&&nameG(c.n)&&nameG(c.n)!==(S.p.g==='v'?'v':'m'))cel=false}
+  return {ok:ok&&roy&&cel,msg:`f8Name ${ok}, vorst ${roy}, celgenoot ${cel}`}});
+F8T('17.2','vrouwen krijgen een vrouwenkapsel, ook in oude levens','NL','',async()=>{let fem=true;for(let i=0;i<200;i++)if(!FHAIR.includes(randAp('v').hair))fem=false;let man=true;for(let i=0;i<200;i++)if(FHAIR.includes(randAp('m').hair))man=false;
+  const w=mkPerson('vriend','v',S.m-20*12);w.ap.hair=1;delete w.ap.h12;S.rel.push(w);const svg=faceOf(w);const mig=FHAIR.includes(w.ap.hair);const lash=/#2a1d17/.test(svg);
+  return {ok:fem&&man&&mig&&lash,msg:`nieuw vrouw ${fem}, man ${man}, oude vrouw omgezet ${mig}, wimpers ${lash}`}});
+F8T('17.3','oud leven: verkeerde naam wordt rechtgezet bij laden','NL','',async()=>{const s=JSON.parse(JSON.stringify(S));const v=s.rel.find(p=>p.role==='vader');v.first='Emma';const f={id:'x1',role:'vriend',g:'m',first:'Sophie',born:S.m,ap:randAp('m'),alive:true,rel:50};s.rel.push(f);
+  s.roy={gp:{first:'Emma',g:'m',by:1970}};migrate(s);const v2=s.rel.find(p=>p.role==='vader');const f2=s.rel.find(p=>p.id==='x1');
+  return {ok:v2.g==='m'&&nameG(v2.first)!=='v'&&f2.g==='v'&&s.roy.gp.g==='v',msg:`vader heet nu ${v2.first}, vriendin Sophie is ${f2.g}, vorst Emma is ${s.roy.gp.g}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 
