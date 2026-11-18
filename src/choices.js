@@ -26,7 +26,7 @@ function petColor(sp,o,cols){const b=o.br?o.br.replace(/ \(.*\)/,''):sp;
   modal({title:cap(b),em:icPet(sp,o.br),cat:'Huisdieren',text:'Welke kleur?',choices:opts(cols.map(c=>({t:cap(c),ic:icPet(sp,o.br,c),on:()=>{closeModal();petName(sp,Object.assign({},o,{col:c}))}})))})}
 function petName(sp,o){const a=ageY(),k=o.k||PETS.find(x=>x[0]===sp)[1];const n=pick(PETNAMES);
   modal({title:'Hoe heet je huisdier?',em:icPet(sp,o.br,o.col),cat:'Huisdieren',text:`${cap(petDesc({sp,br:o.br,col:o.col}))}${a>=18?` · ${fmt(k)}`:''}`,html:`<input class="inp" id="ptn" maxlength="20" value="${he(n)}">`,choices:opts([{t:'Meenemen',cls:'go',on:()=>{const nm=$('#ptn').value.trim()||n;closeModal();
-    if(a<18&&!chance(.5)){toast('Je ouders zeggen nee');return}doAct('Nieuw huisdier',()=>{if(a>=18)cash(-k);addPet(sp,nm,o);hap(8);return `Welkom thuis, ${nm}!`},true,icPet(sp,o.br,o.col))}}])})}
+    if(a<18&&!chance(petYes(k))){toast(k>=1000*(S.cpi||1)?`Je ouders zeggen nee. "Een ${sp}? Waar moet die dan staan?"`:'Je ouders zeggen nee');return}doAct('Nieuw huisdier',()=>{if(a>=18)cash(-k);addPet(sp,nm,o);hap(8);return `Welkom thuis, ${nm}!`},true,icPet(sp,o.br,o.col))}}])})}
 
 /* ---- uitgaan ---- */
 // lo = kans om iemand te ontmoeten, vr = kans op een nieuwe vriend, door = minimaal uiterlijk+sociaal voor de portier

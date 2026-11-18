@@ -3,7 +3,7 @@
    (zie rollEvent). Bedragen schalen mee met het prijspeil. */
 const K3=n=>Math.round(n*(S.cpi||1)/10)*10;
 // ---------- 30 tot 60 ----------
-E('m3_marathon',{a:[30,55],t:'Een marathon?',x:'Een collega daagt je uit om over een half jaar een marathon te lopen.',ch:[
+E('m3_marathon',{a:[30,55],t:'Een marathon?',x:()=>`${S.job?'Een collega':'Een vriend'} daagt je uit om over een half jaar een marathon te lopen.`,ch:[
  ['🏃 Uitdaging aangenomen',()=>{if(S.st.health>=60&&chance(.7)){hea(4);hap(8);MS('Liep een marathon',1);return 'Na 42 kilometer en vier uur lijden kom je over de finish. Je huilt een beetje.'}hea(-2);hap(-2);return 'Bij kilometer 28 gaat je knie op slot. Je neemt de bezemwagen.'}],
  ['🛋️ Ik kijk wel vanaf de bank',()=>'Je juicht vanaf de bank. Ook een sport.']]});
 E('m3_cursus',{a:[30,60],t:'Avondcursus',ctx:()=>({k:K3(350)}),x:c=>`Het buurthuis biedt een avondcursus aan. Tien lessen voor ${fmt(c.k)}.`,ch:[
@@ -12,7 +12,7 @@ E('m3_cursus',{a:[30,60],t:'Avondcursus',ctx:()=>({k:K3(350)}),x:c=>`Het buurthu
  ['🏺 Pottenbakken',c=>{cash(-c.k);hap(6);return 'Je eerste vaas is scheef. Je tweede ook. Je bent er trots op.'},c=>S.money>=c.k],
  ['🙅 Geen tijd',()=>'Misschien volgend jaar.']]});
 E('m3_midlife',{a:[40,52],t:'Midlifecrisis?',x:'Je kijkt in de spiegel en denkt: was dit het nou?',ch:[
- ['🏍️ Een motor kopen',()=>{const k=K3(9000);if(S.money<k){hap(-2);return 'Je bekijkt motoren online, maar je bankrekening is het niet met je eens.'}cash(-k);hap(10);return `Voor ${fmt(k)} rijd je nu op een glimmende motor. Je partner rolt met de ogen.`}],
+ ['🏍️ Een motor kopen',()=>{const k=K3(9000);if(S.money<k){hap(-2);return 'Je bekijkt motoren online, maar je bankrekening is het niet met je eens.'}cash(-k);hap(10);return `Voor ${fmt(k)} rijd je nu op een glimmende motor. ${partner()?'Je partner rolt met de ogen.':'De buren kijken jaloers.'}`}],
  ['🎸 Een band oprichten',()=>{hap(7);return 'Je speelt elke donderdag met drie andere veertigers in een garage. Jullie zijn verschrikkelijk en het is geweldig.'}],
  ['🧘 Het gewoon voelen',()=>{hap(3);sma(1);return 'Je praat erover met een vriend. Het lucht op. Het leven is best goed.'}]]});
 E('m3_ouderavond',{a:[30,55],c:()=>living('kind').some(k=>pAge(k)>=5&&pAge(k)<=16),t:'Ouderavond',ctx:()=>ctxP(pick(living('kind').filter(k=>pAge(k)>=5&&pAge(k)<=16))),x:c=>`De leraar van ${Pe(c).first} wil je spreken.`,ch:[
@@ -38,7 +38,7 @@ E('m3_huisdierweg',{a:[20,80],c:()=>living('huisdier').length>0,t:'Weggelopen',c
 E('m3_verjaardag',{a:[30,70],t:'Je verjaardag',x:()=>`Je wordt ${ageY()}. Hoe vier je het?`,ch:[
  ['🎉 Groot feest',()=>{const k=K3(600);if(S.money<k)return 'Je wilt een groot feest, maar je houdt het bij taart.';cash(-k);hap(6);return 'Je hele familie en al je vrienden zijn er. Het wordt laat.'}],
  ['🍽️ Uit eten met je liefste mensen',()=>{hap(4);return 'Een klein, fijn etentje. Precies goed.'}],
- ['🙈 Doen alsof het niet zo is',()=>{hap(-1);return 'Je collega\'s komen er toch achter. Er hangen ballonnen aan je bureau.'}]]});
+ ['🙈 Doen alsof het niet zo is',()=>{hap(-1);return S.job?'Je collega\'s komen er toch achter. Er hangen ballonnen aan je bureau.':'Je vrienden komen er toch achter. Er staat een taart op je stoep.'}]]});
 E('m3_rug',{a:[35,70],t:'Je rug',x:'Je bukt om een sok op te rapen en voelt een scheut in je onderrug.',ch:[
  ['🧑‍⚕️ Naar de fysiotherapeut',()=>{payMed(250);hea(2);return 'Zes behandelingen en een velletje oefeningen later gaat het een stuk beter.'}],
  ['💊 Pijnstillers en doorgaan',()=>{hea(-2);return 'Het trekt na een paar weken weg. Je bukt nu voorzichtiger.'}]]});

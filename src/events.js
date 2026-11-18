@@ -87,7 +87,7 @@ E('lenen',{a:[18,80],c:()=>S.money>2000,ctx:()=>{const f=pickLiving(['vriend','b
  ['Lenen',c=>{const p=P(c.id);cash(-c.a);p.rel=clamp(p.rel+12);kar(2);S.flags.loanTo={id:p.id,a:c.a};return `${p.first} belooft het snel terug te betalen.`}],
  ['Weigeren',c=>{P(c.id).rel=clamp(P(c.id).rel-10);return 'Het wordt even ongemakkelijk.'}]]});
 E('terugbetaald',{a:[18,90],c:()=>S.flags.loanTo,cd:1,t:'Een geleend bedrag',f:()=>{const l=S.flags.loanTo;S.flags.loanTo=null;const p=P(l.id);if(p&&p.alive&&chance(.6)){cash(l.a);p.rel=clamp(p.rel+5);return `${p.first} betaalt de ${fmt(l.a)} netjes terug.`}if(p)p.rel=clamp(p.rel-15);hap(-4);return `${p?p.first:'Je vriend'} betaalt het geld nooit terug.`}});
-E('bruiloft',{a:[22,60],ctx:()=>{const f=pickLiving(['vriend','broer','zus']);return f&&pAge(f)>=20?{id:f.id}:null},t:'Een bruiloft',x:c=>`${P(c.id).first} gaat trouwen en nodigt je uit.`,ch:[
+E('bruiloft',{a:[22,60],need:c=>!!(c&&P(c.id)&&P(c.id).alive!==false),ctx:()=>{const f=pickLiving(['vriend','broer','zus']);return f&&pAge(f)>=20?{id:f.id}:null},t:'Een bruiloft',x:c=>`${P(c.id).first} gaat trouwen en nodigt je uit.`,ch:[
  ['Gaan',c=>{cash(-150);hap(5);P(c.id).rel=clamp(P(c.id).rel+8);if(!partner()&&ageY()>=18&&chance(.25)){addPartner();return 'Je danst de hele avond met iemand die je daar ontmoet. Het klikt!'}return 'Je danst tot de laatste plaat.'}],
  ['Afzeggen',c=>{P(c.id).rel=clamp(P(c.id).rel-10);return 'Dat neemt die je kwalijk.'}]]});
 E('kinderwens',{a:[24,44],c:()=>partner()&&partner().st==='getrouwd'&&!living('kind').length&&!S.preg&&!S.flags.nokids,t:'Kinderwens',x:()=>`${partner().first} wil graag een kindje.`,ch:[
@@ -171,7 +171,7 @@ E('raket',{chaos:1,a:[10,90],once:1,t:'De buurman',x:'Je buurman bouwt in zijn a
  ['Helpen',()=>{sk('tech',8);if(chance(.15)){S.fame=clamp(S.fame+20);MS('Hielp de buurman een raket lanceren',2);return 'De raket stijgt echt op! Jullie halen het journaal.'}if(chance(.35)){hea(-8);return 'Ontploffing. Je wenkbrauwen zijn weg.'}return 'Hij komt niet verder dan drie meter. Wel gezellig.'}],
  ['De politie bellen',()=>{kar(-1);return 'De buurman krijgt een boete. Hij zwaait niet meer.'}]]});
 E('tijdreiziger',{chaos:1,a:[16,90],once:1,t:'Een vreemde bezoeker',x:'Een man in een zilveren pak staat voor de deur. Hij zegt dat hij je achterkleinkind is, uit 2147.',ch:[
- ['Binnenlaten',()=>{if(chance(.5)){sma(5);return 'Hij geeft je één tip: "Investeer in zonnepanelen." Dan is hij weg.'}cash(-200);return 'Hij eet je koelkast leeg en verdwijnt.'}],
+ ['Binnenlaten',()=>{if(chance(.5)){sma(5);return 'Hij geeft je één tip: "Investeer in zonnepanelen." Dan is hij weg.'}if(ageY()<18)return 'Hij eet de koelkast van je ouders leeg en verdwijnt. Jij krijgt de schuld.';cash(-200);return 'Hij eet je koelkast leeg en verdwijnt.'}],
  ['Deur dichtdoen',()=>'Je hoort nooit meer iets van hem.']]});
 E('ikea',{chaos:1,a:[16,90],once:1,t:'Verdwaald',f:()=>{hap(-3);hea(-1);cash(-35);return 'Je raakt de weg kwijt in de IKEA. Na negen uur vind je de uitgang, met 14 pakken theelichtjes.'}});
 E('quiz',{chaos:1,a:[16,85],cd:40,w:.3,t:'Tv-quiz',x:'Je wordt gevraagd als kandidaat voor een quiz op tv.',ch:[
@@ -188,7 +188,7 @@ E('reality',{chaos:1,a:[18,45],once:1,t:'Realityshow',x:'Je wordt gevraagd voor 
  ['Nee',()=>'Je privacy is je lief.']]});
 E('bijen',{chaos:1,a:[14,90],once:1,t:'Bijen',x:'Een zwerm bijen heeft zich op je balkon gevestigd.',ch:[
  ['Imker worden',()=>{hap(5);cash(ri(3,12)*100);sk('zaken',2);return 'Je verkoopt potjes honing aan de buren.'}],
- ['Bestrijder bellen',()=>{cash(-150);return 'Weg zijn ze.'}]]});
+ ['Bestrijder bellen',()=>{if(ageY()<18)return 'Je ouders bellen een bestrijder. Weg zijn ze.';cash(-150);return 'Weg zijn ze.'}]]});
 E('krant',{chaos:1,a:[30,95],once:1,t:'Overleden?',x:'In de krant staat je eigen overlijdensbericht. Een verwisseling.',ch:[
  ['Rectificatie eisen',()=>{cash(500);return 'De krant betaalt een schadevergoeding.'}],
  ['Naar je eigen afscheid gaan',()=>{hap(8);S.fame=clamp(S.fame+5);return 'Je hoort allemaal mooie dingen over jezelf.'}]]});

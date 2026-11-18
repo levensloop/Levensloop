@@ -182,7 +182,7 @@ E('l_koningsdag',{a:[6,90],c:()=>S.p.country==='NL',cd:4,t:'Koningsdag',x:'Het h
  ['🎉 Feesten in de stad',()=>{hap(5);if(ageY()>=16)addUp('alcohol',3);if(chance(.15)){const f=addFriend();if(f)return `Je maakt een nieuwe vriend: ${f.first}.`}return 'Oranje van top tot teen.'}],
  ['🛋️ Thuisblijven',()=>'Je hoort de muziek tot diep in de nacht.']]});
 E('l_fiets',{a:[8,80],c:()=>S.p.country==='NL',cd:3,t:'Fiets gestolen',x:'Je fiets is weg. Het slot ligt doorgeknipt op de grond.',ch:[
- ['🚲 Een nieuwe kopen',()=>{cash(-Math.round(ri(150,700)*(S.cpi||1)));return 'Een nieuwe fiets. Met twee sloten deze keer.'}],
+ ['🚲 Een nieuwe kopen',()=>{if(ageY()<18)return 'Je ouders kopen een tweedehands fiets voor je. Met twee sloten deze keer.';cash(-Math.round(ri(150,700)*(S.cpi||1)));return 'Een nieuwe fiets. Met twee sloten deze keer.'}],
  ['🕵️ Marktplaats afspeuren',()=>{if(chance(.2))return 'Je vindt je fiets terug in een advertentie. De politie haalt hem op.';return 'Geen spoor. Hij is weg.'}]]});
 // ---- huisdieren ----
 E('p_weggelopen',{a:[6,90],c:()=>living('huisdier').some(p=>['hond','kat'].includes(p.sp)),t:'Weggelopen',ctx:()=>ctxP(pick(living('huisdier').filter(p=>['hond','kat'].includes(p.sp)))),x:c=>`${Pe(c).first} is weggelopen en komt niet meer terug.`,ch:[

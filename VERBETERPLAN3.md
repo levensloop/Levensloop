@@ -32,3 +32,4 @@ Werkwijze zoals in `VERBETERPLAN.md` en `VERBETERPLAN2.md`: per fase een kort pl
 | Fase | Stand |
 |---|---|
 | Tussendoor | Bezittingen in categorieën: klaar (`ownGroups`, `sheetOwnCat` in assets.js; één ding in een categorie opent meteen). |
+| 18 Realisme-check | Klaar. Speurtochten `tests/review/real18.js` (alle willekeurige gebeurtenissen × 15 levenssituaties), `real18b.js` (activiteiten per leeftijd), `real18c.js` (hele levens, logregels tegen de toestand), `real18d.js` (leeftijden van iedereen om je heen). Gerepareerd: fiets, bijen en tijdreiziger kosten een kind niets; geen collega's of partner die er niet zijn (marathon, verjaardag, midlifecrisis); overleden oma bij het debutantenbal; bruiloft zonder persoon. Keuzes Thijmen: ouders betalen tot 12 bij gewone activiteiten (`real18.js`: wrappers om `openSheet` en `doAct`), ouders beslissen over een huisdier (`petYes`), clubs vanaf 18. Eerder (fase 17): peuter-uitnodiging, vwo-advies. |

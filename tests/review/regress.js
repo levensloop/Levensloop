@@ -336,6 +336,16 @@ F8T('17.7','schooladvies volgt je cijfers: een 1 gemiddeld en alles fout geeft g
 F8T('17.8','bezit in categorieën: elke spullen-soort één rij, tik toont de inhoud','NL','',async()=>{S.m=30*12;S.items=S.items||[];for(const [k,n] of [['horloges','Rolex A'],['horloges','Rolex B'],['kunst','Schilderij']])S.items.push({id:uid(),em:'x',ico:[k,'b',n,'Nieuw'],name:n,value:1000,cond:100,yr:year()});
   const G=ownGroups();const h=G.find(g=>g.k==='horloges');openSheet('Bezit',sheetAssets,true);await sl(50);const rows=document.querySelectorAll('#sheet .row, .sheet .row').length;openSheet('Horloges',el=>sheetOwnCat(el,'horloges'),true);await sl(50);const txt=document.body.textContent;closeSheet();
   return {ok:!!h&&h.list.length===2&&txt.includes('Rolex A')&&txt.includes('Rolex B')&&!G.some(g=>g.k==='overig'),msg:`groepen ${G.map(g=>g.k+':'+g.list.length).join(', ')}`}});
+F8T('18.1','realisme: kinderen betalen geen fiets, bestrijder of leeggegeten koelkast; geen collega of partner die er niet is','NL','',async()=>{S.m=14*12;S.money=20;const m0=S.money;
+  const run=(id,lbl)=>{const e=EV[id];const ch=e.ch.find(c=>c[0].includes(lbl));return String(ch[1]({})||'')};
+  run('l_fiets','nieuwe');run('bijen','Bestrijder');for(let i=0;i<6;i++)run('tijdreiziger','Binnenlaten');const kidFree=S.money===m0;
+  S.m=40*12;S.job=null;S.rel=S.rel.filter(p=>p.role!=='partner');S.money=1e6;const t1=typeof EV.m3_marathon.x==='function'?EV.m3_marathon.x():EV.m3_marathon.x;let t2='';for(let i=0;i<3;i++)t2+=run('m3_verjaardag','Doen alsof');const t3=run('m3_midlife','motor');
+  const ok=kidFree&&!/collega/i.test(t1+t2)&&!/partner/i.test(t3);return {ok,msg:`kind betaalt niets ${kidFree}; "${t1.slice(0,30)}" · "${t2.slice(0,40)}" · "${t3.slice(-30)}"`}});
+F8T('18.2','ouders betalen tot 12 bij activiteiten; volwassene betaalt zelf; paard bijna altijd nee; clubs vanaf 18','NL','',async()=>{const go=async(age,money)=>{S.m=age*12+2;S.money=money;S.acts={};render();ACTS.find(a=>a[0]==='vecht')[5]();await sl(30);
+   const row=[...document.querySelectorAll('#sheet .mrow')].find(b=>/Judo/.test(b.textContent));if(!row||row.disabled){closeSheet();return null}row.click();for(let i=0;i<6;i++){await sl(40);const m=document.querySelector('#modal:not([hidden])');if(!m)break;const bt=[...m.querySelectorAll('.btn:not([disabled])')];if(!bt.length)break;bt[0].click()}await sl(150);try{closeModal()}catch(e){}closeSheet();return S.money};
+  const kid=await go(8,0);const adult=await go(30,1000);let yes=0;for(let i=0;i<400;i++)if(chance(petYes(1500*(S.cpi||1))))yes++;
+  S.m=13*12;const el=document.createElement('div');sheetConcerts(el);const club=[...el.querySelectorAll('.mrow')].find(b=>/club/i.test(b.textContent));
+  return {ok:kid===0&&adult!=null&&adult<1000&&yes<50&&club&&club.disabled,msg:`kind 8 judo: geld ${kid}; volwassene: ${adult}; paard ja ${yes}/400; club op 13 dicht ${club&&club.disabled}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 

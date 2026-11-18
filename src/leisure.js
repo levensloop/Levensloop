@@ -17,9 +17,9 @@ E('l_pil',{sys:1,t:'Iets aangeboden',x:'Iemand op het festival biedt je een pill
  ['💊 Aannemen',()=>{addUp('drugs',18);hap(4);if(chance(.12)){hea(-ri(10,25));return 'Het valt verkeerd. Je belandt in de EHBO-tent.'}return 'De muziek klinkt opeens nog beter. De volgende dag voel je je beroerd.'}]]});
 // ---- concerten ----
 const GIGS2=[['🎤','Popconcert in de Ziggo Dome',90],['🤘','Metalconcert',55],['🎻','Klassiek concert',60],['🎷','Jazzclub',35],['🎧','Dj-set in een kleine club',25],['🏟️','Stadionconcert van een wereldster',160]];
-function sheetConcerts(el){const a=ageY();const s=sec(el,'Concerten');for(const [ic,t,k] of GIGS2)row(s,{ic,t,s:a<10?'Vanaf 10 jaar':fmt(cpM(k)),dis:a<10||(a>=16&&S.money<cpM(k)),dots:true,on:()=>{const w=company_();
+function sheetConcerts(el){const a=ageY();const s=sec(el,'Concerten');for(const [ic,t,k] of GIGS2){const min=/club/i.test(t)?18:10;row(s,{ic,t,s:a<min?`Vanaf ${min} jaar`:fmt(cpM(k)),dis:a<min||(a>=16&&S.money<cpM(k)),dots:true,on:()=>{const w=company_();
   mgRhythm({title:t,desc:'Zing en klap mee op de maat.',em:ic,btn:'Meezingen!',speed:t.includes('Metal')?1.3:t.includes('Klassiek')?.8:1},sc=>doAct('Concert',()=>{if(a>=16)cash(-cpM(k));const m=use('conc');hap(Math.round((3+sc*4)*m));if(w)w.rel=clamp(w.rel+ri(3,7));sk('muziek',1);
-    if(chance(.04+sc*.04))return 'Na afloop sta je bij de artiestenuitgang. Je krijgt een handtekening én een selfie!';return `${w?`Met ${w.first}. `:''}${sc>=.75?'Je zingt alles mee, het hele publiek ook.':'Een mooie avond.'}`},true,ic))}})}
+    if(chance(.04+sc*.04))return 'Na afloop sta je bij de artiestenuitgang. Je krijgt een handtekening én een selfie!';return `${w?`Met ${w.first}. `:''}${sc>=.75?'Je zingt alles mee, het hele publiek ook.':'Een mooie avond.'}`},true,ic))}})}}
 // ---- restaurants ----
 const RESTO=[['🍟','Snackbar',12],['🍕','Pizzeria',25],['🍣','Sushi all-you-can-eat',35],['🥩','Steakhouse',60],['⭐','Sterrenrestaurant',220]];
 function sheetRestaurants(el){const a=ageY();const s=sec(el,'Restaurants');const pp=living().filter(p=>['partner','vriend','moeder','vader','broer','zus','kind','minnaar','opa','oma'].includes(p.role)&&pAge(p)>=4);
