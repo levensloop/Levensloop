@@ -369,6 +369,23 @@ F8T('19.5','daten binnen je leeftijdsgroep (10–14, 14–16, 16–30, 30+), min
   S.m=40*12;S.flags.dage=[50,59];let pr=true;for(let i=0;i<100;i++){const x=pAge(candidate({app:1}));if(x<50||x>59)pr=false}S.flags.dage=null;
   S.m=12*12;const kid=dprof();const kidOk=!/drinken|kroeg|wijn/.test(kid.bio)&&kid.job==='scholier';
   return {ok:ok&&pr&&kidOk,msg:out.join(' · ')+` · voorkeur 50–59 ${pr} · kinderprofiel ${kidOk}`}});
+F8T('20.1','steden: echte afstanden, prijsniveau per stad voor kopen en huren','NL','',async()=>{const ka=cityKm('Amsterdam','Utrecht'),kg=cityKm('Amsterdam','Maastricht');S.m=30*12;S.p.city='Amsterdam';S.flags.mk=null;
+  let pa=0,pg=0;for(let i=0;i<60;i++)pa+=mkListing(3).price;S.p.city='Groningen';for(let i=0;i<60;i++)pg+=mkListing(3).price;
+  return {ok:ka>30&&ka<80&&kg>180&&kg<300&&pa>pg*1.3,msg:`Amsterdam–Utrecht ${ka} km, Amsterdam–Maastricht ${kg} km; huizen Amsterdam ${Math.round(pa/pg*100)}% van Groningen`}});
+F8T('20.2','verhuizen naar een andere stad: forenzen, thuiswerken, huis verkopen; reiskosten per jaar','NL','',async()=>{S.m=32*12;S.p.city='Utrecht';S.money=3e5;S.job={id:'sales',lvl:1,mult:1,perf:50,y:0};const h=mkListing(3);const pr=buyHouse(h,false);S.home={k:'eigen',pid:pr.id};
+  moveCity();await sl(30);[...document.querySelectorAll('#modal .btn')].find(b=>/Amsterdam/.test(b.textContent)).click();await sl(30);const hasRemote=[...document.querySelectorAll('#modal .btn')].some(b=>/Thuiswerken/.test(b.textContent));
+  [...document.querySelectorAll('#modal .btn')].find(b=>/op en neer/.test(b.textContent)).click();await sl(30);[...document.querySelectorAll('#modal .btn')].find(b=>/Verkopen/.test(b.textContent)).click();await sl(120);closeModal();
+  const moved=S.p.city==='Amsterdam'&&!S.props.includes(pr)&&S.home.k==='huur'&&S.cmt&&S.cmt.from==='Utrecht';const m0=S.money;f8Year(32);const paid=m0-S.money;
+  return {ok:moved&&hasRemote&&paid>500,msg:`verhuisd ${moved}, thuiswerken kon ${hasRemote}, reiskosten ${paid}`}});
+F8T('20.3','inrichten en thuiswerken','NL','',async()=>{S.m=30*12;S.money=50000;setRent('Appartement',16500);inrMenu();await sl(30);[...document.querySelectorAll('#modal .btn')].find(b=>/Industrieel/.test(b.textContent)).click();await sl(30);
+  [...document.querySelectorAll('#modal .btn')].find(b=>/Mooi/.test(b.textContent)).click();await sl(80);closeModal();const inr=S.home.inr;
+  S.job={id:'sales',lvl:1,mult:1,perf:50,y:0};let ok=false;for(let i=0;i<8&&!S.job.rem;i++){S.job.rem=0;const el=document.createElement('div');circRow(el,'work');const b=[...el.querySelectorAll('.mrow')].find(x=>/Thuiswerken/.test(x.textContent));b&&b.click();await sl(60);closeModal()}
+  return {ok:!!inr&&inr.st==='Industrieel'&&inr.lvl===1&&!!S.job.rem,msg:`ingericht ${JSON.stringify(inr)}, thuiswerken ${S.job.rem}`}});
+F8T('20.4','buren: schutting, oppassen, buurtapp','NL','',async()=>{S.m=40*12;const h=mkListing(3);S.money=1e6;const pr=buyHouse(h,false);S.home={k:'eigen',pid:pr.id};S.nb=null;const ps=nbPpl();const c={id:ps[0].id};
+  const r=['nb_schutting','nb_oppas','nb_app'].map(id=>EV[id].c&&!EV[id].c()?'x':String(EV[id].x(c)).slice(0,30)+' → '+String(EV[id].ch[0][1](c)).slice(0,30));return {ok:r.every(x=>x!=='x'&&!/undefined/.test(x)),msg:r.join(' | ')}});
+F8T('20.5','studentenhuis: hospiteeravond bij intrek, huisoudste na twee jaar','NL','',async()=>{S.m=19*12;S.edu.cur={id:'rechten',ty:'wo'};Q.length=0;setRent('Studentenkamer',6500);const hospi=Q.some(q=>q.id==='st20_hospi');Q.length=0;
+  S.sth.y=year()-3;let old=false;for(let i=0;i<10&&!old;i++){f8Year(21);old=Q.some(q=>q.id==='st20_oudste')}Q.length=0;const t=EV.st20_afwas.ch[0][1]();
+  return {ok:hospi&&old&&!!t,msg:`hospiteeravond ${hospi}, huisoudste ${old}; ${t.slice(0,50)}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 

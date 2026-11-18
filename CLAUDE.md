@@ -6,7 +6,7 @@ Levensloop is een persoonlijke, Nederlandstalige BitLife-kloon van Thijmen. Eén
 
 - Antwoord altijd in het Nederlands, kort en in gewone taal. Thijmen is geen programmeur.
 - Vaste werkwijze: Thijmen vraagt iets → jij schrijft een kort plan en stelt keuzevragen → Thijmen zegt "begin", "door" of "volgende" → jij voert uit → jij meldt per punt wat er veranderd is.
-- Commit en push alleen als Thijmen erom vraagt. Online zetten = `deploy-app.sh`.
+- Commit en push alleen als Thijmen erom vraagt. Online zetten = `deploy-app.sh`. Sinds 18 nov 2026: elke fase uit VERBETERPLAN3 gaat online zodra die klaar en getest is.
 - Blijf van Levensloop v1 af (https://claude.ai/artifact/64NC1MwHRkii7p8YAjtP9e). Dat is een back-up.
 - Ontwerp: indeling van v1 aanhouden, lichtblauw (`#2b9cf2` / `#1477c8`), luchtige BitLife-toon. Geen donkere modus.
 - Bestaande levens op Thijmens iPhone mogen nooit stukgaan. Elke wijziging aan de opslag of aan de vorm van `S` krijgt een migratie die oude gegevens omzet.
@@ -62,7 +62,7 @@ bash deploy-app.sh                 # bouwt, kopieert pwa/ naar de GitHub-clone e
 
 `build.sh` plakt `src/head.html`, `src/theme.css`, `src/body.html` en alle JS-bestanden in vaste volgorde achter elkaar. Alles is globaal (ongeveer 800 functies), dus de volgorde in `build.sh` telt en namen mogen niet botsen.
 
-Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, events3, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, f8, royal, careers8, school2, ident, heir, haunt, god, people9, family9, calm9, work10, health11, acts12, money13, fame14, sport15, crime16, looks17, vote17, real18, love19, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
+Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choices, create, circle, fight, celeb, ui, store, backup, assets, finance, debt, family, minigames, crime2, health, leisure, acts, events2, events3, prison, biz, social, realty, school, legacy, politics, polsys, prlite, politics2, politics3, pres, reg, mil, mil2, war, mil3, occ, eco, eco2, eco3, coup, coup2, f8, royal, careers8, school2, ident, heir, haunt, god, people9, family9, calm9, work10, health11, acts12, money13, fame14, sport15, crime16, looks17, vote17, real18, love19, home20, diag, vangnet, boot. `boot.js` start het spel en moet altijd als laatste.
 
 | Bestand | Inhoud |
 |---|---|
@@ -107,6 +107,7 @@ Volgorde: data, loc, events, engine, career, sectors, icons, avatar, house, choi
 | `vote17.js` | stemmen als gewone burger: standaard `voteMode()==='same'`; bij 18 één keer `vote18` (voorkeurspartij in `S.pw.vote`, `S.flags.vote18`), daarna een logregel per verkiezing (ook VS en presidentslanden). Pop-ups alleen met `polPro()` of de stand 'Elke keer vragen'. Menu: `voteMenu`. Verder in fase 17: berichten met leeftijdsgrenzen (`ibAdd`, `giftCost`), schooladvies uit je cijfers (`setAdvice`), echte doodsoorzaak i.p.v. 'een slechte gezondheid' (`deathCause` in health11.js). |
 | `real18.js` | fase 18 realisme: tot 12 jaar betalen je ouders bij gewone activiteiten (`KIDPAY`; `openSheet` markeert zo'n scherm met `kp` en telt je geld niet mee voor wat aan staat; `doAct` zet de kosten terug en meldt "Je ouders betalen"), huisdier onder 18 via `petYes`. Speurtochten: `tests/review/real18*.js`. |
 | `love19.js` | fase 19 liefde: datingapp (`S.dapp`, `dating` vervangen vanaf 18, `openMatch`), ring (`S.ring`) en aanzoek (`proposeFlow`), partner-aanzoek `l19_aanzoek`, bruiloft plannen (`weddingPlan`, `wedDay`, `p.wed`; `canMarry` volgt de regels van ident.js), ruzie `l19_ruzie`, scheiding (`breakUp` omwikkeld: huis uitkopen of verkopen, partneralimentatie `S.alim`). |
+| `home20.js` | fase 20 wonen: steden (`CITY20` ligging en prijsniveau, `cityKm`, `cityIdx`; `mkListing` en `sheetRent` omwikkeld), verhuizen (`moveCity`→`moveJob`→`moveHouse`→`moveGo`; reizen `S.cmt`, thuiswerken `S.job.rem`, rijen in het werkscherm via `circRow`), inrichten (`inrMenu`, `S.home.inr`), buren `nb_schutting`/`nb_oppas`/`nb_app`, studentenhuis `st20_*` (`S.sth`, `setRent` omwikkeld). |
 | `src/pwa/` | iPhone-app: `meta.html`, `fix.css`, `pwa.js` (updatebalk), `sw.tpl.js` (service worker), manifest |
 
 ## Belangrijkste bouwstenen
