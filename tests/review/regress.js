@@ -346,6 +346,23 @@ F8T('18.2','ouders betalen tot 12 bij activiteiten; volwassene betaalt zelf; paa
   const kid=await go(8,0);const adult=await go(30,1000);let yes=0;for(let i=0;i<400;i++)if(chance(petYes(1500*(S.cpi||1))))yes++;
   S.m=13*12;const el=document.createElement('div');sheetConcerts(el);const club=[...el.querySelectorAll('.mrow')].find(b=>/club/i.test(b.textContent));
   return {ok:kid===0&&adult!=null&&adult<1000&&yes<50&&club&&club.disabled,msg:`kind 8 judo: geld ${kid}; volwassene: ${adult}; paard ja ${yes}/400; club op 13 dicht ${club&&club.disabled}`}});
+F8T('19.1','datingapp: vegen, match, berichtje, afspreken','NL','',async()=>{S.m=26*12;S.flags.pref='beide';S.rel=S.rel.filter(p=>p.role!=='partner');S.st.looks=95;S.st.happy=90;const D=dapp();D.sw=0;
+  dating();await sl(40);let n=0;for(let i=0;i<14&&document.querySelector('#modal:not([hidden])');i++){const b=[...document.querySelectorAll('#modal .btn')].find(x=>/Leuk/.test(x.textContent));if(!b)break;b.click();n++;await sl(25)}closeModal();
+  const matches=D.m.length;let chat=false,date=false;if(matches){const m=D.m[0];openMatch(m);await sl(30);document.querySelector('#modal .btn').click();await sl(60);closeModal();chat=m.msg===1||!D.m.includes(m);
+    const m2=D.m.find(x=>x.msg);if(m2){m2.w=5;openMatch(m2);await sl(30);const a=[...document.querySelectorAll('#modal .btn')].find(x=>/Afspreken/.test(x.textContent));a&&a.click();await sl(60);date=!!document.querySelector('#modal:not([hidden])');closeModal()}else date=true}
+  openSheet('Liefde',sheetLove,true);await sl(30);const txt=document.querySelector('#sheet').textContent;closeSheet();
+  return {ok:n>=10&&matches>0&&chat&&date&&/Swipes over/.test(txt),msg:`${n} keer geveegd, ${matches} matches, berichtje ${chat}, date gestart ${date}`}});
+F8T('19.2','ring kopen en aanzoek; partner kan zelf een aanzoek doen','NL','',async()=>{S.m=30*12;S.money=50000;S.rel=S.rel.filter(p=>p.role!=='partner');const p=addPartner();p.rel=95;p.since=26;
+  proposeFlow(p);await sl(30);const ring=[...document.querySelectorAll('#modal .btn')].find(x=>/diamant/.test(x.textContent));ring.click();await sl(80);closeModal();const bought=!!S.ring&&S.money<50000;
+  let yes=false;for(let i=0;i<6&&!yes;i++){if(!S.ring)S.ring={t:'Gouden ring',lv:1,k:1200};p.st='relatie';p.rel=95;proposeFlow(p);await sl(30);[...document.querySelectorAll('#modal .btn')].find(x=>/strand/.test(x.textContent)).click();await sl(80);closeModal();yes=p.st==='verloofd'}
+  p.st='relatie';const t=EV.l19_aanzoek.ch[0][1]({id:p.id});return {ok:bought&&yes&&p.st==='verloofd'&&!!p.engY,msg:`ring gekocht ${bought}, ja op het strand ${yes}; partner-aanzoek: ${t.slice(0,40)}`}});
+F8T('19.3','bruiloft plannen in vijf stappen, trouwdag met record','NL','',async()=>{S.m=31*12;S.money=100000;S.rel=S.rel.filter(p=>p.role!=='partner');const p=addPartner();p.st='verloofd';p.g=S.p.g==='m'?'v':'m';
+  weddingPlan(p);for(const re of [/Kasteel/,/120 gasten/,/op maat/,/Gouden/,/Italië/,/Trouwen!/]){await sl(30);const b=[...document.querySelectorAll('#modal .btn')].find(x=>re.test(x.textContent));if(!b)return {ok:false,msg:'knop niet gevonden: '+re};b.click()}
+  await sl(100);closeModal();return {ok:p.st==='getrouwd'&&p.wed&&p.wed.loc==='Kasteel'&&S.money<100000-25000,msg:`${p.st}, ${JSON.stringify(p.wed)}, saldo ${S.money}`}});
+F8T('19.4','scheiding: huis verdelen en partneralimentatie; ruzie-moment','NL','',async()=>{S.m=45*12;S.money=500000;S.rel=S.rel.filter(p=>p.role!=='partner');const p=addPartner();p.st='getrouwd';p.since=33;p.job='student';
+  S.job={id:JOBS[0].id,lvl:0,mult:3,perf:50,y:0};const sal=salary();const h=mkListing(4);const pr=buyHouse(h,false);S.home={k:'eigen',pid:pr.id};S.money=5e6;const m0=S.money;
+  breakUp();const al=S.alim;const kept=S.props.includes(pr);const r=EV.l19_ruzie.ch.map(c=>c[0]).join(' / ');
+  return {ok:p.role==='ex'&&kept&&S.money<m0/2&&(sal<10000||!!al&&al.until===year()+5),msg:`salaris ${sal}; huis gehouden ${kept}, saldo ${m0} → ${S.money}; alimentatie ${al?al.amt+' tot '+al.until:'geen'}; ruzie: ${r}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 

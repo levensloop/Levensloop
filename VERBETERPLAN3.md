@@ -7,7 +7,7 @@ Werkwijze zoals in `VERBETERPLAN.md` en `VERBETERPLAN2.md`: per fase een kort pl
 
 - Onderdelen: realisme-check, liefde en daten, wonen, minigames, huisdieren, eigen bedrijf.
 - Volgorde: **grootste impact eerst**.
-- Werkwijze: **alles doorbouwen**, testen, en pas online na "ga door".
+- Werkwijze: alles doorbouwen en testen. **Sinds 18 nov 21:57: elke fase online zodra die klaar en getest is** (Thijmen: "fase voor fase online").
 - Realisme-check: duidelijke fouten meteen repareren, **twijfelgevallen eerst aan Thijmen vragen** (verzamelen en in één keer vragen).
 - Liefde: datingapp, relatiefases (met **ring kopen** en alles rond verloven en trouwen), ruzie en uit elkaar. Je partner mag zelf initiatief nemen (aanzoek, vreemdgaan, het uitmaken), net als in het echt. Geen "dates als moment".
 - Wonen: inrichten en verbouwen, buren als personen, verhuizen naar een andere stad (**steden dichtbij: op en neer reizen of thuiswerken**), studentenhuis.
@@ -33,3 +33,4 @@ Werkwijze zoals in `VERBETERPLAN.md` en `VERBETERPLAN2.md`: per fase een kort pl
 |---|---|
 | Tussendoor | Bezittingen in categorieën: klaar (`ownGroups`, `sheetOwnCat` in assets.js; één ding in een categorie opent meteen). |
 | 18 Realisme-check | Klaar. Speurtochten `tests/review/real18.js` (alle willekeurige gebeurtenissen × 15 levenssituaties), `real18b.js` (activiteiten per leeftijd), `real18c.js` (hele levens, logregels tegen de toestand), `real18d.js` (leeftijden van iedereen om je heen). Gerepareerd: fiets, bijen en tijdreiziger kosten een kind niets; geen collega's of partner die er niet zijn (marathon, verjaardag, midlifecrisis); overleden oma bij het debutantenbal; bruiloft zonder persoon. Keuzes Thijmen: ouders betalen tot 12 bij gewone activiteiten (`real18.js`: wrappers om `openSheet` en `doAct`), ouders beslissen over een huisdier (`petYes`), clubs vanaf 18. Eerder (fase 17): peuter-uitnodiging, vwo-advies. |
+| 19 Liefde en daten | Gebouwd: `love19.js`. Datingapp (`S.dapp`: 12 swipes per jaar, Premium 30, superlike, matches met berichtjes en afspreken via `dateGame`; onder 18 de oude manier), ring kopen (`S.ring`, `RINGS`) en aanzoek met plek (`PLACE19`), partner doet zelf een aanzoek (`l19_aanzoek`), bruiloft plannen in vijf stappen (`weddingPlan`, `p.wed`), ruzie (`l19_ruzie`), scheiding met huis verdelen en partneralimentatie (`S.alim`, max 5 jaar). Bestond al: vreemdgaan (beide kanten), partner wil weg (`s_weg`), voogdij en kinderalimentatie, huwelijkse voorwaarden. |
