@@ -496,7 +496,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .rapport{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:4px}
 .rapport div{display:flex;justify-content:space-between;gap:8px;font-size:15px;border-bottom:.5px solid var(--sep);padding:4px 0}
 .rapport b{font-variant-numeric:tabular-nums}
-@keyframes tapfx{0%{scale:1}35%{scale:.94}100%{scale:1}}@keyframes agetap{0%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-50%) scale(.94)}100%{transform:translate(-50%,-50%) scale(1)}}.agebig.tapfx{animation:agetap .2s ease-out}.tapfx{animation:tapfx .2s ease-out}
+@keyframes tapfx{0%{scale:1}35%{scale:.94}100%{scale:1}}@keyframes agetap{0%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-50%) scale(.94)}100%{transform:translate(-50%,-50%) scale(1)}}.agebig.tapfx{animation:agetap .2s ease-out}.tabbar button{position:relative}.ib9{position:absolute;top:2px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff3b30;color:#fff;font-size:11px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px #fff}.tapfx{animation:tapfx .2s ease-out}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .choices .btn.sub{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;text-align:left;padding-block:9px}.choices .btn.sub .ctx{display:flex;flex-direction:column;gap:2px;min-width:0}.choices .btn.sub .ctx>span{font-weight:700}.cic{flex:none;width:42px;height:42px;border-radius:11px;background:#fff;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.12)}.cic .ico{width:36px;height:36px}.ico{display:block}.mic .ico{width:44px;height:44px;margin:auto}.ptitle .ico{width:48px;height:48px}.card h3 .ico{width:36px;height:36px;display:inline-block;vertical-align:-10px}.bface .ico,.face .ico{width:44px;height:44px}.choices .btn.sub small{font-size:13px;font-weight:500;opacity:.72;line-height:1.3}
 [hidden]{display:none!important}
@@ -696,7 +696,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261118-0027';
+const APP_VERSION='20261118-1040';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -3404,9 +3404,9 @@ function variantPopup(k,b,m){const c=CATALOG[k];
 /* ================= RELATIES ================= */
 const roleLabel=p=>cap(p.role==='partner'?partnerWord(p):p.role==='vijand'?'vijand':p.role==='huisdier'?petDesc(p):relWord(p));
 function personRow(el,p){if(!p.alive){const ago=ageY()-(p.died??ageY());row(el,{ic:'💀',t:`${p.first} ${p.last||''}`.trim(),role:roleLabel(p),s:ago<=0?'Dit jaar overleden':ago===1?'Vorig jaar overleden':`${ago} jaar geleden overleden`,dots:true,on:()=>modal({title:`${p.first} ${p.last||''}`,em:'🪦',cat:'In herinnering',text:`Je ${roleLabel(p).toLowerCase()} ${p.first} is ${ago<=0?'dit jaar':ago+' jaar geleden'} overleden.`,choices:opts([{t:'Graf bezoeken',on:()=>{closeModal();doAct('Graf bezoeken',()=>{use('graf'+p.id);hap(2);kar(1);return `Je legt bloemen bij het graf van ${p.first}.`},true,'💐')}}])})});return}
-  row(el,{ic:faceOf(p),t:`${p.first} ${p.last||''}`.trim(),role:roleLabel(p),bar:{l:'Relatie',v:p.rel,c:statCol(p.rel)},on:()=>openSheet(p.first,el=>sheetPerson(el,p),true)})}
+  row(el,{ic:faceOf(p),t:`${p.first} ${p.last||''}`.trim(),role:roleLabel(p)+(typeof f9Tag==='function'?f9Tag(p):''),bar:{l:'Relatie',v:p.rel,c:statCol(p.rel)},on:()=>openSheet(p.first,el=>sheetPerson(el,p),true)})}
 function sheetPerson(el,p){const a=pAge(p);
-  card(el,`<h3>${faceOf(p)} ${he(p.first+' '+(p.last||''))}</h3><span class="muted">${roleLabel(p)} · ${a} jaar${p.job&&p.role!=='huisdier'?' · '+he(p.job):''}</span><div class="stat"><span>Relatie</span><span></span><span class="v">${Math.round(p.rel)}%</span>${bar(p.rel)}</div>${p.role!=='huisdier'?`<div class="stat"><span>Slimheid</span><span></span><span class="v">${Math.round(p.smarts)}%</span>${bar(p.smarts,'var(--brand)')}</div><div class="stat"><span>Uiterlijk</span><span></span><span class="v">${Math.round(p.looks)}%</span>${bar(p.looks,'var(--brand)')}</div>`:''}`);
+  card(el,`<h3>${faceOf(p)} ${he(p.first+' '+(p.last||''))}</h3><span class="muted">${roleLabel(p)} · ${a} jaar${p.job&&p.role!=='huisdier'?' · '+he(p.job):''}</span><div class="stat"><span>Relatie</span><span></span><span class="v">${Math.round(p.rel)}%</span>${bar(p.rel)}</div>${p.role!=='huisdier'?`<div class="stat"><span>Slimheid</span><span></span><span class="v">${Math.round(p.smarts)}%</span>${bar(p.smarts,'var(--brand)')}</div><div class="stat"><span>Uiterlijk</span><span></span><span class="v">${Math.round(p.looks)}%</span>${bar(p.looks,'var(--brand)')}</div>`:''}${typeof f9Card==='function'?f9Card(p):''}`);
   if(typeof pJailed==='function'&&pJailed(p)){jailedPersonRows(el,p);return}
   if(inJail()){const s=sec(el,'Vanuit de gevangenis');if(p.role==='huisdier'){empty(s,`${p.first} wordt verzorgd tot je terug bent.`);return}
     row(s,{ic:'📞',t:'Bellen',s:'Tien minuten belminuten',on:()=>doAct('Bellen',()=>{use('bel'+p.id);p.rel=clamp(p.rel+ri(3,8));hap(3);return `Je belt met ${p.first}. Het doet je goed.`},true,'📞')});
@@ -3612,7 +3612,7 @@ function drawStory(){
   h+=`<div class="dsec"><p class="sec-l">Terugspoelen</p><div class="btnrow">${[1,3,5,10].map(n=>`<button class="btn sm" data-rw="${n}" ${rewindTarget(n)?'':'disabled'}>${n} jaar</button>`).join('')}</div></div>`;
   if(typeof legacyHtml==='function')h+=timelineHtml()+numbersHtml()+legacyHtml();
   const PL=typeof estatePlan==='function'?estatePlan():[];
-  const hs=living('kind');h+=`<div class="dsec"><p class="sec-l">Verder spelen als je kind</p>${hs.length?hs.map(k=>`<button class="savecard" data-heir="${k.id}"><span class="av" style="background:var(--good-soft);font-size:26px">${faceOf(k)}</span><span class="meta"><b>${he(k.first)}${k.disown?' · onterfd':''}</b><small>${relWord(k)} · ${pAge(k)} jaar${k.job?' · '+he(k.job):''}${(PL.find(x=>x.id===k.id)||{}).net?` · erft ${fmt(PL.find(x=>x.id===k.id).net)}`:''}</small></span><span class="mchev"></span></button>`).join(''):'<p class="muted" style="margin:0">Geen kinderen om het leven mee voort te zetten.</p>'}</div>`;
+  const hk=living('kind');const hs=hk.length?hk:living('kleinkind');/* fase 9: kleinkinderen alleen als er geen kind meer leeft */h+=`<div class="dsec"><p class="sec-l">Verder spelen als je ${hk.length||!hs.length?'kind':'kleinkind'}</p>${hs.length?hs.map(k=>`<button class="savecard" data-heir="${k.id}"><span class="av" style="background:var(--good-soft);font-size:26px">${faceOf(k)}</span><span class="meta"><b>${he(k.first)}${k.disown?' · onterfd':''}</b><small>${relWord(k)} · ${pAge(k)} jaar${k.job?' · '+he(k.job):''}${(PL.find(x=>x.id===k.id)||{}).net?` · erft ${fmt(PL.find(x=>x.id===k.id).net)}`:''}</small></span><span class="mchev"></span></button>`).join(''):'<p class="muted" style="margin:0">Geen kinderen of kleinkinderen om het leven mee voort te zetten.</p>'}</div>`;
   h+=`<div class="dsec" style="padding-bottom:12px"><button class="btn go" id="d-new">Nieuw leven beginnen</button><button class="btn ghost" id="d-home">Mijn levens</button></div></div>`;
   const el=$('#death');el.innerHTML=h;el.scrollTop=0;
   el.querySelectorAll('[data-rw]').forEach(b=>b.onclick=()=>{rewind(+b.dataset.rw);show('game');render();saveLife();toast(`Teruggespoeld naar je ${ageY()}e`)});
@@ -3628,12 +3628,14 @@ function inherit(cid){
   const n=blankState({first:ch.first,last:ch.last,g:ch.g,country:old.p.country,city:old.p.city,by:curY-Math.floor((bm-1+nm)/12),bm,gen:old.gen+1,fam:old.fam,mode:old.settings.mode,chaos:old.settings.chaos,gens:old.gens.concat([{name:rec.name,by:rec.by,age:rec.age,score:rec.score,id:old.id,ap:old.ap,g:old.p.g,job:old.hist&&old.hist.topJob||'',partner:(old.rel.find(p=>p.role==='partner'||p.wid)||{}).first||'',kids:old.rel.filter(p=>p.role==='kind').length}]),bigFam:old.settings.bigFam});
   n.m=nm;n.st={happy:50,health:ri(70,95),smarts:ch.smarts,looks:ch.looks};n.karma=55;n.cpi=old.cpi||1;n.ap=ch.ap||apMix(old.ap,null,ch.g);n.talent='geen';n.disc=ri(30,70);n.fert=ri(45,90);n.econ=Object.assign({},old.econ||{s:'normaal',y:0});share+=Math.max(0,Math.round(ch.money||0));
   const sh=b=>b-ch.born;
+  if(ch.role==='kleinkind'&&typeof f9GKRel==='function')f9GKRel(old,n,ch,sh);else{
   n.rel.push({id:uid(),ap:old.ap,role:old.p.g==='v'?'moeder':'vader',g:old.p.g==='v'?'v':'m',first:old.p.first,last:old.p.last,born:sh(0),rel:ch.rel,alive:false,died:Math.floor(nm/12),looks:old.st.looks,smarts:old.st.smarts,money:0,job:''});
   const op=ch.op&&old.rel.find(p=>p.id===ch.op);
   if(op)n.rel.push(Object.assign({},op,{id:uid(),role:op.g==='v'?'moeder':'vader',born:sh(op.born),st:'',rel:ri(55,85),money:sp&&sp.id===op.id?share:op.money}));
   for(const o of old.rel.filter(p=>p.role==='kind'&&p.id!==cid))n.rel.push(Object.assign({},o,{id:uid(),role:o.g==='v'?'zus':'broer',born:sh(o.born),rel:ri(45,80)}));
   for(const o of old.rel.filter(p=>p.role==='kleinkind'&&p.par===cid))n.rel.push(Object.assign({},o,{id:uid(),role:'kind',born:sh(o.born),rel:ri(65,90)}));
   if(old.settings.bigFam){n.flags.bigGen=1;const map={broer:'oom',zus:'tante',moeder:'oma',vader:'opa',neefje:'neef',nichtje:'nicht'};for(const o of old.rel.filter(p=>map[p.role]&&(p.alive||['moeder','vader'].includes(p.role))))n.rel.push(Object.assign({},o,{id:uid(),role:o.role==='neefje'||o.role==='nichtje'?(o.g==='v'?'nicht':'neef'):map[o.role],born:sh(o.born),died:o.alive?o.died:(o.died!=null?o.died-Math.floor(ch.born/12):undefined),rel:ri(40,75)}))}
+  }
   for(const o of old.rel.filter(p=>p.role==='huisdier'&&p.alive))n.rel.push(Object.assign({},o,{id:uid(),born:sh(o.born)}));
   if(age<18){n.money=0;n.trust=share}else n.money=share;n.biz=old.biz;n.flags.wealth=share>500000?'rijk':share>20000?'midden':'arm';
   S=n;
@@ -4187,7 +4189,7 @@ E('s_failliet',{sys:1,t:'Failliet',f:c=>bankrupt(c.why||'')});
 Object.assign(EVMETA,{s_schuld:['Geld','📬'],s_failliet:['Geld','⚖️']});
 /* ================= RELATIES: grote familie, liefde, opvoeden, stamboom ================= */
 const BIGR={opa:'Grootouders',oma:'Grootouders',oom:'Ooms en tantes',tante:'Ooms en tantes',neef:'Neven en nichten',nicht:'Neven en nichten',neefje:'Neefjes en nichtjes',nichtje:'Neefjes en nichtjes',
-  schoonmoeder:'Schoonfamilie',schoonvader:'Schoonfamilie',zwager:'Schoonfamilie',schoonzus:'Schoonfamilie',stiefvader:'Stieffamilie',stiefmoeder:'Stieffamilie',stiefbroer:'Stieffamilie',stiefzus:'Stieffamilie'};
+  schoonmoeder:'Schoonfamilie',schoonvader:'Schoonfamilie',zwager:'Schoonfamilie',schoonzus:'Schoonfamilie',schoonzoon:'Schoonfamilie',schoondochter:'Schoonfamilie',stiefvader:'Stieffamilie',stiefmoeder:'Stieffamilie',stiefbroer:'Stieffamilie',stiefzus:'Stieffamilie'};
 const bigOn=()=>!!(S&&S.settings&&S.settings.bigFam);
 const gRole=(g,m,v)=>g==='v'?v:m;
 // grootouders, ooms, tantes en neven/nichten op basis van je ouders
@@ -4200,7 +4202,8 @@ function ensureBigFam(){if(!bigOn()||S.flags.bigGen)return;S.flags.bigGen=1;cons
       for(let k=ri(0,3);k>0;k--){const g2=pick(['m','v']);S.rel.push(mkPerson(gRole(g2,'neef','nicht'),g2,me+ri(-8,10)*12+ri(0,11),{ap:apMix(apOf(u),null,g2),last:u.g==='m'?u.last:pick(NAMES[C().r].l),rel:ri(35,70),par:u.id}))}}}}
 function famYear(a){if(!bigOn())return;ensureBigFam();
   // broers en zussen krijgen kinderen
-  for(const s of living(['broer','zus'])){const sa=pAge(s);if(sa>=24&&sa<=42&&chance(.1)&&people(['neefje','nichtje']).filter(x=>x.par===s.id).length<3){const g=pick(['m','v']);const k=mkPerson(gRole(g,'neefje','nichtje'),g,S.m,{ap:apMix(apOf(s),null,g),last:s.g==='m'?s.last:pick(NAMES[C().r].l),rel:ri(50,80),par:s.id});S.rel.push(k);L(`Je ${relWord(s)} ${s.first} heeft een ${g==='v'?'dochter':'zoon'} gekregen: ${k.first}. Je bent ${S.p.g==='v'?'tante':'oom'}!`,'good');hap(3)}}
+  // sinds fase 9 krijgen broers en zussen kinderen vanuit hun eigen leven (people9.js)
+  if(typeof PHASE9==='undefined')for(const s of living(['broer','zus'])){const sa=pAge(s);if(sa>=24&&sa<=42&&chance(.1)&&people(['neefje','nichtje']).filter(x=>x.par===s.id).length<3){const g=pick(['m','v']);const k=mkPerson(gRole(g,'neefje','nichtje'),g,S.m,{ap:apMix(apOf(s),null,g),last:s.g==='m'?s.last:pick(NAMES[C().r].l),rel:ri(50,80),par:s.id});S.rel.push(k);L(`Je ${relWord(s)} ${s.first} heeft een ${g==='v'?'dochter':'zoon'} gekregen: ${k.first}. Je bent ${S.p.g==='v'?'tante':'oom'}!`,'good');hap(3)}}
   // schoonfamilie zodra je getrouwd bent
   const pt=partner();if(pt&&pt.st==='getrouwd'&&!pt.inlaws){pt.inlaws=1;const pa=pAge(pt);for(const g of ['m','v']){const age=pa+ri(22,34);if(age>95)continue;S.rel.push(mkPerson(gRole(g,'schoonvader','schoonmoeder'),g,S.m-age*12,{ap:apMix(apOf(pt),null,g),last:g==='m'?pt.last:pick(NAMES[C().r].l),rel:ri(40,75),of:pt.id}))}
     for(let i=ri(0,2);i>0;i--){const g=pick(['m','v']);S.rel.push(mkPerson(gRole(g,'zwager','schoonzus'),g,pt.born+ri(-6,6)*12,{ap:apMix(apOf(pt),null,g),last:pt.last,rel:ri(40,70),of:pt.id}))}
@@ -4218,6 +4221,7 @@ E('f_scheiding',{sys:1,t:'Je ouders gaan scheiden',x:()=>`${living('moeder')[0]?
 // ---- het relatiescherm (zelfde opbouw, uitgebreid) ----
 function sheetRel(el){if(bigOn())ensureBigFam();
   const top=sec(el,'');row(top,{ic:'🌳',t:'Stamboom',s:`Generatie ${S.gen} · bekijk je hele familie`,on:()=>openSheet('Stamboom',sheetTree,true)});
+  if(typeof f9RelTop==='function')f9RelTop(el);
   // volgorde (verbeterplan 5.1): liefde, kinderen, ouders, broers en zussen, vrienden, huisdieren, dan de overige familie ingeklapt
   const love=sec(el,'Liefde');const pt=partner();if(pt)personRow(love,pt);
   for(const p of living('minnaar'))personRow(love,p);
@@ -4226,8 +4230,9 @@ function sheetRel(el){if(bigOn())ensureBigFam();
   const exes=people('ex');row(love,{ic:'💔',t:'Exen',s:exes.length?`${exes.length} ex${exes.length>1?'en':''}`:'Bekijk je exen',dis:!exes.length,on:()=>openSheet('Exen',el=>{const s=sec(el,'');for(const p of exes)personRow(s,p)},true)});
   const groups=[['Kinderen',['kind']],['Kleinkinderen',['kleinkind']],['Ouders',['moeder','vader']],['Broers en zussen',['broer','zus']],['Vrienden',['vriend']]];
   for(const [n,r] of groups){const ps=living(r);if(!ps.length)continue;const s=sec(el,n);if(r[0]==='kind'&&ps.some(k=>pAge(k)<18))row(s,{ic:'🧸',t:'Opvoeding',s:`${PSTY[S.par?.style||'liefdevol'][0]} · zakgeld ${fmt((S.par?.pocket||0)*(S.cpi||1))} per week`,on:()=>openSheet('Opvoeding',sheetParenting,true)});for(const p of ps)personRow(s,p)}
+  if(typeof f9FriendRows==='function')f9FriendRows(el);
   const pets=living('huisdier');if(pets.length){const s=sec(el,'Huisdieren');for(const p of pets)personRow(s,p)}
-  if(bigOn()){const other=[['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus']]];
+  if(bigOn()){const other=[['Grootouders',['opa','oma']],['Stieffamilie',['stiefvader','stiefmoeder','stiefbroer','stiefzus']],['Ooms en tantes',['oom','tante']],['Neven en nichten',['neef','nicht']],['Neefjes en nichtjes',['neefje','nichtje']],['Schoonfamilie',['schoonmoeder','schoonvader','zwager','schoonzus','schoonzoon','schoondochter']]];
     const n=other.reduce((x,[,r])=>x+living(r).length,0);
     if(n)row(sec(el,'Overige familie'),{ic:'👪',t:'Overige familie',s:`${n} ${n===1?'persoon':'mensen'} · ${other.filter(([,r])=>living(r).length).map(([nm])=>nm.toLowerCase()).join(', ')}`,on:()=>openSheet('Overige familie',e2=>{for(const [nm,r] of other){const ps=living(r);if(!ps.length)continue;const s2=sec(e2,nm);for(const p of ps)personRow(s2,p)}},true)})}
   {const ps=living('vijand');if(ps.length){const s=sec(el,'Vijanden');for(const p of ps)personRow(s,p)}}
@@ -4426,7 +4431,7 @@ function crime(cr,em){if(cr.id==='bank'){openSheet('Overval plannen',el=>sheetHe
 function resolveCrime(cr,pl,hits,em){const a=ageY();use('crime');kar(-ri(3,8));
   const risk=(typeof pl[2]==='function'?pl[2]():pl[2])*(S.talent==='misdaad'?.65:1);
   let p=cr.p*risk*(1+(S.crim.heat||0)/90)*(1+S.crim.rec.length*.12)*(1-S.sk.sport/400);
-  if(hits!=null)p*=hits>=3?.55:hits===2?.9:1.5;p=clamp(p,.08,.95);
+  if(hits!=null)p*=hits>=3?.55:hits===2?.9:1.5;p=clamp(p*(typeof CRIMEMILD!=='undefined'?CRIMEMILD:1),.06,.95);
   if(chance(p)){const m=Math.max(1,Math.round(ri(cr.jail[0],cr.jail[1])*(1+S.crim.rec.length*.25)*risk));const minor=cr.jail[1]===0;
     closeSheet();L(`Betrapt tijdens ${cr.t.toLowerCase()}.`,'bad');Q.push({id:'s_arrest',c:{w:cr.t,m,minor,fine:ri(1,5)*100}});processQ();return}
   if(hits!=null&&hits<2&&chance(.5)){doAct(cr.t,()=>{S.crim.heat=Math.min(100,(S.crim.heat||0)+Math.round(cr.heat/2));hap(-1);return 'Het gaat mis. Je gaat er met lege handen vandoor, maar niemand heeft je gezien.'},true,'😬');return}
@@ -4571,8 +4576,8 @@ function treat(il,sp,o={}){const I=illInfo(il);let p=I.cure*(sp===I.sp?1:sp==='h
   if(sp==='huisarts'&&I.sp!=='huisarts'){il.ref=1;return `De huisarts verwijst je door naar de ${SPEC[I.sp][1].toLowerCase()}.`}
   il.sev=Math.max(1,il.sev-1);return `${o.what||'De behandeling'} helpt een beetje, maar je bent nog niet beter.`}
 function sheetDoctor(el){const a=ageY();
-  card(el,`<h3>👨‍⚕️ Gezondheid</h3>${kv([['Gezondheid',Math.round(S.st.health)+'%'],['Klachten',S.ill.length?S.ill.map(i=>i.n).join(', '):'Geen'],...(S.p.country==='NL'&&a>=18?[['Eigen risico dit jaar',`${fmt(S.er&&S.er.y===year()?S.er.used:0)} van ${fmt(385*(S.cpi||1))}`]]:[])])}`);
-  if(S.ill.length){const k=sec(el,'Je klachten');for(const il of S.ill){const I=illInfo(il);row(k,{ic:I.l?'⚠️':I.ment?'🧠':'🤒',t:cap(il.n),s:`${I.l?'Ernstig · ':''}${I.chron?'Chronisch · ':''}behandeld door de ${SPEC[I.sp][1].toLowerCase()}${il.ref?' · je hebt een verwijzing':''}`,dots:true,on:()=>illMenu(il)})}}
+  card(el,`<h3>👨‍⚕️ Gezondheid</h3>${kv([['Gezondheid',Math.round(S.st.health)+'%'],['Klachten',S.ill.length?S.ill.map(i=>typeof illNm==='function'?illNm(i):i.n).join(', '):'Geen'],...(S.p.country==='NL'&&a>=18?[['Eigen risico dit jaar',`${fmt(S.er&&S.er.y===year()?S.er.used:0)} van ${fmt(385*(S.cpi||1))}`]]:[])])}`);
+  if(S.ill.length){const k=sec(el,'Je klachten');for(const il of S.ill){const I=illInfo(il);row(k,{ic:il.und?'🤔':I.l?'⚠️':I.ment?'🧠':'🤒',t:cap(typeof illNm==='function'?illNm(il):il.n),s:il.und?'Nog niet onderzocht · ga naar de huisarts':`${I.l?'Ernstig · ':''}${I.chron?'Chronisch · ':''}behandeld door de ${SPEC[I.sp][1].toLowerCase()}${il.ref?' · je hebt een verwijzing':''}`,dots:true,on:()=>illMenu(il)})}}
   const s=sec(el,'Naar de dokter');
   for(const [k,[ic,t,pr]] of Object.entries(SPEC)){if(k==='psycholoog')continue;const c=medCost(pr);row(s,{ic,t,s:c?fmt(c):'Gratis'+(S.p.country==='NL'&&a>=18&&pr>60?' (eigen risico al op)':''),dis:S.money<c,dots:true,on:()=>doAct(t,()=>{payMed(pr);use('dok');if(!S.ill.length){hea(2);return pick(['Je bent kerngezond.','Alles ziet er prima uit.','Een routinecheck. Niets aan de hand.'])}const il=S.ill.find(i=>illInfo(i).sp===k)||S.ill[0];return treat(il,k,{what:`De ${t.toLowerCase()}`})},true,ic)})}
   const o=sec(el,'Overig');
@@ -6416,12 +6421,14 @@ function polWorld(el){const W=polW();const s=sec(el,'Politiek in het land');warC
    Politici krijgen de hele verkiezingsavond. Gewone burgers één pop-up waarin ze stemmen en meteen de uitslag zien,
    of (instelling "altijd dezelfde partij" / "niet stemmen") alleen een regel in het logboek. */
 const voteMode=()=>(S&&S.settings&&S.settings.vote)||'ask';
+// fase 9.9: na het stemmen komt de uitslag in het logboek in plaats van in een tweede pop-up
+const vlog=o=>o.map(([l,f,c])=>[l,x=>{const r=f(x);if(r&&typeof r==='string')L('🗳️ '+r);return ''},c]);
 const polPro=()=>{const P=S.pol;return !!(P&&((P.lvl&&P.lvl!=='lid')||Object.values(P.cand||{}).some(Boolean)))};
 function tkCitizen(pre){const c=runTK();return `${pre?pre+' ':''}${c.news} ${tkOutcome(c)}`.trim()}
 /* ---------- events ---------- */
 E('pol_stem',{sys:1,need:()=>!S.dict,t:'Verkiezingen',x:()=>`Het is verkiezingsdag voor ${PT().kamer}. Op wie stem je?`,ch:[]});
 Object.defineProperty(EV.pol_stem,'ch',{get(){const W=polW();const ids=Object.keys(W.sh).sort((a,b)=>W.sh[b]-W.sh[a]);
-  return ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,c=>{W.vote=k;if(c&&c.run)return tkCitizen(`Je stemt op ${PTY(k).n}.`);L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',c=>{if(c&&c.run)return tkCitizen('Je gaat niet stemmen.');L('Je gaat niet stemmen.');return ''}]])}});
+  return vlog(ids.map(k=>[`${PTY(k).em} ${PTY(k).n}`,c=>{W.vote=k;if(c&&c.run)return tkCitizen(`Je stemt op ${PTY(k).n}.`);L(`Je stemt op ${PTY(k).n}.`);return ''}]).concat([['🛋️ Niet stemmen',c=>{if(c&&c.run)return tkCitizen('Je gaat niet stemmen.');L('Je gaat niet stemmen.');return ''}]]))}});
 E('pol_tk',{sys:1,need:()=>!S.dict,t:'Uitslagavond',f:()=>{const c=runTK();return c.news+' '+tkOutcome(c)}});
 E('pol_gr',{sys:1,need:()=>!S.dict,t:'Gemeenteraadsverkiezingen',f:()=>runGR()});
 E('pol_formatie',{sys:1,need:()=>!S.dict,t:'Formatie',x:()=>`Jij bent de formateur. Ga op zoek naar een meerderheid van minstens ${NEED()} zetels.`,ch:[['🤝 Beginnen met de gesprekken',()=>({go:formation})]]});
@@ -6681,7 +6688,7 @@ function prFlow(done){const W=S.pw,P=S.pol,p=psys().pres;const {C:Cs}=prCands();
   if(me)camp(0);else R1()}
 E('pr_pres',{sys:1,need:()=>presL()&&!S.dict&&!(typeof occHere==='function'&&occHere()),t:'Presidentsverkiezingen',x:()=>{const {me,C:Cs}=prCands();const P=S.pol;return me?(P.lvl==='mp'?'Je bent kandidaat voor een nieuwe termijn.':`Je bent kandidaat voor het presidentschap van ${C().n}.`):`${C().n} kiest een nieuwe president. De kandidaten: ${Cs.slice(0,4).map(c=>c.n+' ('+PTY(c.k).k+')').join(', ')}.${P&&P.cand.pres?' Jouw partij heeft iemand anders genomineerd.':''}`},ch:[['🗳️ De verkiezingen volgen',()=>({go:()=>prFlow(processQ)})]]});
 E('pr_stem',{sys:1,need:()=>presL()&&!S.dict,t:'Stemmen voor president',x:'Het is verkiezingsdag. Op wie stem je in de eerste ronde?',ch:[]});
-Object.defineProperty(EV.pr_stem,'ch',{get(){if(!S.pw||!presL())return [['🛋️ Niet stemmen',()=>'']];const {C:Cs}=prCands();return Cs.map(c=>[`${PTY(c.k).em} ${c.me?'Op jezelf':c.n} (${PTY(c.k).k})`,cx=>{S.pw.vote=c.k;const t=c.me?'Je stemt op jezelf.':`Je stemt op ${c.n}.`;return cx&&cx.run?t+' '+prQuick():t}]).concat([['🛋️ Niet stemmen',cx=>cx&&cx.run?'Je blijft thuis. '+prQuick():'Je blijft thuis.']])}});
+Object.defineProperty(EV.pr_stem,'ch',{get(){if(!S.pw||!presL())return [['🛋️ Niet stemmen',()=>'']];const {C:Cs}=prCands();return vlog(Cs.map(c=>[`${PTY(c.k).em} ${c.me?'Op jezelf':c.n} (${PTY(c.k).k})`,cx=>{S.pw.vote=c.k;const t=c.me?'Je stemt op jezelf.':`Je stemt op ${c.n}.`;return cx&&cx.run?t+' '+prQuick():t}]).concat([['🛋️ Niet stemmen',cx=>cx&&cx.run?'Je blijft thuis. '+prQuick():'Je blijft thuis.']]))}});
 Object.assign(EVMETA,{pr_pres:['Verkiezingen','🏛️'],pr_stem:['Verkiezingen','🗳️']});
 function prSheetRows(v,P,a){if(!presL())return;const W=S.pw,p=psys().pres;const yrs=W.nextPR;const age=a+(yrs-year());
   if(P.lvl==='mp'){row(v,{ic:P.noRun||(P.terms||1)>=p.lim?'🚪':'🔁',t:(P.terms||1)>=p.lim?'Geen nieuwe termijn mogelijk':P.noRun?'Je stelt je niet herkiesbaar':'Je stelt je herkiesbaar',s:(P.terms||1)>=p.lim?(p.lim===1?'De grondwet staat maar één termijn toe':'Je zit al je tweede termijn uit')+` · verkiezingen ${yrs}`:`Presidentsverkiezingen ${yrs} · tik om te wisselen`,dis:(P.terms||1)>=p.lim,on:()=>{P.noRun=P.noRun?0:1;refreshSheet()}});return}
@@ -7088,8 +7095,8 @@ E('us_cong',{sys:1,t:'Verkiezingen voor het Congres',f:()=>{const W=S.pw,y=year(
 E('us_stem',{sys:1,need:()=>!S.dict,t:'Verkiezingsdag',x:()=>year()%4===0?'Het is de eerste dinsdag van november. Op wie stem je voor president?':'Tussentijdse verkiezingen voor het Congres. Op welke partij stem je?',ch:[]});
 Object.defineProperty(EV.us_stem,'ch',{get(){const W=S.pw;if(!W||!W.nom&&year()%4===0)return [['🛋️ Niet stemmen',()=>'']];
   if(year()%4===0){const P=S.pol;const o=[];for(const p of ['dem','rep']){const me=P&&P.nom===year()&&P.party===p;const n=me?myName():W.nom[p].n;o.push([`${PTY(p).em} ${me?'Op jezelf':n} (${PTY(p).k})`,()=>{W.vote=p;return me?'Je stemt op jezelf. Een vreemd gevoel.':`Je stemt op ${n}.`}])}
-    o.push(['🌻 Een kleine partij',()=>{W.vote='gpus';return 'Je stemt op een kleine partij. "Een weggegooide stem," zegt je buurman.'}]);o.push(['🛋️ Niet stemmen',()=>'Je blijft thuis. De rij was ook wel erg lang.']);return o}
-  return US_PARTIES.map(p=>[`${p.em} ${p.n}`,()=>{W.vote=p.id;return `Je stemt op de ${p.n}.`}]).concat([['🛋️ Niet stemmen',()=>'']])}});
+    o.push(['🌻 Een kleine partij',()=>{W.vote='gpus';return 'Je stemt op een kleine partij. "Een weggegooide stem," zegt je buurman.'}]);o.push(['🛋️ Niet stemmen',()=>'Je blijft thuis. De rij was ook wel erg lang.']);return vlog(o)}
+  return vlog(US_PARTIES.map(p=>[`${p.em} ${p.n}`,()=>{W.vote=p.id;return `Je stemt op de ${p.n}.`}]).concat([['🛋️ Niet stemmen',()=>'']]))}});
 /* ---------- voorverkiezingen voor het presidentschap ---------- */
 const US_PRIM=[['Iowa','🌽','De eerste caucus. Klein, maar het hele land kijkt mee.',.012],['New Hampshire','🍁','De eerste echte voorverkiezing.',.01],['Nevada en South Carolina','🌵','Het westen en het zuiden stemmen.',.03],['Super Tuesday','🗳️','Vijftien staten op één dag, waaronder Californië en Texas.',.36],['Maart','🌷','Florida, Illinois, Ohio en Arizona.',.22],['April en mei','🗽','New York, Pennsylvania en de rest van het oosten.',.22],['Juni','☀️','De laatste staten, waaronder New Jersey.',.148]];
 function usMyS(){const P=S.pol;return 22+P.pop*.35+P.steun*.15+kasPts('mp',P.kas||0)*1.6+({gov:8,ek:6,vp:12,mp:22,min:5,kamer:2,burg:3}[P.lvl]||0)+Math.min(10,P.oy*.7)+(S.fame-40)*.06+(P.prim||0)}
@@ -9606,7 +9613,6 @@ function godSlider(title,em,cat,fields,save){const v={};for(const f of fields)v[
 function godSelf(){const st=S.st;godSlider('Jezelf','🧬','Menu',[['happy','😀','Geluk',st.happy],['health','❤️','Gezondheid',st.health],['smarts','🧠','Slimheid',st.smarts],['looks','✨','Uiterlijk',st.looks],['karma','😇','Karma',S.karma],['disc','🎯','Discipline',S.disc??50],['fert','🧬','Vruchtbaarheid',S.fert??60],
   ...Object.keys(S.sk).map(k=>['sk_'+k,'⭐',SKN[k]||k,S.sk[k]])],v=>{for(const k of ['happy','health','smarts','looks'])S.st[k]=clamp(v[k]);S.karma=clamp(v.karma);S.disc=clamp(v.disc);S.fert=clamp(v.fert);for(const k of Object.keys(S.sk))S.sk[k]=clamp(v['sk_'+k]);L('✨ Je past jezelf aan met God-modus.','sys')})}
 F8.person.push((el,p)=>{if(!godOn()||!p.alive)return;const s=sec(el,'✨ God-modus');const pet=p.role==='huisdier';
-  if(!pet&&p.kt)card(el,`<span class="muted">Karakter: ${TREM[p.kt]||''} ${he(p.kt.toLowerCase())}</span>`);
   row(s,{ic:'🎚️',t:'Eigenschappen aanpassen',s:pet?'Relatie':'Relatie, slimheid, uiterlijk, geld',on:()=>godSlider(p.first,pet?petIcon(p):'🧑',cap(roleLabel(p)),pet?[['rel','❤️','Relatie',Math.round(p.rel)]]:[['rel','❤️','Relatie',Math.round(p.rel)],['smarts','🧠','Slimheid',Math.round(p.smarts)],['looks','✨','Uiterlijk',Math.round(p.looks)],['money','💶','Geld',Math.max(0,Math.round(p.money||0)),Math.max(1e6,Math.round((p.money||0)*2))]],
     v=>{p.rel=clamp(v.rel);if(!pet){p.smarts=clamp(v.smarts);p.looks=clamp(v.looks);p.money=Math.round(v.money)}L(`✨ Je past ${p.first} aan met God-modus.`,'sys')})});
   if(!pet)row(s,{ic:'🎭',t:'Karakter kiezen',s:p.kt?`${TREM[p.kt]} ${p.kt}`:'Nog geen bijzonder karakter',dots:true,on:()=>modal({title:'Karakter',em:'🎭',cat:p.first,text:`Wat voor iemand is ${p.first}?`,choices:opts(GTRAITS.map(t=>({t:`${TREM[t]} ${t}`,cls:p.kt===t?'go':'',on:()=>{p.kt=t;S.god=1;closeModal();L(`✨ ${p.first} is voortaan ${t.toLowerCase()}.`,'sys');refreshSheet();saveLife()}})))})});
@@ -9614,9 +9620,1016 @@ F8.person.push((el,p)=>{if(!godOn()||!p.alive)return;const s=sec(el,'✨ God-mod
   if(!pet&&p.role==='vijand')row(s,{ic:'🕊️',t:'Vrede sluiten',on:()=>doAct('God-modus',()=>{S.god=1;p.role='vriend';p.rel=70;return `${p.first} staat met een taart voor de deur. Jullie zijn vrienden.`},true,'🕊️')})});
 // karakter doet ook echt iets
 F8.year.push(()=>{for(const p of S.rel){if(!p.kt||!p.alive||p.born>S.m)continue;
-  if(p.kt==='Lief')p.rel=clamp(p.rel+2);else if(p.kt==='Chagrijnig')p.rel=clamp(p.rel-2);else if(p.kt==='Grappig'&&p.rel>=60)hap(1);else if(p.kt==='Ambitieus')p.money=Math.round((p.money||0)*1.04+2000*(S.cpi||1));else if(p.kt==='Lui')p.money=Math.round((p.money||0)*.98);
+  if(p.kt==='Lief')p.rel=clamp(p.rel+1);else if(p.kt==='Chagrijnig')p.rel=clamp(p.rel-1);else if(p.kt==='Grappig'&&p.rel>=60&&!S.acts.grap9&&p.role!=='huisdier'){S.acts.grap9=1;if(chance(.5))hap(1)}else if(p.kt==='Ambitieus')p.money=Math.round((p.money||0)*1.04+2000*(S.cpi||1));else if(p.kt==='Lui')p.money=Math.round((p.money||0)*.98);
   if(p.kt==='Jaloers'&&p.role==='partner'&&chance(.25)){p.rel=clamp(p.rel-6);hap(-2);L(`${p.first} is jaloers omdat je te lang met een collega praatte.`,'sys')}}});
 if(typeof sheetAch==='function'){sheetAch=(f=>function(el){if(S.god)card(el,'<span class="muted">✱ In dit leven is God-modus gebruikt.</span>');f(el)})(sheetAch)}
+/* ================= FASE 9: mensen met een eigen leven =================
+   9.1 geheugen (p.mem), 9.2 karakter voor iedereen (p.kt, uit god.js), 9.3 eigen levensloop (p.lf),
+   9.4 berichten van anderen (S.inbox), wonen in het buitenland (p.cc), verder spelen als kleinkind.
+   Nieuwe velden zijn allemaal optioneel: oude levens krijgen ze via f9Migrate of pas als ze nodig zijn. */
+
+// ---------- 9.2 karakter ----------
+GTRAITS.push('Zorgzaam','Gul','Gierig','Eigenwijs');Object.assign(TREM,{Zorgzaam:'🤗',Gul:'🎁',Gierig:'💰',Eigenwijs:'🐂'});
+const KTXT={Lief:'lief en hartelijk',Grappig:'altijd in voor een grap',Ambitieus:'ambitieus',Avontuurlijk:'avontuurlijk',Verlegen:'verlegen',Jaloers:'snel jaloers',Lui:'een beetje lui',Chagrijnig:'vaak chagrijnig',Zorgzaam:'zorgzaam',Gul:'gul',Gierig:'zuinig, om niet te zeggen gierig',Eigenwijs:'eigenwijs'};
+const isHuman=p=>!!p&&p.role!=='huisdier';
+const ktOf=p=>{if(!isHuman(p))return null;if(!p.kt)p.kt=pick(GTRAITS);return p.kt};
+mkPerson=(f=>function(role,g,born,o){const p=f(role,g,born,o);if(role!=='huisdier'&&!p.kt)p.kt=pick(GTRAITS);return p})(mkPerson);
+const who=p=>`je ${roleLabel(p).toLowerCase()} ${p.first}`;
+const Who=p=>cap(who(p));
+const hem=g=>g==='v'?'haar':g==='m'?'hem':'hen';
+const landN=cc=>(COUNTRIES[cc]||{}).n||cc;
+
+// ---------- 9.1 geheugen ----------
+// [icoon, tekst vanuit jou gezien, gewicht]. {zijn} {hem} {hij} {x} worden ingevuld.
+const MEMT={
+ 'verj+':['🎂','Je kwam naar {zijn} {x}e verjaardag',3],'verj-':['🎂','Je kwam niet naar {zijn} {x}e verjaardag',-4],
+ 'bruil+':['💒','Je was erbij op {zijn} bruiloft',5],'bruil-':['💒','Je sloeg {zijn} bruiloft over',-8],
+ 'speech+':['🎤','Je hield een prachtige speech op {zijn} bruiloft',6],'speech-':['🎤','Je speech op {zijn} bruiloft ging helemaal mis',-3],'bijdr+':['💶','Je betaalde mee aan {zijn} bruiloft',5],
+ 'hulp+':['🤝','Je hielp {hem} toen {hij} je nodig had',5],'hulp-':['🤝','Je liet {hem} zitten toen {hij} om hulp vroeg',-5],
+ 'geld+':['💶','Je leende {hem} geld toen {hij} krap zat',4],'geld-':['💶','Je weigerde {hem} geld te lenen',-3],
+ 'schuld+':['✅','Je betaalde het geleende geld netjes terug',3],'schuld-':['💸','Je betaalde het geleende geld nooit terug',-7],
+ 'ziek+':['💐','Je stond voor {hem} klaar toen {hij} ziek was',6],'ziek-':['🏥','Je kwam niet langs toen {hij} ziek was',-5],
+ 'vak+':['🏖️','Jullie gingen samen op vakantie',4],'bel-':['🤬','Je hebt {hem} beledigd',-4],'vecht-':['👊','Jullie hebben met elkaar gevochten',-8],
+ 'studie+':['🎓','Je betaalde {zijn} studie',6],'studie-':['🎓','Je liet {hem} de studie zelf regelen',-2],
+ 'trouw+':['💍','Jullie zijn getrouwd',6],'baby+':['👶','Jullie kregen samen een kind',6],'vreemd-':['💔','Je ging vreemd',-10],'onterf-':['🚫','Je hebt {hem} onterfd',-10],
+ 'diner+':['🍽️','Jullie hadden een gezellig familiediner',2],'diner-':['🍽️','Het familiediner liep uit op ruzie',-3],
+ 'bezoek+':['✈️','Je kwam {hem} opzoeken in {x}',4],'huis+':['🏡','Je hielp {hem} aan {zijn} eerste huis',6],'oppas+':['🧸','Je paste op de kleinkinderen',3],
+ 'jub+':['🥂','Jullie vierden jullie {x}-jarig huwelijk',4],'jub-':['🥂','Je vergat jullie {x}-jarig huwelijk',-5],'reunie+':['🎓','Jullie zagen elkaar terug op de reünie',3],
+ 'feest+':['🎉','Je organiseerde het feest voor {zijn} jubileum',4],'droom+':['🌠','Je steunde {zijn} grote droom',6],'droom-':['🌠','Je hield {zijn} grote droom tegen',-6],
+ 'rijles+':['🚗','Je betaalde {zijn} rijlessen',3],'trots+':['🌟','Je was trots op {zijn} rapport',2],'streng-':['😠','Je was streng over {zijn} rapport',-1],'groep+':['👯','Jullie hadden een topavond met de hele groep',2]};
+function memTxt(m,p){const t=MEMT[m[0]];if(!t)return'';return t[1].replace(/\{zijn\}/g,f8Zijn(p.g)).replace(/\{hem\}/g,hem(p.g)).replace(/\{hij\}/g,f8Hij(p.g)).replace(/\{x\}/g,m[2]==null?'':m[2])}
+function memAdd(p,code,arg){if(!isHuman(p)||!MEMT[code])return;p.mem=p.mem||[];p.mem.push(arg!=null?[code,year(),arg]:[code,year()]);if(p.mem.length>8)p.mem.shift()}
+// stemming: optelsom van herinneringen; een herinnering vervaagt in 15 jaar
+function mood(p){let s=0;const y=year();for(const m of p.mem||[]){const t=MEMT[m[0]];if(t)s+=t[2]*Math.max(0,1-(y-m[1])/15)}return s}
+// "Weet je nog...": soms in gesprekken
+function memRemind(p){const ms=(p.mem||[]).filter(m=>MEMT[m[0]]&&year()-m[1]<=12);if(!ms.length||!chance(.25))return '';const m=pick(ms);const t=MEMT[m[0]];
+  if(t[2]>0){p.rel=clamp(p.rel+2);return ` ${p.first} begint erover: "Weet je nog? ${memTxt(m,p).replace(/^Je /,'Jij ').replace(/^Jullie /,'Wij ')}." Jullie lachen erom.`}
+  p.rel=clamp(p.rel-2);return ` Halverwege zegt ${p.first}: "Ik ben trouwens nog steeds niet vergeten dat ${memTxt(m,p).replace(/^Je /,'je ').replace(/^Jullie /,'we ')}."`}
+
+// ---------- wonen: in het buitenland ----------
+// p.cc = land waar iemand woont (leeg = waar jij woont). Partner, kinderen onder 18 en huisdieren verhuizen met je mee.
+const abroad=p=>!!(p&&p.cc&&p.cc!==S.p.country);
+emigrate=(f=>function(k){const old=S.p.country;for(const p of S.rel){if(!p.alive||p.role==='huisdier')continue;const moves=(p.role==='partner'&&p.live!==0)||(p.role==='kind'&&pAge(p)<18);if(moves){if(p.cc&&p.cc!==k)delete p.cc;continue}if(!p.cc)p.cc=old}
+  const r=f.apply(this,arguments);for(const p of S.rel)if(p.cc===S.p.country)delete p.cc;return r})(emigrate);
+
+// ---------- 9.3 eigen levensloop ----------
+const FULLR=['moeder','vader','broer','zus','kind','kleinkind','partner','vriend','schoonzoon','schoondochter'];
+const CLOSE=['moeder','vader','broer','zus','kind','partner'];
+function fullLife(p){if(!p||!p.alive||!isHuman(p)||p.born>S.m||p.gone)return false;if(p.role==='vriend')return p.rel>=50||S.bff===p.id;return FULLR.includes(p.role)}
+const isClose=p=>CLOSE.includes(p.role)||S.bff===p.id;
+const lf=p=>p.lf||(p.lf={ev:[]});
+function lfLog(p,t){const x=lf(p);x.ev.push([year(),t]);if(x.ev.length>10)x.ev.shift()}
+const SPN=g=>g==='v'?'vriendin':'vriend';
+const EDN={mbo:'mbo',hbo:'hbo',wo:'universiteit'};
+// verzonnen partner (alleen naam) voor iemand die geen eigen persoon nodig heeft
+function mkPs(p){const pa=pAge(p);const g=chance(.06)?p.g:(p.g==='v'?'m':'v');return{n:f8Name(g),g,st:'relatie',y:year(),a:clamp(pa+ri(-4,4),18,99)}}
+// begintoestand voor oude levens en voor volwassenen die er al zijn
+function lfInit(p){const x=lf(p);if(x.v)return x;x.v=1;const pa=pAge(p),r=p.role;
+  if(['kind','kleinkind','broer','zus','vriend'].includes(r)&&pa>=18){
+    if(pa>=22&&!x.ed){const sm=p.smarts||50;x.ed=p.study||sm>=66?'wo':sm>=48?'hbo':'mbo';x.done=1}
+    const roll=R();if(pa>=24&&!x.ps){const ps=mkPs(p);ps.st=roll<(pa>=30?.55:.3)?'getrouwd':roll<.7?'samen':roll<.85?'relatie':null;if(ps.st){ps.y=year()-ri(1,Math.max(1,Math.min(12,pa-22)));x.ps=ps;if(ps.st==='getrouwd')f9Inlaw(p,ps)}}
+    if(x.ps&&x.ps.st!=='relatie'&&pa>=28&&r!=='kind'&&r!=='kleinkind'&&!(r!=='vriend'&&bigOn()))x.nk=ri(0,3)}
+  return x}
+// een getrouwde partner van je kind (of van je broer/zus met grote familie) wordt een echte persoon
+function f9Inlaw(p,ps){const r=p.role;let role=null;if(r==='kind')role=ps.g==='v'?'schoondochter':'schoonzoon';else if((r==='broer'||r==='zus')&&bigOn())role=ps.g==='v'?'schoonzus':'zwager';
+  if(!role||S.rel.some(x=>x.of===p.id&&x.role===role&&x.alive))return null;const q=mkPerson(role,ps.g,S.m-(ps.a||pAge(p))*12-ri(0,11),{first:ps.n,last:pick(NAMES[C().r].l),rel:ri(45,75),of:p.id,job:pick(KIDJOBS)});S.rel.push(q);ps.pid=q.id;return q}
+function f9DropInlaw(p){S.rel=S.rel.filter(x=>!(x.of===p.id&&['schoonzoon','schoondochter'].includes(x.role)||x.of===p.id&&['zwager','schoonzus'].includes(x.role)&&(p.role==='broer'||p.role==='zus')))}
+function lifeOne(p){const pa=pAge(p),r=p.role,x=lfInit(p),cp=S.cpi||1,kt=ktOf(p);const close=isClose(p);
+  const say=(t,c)=>{if(close)L(t,c||'sys')};
+  // opleiding (eigen kinderen, kleinkinderen, broers en zussen)
+  if(['kind','kleinkind','broer','zus'].includes(r)){
+    if(pa===18&&!x.ed){const go=r==='kind'?!!p.study:chance(clamp(((p.smarts||50)-20)/70,.1,.9));if(go){const sm=p.smarts||50;x.ed=sm>=66?'wo':sm>=48?'hbo':'mbo';const st=pick(STUDIES.filter(s=>s.ty.includes(x.ed)))||STUDIES[0];x.st=st.t;x.end=18+(x.ed==='mbo'?3:x.ed==='hbo'?4:5);lfLog(p,`Begon aan ${x.ed==='wo'?'de universiteit':x.ed==='hbo'?'de hogeschool':'een vakopleiding'}: ${st.t.toLowerCase()}`);p.job='student'}}
+    if(x.end&&pa===x.end&&!x.done){x.done=1;if(chance(.85)){lfLog(p,`Haalde ${f8Zijn(p.g)} diploma ${(x.st||'').toLowerCase()}`);if(r==='kind'){L(`🎓 ${Who(p)} heeft ${f8Zijn(p.g)} diploma ${(x.st||'').toLowerCase()} gehaald!`,'good');hap(3)}}else{lfLog(p,'Stopte met de studie');x.ed=null}if(p.job==='student')p.job=''}}
+  // werk
+  const studying=x.end&&pa<x.end&&!x.done;
+  if(pa>=18&&pa<67&&!studying&&(!p.job||/^(student|scholier|werkzoekend)$/.test(p.job))&&r!=='partner'&&chance(pa<22?.35:.5)){p.job=x.ed==='wo'||x.ed==='hbo'?pick(GOODJOBS):pick(KIDJOBS);lfLog(p,`Begon als ${p.job}`)}
+  if(r==='partner'&&!p.job&&pa>=20&&pa<67&&chance(.45)){p.job=pick(KIDJOBS);p.inc=null;lfLog(p,`Vond een nieuwe baan als ${p.job}`);say(`${Who(p)} heeft een nieuwe baan als ${p.job}.`,'good')}
+  if(p.job&&!/^(student|scholier|werkzoekend|gepensioneerd)/.test(p.job)&&pa<67){
+    if(chance(kt==='Ambitieus'?.13:kt==='Lui'?.03:.07)&&(p.jl||0)<4){p.jl=(p.jl||0)+1;if(p.inc)p.inc=Math.round(p.inc*1.12);lfLog(p,`Kreeg promotie als ${p.job}`)}
+    else if(chance(kt==='Lui'?.05:.022)){lfLog(p,`Werd ontslagen als ${p.job}`);if(r==='partner'||r==='kind')say(`${Who(p)} is ontslagen.`,'bad');p.job='';p.jl=0;if(r==='partner')p.inc=0}
+    if(r!=='partner')p.money=Math.round((p.money||0)+ri(2,8)*1000*cp*(1+(p.jl||0)*.25))}
+  if(pa>=67&&p.job&&!/^gepensioneerd/.test(p.job)&&!['student','scholier'].includes(p.job)){x.wj=p.job;p.job='gepensioneerd';if(r==='partner'&&p.inc)p.inc=Math.round(p.inc*.6);lfLog(p,`Ging met pensioen na een leven als ${x.wj}`);if(close)say(`${Who(p)} gaat met pensioen.`)}
+  // liefde (niet voor je eigen partner, en ouders zijn met elkaar getrouwd)
+  const parentsTogether=(r==='moeder'||r==='vader')&&living(['moeder','vader']).length===2&&!S.flags.oudersSch;
+  if(r!=='partner'&&pa>=18&&!parentsTogether&&!(r==='moeder'||r==='vader')||((r==='moeder'||r==='vader')&&!parentsTogether&&pa<80)){
+    const ps=x.ps;
+    if(!ps){const c=pa<30?.16:pa<45?.1:pa<65?.05:.02;if(chance(c)){x.ps=mkPs(p);lfLog(p,`Kreeg verkering met ${x.ps.n}`);if(r==='kind'&&pa<30)L(`💘 ${Who(p)} heeft verkering met ${x.ps.n}.`,'sys')}}
+    else{const yrs=year()-(ps.y||year());
+      if(ps.st==='relatie'&&chance(.12)){lfLog(p,`Het ging uit met ${ps.n}`);x.ps=null}
+      else if(ps.st==='samen'&&chance(.05)){lfLog(p,`Ging uit elkaar met ${ps.n}`);say(`${Who(p)} en ${ps.n} gaan uit elkaar.`,'bad');x.ps=null}
+      else if(ps.st==='getrouwd'&&chance(kt==='Jaloers'?.025:.014)){lfLog(p,`Scheidde van ${ps.n}`);say(`${Who(p)} gaat scheiden van ${ps.n}.`,'bad');f9DropInlaw(p);x.ps=null}
+      else if(ps.st==='relatie'&&yrs>=1&&chance(.25)){ps.st='samen';ps.y=year();lfLog(p,`Ging samenwonen met ${ps.n}`)}
+      else if(ps.st==='samen'&&yrs>=1&&pa>=21&&chance(.16)){ps.st='getrouwd';ps.y=year();lfLog(p,`Trouwde met ${ps.n}`);f9Inlaw(p,ps);if(typeof f9Wedding==='function')f9Wedding(p)}
+      // kinderen
+      if(x.ps&&x.ps.st!=='relatie'&&pa>=24&&pa<=42&&chance(.13)){const n=r==='kind'?people('kleinkind').filter(k=>k.par===p.id).length:(x.nk||0)+people(['neefje','nichtje']).filter(k=>k.par===p.id).length;
+        if(n<4){if(r==='kind'){if(!Q.some(q=>q.id==='kleinkind'))Q.push({id:'kleinkind',c:{id:p.id}})}
+          else if((r==='broer'||r==='zus')&&bigOn()){const g=pick(['m','v']);const k=mkPerson(gRole(g,'neefje','nichtje'),g,S.m,{ap:apMix(apOf(p),null,g),last:p.g==='m'?p.last:pick(NAMES[C().r].l),rel:ri(50,80),par:p.id});S.rel.push(k);lfLog(p,`Kreeg een ${g==='v'?'dochter':'zoon'}: ${k.first}`);L(`👶 ${Who(p)} heeft een ${g==='v'?'dochter':'zoon'} gekregen: ${k.first}. Je bent ${S.p.g==='v'?'tante':'oom'}!`,'good');hap(3)}
+          else{x.nk=(x.nk||0)+1;const g=pick(['m','v']);lfLog(p,`Kreeg een ${g==='v'?'dochter':'zoon'}: ${f8Name(g)}`);if(S.bff===p.id)L(`👶 Je beste ${SPN(p.g)} ${p.first} heeft een ${g==='v'?'dochter':'zoon'} gekregen!`,'good')}}}}}
+  // verhuizen en emigreren
+  const kidHome=(r==='kind'||r==='kleinkind')&&pa<18;
+  if(!kidHome&&r!=='partner'&&pa>=19){const cc=p.cc||S.p.country;
+    if(chance(.05)){const c=pick(COUNTRIES[cc].cities);if(c&&c!==x.ci){x.ci=c;lfLog(p,`Verhuisde naar ${c}`)}}
+    if(!p.cc||p.cc===S.p.country){const emi=(pa>=22&&pa<=45&&chance(kt==='Avontuurlijk'?.025:.01))||(pa>=66&&pa<=76&&chance(.007));
+      if(emi){const ccs=pa>=66?['ES','IT','FR'].filter(k=>k!==S.p.country):Object.keys(COUNTRIES).filter(k=>k!==S.p.country);const to=pick(ccs);if(to){x.oc=S.p.country;p.cc=to;x.ci=pick(COUNTRIES[to].cities);lfLog(p,`Emigreerde naar ${landN(to)}`);if(close)L(`✈️ ${Who(p)} verhuist naar ${landN(to)}. Langsgaan wordt een reis, maar bellen kan altijd.`,'sys')}}}
+    else if(chance(.07)){const back=x.oc&&COUNTRIES[x.oc]?x.oc:S.p.country;lfLog(p,`Kwam terug naar ${landN(back)}`);if(back===S.p.country)delete p.cc;else p.cc=back;if(close&&back===S.p.country)L(`🏠 ${Who(p)} komt terug naar ${landN(back)}.`,'good')}}
+  // ziek worden en herstellen
+  if(p.ill&&!p.chr){if(chance(.35)){lfLog(p,`Herstelde van ${p.ill}`);if(close)L(`💚 ${Who(p)} is hersteld.`,'good');delete p.ill;p.hl=Math.max(p.hl??70,65)}}
+  else if(!p.ill&&pa>=40&&chance(.012+Math.max(0,pa-45)*.0013)){const ill=pick(typeof ILLO!=='undefined'?ILLO:['een longontsteking']);p.ill=ill;p.chr=CHRON.includes(ill)?1:0;p.hl=Math.min(p.hl??70,ill==='kanker'?ri(30,45):p.chr?ri(45,60):ri(40,60));lfLog(p,p.chr?`Kreeg ${ill}`:`Werd ziek: ${ill}`);if(close||p.rel>=60){if(close)L(`🏥 ${Who(p)} heeft ${ill}.`,'bad');ibAdd(p,'ziek',ill)}}
+}
+const PHASE9=1;
+const CHRON=['diabetes','hartfalen','artrose','COPD','hoge bloeddruk','Alzheimer','Parkinson'];
+function lifeYear(){for(const p of S.rel.slice())if(fullLife(p))safe(()=>lifeOne(p))}
+
+// ---------- 9.4 berichten (S.inbox) ----------
+// Mensen nemen zelf initiatief. Dat is geen pop-up: er komt een regel in het logboek en een bericht bij Relaties.
+// Wat je laat liggen, verloopt op je volgende verjaardag (en dat merken ze).
+const IBX={
+ verj:{em:'🎂',t:(p,a)=>`${Who(p)} nodigt je uit voor ${f8Zijn(p.g)} ${a}e verjaardag`,yes:'🎉 Gaan',no:'🙅 Afzeggen',
+   ok:(p,a)=>{const k=Math.round(ri(20,60)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(5,9));hap(2);memAdd(p,'verj+',a);return `Je gaat naar het feest van ${p.first} en neemt een cadeau mee (${fmt(k)}). ${pick(['Het wordt laat.','Er wordt veel gelachen.','Je danst zelfs even.'])}`},
+   nee:p=>{p.rel=clamp(p.rel-2);return `Je zegt af. ${p.first} begrijpt het, zegt ${f8Hij(p.g)}.`},skip:(p,a)=>{p.rel=clamp(p.rel-4);memAdd(p,'verj-',a)}},
+ bruil:{em:'💒',t:(p,a)=>`${Who(p)} gaat trouwen met ${a} en nodigt je uit voor de bruiloft`,yes:'💒 Gaan',no:'🙅 Afzeggen',
+   ok:p=>{const k=Math.round(ri(100,300)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(7,11));hap(4);memAdd(p,'bruil+');return `Wat een dag! Je geeft ${fmt(k)} als cadeau en danst tot het einde.`},
+   nee:p=>{p.rel=clamp(p.rel-6);memAdd(p,'bruil-');return `Je zegt af. ${p.first} is er stil van.`},skip:p=>{p.rel=clamp(p.rel-8);memAdd(p,'bruil-')}},
+ geld:{em:'💶',t:(p,a)=>`${Who(p)} zit krap en vraagt of je ${fmt(a)} kunt lenen`,yes:'💶 Lenen',no:'🙅 Weigeren',can:(p,a)=>S.money>=a,
+   ok:(p,a)=>{cash(-a);p.owe=(p.owe||0)+a;p.oweY=year();p.rel=clamp(p.rel+ri(6,10));memAdd(p,'geld+');return `Je maakt ${fmt(a)} over. ${p.first} belooft het terug te betalen.`},
+   nee:p=>{p.rel=clamp(p.rel-4);memAdd(p,'geld-');return `Je zegt nee. ${p.first} zegt dat ${f8Hij(p.g)} het begrijpt, maar klinkt teleurgesteld.`},skip:p=>{p.rel=clamp(p.rel-3);memAdd(p,'geld-')}},
+ hulp:{em:'📦',t:(p,a)=>`${Who(p)} vraagt of je komt helpen met ${a}`,yes:'💪 Helpen',no:'🙅 Geen tijd',
+   ok:(p,a)=>{p.rel=clamp(p.rel+ri(6,10));hap(-1);memAdd(p,'hulp+');return `Je helpt een hele zaterdag met ${a}. ${p.first} is je dankbaar.`},
+   nee:p=>{p.rel=clamp(p.rel-3);return `Je hebt geen tijd. ${p.first} vraagt iemand anders.`},skip:p=>{p.rel=clamp(p.rel-4);memAdd(p,'hulp-')}},
+ ziek:{em:'💐',t:(p,a)=>p.role==='partner'?`${Who(p)} heeft ${a} en heeft je zorg nodig`:`${Who(p)} heeft ${a} en zou het fijn vinden als je langskomt`,yes:p=>abroad(p)?'✈️ Erheen reizen':'💐 Langsgaan',no:'🙅 Er niet aan toekomen',
+   ok:p=>{let t='';if(abroad(p)){const k=Math.round(ri(400,1400)*(S.cpi||1));cash(-k);t=` De reis kost ${fmt(k)}.`}p.rel=clamp(p.rel+ri(7,12));hap(-1);memAdd(p,'ziek+');p.hl=Math.min(90,(p.hl??60)+5);return `Je zorgt een tijd goed voor ${p.first}. Het doet ${hem(p.g)} zichtbaar goed.${t}`},
+   can:p=>!abroad(p)||S.money>=400*(S.cpi||1),nee:p=>{p.rel=clamp(p.rel-5);memAdd(p,'ziek-');return `Je komt er niet aan toe. ${p.first} merkt het.`},skip:p=>{p.rel=clamp(p.rel-5);memAdd(p,'ziek-')}},
+ bezoek:{em:'✈️',t:p=>`${Who(p)} woont in ${landN(p.cc)} en vraagt of je eens langskomt`,yes:'✈️ Op bezoek',no:'🙅 Nu niet',can:()=>S.money>=500*(S.cpi||1),
+   ok:p=>{const k=Math.round(ri(500,1600)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(9,14));hap(5);memAdd(p,'bezoek+',landN(p.cc));return `Je vliegt naar ${landN(p.cc)} (${fmt(k)}). ${p.first} laat je ${pick(['de mooiste plekjes','de lokale markt','het strand','de beste restaurants'])} zien.`},
+   nee:p=>{p.rel=clamp(p.rel-1);return `Misschien volgend jaar, zeg je. ${p.first} houdt je eraan.`},skip:p=>{p.rel=clamp(p.rel-2)}}};
+const HULPW=['verhuizen','het schilderen van de woonkamer','het leeghalen van de zolder','de tuin','een nieuwe keuken in elkaar zetten'];
+function ibAdd(p,k,a){S.inbox=S.inbox||[];if(S.inbox.length>=5||S.inbox.some(i=>i.p===p.id&&i.k===k))return false;S.inbox.push({i:uid(),p:p.id,k,y:year(),a});const d=IBX[k];L(`📨 ${d.t(p,a)}. Je vindt het bericht bij Relaties.`,'sys');return true}
+function ibOpen(it){const p=P(it.p),d=IBX[it.k];if(!p||!p.alive||!d){S.inbox=S.inbox.filter(x=>x!==it);refreshSheet();render();return}
+  const yes=typeof d.yes==='function'?d.yes(p):d.yes;const can=!d.can||d.can(p,it.a);
+  modal({title:'Bericht',em:d.em,cat:roleLabel(p),person:p,text:d.t(p,it.a)+'.',choices:[{t:yes,cls:'go',dis:!can,on:()=>{closeModal();doAct('Bericht',()=>{const r=d.ok(p,it.a);S.inbox=S.inbox.filter(x=>x!==it);return r},true,d.em)}},{t:d.no,on:()=>{closeModal();doAct('Bericht',()=>{const r=d.nee(p,it.a);S.inbox=S.inbox.filter(x=>x!==it);return r},true,d.em)}},{t:'Later',cls:'ghost',on:closeModal}]})}
+function ibYear(){S.inbox=S.inbox||[];
+  // wat blijft liggen, verloopt
+  for(const it of S.inbox.filter(i=>i.y<year())){const p=P(it.p),d=IBX[it.k];if(p&&p.alive&&d&&d.skip)safe(()=>d.skip(p,it.a))}
+  S.inbox=S.inbox.filter(i=>i.y>=year());if(inJail())return;
+  // geleend geld komt (meestal) terug
+  for(const p of living().filter(p=>p.owe)){const kt=ktOf(p);if(chance(kt==='Gierig'||kt==='Lui'?.2:.45)){cash(p.owe);L(`💶 ${Who(p)} betaalt de ${fmt(p.owe)} terug die je leende.`,'good');p.owe=0}else if(year()-(p.oweY||year())>=5){L(`💸 ${Who(p)} heeft de ${fmt(p.owe)} nooit terugbetaald. Je laat het maar zo.`,'sys');p.owe=0;p.rel=clamp(p.rel-3)}}
+  // jij leende geld van iemand en betaalt niet terug
+  for(const p of living().filter(p=>p.lent&&p.lentY&&year()-p.lentY>=3&&!(p.mem||[]).some(m=>m[0]==='schuld-')))memAdd(p,'schuld-');
+  // nieuwe berichten: hooguit twee per jaar
+  const cands=[];for(const p of living()){if(!isHuman(p)||p.gone||!['moeder','vader','broer','zus','kind','kleinkind','vriend','opa','oma','oom','tante'].includes(p.role))continue;const pa=pAge(p);if(pa<18&&p.role!=='kind')continue;const close=isClose(p);
+    if(pa>=20&&pa%10===0&&p.rel>=35&&chance(close?.7:.35))cands.push([p,'verj',pa]);
+    if(pa>=20&&pa<70&&(p.money||0)<5000*(S.cpi||1)&&ktOf(p)!=='Gierig'&&chance(.025)&&p.role!=='opa'&&p.role!=='oma')cands.push([p,'geld',Math.round(ri(3,25)*100*(S.cpi||1))]);
+    if(pa>=20&&pa<80&&!abroad(p)&&chance(ktOf(p)==='Lui'?.04:.025))cands.push([p,'hulp',pick(HULPW)]);
+    if(abroad(p)&&p.rel>=40&&chance(.22))cands.push([p,'bezoek'])}
+  for(const [p,k,a] of cands.sort(()=>R()-.5).slice(0,2))ibAdd(p,k,a)}
+// zorgzame en gulle mensen doen soms zomaar iets
+function ktYear(){for(const p of living()){if(!fullLife(p)||!isClose(p))continue;const kt=ktOf(p);
+  if(kt==='Zorgzaam'&&chance(.08)){p.rel=clamp(p.rel+2);L(`📞 ${Who(p)} belt even om te vragen hoe het met je gaat.`,'sys')}
+  else if(kt==='Gul'&&(p.money||0)>20000*(S.cpi||1)&&chance(.08)&&p.role!=='partner'){const k=Math.round(ri(1,5)*100*(S.cpi||1));cash(k);p.money-=k;L(`🎁 ${Who(p)} stopt je zomaar ${fmt(k)} toe.`,'good')}}}
+
+// ---------- schermen ----------
+// regel in de kaart bovenaan het scherm van een persoon
+function f9Card(p){if(!isHuman(p)||!p.alive)return'';const kt=ktOf(p);const x=p.lf||{};const bits=[];const pa=pAge(p);
+  if(abroad(p))bits.push(`woont in ${x.ci?x.ci+', ':''}${landN(p.cc)}`);else if(x.ci&&p.role!=='partner')bits.push(`woont in ${x.ci}`);
+  if(x.ps&&p.role!=='partner')bits.push(x.ps.st==='getrouwd'?`getrouwd met ${x.ps.n}`:x.ps.st==='samen'?`woont samen met ${x.ps.n}`:`verkering met ${x.ps.n}`);
+  const nk=(p.role==='kind'?people('kleinkind').filter(k=>k.par===p.id&&k.alive).length:people(['neefje','nichtje']).filter(k=>k.par===p.id&&k.alive).length)+(x.nk||0);if(nk)bits.push(`${nk} ${nk===1?'kind':'kinderen'}`);
+  if(p.ill)bits.push(p.chr?`heeft ${p.ill}`:`ziek: ${p.ill}`);if(x.st&&x.end&&pa<x.end&&!x.done)bits.push(`studeert ${x.st.toLowerCase()}`);
+  return `<div class="muted" style="margin-top:6px">${TREM[kt]||''} ${cap(KTXT[kt]||kt.toLowerCase())}${S.bff===p.id?' · ⭐ je beste '+SPN(p.g):''}${bits.length?'<br>'+he(cap(bits.join(' · '))):''}</div>`}
+// achter de rol in lijsten
+function f9Tag(p){if(!p.alive)return'';const t=[];if(S.bff===p.id)t.push('⭐');if(abroad(p))t.push(flag(p.cc));if(p.ill)t.push('🤒');return t.length?' '+t.join(' '):''}
+F8.person.push((el,p)=>{if(!isHuman(p)||!p.alive)return;
+  // in het buitenland: bellen en op bezoek
+  if(abroad(p)&&!inJail()){const s=sec(el,`${flag(p.cc)} Woont in ${landN(p.cc)}`);
+    row(s,{ic:'📞',t:'Videobellen',s:S.acts['vb'+p.id]?'Dit jaar al gedaan':'Even bijpraten',dis:!!S.acts['vb'+p.id],on:()=>doAct('Videobellen',()=>{S.acts['vb'+p.id]=1;p.rel=clamp(p.rel+ri(3,6));hap(1);return `Jullie bellen een uur. ${p.first} laat ${pick(['het uitzicht','het nieuwe huis','de buurt'])} zien.`},true,'📞')});
+    const k=Math.round(900*(S.cpi||1));row(s,{ic:'✈️',t:'Op bezoek gaan',s:S.acts['bz'+p.id]?'Dit jaar al geweest':`Ongeveer ${fmt(k)} voor de reis`,dis:!!S.acts['bz'+p.id]||S.money<k,on:()=>doAct('Op bezoek',()=>{S.acts['bz'+p.id]=1;const c=Math.round(ri(500,1400)*(S.cpi||1));cash(-c);p.rel=clamp(p.rel+ri(9,14));hap(5);memAdd(p,'bezoek+',landN(p.cc));return `Je vliegt naar ${landN(p.cc)} (${fmt(c)}) en logeert een week bij ${p.first}.`},true,'✈️')})}
+  // beste vriend(in)
+  if(p.role==='vriend'){const s=sec(el,'Vriendschap');if(S.bff===p.id)row(s,{ic:'⭐',t:`Je beste ${SPN(p.g)}`,s:'Tik om dat niet meer te zijn',dots:true,on:()=>{S.bff=null;refreshSheet();render()}});
+    else row(s,{ic:'⭐',t:`Je beste ${SPN(p.g)} maken`,s:p.rel>=60?'Jullie zijn er klaar voor':'Kan vanaf een relatie van 60%',dis:p.rel<60,on:()=>{S.bff=p.id;p.rel=clamp(p.rel+5);L(`⭐ ${p.first} is je beste ${SPN(p.g)}.`,'good');refreshSheet();render()}})}
+  // leven van ... (tijdlijn)
+  const ev=(p.lf&&p.lf.ev)||[];if(ev.length){const s=sec(el,`📖 Het leven van ${p.first}`);for(const [y,t] of ev.slice().reverse())row(s,{ic:'•',t,s:String(y)})}
+  // samen meegemaakt
+  const ms=(p.mem||[]).filter(m=>MEMT[m[0]]);if(ms.length){const s=sec(el,'Samen meegemaakt');for(const m of ms.slice().reverse())row(s,{ic:MEMT[m[0]][0],t:memTxt(m,p),s:`${m[1]}${MEMT[m[0]][2]>0?'':' · daar denkt '+f8Hij(p.g)+' nog aan'}`})}});
+// het scherm van een persoon onthoudt wie het is (voor herinneringen en het buitenland)
+let curP=null;
+sheetPerson=(f=>function(el,p){curP=p;return f.apply(this,arguments)})(sheetPerson);
+drawSheet=(f=>function(){curP=null;return f.apply(this,arguments)})(drawSheet);
+// acties op het scherm van een persoon die een herinnering worden; bij iemand in het buitenland kan dit niet in het echt
+const MEMACT={'Samen op vakantie':p=>'vak+','Beledigen':p=>'bel-','Getrouwd!':p=>{p.wy=year();return 'trouw+'},'Onterven':p=>p.disown?'onterf-':null};
+const AWAY=['Tijd samen doorbrengen','Samen uitgaan','Naar de film','Samen sporten','Op date gaan','Een grap uithalen','Voorlezen','Helpen met huiswerk','Samen naar bed','Zakgeld geven','Spelen','Voeden','Troosten'];
+doAct=(f=>function(title,fn,logIt,em){const p=curP;
+  if(p&&abroad(p)&&AWAY.includes(title)){toast(`${p.first} woont in ${landN(p.cc)}. Bel of ga op bezoek.`);return}
+  if(p&&(MEMACT[title]||/terugbetalen$/.test(title)||title==='Gesprek')){const fn0=fn;fn=function(){const r=fn0.apply(this,arguments);if(r!=null){if(title==='Gesprek'&&typeof r==='string')return r+memRemind(p);const c=/terugbetalen$/.test(title)?'schuld+':MEMACT[title](p);if(c)memAdd(p,c)}return r}}
+  return f.call(this,title,fn,logIt,em)})(doAct);
+fightFlow=(f=>function(o){const p=curP;if(p&&o&&/^Gevecht met/.test(o.title||'')&&o.end){const e=o.end;o.end=function(){memAdd(p,'vecht-');return e.apply(this,arguments)}}return f.apply(this,arguments)})(fightFlow);
+birthChild=(f=>function(){const pt=S.preg&&S.preg.op?P(S.preg.op):partner();const r=f.apply(this,arguments);if(pt&&pt.alive)memAdd(pt,'baby+');return r})(birthChild);
+// studie betalen, betrapt op vreemdgaan
+{const w=(id,i,code,whoF)=>{const ch=EV[id]&&EV[id].ch&&EV[id].ch[i];if(!ch)return;const fn=ch[1];ch[1]=function(c){const p=whoF(c);const r=fn.apply(this,arguments);if(p)memAdd(p,code);return r}};
+  w('f_studie',0,'studie+',c=>P(c.id));w('f_studie',1,'studie+',c=>P(c.id));w('f_studie',2,'studie-',c=>P(c.id));
+  for(const i of [0,1])w('f_betrapt',i,'vreemd-',()=>partner())}
+// berichten bovenaan Relaties, en een teller op het tabblad
+function f9RelTop(el){const its=(S.inbox||[]).filter(i=>{const p=P(i.p);return p&&p.alive});if(!its.length)return;const s=sec(el,'📨 Berichten');
+  for(const it of its){const p=P(it.p),d=IBX[it.k];row(s,{ic:d.em,t:d.t(p,it.a),s:'Verloopt op je volgende verjaardag',dots:true,on:()=>ibOpen(it)})}}
+// 9.10: getrouwd (of al samenwonend) = samen wonen, ook na het kopen of huren van een ander huis
+function f9Samen(){if(!S||!S.alive||!S.home)return;const pt=partner();if(!pt||inJail()||abroad(pt)||S.home.k==='ouders')return;
+  if(pt.st==='getrouwd'||pt.live||S.home.samen===pt.id){if(S.home.samen!==pt.id)S.home.samen=pt.id;pt.live=1}}
+render=(f=>function(){safe(f9Samen);const r=f.apply(this,arguments);try{const b=$('#t-rel');if(b&&S){const n=(S.inbox||[]).filter(i=>{const p=P(i.p);return p&&p.alive}).length;let d=b.querySelector('.ib9');if(n&&!inJail()){if(!d){d=document.createElement('span');d.className='ib9';b.appendChild(d)}d.textContent=n}else if(d)d.remove()}}catch(e){}return r})(render);
+
+// ---------- jaarlijks ----------
+F8.year.push(()=>{if(!S.alive)return;lifeYear();ibYear();ktYear()});
+// kleinkinderen komen voortaan uit het leven van je kinderen (fase 9.3), niet meer willekeurig
+if(EV.kleinkind)EV.kleinkind.w=0;
+
+// ---------- verder spelen ----------
+F8.inherit.push((old,n,ch,age)=>{for(const p of n.rel){p.mem=[];delete p.owe;delete p.lent}
+  // de partner van je erfgenaam wordt jouw partner
+  const sp=old.rel.find(p=>p.of===ch.id&&['schoonzoon','schoondochter'].includes(p.role)&&p.alive);const x=ch.lf||{};
+  if(sp)n.rel.push(Object.assign({},sp,{id:uid(),role:'partner',st:'getrouwd',since:Math.max(0,Math.floor(n.m/12)-Math.max(1,year()-((x.ps&&x.ps.y)||year()))),wy:(x.ps&&x.ps.y)||year(),live:1,of:undefined,rel:ri(65,90),mem:[]}));
+  else if(x.ps&&age>=18){const ps=x.ps;const q=mkPerson('partner',ps.g,n.m-(ps.a||age)*12,{first:ps.n,st:ps.st==='getrouwd'?'getrouwd':'relatie',since:Math.floor(n.m/12)-Math.max(0,year()-(ps.y||year())),rel:ri(60,85),live:ps.st==='relatie'?0:1});if(ps.st==='getrouwd')q.wy=ps.y;n.rel.push(q)}
+  // woonde je erfgenaam in het buitenland, dan komt die terug (je erfenis staat in de munt van je land)
+  for(const p of n.rel)if(p.cc===n.p.country)delete p.cc;
+  n.inbox=[];n.bff=null});
+
+// verder als kleinkind (alleen als er geen kind meer leeft): de familie schuift een generatie op
+function f9GKRel(old,n,ch,sh){const dd=o=>o.alive?undefined:(o.died!=null?o.died-Math.floor(ch.born/12):undefined);const cp=(o,x)=>Object.assign({},o,{id:uid(),born:sh(o.born),mem:[]},x);
+  n.rel.push({id:uid(),ap:old.ap,role:old.p.g==='v'?'oma':'opa',g:old.p.g==='v'?'v':'m',first:old.p.first,last:old.p.last,born:sh(0),rel:ch.rel,alive:false,died:Math.floor((old.m-ch.born)/12),looks:old.st.looks,smarts:old.st.smarts,money:0,job:''});
+  const gp=old.rel.find(p=>p.role==='partner'&&p.alive);if(gp)n.rel.push(cp(gp,{role:gp.g==='v'?'oma':'opa',st:'',rel:ri(55,85)}));
+  const par=old.rel.find(p=>p.id===ch.par);if(par)n.rel.push(cp(par,{role:par.g==='v'?'moeder':'vader',rel:par.alive?ri(55,85):ch.rel,died:dd(par)}));
+  const op=par&&old.rel.find(p=>p.of===par.id&&['schoonzoon','schoondochter'].includes(p.role));if(op)n.rel.push(cp(op,{role:op.g==='v'?'moeder':'vader',of:undefined,rel:ri(55,85)}));
+  for(const o of old.rel.filter(p=>p.role==='kleinkind'&&p.par===ch.par&&p.id!==ch.id))n.rel.push(cp(o,{role:o.g==='v'?'zus':'broer',rel:ri(45,80),par:undefined}));
+  if(old.settings.bigFam){n.flags.bigGen=1;for(const o of old.rel.filter(p=>p.role==='kind'&&p.id!==ch.par))n.rel.push(cp(o,{role:o.g==='v'?'tante':'oom',rel:ri(40,75),died:dd(o)}));
+    for(const o of old.rel.filter(p=>p.role==='kleinkind'&&p.par!==ch.par&&p.alive))n.rel.push(cp(o,{role:o.g==='v'?'nicht':'neef',rel:ri(35,70)}))}}
+// ---------- oude levens ----------
+function f9Migrate(s){if(!s||!s.rel)return;for(const p of s.rel){if(p.role==='huisdier')continue;if(!p.kt)p.kt=pick(GTRAITS);if(p.role==='vriend'&&!p.grp)p.grp='oud';
+    if(p.role==='partner'&&p.st==='getrouwd'&&p.wy==null){const y=s.p.by+Math.floor((s.p.bm-1+s.m)/12);p.wy=y-Math.max(1,Math.floor(s.m/12)-(p.since??Math.floor(s.m/12))-1)}}
+  s.inbox=s.inbox||[];s.flags=s.flags||{};s.flags.p9=1}
+migrate=(f=>function(s){f.apply(this,arguments);safe(()=>f9Migrate(s))})(migrate);
+/* ================= FASE 9: kinderen, partner, vrienden en grote familiemomenten =================
+   9.5 acties per leeftijd van je kind, cijfers en schoolniveau van je kinderen
+   9.6 samen beslissen met je partner, jubilea, de droom of de affaire van je partner
+   9.7 beste vriend(in), vriendengroepen, uit beeld raken, reünie
+   9.8 hooguit één groot familiemoment per jaar (S.fmY) */
+
+// ---------- 9.5 kinderen ----------
+const CLB={voetbal:['⚽','Voetbal'],zwemmen:['🏊','Zwemmen'],muziek:['🎹','Muziekles'],dans:['💃','Dansles'],scouting:['⛺','Scouting'],tekenen:['🎨','Tekenles'],schaken:['♟️','Schaakclub'],judo:['🥋','Judo']};
+const HR={streng:['Streng','Vroeg thuis, telefoon weg bij het eten'],normaal:['Normaal','Afspraken maken, soms onderhandelen'],vrij:['Vrij','Ze bepalen het grotendeels zelf']};
+const kidCost=()=>Math.round(300*(S.cpi||1)),opvCost=()=>Math.round(3500*(S.cpi||1));
+function kidSchool(){for(const k of living('kind')){const a=pAge(k);if(a<1||a>17)continue;const x=lf(k);
+  if(k.opv&&a>=1&&a<=4){cash(-opvCost());k.smarts=clamp(k.smarts+1);k.disc=clamp((k.disc??50)+1)}if(k.opv&&a>4)k.opv=0;
+  if(k.club&&a>=6){cash(-kidCost());k.rel=clamp(k.rel+1);if(['voetbal','zwemmen','dans','judo'].includes(k.club))k.looks=clamp(k.looks+1);else k.smarts=clamp(k.smarts+1)}
+  if(a>=12&&k.hr==='streng'){k.disc=clamp((k.disc??50)+2);k.rel=clamp(k.rel-1)}else if(a>=12&&k.hr==='vrij'){k.disc=clamp((k.disc??50)-2);k.rel=clamp(k.rel+1)}
+  if(a>=6){const hw=(S.lastActs||{})['hw'+k.id]?.4:0;k.gr=Math.round(clamp((3.3+k.smarts/22+((k.disc??50)-50)/45+hw+(R()-.5)*1.2)*10,30,98))/10}
+  if(a>=12&&!x.lvl){x.lvl=k.smarts>=66&&(k.gr||6)>=6.6?'vwo':k.smarts>=46?'havo':'vmbo';x.len={vmbo:4,havo:5,vwo:6}[x.lvl];lfLog(k,`Ging naar de middelbare school: ${lvlN(x.lvl)}`)}
+  if(x.lvl&&!x.sch&&a===12+x.len){x.sch=1;if((k.gr||6)>=5.5||chance(.6))lfLog(k,`Slaagde voor ${lvlN(x.lvl)}`);else lfLog(k,`Zakte voor ${lvlN(x.lvl)} en deed het jaar over`)}}}
+function rapport(p){const g=p.gr||6;const good=g>=7,bad=g<5.5;
+  modal({title:`Het rapport van ${p.first}`,em:'📒',cat:roleLabel(p),person:p,text:`Gemiddeld een ${nl1(g)}. ${good?'Een prima rapport.':bad?'Er staan een paar onvoldoendes op.':'Niet slecht, niet heel goed.'} ${p.first} kijkt je afwachtend aan.`,choices:opts([
+    {t:'🌟 Trots zijn',on:()=>{closeModal();doAct('Rapport',()=>{S.acts['rap'+p.id]=1;p.rel=clamp(p.rel+(good?6:3));if(good)memAdd(p,'trots+');if(bad)p.disc=clamp((p.disc??50)-2);return good?`${p.first} straalt. Het rapport krijgt een plekje op de koelkast.`:`${p.first} is opgelucht. "Volgend jaar beter," belooft ${f8Hij(p.g)}.`},true,'🌟')}},
+    {t:'📚 Aansporen om harder te werken',on:()=>{closeModal();doAct('Rapport',()=>{S.acts['rap'+p.id]=1;p.disc=clamp((p.disc??50)+4);p.rel=clamp(p.rel-1);return `Jullie maken samen een planning voor het huiswerk. ${p.first} zucht, maar doet mee.`},true,'📚')}},
+    {t:'😠 Streng zijn',on:()=>{closeModal();doAct('Rapport',()=>{S.acts['rap'+p.id]=1;p.disc=clamp((p.disc??50)+6);p.rel=clamp(p.rel-6);if(!good)memAdd(p,'streng-');return `Je bent flink boos. ${p.first} rent huilend naar boven.`},true,'😠')}},
+    {t:`🎁 Een beloning (${fmt(Math.round(50*(S.cpi||1)))})`,dis:S.money<50*(S.cpi||1),on:()=>{closeModal();doAct('Rapport',()=>{S.acts['rap'+p.id]=1;cash(-Math.round(50*(S.cpi||1)));p.rel=clamp(p.rel+6);return `${p.first} mag iets uitzoeken. Het wordt ${pick(['een spel','een boek','sneakers','een dagje pretpark'])}.`},true,'🎁')}}])})}
+function clubMenu(p){modal({title:'Een club',em:'🏅',cat:p.first,person:p,text:`Wat gaat ${p.first} doen? Een club kost ${fmt(kidCost())} per jaar.`,choices:opts(Object.entries(CLB).map(([k,[e,n]])=>({t:`${e} ${n}`,cls:p.club===k?'go':'',on:()=>{closeModal();p.club=k;lfLog(p,`Ging op ${n.toLowerCase()}`);p.rel=clamp(p.rel+3);toast(`${p.first} gaat op ${n.toLowerCase()}`);refreshSheet()}})).concat(p.club?[{t:'🛑 Stoppen met de club',on:()=>{closeModal();p.club=null;refreshSheet()}}]:[]))})}
+function rulesMenu(p){modal({title:'Huisregels',em:'🏠',cat:p.first,person:p,text:`Hoe streng ben je voor ${p.first}?`,choices:opts(Object.entries(HR).map(([k,[n,d]])=>({t:n,s:d,cls:(p.hr||'normaal')===k?'go':'',on:()=>{closeModal();p.hr=k;refreshSheet();toast(`Huisregels: ${n.toLowerCase()}`)}})))})}
+F8.person.push((el,p)=>{if(p.role!=='kind'||!p.alive||inJail()||abroad(p))return;const a=pAge(p),cp=S.cpi||1;const s=sec(el,a<18?'🧸 Opvoeden':'👪 Je volwassen kind');
+  const A=(ic,t,fn,o={})=>row(s,{ic,t,s:o.s,dis:o.dis,on:()=>doAct(t,fn,true,ic)});
+  if(a<=1){A('🍼','Voeden',()=>{const m=use('voed'+p.id);p.rel=clamp(p.rel+Math.round(4*m));hap(1);return pick([`${p.first} drinkt de fles leeg en laat een flinke boer.`,`${p.first} eet voor het eerst groente. Het meeste zit op je trui.`,`${p.first} valt halverwege de fles in slaap.`])});
+    A('🤗','Troosten',()=>{const m=use('troost'+p.id);p.rel=clamp(p.rel+Math.round(5*m));hap(2);return `${p.first} huilt, maar valt in je armen in slaap.`})}
+  if(a>=1&&a<=4){A('🧩','Spelen',()=>{const m=use('kspel'+p.id);p.rel=clamp(p.rel+Math.round(5*m));if(m>0)p.smarts=clamp(p.smarts+1);return pick([`Jullie bouwen een toren van blokken. ${p.first} gooit hem om en lacht.`,`Verstoppertje. ${p.first} verstopt zich steeds achter hetzelfde gordijn.`,`Jullie maken een tekening. Het is een paard, zegt ${p.first}.`])});
+    row(s,{ic:'🏫',t:p.opv?'Van de opvang halen':'Naar de opvang',s:p.opv?`Gaat nu naar de opvang · ${fmt(opvCost())} per jaar`:`Spelen met andere kinderen · ${fmt(opvCost())} per jaar`,dots:true,on:()=>{p.opv=p.opv?0:1;toast(p.opv?`${p.first} gaat naar de opvang`:`${p.first} blijft thuis`);refreshSheet()}})}
+  if(a>=6&&a<=17&&p.gr!=null)row(s,{ic:'📒',t:'Rapport bekijken',s:S.acts['rap'+p.id]?'Dit jaar al besproken':`Gemiddeld een ${nl1(p.gr)}${p.lf&&p.lf.lvl?' · '+lvlN(p.lf.lvl):''}`,dis:!!S.acts['rap'+p.id],dots:true,on:()=>rapport(p)});
+  if(a>=4&&a<=17)A('🏫','Naar de ouderavond',()=>{S.acts['oa'+p.id]=1;p.disc=clamp((p.disc??50)+2);p.rel=clamp(p.rel+2);const g=p.gr||6.5;return `De ${a<12?'juf':'mentor'} vertelt dat ${p.first} ${g>=7?'goed meedoet en behulpzaam is':g<5.5?'moeite heeft met opletten':'het prima doet, maar meer kan'}. ${pick(['Je krijgt koffie uit een plastic bekertje.','Er hangen tekeningen aan de muur.','Je zit op een veel te klein stoeltje.'])}`},{dis:!!S.acts['oa'+p.id],s:S.acts['oa'+p.id]?'Dit jaar al geweest':'Hoor hoe het echt gaat'});
+  if(a>=5&&a<=17)row(s,{ic:p.club?CLB[p.club][0]:'🏅',t:p.club?`Club: ${CLB[p.club][1]}`:'Een club kiezen',s:p.club?'Tik om te wisselen of te stoppen':`Sport, muziek, scouting · ${fmt(kidCost())} per jaar`,dots:true,on:()=>clubMenu(p)});
+  if(a>=12&&a<=17)row(s,{ic:'🏠',t:'Huisregels',s:`${HR[p.hr||'normaal'][0]}: ${HR[p.hr||'normaal'][1].toLowerCase()}`,dots:true,on:()=>rulesMenu(p)});
+  if(a>=13&&a<=17&&p.lf&&p.lf.ps)A('💬','Praten over de liefde',()=>{use('liefde'+p.id);const ok=chance(p.rel/110);p.rel=clamp(p.rel+(ok?5:-2));return ok?`${p.first} vertelt over ${p.lf.ps.n}. Met rode wangen, maar toch.`:`"Mam/pap, dat gaat je echt niks aan." De deur gaat dicht.`.replace('Mam/pap',S.p.g==='v'?'Mam':'Pap')});
+  if(a>=16&&a<=19&&!p.rij){const k=Math.round(2500*cp);A('🚗','Rijlessen betalen',()=>{cash(-k);p.rij=1;p.rel=clamp(p.rel+6);memAdd(p,'rijles+');lfLog(p,'Haalde het rijbewijs');return `Je betaalt de rijlessen (${fmt(k)}). ${p.first} slaagt ${chance(.6)?'in één keer':'de tweede keer'}!`},{dis:S.money<k,s:`${fmt(k)} voor lessen en examen`})}
+  if(a>=23&&!p.huis){const k=Math.round(clamp(S.money*.1,5000*cp,40000*cp));A('🏡','Helpen met een eerste huis',()=>{cash(-k);p.money=(p.money||0)+k;p.huis=1;p.rel=clamp(p.rel+10);memAdd(p,'huis+');lfLog(p,'Kocht een eerste huis');return `Je geeft ${p.first} ${fmt(k)} voor de aanbetaling. ${cap(f8Hij(p.g))} koopt een ${pick(['appartement','rijtjeshuis','benedenwoning'])}.`},{dis:S.money<k*1.5,s:`${fmt(k)} schenken voor de aanbetaling`})}
+  const gk=living('kleinkind').filter(k=>k.par===p.id&&pAge(k)<12);if(a>=18&&gk.length)A('🧸','Oppassen op de kleinkinderen',()=>{S.acts['opp'+p.id]=1;p.rel=clamp(p.rel+6);for(const k of gk)k.rel=clamp(k.rel+6);hap(3);hea(-1);memAdd(p,'oppas+');return `Een weekend met ${f8List(gk.map(k=>k.first))}. Uitgeput, maar gelukkig.`},{dis:!!S.acts['opp'+p.id],s:S.acts['opp'+p.id]?'Dit jaar al gedaan':`${f8List(gk.map(k=>k.first))}`})});
+
+// ---------- 9.6 partner ----------
+const HH={eerlijk:['⚖️','Eerlijk verdelen'],ik:['🙋','Jij doet het meeste'],jij:['🛋️',`Je partner doet het meeste`]};
+function kwOf(p){if(p.kw==null){const kt=ktOf(p);p.kw=chance(kt==='Lief'||kt==='Zorgzaam'?.8:kt==='Ambitieus'||kt==='Avontuurlijk'?.45:.65)?1:0}return p.kw}
+function decide(p){const cp=S.cpi||1;const done=k=>!!S.acts['bs'+k];
+  modal({title:'Samen beslissen',em:'🗳️',cat:roleLabel(p),person:p,text:`Waar wil je het met ${p.first} over hebben?`,choices:opts([
+    {t:'🏡 Verhuizen naar een andere stad',s:done('vh')?'Dit jaar al besproken':S.home.k==='eigen'?'Verkoop eerst je huis':`Verhuiskosten ${fmt(Math.round(3000*cp))}`,dis:done('vh')||S.home.k==='eigen'||S.money<3000*cp||inJail(),on:()=>{closeModal();const cs=COUNTRIES[S.p.country].cities.filter(c=>c!==S.p.city).sort(()=>R()-.5).slice(0,3);
+      modal({title:'Waarheen?',em:'🏡',cat:p.first,person:p,text:`${p.first} wil ${pick(['wel eens iets anders','dichter bij familie wonen','meer ruimte','een nieuwe start'])}. Waar gaan jullie wonen?`,choices:opts(cs.map(c=>({t:c,on:()=>{closeModal();doAct('Verhuizen',()=>{S.acts.bsvh=1;cash(-Math.round(3000*cp));const old=S.p.city;S.p.city=c;p.rel=clamp(p.rel+(ktOf(p)==='Avontuurlijk'?7:4));hap(3);MS(`Verhuisde naar ${c}`,1);return `Jullie verhuizen van ${old} naar ${c}. Dozen, dozen en nog eens dozen.`},true,'🏡')}})))})}},
+    {t:'👶 Kinderwens bespreken',s:done('kw')?'Dit jaar al besproken':p.kwK?`${p.first} ${kwOf(p)?'wil graag kinderen':'wil geen kinderen'}`:'Wil je partner kinderen?',dis:done('kw'),on:()=>{closeModal();doAct('Kinderwens',()=>{S.acts.bskw=1;const w=kwOf(p);p.kwK=1;const have=living('kind').length;
+      if(w){p.rel=clamp(p.rel+3);return have?`${p.first} zou ${pick(['nog wel een kindje','er nog eentje bij'])} willen. Jullie lachen erom.`:`${p.first} wil graag kinderen met je. Bij ${hem(p.g)} staat "Kind proberen te krijgen" klaar.`}
+      p.rel=clamp(p.rel-(have?0:4));return have?`${p.first} vindt het zo goed, zegt ${f8Hij(p.g)}. Genoeg luiers gezien.`:`${p.first} wil eigenlijk geen kinderen. Een lastig gesprek.`},true,'👶')}},
+    {t:'🧹 Het huishouden verdelen',s:done('hh')?'Dit jaar al besproken':`Nu: ${HH[p.hh||'eerlijk'][1].toLowerCase()}`,dis:done('hh'),on:()=>{closeModal();modal({title:'Het huishouden',em:'🧹',cat:p.first,person:p,text:'Wie doet de afwas, de was en de boodschappen?',choices:opts(Object.entries(HH).map(([k,[e,n]])=>({t:`${e} ${n}`,on:()=>{closeModal();doAct('Huishouden',()=>{S.acts.bshh=1;p.hh=k;return k==='eerlijk'?'Jullie maken een schema voor op de koelkast.':k==='ik'?`Jij neemt het meeste op je. ${p.first} is blij.`:`${p.first} doet voortaan het meeste. ${cap(f8Hij(p.g))} zegt er nog niks van.`},true,e)}})))})}}])})}
+F8.person.push((el,p)=>{if(p.role!=='partner'||!p.alive||inJail())return;const s=sec(el,'💑 Samen');
+  row(s,{ic:'🗳️',t:'Samen beslissen',s:'Verhuizen, kinderwens, huishouden',dots:true,on:()=>decide(p)});
+  if(p.st==='getrouwd'&&p.wy)row(s,{ic:'💍',t:`${year()-p.wy} jaar getrouwd`,s:`Sinds ${p.wy}`})});
+function partnerYear(){const p=partner();if(!p)return;
+  if(p.hh==='eerlijk')p.rel=clamp(p.rel+1);else if(p.hh==='ik'){p.rel=clamp(p.rel+1);hap(-1)}else if(p.hh==='jij'){p.rel=clamp(p.rel-2)}}
+
+// ---------- 9.7 vrienden ----------
+const GRPN={basis:'Vrienden van de basisschool',middel:'Vrienden van de middelbare school',studie:'Studievrienden',werk:'Vrienden van je werk',buurt:'Vrienden uit de buurt',oud:'Oude vrienden'};
+addFriend=(f=>function(){const p=f.apply(this,arguments);if(p&&!p.grp){const a=ageY();p.grp=a<12?'basis':a<18?'middel':S.edu&&S.edu.cur?'studie':S.job?'werk':'buurt'}return p})(addFriend);
+function f9FriendRows(el){const fr=living('vriend').filter(p=>!p.gone);const by={};for(const p of fr){const g=p.grp||'oud';(by[g]=by[g]||[]).push(p)}
+  const gs=Object.entries(by).filter(([,ps])=>ps.length>=2);if(!gs.length||inJail())return;const s=sec(el,'👯 Vriendengroepen');
+  for(const [g,ps] of gs){const k='grp'+g;row(s,{ic:'👯',t:GRPN[g]||'Vrienden',s:S.acts[k]?'Dit jaar al afgesproken':`Afspreken met ${f8List(ps.map(p=>p.first))}`,dis:!!S.acts[k]||ageY()<6,on:()=>doAct('Vriendengroep',()=>{S.acts[k]=1;const c=Math.round((ageY()<16?10:45)*(S.cpi||1));cash(-c);for(const p of ps){p.rel=clamp(p.rel+ri(4,8));if(chance(.3))memAdd(p,'groep+')}hap(4);
+      return pick([`Jullie gaan ${ageY()<16?'naar het zwembad':'eten bij de Griek'} en praten tot sluitingstijd.`,`Een avond spelletjes met ${f8List(ps.map(p=>p.first))}. Er wordt vals gespeeld.`,`Jullie halen herinneringen op. ${pick(ps).first} vertelt voor de honderdste keer hetzelfde verhaal.`])},true,'👯')})}}
+function friendsYear(){for(const p of living('vriend')){if(S.bff===p.id||p.gone)continue;const met=Object.keys(S.lastActs||{}).some(k=>k.endsWith(p.id));
+  if(p.rel<12&&!met&&chance(.35)){S.oldF=S.oldF||[];S.oldF.push({first:p.first,last:p.last,g:p.g,grp:p.grp||'oud',born:p.born,ap:p.ap,kt:p.kt});if(S.oldF.length>10)S.oldF.shift();S.rel=S.rel.filter(x=>x!==p);L(`Je bent uit beeld geraakt met ${p.first}. Jullie spreken elkaar niet meer.`,'sys')}}
+  if(S.bff&&!P(S.bff)?.alive)S.bff=null}
+
+// ---------- 9.8 grote familiemomenten (hooguit één per jaar) ----------
+const fmFree=()=>S.fmY!==year();
+const fmTake=()=>{S.fmY=year()};
+// de bruiloft van iemand uit je leven (aangeroepen vanuit het leven van die persoon, fase 9.3)
+function f9Wedding(p){const n=(p.lf&&p.lf.ps&&p.lf.ps.n)||'de liefde van '+f8Zijn(p.g)+' leven';if(inJail())return;
+  if(p.role==='kind'&&fmFree()){fmTake();Q.push({id:'f9_trouwkind',c:{id:p.id}});return}
+  if(['kind','broer','zus','kleinkind','moeder','vader'].includes(p.role)||p.rel>=45)ibAdd(p,'bruil',n);
+  if(isClose(p))L(`💒 ${Who(p)} gaat trouwen met ${n}!`,'good')}
+const psN=c=>{const p=P(c.id);return (p&&p.lf&&p.lf.ps&&p.lf.ps.n)||'de liefde van haar leven'};
+E('f9_trouwkind',{sys:1,need:c=>!!P(c.id)&&P(c.id).alive&&!inJail(),t:'De bruiloft van je kind',x:c=>`${Who(P(c.id))} trouwt met ${psN(c)}! Het wordt een groot feest met ${ri(60,180)} gasten.`,ch:[
+ ['💶 Meebetalen aan de bruiloft',c=>{const p=P(c.id);const k=Math.round(8000*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+12);hap(6);memAdd(p,'bijdr+');return `Je betaalt ${fmt(k)} mee. ${p.first} omhelst je: "Dit vergeet ik nooit."`},()=>S.money>=8000*(S.cpi||1)],
+ ['🎤 Een speech houden',c=>{const p=P(c.id);if(chance(.45+(S.sk.sociaal||0)/200)){p.rel=clamp(p.rel+10);hap(7);memAdd(p,'speech+');return `Je vertelt over de eerste stapjes van ${p.first}, de puberteit en de dag dat ${f8Hij(p.g)} ${psN(c)} mee naar huis nam. Niemand houdt het droog.`}
+   p.rel=clamp(p.rel-2);hap(-3);memAdd(p,'speech-');return `Je bent je papiertje kwijt en vertelt een gênant verhaal over een ex. Het wordt heel stil in de zaal.`}],
+ ['🥂 Genieten als gast',c=>{const p=P(c.id);p.rel=clamp(p.rel+6);hap(5);memAdd(p,'bruil+');return 'Je danst, je huilt een beetje en je eet veel te veel taart.'}],
+ ['🙅 Niet gaan',c=>{const p=P(c.id);p.rel=clamp(p.rel-25);hap(-4);memAdd(p,'bruil-');return `Je komt niet. ${p.first} zal het je lang kwalijk nemen.`}]]});
+// het familiediner: gezellig, of ruzie met de dwarsligger van de familie
+E('f9_diner',{sys:1,need:c=>!!P(c.id)&&P(c.id).alive&&!inJail(),t:'Het familiediner',x:c=>{const p=P(c.id);return `De hele familie schuift aan. Bij het toetje begint ${who(p)} over ${c.w}. Iedereen kijkt naar jou.`},ch:[
+ ['🍷 Het gezellig houden',c=>{const fam=living(['moeder','vader','broer','zus','kind','partner','opa','oma']).filter(x=>!abroad(x));for(const x of fam)x.rel=clamp(x.rel+2);const p=P(c.id);memAdd(p,'diner+');hap(2);return 'Je verandert handig van onderwerp. Het wordt nog een gezellige avond.'}],
+ ['🗣️ De discussie aangaan',c=>{const p=P(c.id);if(chance(.4)){p.rel=clamp(p.rel+3);kar(1);return `Je blijft rustig en hebt goede argumenten. ${p.first} geeft je zowaar gelijk.`}p.rel=clamp(p.rel-10);hap(-3);memAdd(p,'diner-');return `Het loopt uit de hand. ${p.first} staat op en vertrekt zonder koffie.`}],
+ ['🚪 Vroeg naar huis',c=>{const p=P(c.id);p.rel=clamp(p.rel-3);hap(-1);return 'Je zegt dat je morgen vroeg op moet. Niemand gelooft het.'}]]});
+const DINW=['politiek','geld','de erfenis van opa','jouw baan','opvoeding','het klimaat','wie er de vorige keer had moeten afwassen'];
+E('f9_jubileum',{sys:1,need:c=>!!partner()&&partner().st==='getrouwd'&&!inJail(),t:'Jullie trouwdag',x:c=>`${partner().first} en jij zijn vandaag ${c.n} jaar getrouwd.`,ch:[
+ ['🎉 Een groot feest geven',c=>{const p=partner();const k=Math.round(5000*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+10);hap(6);memAdd(p,'jub+',c.n);for(const x of living(['kind','moeder','vader','broer','zus','vriend']).filter(x=>!abroad(x)))x.rel=clamp(x.rel+2);return `Een feest met familie en vrienden (${fmt(k)}). De kinderen houden een speech.`},()=>S.money>=5000*(S.cpi||1)],
+ ['🍽️ Samen uit eten',c=>{const p=partner();const k=Math.round(180*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+6);hap(3);memAdd(p,'jub+',c.n);return `Een etentje in het restaurant van jullie eerste date (${fmt(k)}).`}],
+ ['🛋️ Er niet veel van maken',c=>{const p=partner();if(chance(.5)){p.rel=clamp(p.rel-1);return 'Een avond op de bank met afhaalchinees. Ook goed.'}p.rel=clamp(p.rel-9);memAdd(p,'jub-',c.n);hap(-2);return `${p.first} had meer verwacht. De sfeer is ijzig.`}]]});
+E('f9_ouders40',{sys:1,need:()=>living(['moeder','vader']).length===2&&!inJail(),t:'Robijnen bruiloft',x:()=>`${living('moeder')[0].first} en ${living('vader')[0].first} zijn 40 jaar getrouwd.`,ch:[
+ ['🎉 Een feest organiseren',()=>{const k=Math.round(2500*(S.cpi||1));cash(-k);for(const p of living(['moeder','vader'])){p.rel=clamp(p.rel+12);memAdd(p,'feest+')}for(const p of living(['broer','zus']))p.rel=clamp(p.rel+3);hap(5);return `Je regelt een zaal, een band en een fotoshow (${fmt(k)}). Je ${S.p.g==='v'?'vader':'moeder'} pinkt een traantje weg.`},()=>S.money>=2500*(S.cpi||1)],
+ ['🎁 Een cadeau geven',()=>{const k=Math.round(300*(S.cpi||1));cash(-k);for(const p of living(['moeder','vader']))p.rel=clamp(p.rel+6);hap(2);return `Je geeft ze een weekendje weg (${fmt(k)}).`}],
+ ['☕ Even langsgaan',()=>{for(const p of living(['moeder','vader']))p.rel=clamp(p.rel+2);return 'Je drinkt koffie met taart. Ze zijn blij dat je er bent.'}]]});
+E('f9_reunie',{sys:1,need:()=>(S.oldF||[]).length>0&&!inJail(),t:'Reünie',x:c=>`Er is een reünie van je ${(GRPN[c.g]||'oude vrienden').toLowerCase().replace(/^vrienden van /,'')}. Misschien zie je oude vrienden terug.`,ch:[
+ ['🎓 Gaan',c=>{const pool=(S.oldF||[]).filter(o=>o.grp===c.g);const o=pick(pool.length?pool:S.oldF);S.oldF=S.oldF.filter(x=>x!==o);const p=mkPerson('vriend',o.g,o.born,{first:o.first,last:o.last,ap:o.ap,kt:o.kt,rel:ri(50,65)});p.grp=o.grp;S.rel.push(p);memAdd(p,'reunie+');hap(4);return `Je ziet ${o.first} na jaren terug. Het voelt alsof jullie elkaar gisteren nog spraken. Jullie zijn weer vrienden.`}],
+ ['🙅 Niet gaan',()=>'Je kijkt de foto\'s later online. Iedereen is grijs geworden.']]});
+E('f9_ptvreemd',{sys:1,need:c=>!!partner()&&!inJail(),t:'Een affaire',x:c=>`Je ontdekt dat ${partner().first} een affaire heeft met ${c.n}.`,ch:[
+ ['💬 Praten en nog een kans geven',c=>{const p=partner();if(chance(.55)){p.rel=clamp(p.rel-8);hap(-6);return `${p.first} huilt en zegt dat het voorbij is. Jullie gaan in relatietherapie. Het vertrouwen moet terugkomen.`}hap(-8);breakUp();return `Het gesprek maakt alles duidelijk: ${p.first} kiest voor ${c.n}.`}],
+ ['💔 Het uitmaken',c=>{const p=partner();hap(-8);breakUp();return `Je pakt een tas in voor ${p.first}. Het is voorbij.`}],
+ ['🤐 Doen alsof je niets weet',c=>{const p=partner();hap(-10);p.rel=clamp(p.rel-5);return 'Je zegt niets. Het knaagt elke dag.'}]]});
+const DROOM={emigreren:p=>`${p.first} wil al jaren in het buitenland wonen en vraagt of je mee wilt`,zaak:p=>`${p.first} wil ${f8Zijn(p.g)} baan opzeggen en een eigen zaak beginnen. Daar is ${fmt(Math.round(15000*(S.cpi||1)))} van jullie spaargeld voor nodig`,studie:p=>`${p.first} wil op ${f8Zijn(p.g)} leeftijd nog gaan studeren. Dat betekent een paar jaar minder geld`};
+E('f9_ptdroom',{sys:1,need:()=>!!partner()&&!inJail(),t:'Een grote droom',x:c=>DROOM[c.k](partner())+'.',ch:[
+ ['🌠 Steunen',c=>{const p=partner();memAdd(p,'droom+');p.rel=clamp(p.rel+10);
+   if(c.k==='emigreren'){const to=c.cc;emigrate(to);hap(4);MS(`Verhuisde met ${p.first} naar ${landN(to)}`,2);return `Jullie verkopen alles en vertrekken naar ${landN(to)}. Een nieuw avontuur.`}
+   if(c.k==='zaak'){const k=Math.round(15000*(S.cpi||1));cash(-k);if(chance(.55)){p.inc=Math.round((partnerInc(p)||30000)*1.4/(S.cpi||1));p.job='ondernemer';lfLog(p,'Begon een eigen zaak');return `${p.first} begint een eigen zaak. Na een zwaar eerste jaar loopt het goed!`}p.job='';p.inc=0;lfLog(p,'Begon een eigen zaak, maar die ging failliet');return `${p.first} begint een eigen zaak. Na een jaar gaat het mis: het geld is weg.`}
+   p.job='student';p.inc=0;const x=lf(p);x.st=pick(STUDIES).t;x.end=pAge(p)+3;x.done=0;lfLog(p,`Begon aan een studie ${x.st.toLowerCase()}`);return `${p.first} gaat ${x.st.toLowerCase()} studeren. Jullie leven een paar jaar zuinig.`},c=>c.k!=='zaak'||S.money>=15000*(S.cpi||1)],
+ ['🙅 Liever niet',c=>{const p=partner();memAdd(p,'droom-');p.rel=clamp(p.rel-10);hap(-2);return `${p.first} legt zich erbij neer. Voorlopig.`}]]});
+Object.assign(EVMETA,{f9_trouwkind:['Familie','💒'],f9_diner:['Familie','🍽️'],f9_jubileum:['Liefde','💍'],f9_ouders40:['Familie','🎉'],f9_reunie:['Vrienden','🎓'],f9_ptvreemd:['Liefde','💔'],f9_ptdroom:['Liefde','🌠']});
+function momentsYear(){if(!fmFree()||inJail()||!S.alive)return;const a=ageY(),pt=partner();const c=[];
+  if(pt&&pt.st==='getrouwd'&&pt.wy){const n=year()-pt.wy;if([5,10,25,40,50,60].includes(n))c.push(['f9_jubileum',{n},1])}
+  const mom=living('moeder')[0],dad=living('vader')[0];if(mom&&dad&&!S.flags.oudersSch&&!S.flags.p9o40&&a>=16&&pAge(mom)>=62&&pAge(mom)<=68&&chance(.35)){S.flags.p9o40=1;c.push(['f9_ouders40',{},.9])}
+  if((S.oldF||[]).length&&a>=30&&a%10===5&&chance(.6))c.push(['f9_reunie',{g:pick(S.oldF).grp},.7]);
+  if(pt&&a>=20&&chance(.006+(pt.rel<50?.025:0)+(ktOf(pt)==='Avontuurlijk'?.004:0)))c.push(['f9_ptvreemd',{n:f8Name(pref2(pt))},.8]);
+  if(pt&&pt.live&&a>=25&&a<=65&&pt.since!=null&&a-pt.since>=3&&chance(.012)){const k=pick(['emigreren','zaak','studie']);c.push(['f9_ptdroom',{k,cc:pick(Object.keys(COUNTRIES).filter(x=>x!==S.p.country))},.6])}
+  const fam=living(['moeder','vader','broer','zus','kind','opa','oma','oom','tante']).filter(p=>pAge(p)>=16&&!abroad(p));
+  if(fam.length>=3&&a>=14&&chance(.035)){const dw=fam.filter(p=>['Chagrijnig','Eigenwijs','Jaloers'].includes(ktOf(p)));c.push(['f9_diner',{id:pick(dw.length?dw:fam).id,w:pick(DINW)},.5])}
+  if(!c.length)return;c.sort((x,y)=>y[2]-x[2]);const [id,ctx]=c[0];fmTake();Q.push({id,c:ctx})}
+const pref2=pt=>pt.g==='v'?(chance(.9)?'m':'v'):(chance(.9)?'v':'m');
+
+// minder dubbel: deze willekeurige gebeurtenissen komen nu vooral uit het leven van de mensen zelf
+for(const [id,w] of [['bruiloft',.35],['r_verhuizen',.35],['lenen',.4],['reunie',.3],['r_ouderziek',.4]])if(EV[id])EV[id].w=w;
+
+F8.year.push(()=>{if(!S.alive)return;kidSchool();partnerYear();friendsYear();momentsYear()});
+/* ================= FASE 9.9: rustiger pop-ups =================
+   "Minder maar groter": kleine gebeurtenissen worden een regel in het logboek in plaats van een pop-up.
+   Het spel kiest dan zelf een redelijke keuze (een nummer = die keuze, 'r' = willekeurig, 'f' = zonder keuze).
+   Grote momenten (geld, liefde, familie, gezondheid die ertoe doet) blijven een pop-up. */
+const LOGEV={
+  // baby en peuter
+  woordje:'r',k_stapjes:0,bijten:'r',waterpokken:0,verdwaald:'r',k_nachtmerrie:'r',tand:'f',k_zwemles:0,k_sint:'r',k_logeren:'r',
+  // klein ongemak
+  griep:0,gevallen:0,m3_rug:0,m3_bril:0,o_valpartij:0,m3_wifi:'r',wasmachine:1,energie:'f',pe_energie:0,war_hamster:1,tandarts:'f',
+  // buurt en vrije tijd van ouderen
+  nb_nieuw:0,nb_hulp:0,o_bingo:'r',o_computerles:'r',o_dansles:'r',o_wandelclub:'r',
+  // school: het rapport staat ook in het logboek
+  sc_rapport:'f'};
+function autoEv(q){const e=EV[q.id],c=q.c||{};if(!e)return;
+  if((e.need&&!safe(()=>e.need(c)))||(e.jail&&!inJail()))return;if(!e.sys&&e.c&&!safe(()=>e.c()))return;
+  const em=(EVMETA[q.id]||['','📌'])[1];let r='';
+  if(e.f&&!e.ch)r=safe(()=>e.f(c))||'';
+  else{const chs=(e.ch||[]).filter(ch=>!ch[2]||safe(()=>ch[2](c)));if(!chs.length)return;const v=LOGEV[q.id];const ch=v==='r'?pick(chs):chs[Math.min(+v||0,chs.length-1)];
+    r=safe(()=>ch[1](c))||'';if(r&&r.go){Q.unshift(Object.assign({},q,{pop:1}));return}}
+  if(typeof r==='string'&&r&&!c.nolog)L(`${em} ${e.t.replace(/[?!.…]$/,'')}: ${r}`)}
+processQ=(f=>function(){let n=0;while(Q.length&&LOGEV[Q[0].id]!=null&&!Q[0].pop&&n++<20){const q=Q.shift();safe(()=>autoEv(q))}return f.apply(this,arguments)})(processQ);
+// iets minder willekeurige gebeurtenissen (doel: ongeveer 2 schermen per jaar)
+rollEvent=(f=>function(){if(!chance(.9))return null;return f.apply(this,arguments)})(rollEvent);
+/* ================= FASE 10: werk en school =================
+   10.1 je leidinggevende (uit de kring Collega's) telt mee; 10.2 werkdag: meestal een logregel, soms een situatie uit je beroep;
+   10.3 jaargesprek; 10.4 nieuwe beroepen en studies (vervoer, zorg en dieren, overheid en veiligheid, ambacht en buiten);
+   10.5 werktijden, burn-out, ouderschapsverlof, sabbatical; 10.6 docenten met een naam, een klas overslaan; 10.7 stage en buitenlandsemester. */
+
+// ---------- 10.4 nieuwe studies en beroepen ----------
+Object.assign(SECN,{vervoer:'Vervoer',overheid:'Overheid',buiten:'Ambacht en buiten'});
+for(const st of [{id:'luchtvaart',t:'Pilotenopleiding',ty:['hbo'],sk:'tech',sm:55},{id:'tandheelkunde',t:'Tandheelkunde',ty:['wo'],len:6,sm:60},{id:'farmacie',t:'Farmacie',ty:['wo'],sm:56},
+  {id:'diergeneeskunde',t:'Diergeneeskunde',ty:['wo'],len:6,sm:60},{id:'bestuurskunde',t:'Bestuurskunde',ty:['hbo','wo'],sk:'sociaal'},{id:'agrarisch',t:'Agrarische opleiding',ty:['mbo','hbo']},
+  {id:'installatie',t:'Installatietechniek',ty:['mbo'],sk:'tech'},{id:'timmer',t:'Timmeropleiding',ty:['mbo'],sk:'tech'}])if(!STUDIES.some(x=>x.id===st.id))STUDIES.push(st);
+Object.assign(STUDYSEC,{luchtvaart:'vervoer',tandheelkunde:'zorg',farmacie:'zorg',diergeneeskunde:'zorg',bestuurskunde:'overheid',agrarisch:'buiten',installatie:'buiten',timmer:'buiten'});
+for(const s of STUDIES)s.sec=STUDYSEC[s.id]||'algemeen';
+{const pol=STUDIES.find(s=>s.id==='politie');if(pol&&!pol.ty.includes('hbo'))pol.ty.push('hbo')}
+const JOBS10=[
+ {id:'piloot',lad:['Tweede officier','Eerste officier','Gezagvoerder','Chief pilot'],sal:[48,75,130,180],req:{age:[20,99],clean:1},np:1,sk:'tech',em:'✈️',g:'vervoer'},
+ {id:'cabine',lad:['Cabinemedewerker','Senior purser','Hoofd cabinepersoneel'],sal:[26,38,55],req:{age:[18,99]},sk:'sociaal',em:'🛫',g:'vervoer'},
+ {id:'buschauffeur',lad:['Buschauffeur','Touringcarchauffeur','Planner openbaar vervoer'],sal:[30,34,44],req:{age:[21,99]},em:'🚌',g:'vervoer'},
+ {id:'machinist',lad:['Machinist in opleiding','Machinist','Hoofdmachinist'],sal:[32,46,58],req:{age:[18,99]},sk:'tech',em:'🚆',g:'vervoer'},
+ {id:'tandarts',lad:['Tandarts','Tandarts met eigen praktijk'],sal:[75,140],req:{age:[22,99]},np:1,em:'🦷',g:'zorg'},
+ {id:'apotheker',lad:['Apotheker','Beherend apotheker'],sal:[62,90],req:{age:[22,99]},np:1,em:'💊',g:'zorg'},
+ {id:'dierenarts',lad:['Dierenarts','Dierenarts met eigen kliniek'],sal:[48,85],req:{age:[22,99]},np:1,em:'🐾',g:'zorg'},
+ {id:'ambulance',lad:['Ambulancechauffeur','Ambulanceverpleegkundige','Teamleider ambulancedienst'],sal:[34,46,60],req:{age:[20,99]},np:1,em:'🚑',g:'zorg'},
+ {id:'ambtenaar',lad:['Beleidsmedewerker','Senior beleidsadviseur','Afdelingshoofd','Secretaris-generaal'],sal:[38,55,75,160],req:{age:[20,99]},np:1,sk:'sociaal',em:'🏛️',g:'kantoor'},
+ {id:'brandweer',lad:['Manschap brandweer','Bevelvoerder','Officier van dienst','Brandweercommandant'],sal:[32,42,58,95],req:{age:[18,99]},sk:'sport',em:'🚒',g:'veilig'},
+ {id:'recherche',lad:['Rechercheur','Senior rechercheur','Teamleider recherche','Hoofd recherche'],sal:[42,55,68,95],req:{age:[21,99],clean:1},np:1,em:'🔎',g:'veilig'},
+ {id:'douane',lad:['Douanier','Senior douanier','Teamleider douane'],sal:[34,44,58],req:{age:[18,99],clean:1},np:1,em:'🛃',g:'veilig'},
+ {id:'boer',lad:['Boerenknecht','Bedrijfsleider boerderij','Eigen boerderij'],sal:[26,38,62],req:{age:[16,99]},em:'🚜',g:'buiten'},
+ {id:'hovenier',lad:['Hovenier','Voorman hoveniers','Eigen hoveniersbedrijf'],sal:[27,34,55],req:{age:[16,99]},em:'🌳',g:'buiten'},
+ {id:'timmerman',lad:['Leerling-timmerman','Timmerman','Meestertimmerman','Eigen timmerbedrijf'],sal:[24,34,42,65],req:{age:[16,99]},sk:'tech',em:'🪚',g:'buiten'},
+ {id:'loodgieter',lad:['Leerling-loodgieter','Loodgieter','Eigen installatiebedrijf'],sal:[24,38,70],req:{age:[16,99]},sk:'tech',em:'🔧',g:'buiten'}];
+Object.assign(JGROUP,{vervoer:[],veilig:['politie','beveil'],buiten:['bouw']});
+for(const g of ['vervoer','veilig','buiten'])for(const k of Object.keys(JGROUP))if(k!==g)JGROUP[k]=JGROUP[k].filter(x=>!JGROUP[g].includes(x)||k===g);
+for(const j of JOBS10){if(JOB(j.id))continue;JOBS.splice(JOBS.findIndex(x=>x.id==='politiek'),0,j);JOBEM[j.id]=j.em;if(JGROUP[j.g])JGROUP[j.g].push(j.id)}
+Object.assign(JOBSEC,{piloot:'vervoer',cabine:'vervoer',buschauffeur:'vervoer',machinist:'vervoer',tandarts:'zorg',apotheker:'zorg',dierenarts:'zorg',ambulance:'zorg',ambtenaar:'overheid',brandweer:'veiligheid',recherche:'veiligheid',douane:'veiligheid',boer:'buiten',hovenier:'buiten',timmerman:'buiten',loodgieter:'buiten'});
+Object.assign(PATHS,{luchtvaart:{hbo:[['piloot',0],['cabine',1]]},tandheelkunde:{wo:[['tandarts',0]]},farmacie:{wo:[['apotheker',0],['lab',1]]},diergeneeskunde:{wo:[['dierenarts',0]]},
+  bestuurskunde:{hbo:[['ambtenaar',0]],wo:[['ambtenaar',1],['consultant',0]]},agrarisch:{mbo:[['boer',0],['hovenier',0]],hbo:[['boer',1],['milieu',0]]},installatie:{mbo:[['loodgieter',1],['elektro',0]]},timmer:{mbo:[['timmerman',1],['bouw',1]]}});
+PATHS.verpleeg.mbo.push(['ambulance',0]);PATHS.verpleeg.hbo.push(['ambulance',1]);PATHS.politie.mbo.push(['douane',0]);PATHS.politie.hbo=[['recherche',0],['politie',1],['douane',1]];PATHS.rechten.wo.push(['recherche',1]);
+for(const j of JOBS){j.sec=JOBSEC[j.id]||'algemeen';const via=[];for(const f in PATHS)for(const ty in PATHS[f])for(const [id] of PATHS[f][ty])if(id===j.id)via.push([f,ty]);j.via=via;
+  if(via.length&&(j.req.f||j.np)){j.np=1;j.minTy=Math.min(...via.map(([,ty])=>TYR[ty]))}}
+Object.assign(SIG,{vervoer:['🧭','Extra diensten rijden','Meer geld, minder vrije tijd'],veilig:['🚨','Een extra dienst draaien','Meer geld, en je baas ziet het'],buiten:['🧰','Een klus erbij aannemen','Extra geld, zwaar werk']});
+
+// ---------- 10.2 werkdag: situaties per beroep ----------
+// [situatie, [[keuze, score 0-2]]], zoals de bestaande WORKQ/WORKG
+Object.assign(WORKG,{
+ vervoer:[['Er is vertraging en de passagiers worden boos.',[['Rustig uitleggen wat er aan de hand is',2],['Omroepen dat je er niets aan kunt doen',1],['De microfoon uitzetten',0]]],['Je merkt een technisch probleem vlak voor vertrek.',[['Melden en het laten nakijken',2],['Een collega laten beslissen',1],['Toch vertrekken',0]]],['Iemand wordt onwel onderweg.',[['Meteen stoppen en hulp regelen',2],['Doorgaan naar de volgende halte',1],['Niets doen',0]]]],
+ veilig:[['Een melding komt binnen terwijl je net pauze hebt.',[['Meteen gaan',2],['Een collega vragen',1],['Eerst je broodje opeten',0]]],['Een verdachte begint tegen je te schreeuwen.',[['Kalm blijven en de-escaleren',2],['Hard terugpraten',1],['Duwen',0]]],['Je collega overtreedt een regel.',[['Er later met hem over praten',2],['Wegkijken',1],['Meedoen',0]]]],
+ buiten:[['Het regent pijpenstelen en de klus moet vandaag af.',[['Regenpak aan en doorwerken',2],['Een dag uitstellen in overleg',1],['Naar huis gaan zonder te bellen',0]]],['Een klant wil het anders dan afgesproken.',[['Meedenken en een eerlijke prijs geven',2],['Het gewoon doen',1],['Weigeren en vertrekken',0]]],['Je gereedschap is gestolen uit je bus.',[['Aangifte doen en snel nieuw regelen',2],['Lenen van een collega',1],['De dag maar afschrijven',0]]]]});
+WORKG.zorg.push(['Een familielid is boos op de afdeling.',[['Rustig luisteren en uitleggen',2],['Doorverwijzen naar de arts',1],['Wegsturen',0]]]);
+WORKG.kantoor.push(['Een collega vraagt of jij zijn presentatie wilt overnemen.',[['Helpen, maar afspreken dat hij het volgende keer terugdoet',2],['Ja zeggen en balen',1],['Nee en verder niks',0]]]);
+WORKG.horeca.push(['Je collega komt niet opdagen op zaterdagavond.',[['Schuiven en het samen oplossen',2],['De keuken zo goed mogelijk draaiende houden',1],['Ook naar huis gaan',0]]]);
+WORKG.tech.push(['De klant wil een nieuwe functie, maar de deadline is morgen.',[['Eerlijk zeggen wat haalbaar is',2],['Beloven en het halve werk leveren',1],['Niet reageren',0]]]);
+WORKG.onderwijs.push(['Een leerling vertelt je in vertrouwen dat het thuis niet goed gaat.',[['Luisteren en met de zorgcoördinator overleggen',2],['Zeggen dat het wel goedkomt',1],['Doorgaan met de les',0]]]);
+WORKG.handwerk.push(['Je baas vraagt of je zaterdag kunt werken.',[['Ja, als je er een vrije dag voor terugkrijgt',2],['Met tegenzin ja',1],['Nee, zonder reden',0]]]);
+const WDTXT={zorg:['Een drukke dienst, maar iedereen is goed geholpen.','Je hebt een rustige dag en tijd voor een praatje met de patiënten.'],horeca:['Volle bak, maar alles loopt op rolletjes.','Een rustige dienst. Je maakt de keuken eens goed schoon.'],tech:['Je lost drie storingen op voor de lunch.','Een dag vol overleg. Code schrijven komt er niet van.'],kantoor:['Je mailbox is eindelijk leeg.','Vergadering na vergadering. Je komt nergens aan toe.'],onderwijs:['De klas luistert vandaag echt.','Een chaotische dag met een brandoefening halverwege.'],handwerk:['Je klus is eerder af dan gepland.','Een zware dag. Je rug voelt het.'],vervoer:['Alles op tijd vandaag. Bijna een record.','Vertraging na vertraging, maar je blijft vriendelijk.'],veilig:['Een rustige dienst zonder bijzonderheden.','Een spannende melding, maar alles loopt goed af.'],buiten:['Je werkt de hele dag in de zon. Heerlijk.','Modder tot aan je knieën, maar het werk is af.'],fame:['Een dag vol interviews en fotoshoots.','Repetities, repetities, repetities.'],politiek:['Je schudt honderd handen.','Een lange dag in de vergaderzaal.']};
+const perfAdd=d=>{if(S.job)S.job.perf=clamp(S.job.perf+d)};
+const boss=()=>{const c=typeof circle==='function'&&S.job?circle('work'):null;return c?circPpl(c).find(p=>p.lead):null};
+workDay=(f=>function(){if(!S.job)return;const g=jobGroup(S.job.id);const pool=(WORKG[g]||[]).concat(WORKQ);
+  if(chance(.35)&&pool.length){const [q,op]=pick(pool);const b=boss();
+    modal({title:'Op je werk',em:jobEm(S.job.id),cat:jobTitle(),text:q,choices:op.slice().sort(()=>R()-.5).map(([t,sc])=>({t,on:()=>{closeModal();doAct('Werkdag',()=>{use('werk');const d=[-6,2,7][sc];perfAdd(d);if(b)b.rel=clamp(b.rel+[-5,0,4][sc]);hap(sc===2?2:sc===0?-1:0);if(sc===0&&chance(.15))kar(-1);
+      return sc===2?`Goed opgelost. ${b?b.first+' knikt tevreden.':'Je baas is tevreden.'} (prestaties +${d})`:sc===1?`Het loopt met een sisser af. (prestaties +${d})`:`Dat viel niet goed. ${b?b.first+' roept je even apart.':'Je baas is niet blij.'} (prestaties ${d})`},true,jobEm(S.job.id))}}))});return}
+  doAct('Werkdag',()=>{const m=use('werk');const sk=S.sk[(JOB(S.job.id)||{}).sk]||30;const sc=clamp((S.st.smarts+sk)/200+gauss()*.18,0,1);let d=Math.round((sc-.45)*12);if(d>0)d=Math.round(d*m);perfAdd(d);hap(sc>.7?1:0);
+    return `${pick(WDTXT[g]||WDTXT.kantoor)} (prestaties ${d>=0?'+':''}${d})`},true,jobEm(S.job.id))})(workDay);
+// extra actie voor de nieuwe groepen
+sigAction=(f=>function(){const g=S.job&&jobGroup(S.job.id);if(!['vervoer','veilig','buiten'].includes(g))return f.apply(this,arguments);const [e,t]=SIG[g];
+  doAct(t,()=>{const m=use('sig');const k=Math.round(salary()/40*m);cash(k);perfAdd(3*m);hea(g==='buiten'?-1:0);return `Je draait extra uren en verdient ${fmt(k)} bij.`},true,e)})(sigAction);
+
+// ---------- 10.1 / 10.3 / 10.5 jouw werk ----------
+const WL={normaal:['⏱️','Gewone uren','Zoals afgesproken in je contract'],over:['🔥','Veel overuren','10% meer geld en betere prestaties, maar zwaar'],part:['🌿','Parttime','60% van je salaris, meer tijd voor jezelf en je gezin'],thuis:['🏠','Vaak thuiswerken','Rustiger, maar je ziet je collega\'s minder']};
+const canHome=()=>S.job&&['kantoor','tech','onderwijs'].includes(jobGroup(S.job.id));
+salary=(f=>function(){const s=f.apply(this,arguments);const w=S&&S.job&&S.job.wl;return w==='part'?s*.6:w==='over'?s*1.1:s})(salary);
+const perfWord=v=>v>=80?'uitstekend':v>=65?'goed':v>=50?'voldoende':v>=35?'matig':'onvoldoende';
+function jaargesprek(){const j=S.job,b=boss();const bn=b?`${b.first}${b.kt?` (${(KTXT[ktOf(b)]||'').split(',')[0]})`:''}`:'je leidinggevende';const pr=j.perf,br=b?b.rel:50;
+  const done=()=>{S.acts.jg=1;j.jg=year()};
+  modal({title:'Jaargesprek',em:'📋',cat:jobTitle(),text:`Je zit tegenover ${bn}. Je beoordeling dit jaar: ${perfWord(pr)} (${Math.round(pr)}%). Wat wil je bespreken?`,choices:opts([
+    {t:'💶 Om opslag vragen',on:()=>{closeModal();doAct('Jaargesprek',()=>{done();if(chance(clamp(pr/120+(br-50)/250,.05,.9))){const p=ri(3,9);j.mult*=1+p/100;hap(4);if(b)b.rel=clamp(b.rel+1);return `"Dat heb je verdiend." Je krijgt ${p}% opslag.`}if(b)b.rel=clamp(b.rel-2);hap(-1);return '"Daar is dit jaar geen ruimte voor."'},true,'💶')}},
+    {t:'📈 Promotie bespreken',dis:j.lvl>=JOB(j.id).lad.length-1,on:()=>{closeModal();doAct('Jaargesprek',()=>{done();if(j.lyrs>=1&&chance(clamp((pr-55)/60+(br-50)/200,.03,.8))){const fl=promoTxt(j.id);promote();return `${fl} Je bent nu ${jobTitle().toLowerCase()}!`}j.perf=clamp(j.perf+2);return `"Nog niet, maar je bent op de goede weg." Je spreekt af wat je moet laten zien.`},true,'📈')}},
+    {t:'🚪 Dreigen te vertrekken',on:()=>{closeModal();doAct('Jaargesprek',()=>{done();if(pr>=70&&chance(.6)){const p=ri(8,15);j.mult*=1+p/100;if(b)b.rel=clamp(b.rel-4);return `Ze willen je niet kwijt. Je krijgt ${p}% opslag.`}if(b)b.rel=clamp(b.rel-12);if(pr<50&&chance(.3)){const t=jobTitle().toLowerCase();endJob();hap(-8);MS(`Vertrok als ${t}`,0);return '"Dan ga je toch." Je moet je spullen pakken.'}return `${b?b.first:'Je baas'} haalt de schouders op. Dat was geen slimme zet.`},true,'🚪')}},
+    {t:'🙂 Tevreden zijn',on:()=>{closeModal();doAct('Jaargesprek',()=>{done();if(b)b.rel=clamp(b.rel+4);hap(1);return 'Een prettig gesprek. Jullie spreken af zo door te gaan.'},true,'🙂')}}])})}
+function wlMenu(){const cur=S.job.wl||'normaal';modal({title:'Werktijden',em:'⏱️',cat:jobTitle(),text:'Hoe wil je werken?',choices:opts(Object.entries(WL).filter(([k])=>k!=='thuis'||canHome()).map(([k,[e,n,d]])=>({t:`${e} ${n}`,s:d,cls:cur===k?'go':'',on:()=>{closeModal();S.job.wl=k;if(k!=='over')S.job.ot=0;toast(`Werktijden: ${n.toLowerCase()}`);refreshSheet();render()}})))})}
+function f10JobRows(el){const j=S.job;if(!j||j.id==='prosport'||inJail())return;const s=sec(el,'Jouw werk');const b=boss();
+  if(b)row(s,{ic:'🧑‍💼',t:`Je leidinggevende: ${b.first}`,s:`${TREM[ktOf(b)]||''} ${cap(KTXT[ktOf(b)]||'')} · jullie band: ${Math.round(b.rel)}%`,on:()=>openSheet(b.first,el=>sheetCircP(el,'work',b),true)});
+  row(s,{ic:'📋',t:'Jaargesprek',s:S.acts.jg||j.jg===year()?'Dit jaar al gehad':j.yrs<1?'Na je eerste jaar':'Beoordeling, opslag, promotie',dis:!!S.acts.jg||j.jg===year()||j.yrs<1,dots:true,on:jaargesprek});
+  const w=WL[j.wl||'normaal'];row(s,{ic:w[0],t:'Werktijden',s:`${w[1]} · tik om te wisselen`,dots:true,on:wlMenu});
+  if(living('kind').some(k=>pAge(k)<1))row(s,{ic:'👶',t:'Ouderschapsverlof',s:S.acts.ov?'Dit jaar al opgenomen':'Een paar maanden thuis bij je baby',dis:!!S.acts.ov,on:()=>doAct('Ouderschapsverlof',()=>{S.acts.ov=1;const k=living('kind').find(k=>pAge(k)<1);cash(-Math.round(salary()*.08));k.rel=clamp(k.rel+10);const pt=partner();if(pt)pt.rel=clamp(pt.rel+6);hap(5);j.perf=clamp(j.perf-5);return `Drie maanden thuis met ${k.first}. Luiers, wandelingen en heel weinig slaap.`},true,'👶')});
+  if(j.yrs>=5)row(s,{ic:'🌴',t:'Sabbatical',s:S.flags.sab10&&year()-S.flags.sab10<8?`Weer mogelijk in ${S.flags.sab10+8}`:'Een half jaar onbetaald vrij',dis:!!(S.flags.sab10&&year()-S.flags.sab10<8),dots:true,on:()=>ask('Sabbatical?',`Je neemt een half jaar onbetaald verlof. Dat kost je ongeveer ${fmt(Math.round(salary()*.5))}.`,'Doen',()=>doAct('Sabbatical',()=>{S.flags.sab10=year();cash(-Math.round(salary()*.5));hap(12);hea(5);j.perf=clamp(j.perf-8);MS('Nam een sabbatical',1);return pick(['Je reist een half jaar door Zuid-Amerika.','Je leert surfen in Portugal.','Je knapt eindelijk dat huisje op en leest dertig boeken.'])},true,'🌴'),'go')})}
+circRow=(f=>function(el,slot){const r=f.apply(this,arguments);if(slot==='work')safe(()=>f10JobRows(el));return r})(circRow);
+function workYear(){const j=S.job;if(!j||j.id==='prosport'||inJail())return;const b=boss();
+  if(b){j.perf=clamp(j.perf+Math.round((b.rel-50)/20));const kt=ktOf(b);if(kt==='Chagrijnig')j.perf=clamp(j.perf-1);else if(kt==='Lief'||kt==='Zorgzaam')hap(1)}
+  const w=j.wl||'normaal';const fam=()=>[partner(),...living('kind').filter(k=>pAge(k)<18)].filter(Boolean);
+  if(w==='over'){j.perf=clamp(j.perf+5);hap(-2);hea(-1);for(const p of fam())p.rel=clamp(p.rel-1);j.ot=(j.ot||0)+1;if(j.ot>=3&&chance(.25)&&typeof fmFree==='function'&&fmFree()){fmTake();Q.push({id:'w10_burnout',c:{}})}}
+  else if(w==='part'){hap(2);j.perf=clamp(j.perf-1);for(const p of fam())p.rel=clamp(p.rel+1)}
+  else if(w==='thuis'){hap(1);const c=circle('work');if(c)for(const p of circPpl(c))p.rel=clamp(p.rel-1)}
+  // stage: na je studie kun je bij je stagebedrijf beginnen
+}
+E('w10_burnout',{sys:1,need:()=>!!S.job,t:'Op',x:'Je slaapt slecht, vergeet dingen en huilt in de auto. Je huisarts noemt het een burn-out.',ch:[
+ ['🛌 Je ziek melden en herstellen',()=>{S.job.wl='normaal';S.job.ot=0;perfAdd(-15);hap(4);hea(3);MS('Herstelde van een burn-out',1);return 'Je blijft drie maanden thuis. Wandelen, slapen, praten. Langzaam komt je energie terug.'}],
+ ['🌿 Parttime gaan werken',()=>{S.job.wl='part';S.job.ot=0;perfAdd(-8);hap(5);return 'Je gaat minder werken. Het geld is minder, de rust is groter.'}],
+ ['💪 Gewoon doorgaan',()=>{hea(-6);hap(-6);perfAdd(-5);return 'Je bijt door. Het voelt alsof je door stroop loopt.'}]]});
+EVMETA.w10_burnout=['Werk','🪫'];
+
+// ---------- 10.6 school: docenten met een naam, een klas overslaan ----------
+function docOf(s){const E=S.edu;E.doc=E.doc||{};if(!E.doc[s]){const g=pick(['m','v']);E.doc[s]={n:`${g==='v'?'mevrouw':'meneer'} ${pick(NAMES[C().r].l)}`,kt:pick(['Lief','Grappig','Chagrijnig','Eigenwijs','Zorgzaam','Ambitieus'])}}return E.doc[s]}
+function sheetDocs(el){const E=S.edu;if(typeof ensureGrades==='function')ensureGrades();const gr=E.gr||{};if(!Object.keys(gr).length){empty(el,'Nog geen vakken met een cijfer.');return}const s=sec(el,'Je docenten');
+  for(const v of Object.keys(gr)){const d=docOf(v);const k='uitl'+v;row(s,{ic:SUBEM[v]||'📘',t:`${subjName(v)}: ${d.n}`,s:`${TREM[d.kt]||''} ${KTXT[d.kt]||''} · cijfer ${nl1(gr[v])}${S.acts[k]?' · al extra uitleg gehad':''}`,dis:!!S.acts[k],on:()=>doAct('Extra uitleg',()=>{S.acts[k]=1;E.xtra=E.xtra||{};E.xtra[v]=1;const nice=['Lief','Zorgzaam','Grappig'].includes(d.kt);return nice?`${cap(d.n)} neemt er rustig de tijd voor. Het kwartje valt.`:d.kt==='Chagrijnig'?`${cap(d.n)} zucht, maar legt het toch uit.`:`${cap(d.n)} geeft je een stapel extra opgaven mee.`},true,'👩‍🏫')})}}
+schoolLifeRow=(f=>function(o){const r=f.apply(this,arguments);if(S.edu.stage==='middel'||S.edu.stage==='basis')row(o,{ic:'👩‍🏫',t:S.edu.stage==='basis'?'Je juf of meester':'Je docenten',s:'Wie geeft welk vak · extra uitleg vragen',on:()=>openSheet('Docenten',sheetDocs,true)});return r})(schoolLifeRow);
+gradesYear=(f=>function(E){const x=E.xtra||{};const r=f.apply(this,arguments);for(const v of Object.keys(x))if(E.gr&&E.gr[v]!=null)E.gr[v]=clampG(E.gr[v]+.35);E.xtra={};return r})(gradesYear);
+function schoolYear10(){const E=S.edu;if(E.stage!=='middel'||!E.gr||E.skip||inJail())return;const v=Object.values(E.gr);if(!v.length)return;const avg=v.reduce((a,b)=>a+b,0)/v.length;
+  if(avg>=8.4&&S.st.smarts>=82&&E.yrs>=1&&E.yrs<E.len-2&&chance(.5)&&typeof fmFree==='function'&&fmFree()){fmTake();Q.push({id:'w10_overslaan',c:{}})}}
+E('w10_overslaan',{sys:1,need:()=>S.edu.stage==='middel'&&!S.edu.skip,t:'Een klas overslaan?',x:'Je mentor vindt dat je je verveelt in de klas. De school stelt voor dat je een jaar overslaat.',ch:[
+ ['🚀 Ja, overslaan',()=>{const E=S.edu;E.skip=1;E.yrs++;sma(2);hap(2);MS('Sloeg een klas over',1);return 'Je zit ineens bij oudere leerlingen. Even wennen, maar het gaat goed.'}],
+ ['🙂 Liever bij je vrienden blijven',()=>{S.edu.skip=1;hap(2);return 'Je blijft in je eigen klas. Je mentor geeft je wat extra uitdaging.'}]]});
+EVMETA.w10_overslaan=['School','🚀'];
+
+// ---------- 10.7 studie: stage en een semester in het buitenland ----------
+function f10StudyRows(el,c){if(!c||!c.f||inJail())return;const s=sec(el,'Verder in je studie');const cp=S.cpi||1;
+  if(c.y>=1&&!c.stage){const p=pathOf(c.f,c.ty)[0];row(s,{ic:'🧑‍💼',t:'Stage lopen',s:p?`Bij een ${JOB(p[0]).lad[0].toLowerCase()} in de praktijk`:'Ervaring opdoen in de praktijk',on:()=>doAct('Stage',()=>{c.stage=1;c.perf=clamp(c.perf+4);sk('sociaal',2);if(p&&chance(.45)){S.flags.stage10={id:p[0],lvl:p[1],co:company()};return `Een leerzame stage bij ${S.flags.stage10.co}. Aan het eind zeggen ze: "Kom na je diploma maar bij ons werken."`}return 'Een leerzame stage. Je weet nu beter wat je later wilt.'},true,'🧑‍💼')})}
+  if(c.y>=1&&!c.abroad){const k=Math.round(3000*cp);row(s,{ic:'🌍',t:'Een semester in het buitenland',s:`Ongeveer ${fmt(k)} extra`,dis:S.money<k,on:()=>doAct('Buitenland',()=>{c.abroad=1;cash(-k);hap(7);sma(2);sk('sociaal',3);if(chance(.35))addFriend();return `Een half jaar in ${pick(['Barcelona','Stockholm','Lissabon','Praag','Montréal','Melbourne'])}. Je leert een nieuwe taal en een hoop nieuwe mensen kennen.`},true,'🌍')})}}
+studyRows=(f=>function(el,c){const r=f.apply(this,arguments);safe(()=>f10StudyRows(el,c));return r})(studyRows);
+function stageYear(){const st=S.flags.stage10;if(!st||S.edu.cur||inJail())return;if(!S.job&&ageY()<35&&JOB(st.id)){setJob(st.id,Math.min(st.lvl||0,JOB(st.id).lad.length-1),st.co);L(`🧑‍💼 Je stagebedrijf ${st.co} neemt je aan als ${jobTitle().toLowerCase()}.`,'good');hap(5)}S.flags.stage10=null}
+
+F8.year.push(()=>{if(!S.alive)return;workYear();schoolYear10();stageYear()});
+/* ================= FASE 11: gezondheid en ouderdom (mild) =================
+   Keuze Thijmen: ziektes mild (de meeste gaan over), geen dementie, geen keuzes over het levenseinde.
+   11.1 klachten eerst, de dokter stelt de ziekte vast; extra milde ziektes; Alzheimer niet meer in nieuwe ziektes
+   11.2 leefstijl telt (S.ls); 11.3 het ziekenhuis als groot moment bij een ernstige ziekte; 11.4 steun bij mentale klachten
+   11.5 ouder worden: seniorenwoning, zorgcentrum, mantelzorg, je kinderen helpen jou, opa en oma zijn; 11.6 fitheid (S.fit) */
+
+// ---------- 11.1 ziektes ----------
+{const i=ILLO.indexOf('Alzheimer');if(i>=0)ILLO.splice(i,1)}
+Object.assign(ILLS,{'een oorontsteking':[1,0,'huisarts',.8],'eczeem':[1,0,'dermatoloog',.5],'hooikoorts':[1,0,'huisarts',.5],'een gebroken pols':[2,0,'orthopeed',.85],
+  'reuma':[3,0,'internist',.35],'glaucoom':[2,0,'oogarts',.5],'gehoorverlies':[2,0,'huisarts',.4],'jicht':[2,0,'internist',.6],'galstenen':[3,0,'internist',.75],
+  'slapeloosheid':[2,0,'huisarts',.5,0,1],'een blaasontsteking':[1,0,'huisarts',.9],'spataderen':[1,0,'dermatoloog',.7]});
+for(const n of ['een oorontsteking','eczeem','hooikoorts','een gebroken pols','slapeloosheid','een blaasontsteking'])if(!ILLY.includes(n))ILLY.push(n);
+for(const n of ['reuma','glaucoom','gehoorverlies','jicht','galstenen','spataderen'])if(!ILLO.includes(n))ILLO.push(n);
+// klachten voordat je weet wat het is
+const SYM={'migraine':'bonzende hoofdpijn','een hernia':'pijn onder in je rug','astma':'kortademigheid','de ziekte van Pfeiffer':'moeheid en keelpijn','de ziekte van Lyme':'een rode kring op je been en moeheid','long covid':'moeheid die niet overgaat',
+  'diabetes':'veel dorst en vaak plassen','artrose':'stijve en pijnlijke knieën','hoge bloeddruk':'hoofdpijn en duizeligheid','staar':'wazig zien','een oorontsteking':'oorpijn','eczeem':'jeukende rode plekken','hooikoorts':'niezen en tranende ogen',
+  'reuma':'pijnlijke, gezwollen handen','glaucoom':'een vlek in je zicht','gehoorverlies':'moeite met verstaan','jicht':'een dikke, pijnlijke grote teen','galstenen':'pijn rechts in je buik','slapeloosheid':'slecht slapen','een blaasontsteking':'een branderig gevoel bij het plassen','spataderen':'zware benen','een angststoornis':'onrust en hartkloppingen','een depressie':'somberheid','een burn-out':'uitputting'};
+const symOf=il=>SYM[il.n]||'vage klachten';
+const illNm=il=>il.und?`klachten: ${symOf(il)}`:il.n;
+// nieuwe ziektes: lichte ziektes beginnen als klachten
+illYear=(f=>function(a){const before=new Set(S.ill);const n0=S.log.length;const r=f.apply(this,arguments);
+  for(const il of S.ill)if(!before.has(il)){const I=illInfo(il);
+    if(!I.l&&SYM[il.n]&&chance(.55)){il.und=1;for(let i=S.log.length-1;i>=n0;i--){const t=S.log[i];const tx=typeof t==='string'?t:t&&t.t;if(tx&&tx.includes(il.n)){const nt=`Je hebt al een tijdje last van ${symOf(il)}. Misschien eens naar de dokter?`;if(typeof t==='string')S.log[i]=nt;else t.t=nt;break}}}
+    else if(I.l&&typeof fmFree==='function'&&fmFree()&&!inJail()){fmTake();Q.push({id:'h11_zkh',c:{n:il.n}})}}
+  // klachten zonder diagnose: gaan vaak vanzelf over
+  for(const il of S.ill.slice())if(il.und&&before.has(il)){if(chance(.4)){S.ill=S.ill.filter(x=>x!==il);L(`Je last van ${symOf(il)} is vanzelf overgegaan.`,'good')}else{hea(-2);if(chance(.35)){il.und=0;L(`Je klachten worden erger. De huisarts stelt vast dat je ${il.n} hebt.`,'bad')}}}
+  return r})(illYear);
+// mild: behandelingen werken vaker
+treat=(f=>function(il,sp,o){o=Object.assign({},o||{});if(il&&!illInfo(il).chron)o.bonus=(o.bonus||0)+.12;if(il&&il.und){il.und=0;const r=f.call(this,il,sp,o);return `De dokter ontdekt wat het is: ${il.n}. ${r}`}return f.call(this,il,sp,o)})(treat);
+
+// ---------- 11.3 ernstige ziekte: het behandelplan ----------
+E('h11_zkh',{sys:1,need:c=>S.ill.some(i=>i.n===c.n)&&!inJail(),t:'Het behandelplan',x:c=>`De specialist bespreekt met je wat er moet gebeuren. Je hebt ${c.n}. "We gaan er alles aan doen," zegt ze.`,ch:[
+ ['🏥 Het ziekenhuis in de buurt',c=>{const il=S.ill.find(i=>i.n===c.n);payMed(2000);const r=treat(il,illInfo(il).sp,{bonus:.12,what:'De behandeling'});return r+zkhVisit()}],
+ ['🎓 Een academisch ziekenhuis',c=>{const il=S.ill.find(i=>i.n===c.n);payMed(5000);cash(-Math.round(300*(S.cpi||1)));const r=treat(il,illInfo(il).sp,{bonus:.25,what:'De behandeling in het academisch ziekenhuis'});return r+zkhVisit()},()=>S.money>=Math.max(medCost(5000),0)+300*(S.cpi||1)],
+ ['⏳ Eerst afwachten',c=>{if(chance(.5)){hea(-8);return 'Je wacht af. Het wordt helaas niet beter.'}return 'Je wacht af. De klachten blijven gelukkig gelijk.'}]]});
+EVMETA.h11_zkh=['Gezondheid','🏥'];
+function zkhVisit(){const ps=living(['partner','kind','moeder','vader','broer','zus','vriend']).filter(p=>p.rel>=55&&!(typeof abroad==='function'&&abroad(p))&&pAge(p)>=12).slice(0,3);if(!ps.length)return ' Er komt niemand op bezoek. Het voelt eenzaam.';for(const p of ps){p.rel=clamp(p.rel+3)}hap(4);return ` ${f8List(ps.map(p=>p.first))} ${ps.length>1?'komen':'komt'} op bezoek met bloemen en tijdschriften.`}
+
+// ---------- 11.2 leefstijl en 11.6 fitheid ----------
+function lsYear(){const A=S.lastActs||{},a=ageY();let s=50;const sp=['gym','run','klim'].filter(k=>A[k]).length+(S.sport&&S.sport.st&&S.sport.st!=='gestopt'?1:0);
+  s+=sp*9+(A.eten?8:0)+(A.med?4:0)-(addLvl('roken')>=50?25:0)-(addLvl('alcohol')>=50?15:0)-(addLvl('drugs')>=50?20:0)-(S.job&&S.job.wl==='over'?8:0);S.ls=clamp(Math.round(s));
+  // fitheid: sporten maakt fitter; zonder sport zak je langzaam naar een normale basis (die met de jaren iets lager ligt)
+  const base=a<40?45:a<60?40:a<75?35:30;let f=S.fit??(a<30?55:45);if(sp)f+=sp*4;else if(f>base)f-=2;else if(f<base)f+=1;S.fit=clamp(Math.round(f+(S.ls-50)/25));
+  if(a>=12){const d=(S.ls-50)/30+(S.fit-base)/50;hea(d>=.8?1:d<=-.8?-1:0)}}
+function lsTips(){const t=[],A=S.lastActs||{};if(!['gym','run','klim'].some(k=>A[k]))t.push('meer bewegen (Geest & lichaam)');if(!A.eten)t.push('gezonder eten');if(addLvl('roken')>=50)t.push('stoppen met roken');if(addLvl('alcohol')>=50)t.push('minder drinken');if(S.job&&S.job.wl==='over')t.push('minder overuren');return t}
+sheetDoctor=(f=>function(el){const r=f.apply(this,arguments);const ls=S.ls??50,fit=S.fit??50;const t=lsTips();
+  card(el,`<h3>🍎 Je leefstijl</h3><div class="stat"><span>Leefstijl</span><span></span><span class="v">${ls}%</span>${bar(ls)}</div><div class="stat"><span>Fitheid</span><span></span><span class="v">${fit}%</span>${bar(fit,'var(--brand)')}</div><span class="muted">${t.length?'Tip: '+he(f8List(t))+'.':'Goed bezig! Zo blijf je langer gezond.'}</span>`);return r})(sheetDoctor);
+// namen van klachten op de juiste plek tonen
+{const a=ACTS.find(x=>x[0]==='dokter');if(a)a[3]=()=>S.ill.length?`Je klachten: ${S.ill.map(illNm).join(', ')}`:'Huisarts, specialisten, check-up'}
+illMenu=(f=>function(il){if(il&&il.und){const sp=SPEC.huisarts;modal({title:cap(symOf(il)),em:'🤔',cat:'Gezondheid',text:'Je weet nog niet wat het is. De huisarts kan het uitzoeken.',choices:opts([{t:'Naar de huisarts',s:fmt(medCost(sp[2])),ic:sp[0],on:()=>{closeModal();doAct('Huisarts',()=>{payMed(sp[2]);return treat(il,'huisarts',{what:'De huisarts'})},true,sp[0])}}])});return}return f.apply(this,arguments)})(illMenu);
+
+// ---------- 11.4 steun bij mentale klachten ----------
+function mentYear(){const m=S.ill.filter(i=>!i.und&&illInfo(i).ment);if(!m.length)return;const sup=[partner(),S.bff&&P(S.bff)].filter(p=>p&&p.alive&&p.rel>=55);
+  if(sup.length&&chance(.35)){const p=pick(sup);hap(3);p.rel=clamp(p.rel+2);L(`💛 ${Who(p)} is er voor je. Dat helpt.`,'good');if(chance(.3)){const il=pick(m);S.ill=S.ill.filter(x=>x!==il);L(`Je voelt je beter. Je bent hersteld van ${il.n}.`,'good');hap(5)}}}
+
+// ---------- 11.5 ouder worden ----------
+const SENIOR=9600,ZORGC=24000;
+sheetHousing=(f=>function(el){const r=f.apply(this,arguments);const a=ageY(),cp=S.cpi||1;if(a<65||inJail())return r;const s=sec(el,'Ouder worden');
+  const h=S.home;if(h.k!=='eigen'&&h.name!=='Seniorenwoning'&&h.name!=='Zorgcentrum')row(s,{ic:'🏡',t:'Naar een seniorenwoning',s:`Gelijkvloers, met buren van je leeftijd · ${fmt(SENIOR*cp/12)} per maand`,dots:true,on:()=>ask('Verhuizen?','Je gaat in een seniorenwoning wonen.','Verhuizen',()=>doAct('Verhuizen',()=>{setRent('Seniorenwoning',Math.round(SENIOR*cp));hap(3);return 'Je verhuist naar een seniorenwoning. Geen trappen meer, en de buurvrouw komt meteen koffie drinken.'},true,'🏡'),'go')});
+  else if(h.k==='eigen')card(s,'<span class="muted">Wil je kleiner gaan wonen? Verkoop eerst je huis bij Bezit.</span>');
+  if(a>=75&&h.name!=='Zorgcentrum')row(s,{ic:'🏥',t:'Naar een zorgcentrum',s:S.st.health<45?`Zorg dichtbij · ${fmt(ZORGC*cp/12)} per maand`:'Pas als je gezondheid minder wordt',dis:S.st.health>=45||h.k==='eigen',dots:true,on:()=>ask('Naar een zorgcentrum?','Je krijgt elke dag hulp en er is altijd iemand in de buurt.','Verhuizen',()=>doAct('Verhuizen',()=>{setRent('Zorgcentrum',Math.round(ZORGC*cp));hea(5);return 'Je verhuist naar een zorgcentrum. Elke dag verse koffie, en op donderdag bingo.'},true,'🏥'),'go')});return r})(sheetHousing);
+F8.person.push((el,p)=>{if(!p.alive||inJail()||(typeof abroad==='function'&&abroad(p)))return;const pa=pAge(p),my=ageY();
+  if(['moeder','vader','opa','oma','partner'].includes(p.role)&&my>=18&&(pa>=75||p.ill)){const s=sec(el,'Zorg');const k='mz'+p.id;
+    row(s,{ic:'🤲',t:'Mantelzorg geven',s:S.acts[k]?'Dit jaar al gedaan':'Boodschappen, de was, mee naar de dokter',dis:!!S.acts[k],on:()=>doAct('Mantelzorg',()=>{S.acts[k]=1;p.rel=clamp(p.rel+8);p.hl=Math.min(90,(p.hl??60)+5);hap(-1);hea(-1);if(typeof memAdd==='function'&&p.ill)memAdd(p,'ziek+');return `Je helpt ${p.first} een paar maanden met van alles. Zwaar, maar ${f8Hij(p.g)} is je ontzettend dankbaar.`},true,'🤲')})}
+  if(p.role==='kleinkind'&&pa<12&&my>=40){const s=sec(el,'Opa en oma zijn'.replace('Opa en oma',S.p.g==='v'?'Oma':'Opa'));const k='vw'+p.id;
+    row(s,{ic:'🍦',t:'Verwennen',s:S.acts[k]?'Dit jaar al gedaan':'IJsjes, cadeautjes en te laat naar bed',dis:!!S.acts[k],on:()=>doAct('Verwennen',()=>{S.acts[k]=1;cash(-Math.round(25*(S.cpi||1)));p.rel=clamp(p.rel+8);hap(3);return pick([`Je neemt ${p.first} mee naar de speeltuin en daarna voor een ijsje met drie bolletjes.`,`${p.first} mag bij jou alles. Ook om 10 uur nog chips eten.`,`Jullie bakken pannenkoeken. De keuken is een slagveld.`])},true,'🍦')})}});
+function oldYear(){const a=ageY();if(a<75||inJail())return;
+  if(S.st.health<50&&chance(.4)){const ks=living('kind').filter(k=>k.rel>=55&&pAge(k)>=18&&!(typeof abroad==='function'&&abroad(k)));if(ks.length){const k=pick(ks);hap(2);k.rel=clamp(k.rel+1);L(`🛒 ${Who(k)} doet je boodschappen en blijft koffie drinken.`,'good')}}
+  if(a>=80&&S.st.health<40&&S.home&&S.home.name!=='Zorgcentrum'&&!S.flags.zc11){S.flags.zc11=1;L('Alles gaat wat moeizamer. Een zorgcentrum is misschien iets voor je (zie Bezit → Wonen).','sys')}}
+
+F8.year.push(()=>{if(!S.alive)return;lsYear();mentYear();oldYear()});
+/* ================= FASE 12: activiteiten =================
+   12.1 een activiteit is een moment met een keuze (met een knop "Snel" voor wie alleen het resultaat wil)
+   12.2 samen doen: kies wie er meegaat (telt voor jullie band en wordt soms een herinnering)
+   12.3 hobby's met een doel: exposeren of optreden, er je beroep van maken
+   12.4 reizen: 30 bestemmingen, een reisgenoot, iets onderweg, souvenirs (S.souv)
+   12.5 uitgaan: met wie, en hoeveel je drinkt
+   12.6 nieuw: cultuur, buiten (met volkstuin), sport kijken, leren (talen, cursussen, geloof) */
+Object.assign(MEMT,{'uit+':['🎟️','Jullie gingen samen naar {x}',2],'reis+':['🧳','Jullie reisden samen naar {x}',4],'kamp+':['⛺','Jullie gingen samen kamperen',3],'stad+':['🏟️','Jullie zagen samen {x} spelen',2]});
+const cpX=k=>Math.round(k*(S.cpi||1));
+// ---------- 12.2 met wie ----------
+function buddies(minAge){return living(['partner','kind','vriend','broer','zus','moeder','vader','kleinkind']).filter(p=>!p.gone&&pAge(p)>=(minAge||4)&&!(typeof abroad==='function'&&abroad(p))&&!(p.jail&&p.jail.until>S.m)).sort((a,b)=>b.rel-a.rel).slice(0,6)}
+function withWho(title,em,cb,o={}){if(inJail()){toast('Niet vanuit de gevangenis');return}const ps=buddies(o.min);
+  modal({title,em,cat:o.cat||'Activiteit',text:'Met wie ga je?',choices:[{t:'⚡ Snel',s:'Meteen, zonder keuzes',on:()=>{closeModal();cb(null,true)}},{t:'🙋 Alleen',on:()=>{closeModal();cb(null,false)}},...ps.map(p=>({t:p.first,ic:faceOf(p),s:roleLabel(p),on:()=>{closeModal();cb(p,false)}})),{t:'Annuleren',cls:'ghost',on:closeModal}]})}
+function withFx(p,code,arg){if(!p)return '';p.rel=clamp(p.rel+ri(4,9));hap(1);if(code&&chance(.3)&&typeof memAdd==='function')memAdd(p,code,arg);return ''}
+// een keuze-moment na "met wie": [label, fn(p) → tekst]
+function scene(title,em,text,opts_,p){modal({title,em,cat:p?`Met ${p.first}`:'Alleen',person:p||undefined,text,choices:opts_.map(([t,fn,dis])=>({t,dis:!!dis,on:()=>{closeModal();doAct(title,()=>fn(p),true,em)}}))})}
+
+// ---------- 12.1 bioscoop, dierentuin, pretpark ----------
+const FILMS=[['💥','Actiefilm','Veel explosies, weinig verhaal.'],['😂','Komedie','Je lacht zo hard dat je popcorn morst.'],['👻','Horrorfilm','Je slaapt vannacht met het licht aan.'],['💕','Romantische film','Je pinkt een traantje weg.'],['🧸','Animatiefilm','Leuker dan verwacht.'],['📽️','Arthousefilm','Je snapt er niks van, maar voelt je cultureel.']];
+sheetMovies=function(el){const s=sec(el,'Wat draait er?');for(const [ic,t,txt] of FILMS)row(s,{ic,t,s:fmt(cpX(13)),dis:S.money<13&&ageY()>=18,dots:true,on:()=>withWho(t,ic,(p,quick)=>{
+  const pay=()=>{if(ageY()>=18)cash(-cpX(13)*(p?2:1))};const base=()=>{const m=use('film');hap(ri(2,5)*m);return txt};
+  if(quick)return doAct(t,()=>{pay();return base()},true,ic);
+  scene(t,ic,'De aftiteling loopt. Wat vond je ervan?',[['⭐⭐⭐⭐⭐ Geweldig',q=>{pay();const r=base();withFx(q,'uit+','de film');hap(1);return `${r} ${q?(chance(.6)?`${q.first} vond hem ook fantastisch.`:`${q.first} vond er niks aan. Jullie discussiëren de hele weg naar huis.`):''}`}],['⭐⭐⭐ Prima',q=>{pay();const r=base();withFx(q);return r}],['⭐ Niks aan',q=>{pay();hap(-1);withFx(q);return `Twee uur van je leven die je nooit terugkrijgt.${q?` ${q.first} slaapt halverwege in.`:''}`}]],p)},{cat:'Bioscoop'})})};
+zoo=function(){withWho('Dierentuin','🦓',(p,quick)=>{const pay=()=>{if(ageY()>=18)cash(-cpX(28)*(p?2:1))};
+  if(quick)return doAct('Dierentuin',()=>{pay();const k=use('zoo');hap(3*k);return pick(['De pinguïns zijn je favoriet.','Een aap gooit iets naar je. Je wil niet weten wat.','De leeuw kijkt je recht in de ogen.'])},true,'🦓');
+  scene('Dierentuin','🦓','Waar ga je eerst heen?',[['🐧 De pinguïns',q=>{pay();hap(3);withFx(q,'uit+','de dierentuin');return 'Net op tijd voor het voeren. Een pinguïn glijdt op zijn buik het water in.'}],['🦁 De leeuwen',q=>{pay();hap(3);withFx(q,'uit+','de dierentuin');return 'De leeuw brult. Iedereen schrikt, en een kind laat zijn ijsje vallen.'}],['🐒 De apen',q=>{pay();hap(3);withFx(q,'uit+','de dierentuin');return pick(['Een aap pikt de zonnebril van een toerist.','De apen kijken net zo naar jou als jij naar hen.'])}],['🦒 De giraffen',q=>{pay();hap(3);withFx(q,'uit+','de dierentuin');return 'Je mag een giraffe voeren. Haar tong is blauw en eindeloos lang.'}]],p)},{cat:'Dagje uit'})};
+function pretpark(){withWho('Pretpark','🎢',(p,quick)=>{const pay=()=>{if(ageY()>=16)cash(-cpX(45)*(p?2:1))};
+  if(quick)return doAct('Pretpark',()=>{pay();const m=use('pret');hap(Math.round(5*m));return pick(['De achtbaan is zo hard dat je je stem kwijt bent.','Je staat twee uur in de rij voor één minuut plezier. Toch de moeite waard.'])},true,'🎢');
+  scene('Pretpark','🎢','Waar begin je?',[['🎢 De wildste achtbaan',q=>{pay();use('pret');if(chance(.15)){hap(1);return 'Je wordt misselijk en ziet de rest van de dag groen.'}hap(6);withFx(q,'uit+','het pretpark');return 'Drie loopings. Je gilt, je lacht, je wilt meteen nog een keer.'}],['🎠 Rustige attracties',q=>{pay();use('pret');hap(4);withFx(q,'uit+','het pretpark');return 'Draaimolen, sprookjesbos, botsauto\'s. Ontspannen en gezellig.'}],['🍟 Vooral eten',q=>{pay();use('pret');hap(3);hea(-1);cash(-cpX(25));withFx(q);return 'Churros, friet, een suikerspin zo groot als je hoofd.'}]],p)},{cat:'Dagje uit'})}
+
+// ---------- 12.4 reizen ----------
+const DEST=[
+ ['Europa',[['🗼','Parijs',700],['🏛️','Rome',750],['🏖️','Barcelona',700],['💂','Londen',650],['🏰','Praag',550],['🚋','Lissabon',650],['🏝️','De Griekse eilanden',900],['🌋','IJsland',1400],['🏔️','De fjorden van Noorwegen',1300],['⛵','Kroatië',850]]],
+ ['Azië',[['🗾','Tokio',2600],['🌺','Bali',2200],['🐘','Thailand',2000],['🍜','Vietnam',2100],['🏙️','Dubai',1600],['🕌','Rajasthan, India',2000]]],
+ ['Amerika',[['🗽','New York',1900],['🌉','Californië',2400],['🌮','Mexico',2000],['🦙','Machu Picchu, Peru',2800],['🎭','Rio de Janeiro',2400],['🍁','De Rocky Mountains',2300],['🚗','Cuba',1900]]],
+ ['Afrika',[['🕌','Marrakech',600],['🦁','Safari in Kenia',3200],['🐧','Kaapstad',2500],['🐫','De piramides van Egypte',1300]]],
+ ['Oceanië',[['🦘','Australië',3500],['🥝','Nieuw-Zeeland',3800]]]];
+const REISEV=[
+ ['Je vlucht heeft zes uur vertraging.',[['⏳ Wachten met een boek',()=>'Je leest een heel boek uit op het vliegveld.'],['🃏 Kaarten met andere reizigers',()=>{hap(1);return 'Je leert drie Australiërs pesten. Een topbegin.'}]]],
+ ['Je koffer is niet meegekomen.',[['🛍️ Nieuwe kleren kopen',()=>{cash(-cpX(250));return 'Je koopt een complete nieuwe garderobe. Twee dagen later is je koffer er alsnog.'}],['😤 Wachten in je reiskleren',()=>{hap(-1);return 'Twee dagen in dezelfde broek. Dan is je koffer er.'}]]],
+ ['De lokale markt is overweldigend.',[['🤝 Afdingen',()=>{hap(1);return 'Je dingt af tot de helft. De verkoper lacht: hij had nog meer gerekend.'}],['💶 Gewoon betalen',()=>'Je koopt een prachtig kleed. Veel te duur, maar wat maakt het uit.']]],
+ ['Het weer is fantastisch.',[['🏖️ Naar het strand',()=>{hap(2);loo(1);return 'Je ligt een week in de zon. Bruin en uitgerust.'}],['🥾 Een excursie',()=>{hap(2);sma(1);return 'Je ziet een plek die je nooit meer vergeet.'}]]],
+ ['Je eet iets op straat dat er heerlijk uitziet.',[['😋 Nog een portie',()=>{if(chance(.4)){hea(-3);return 'Twee dagen met buikpijn in je hotelkamer. Achteraf toch niet zo heerlijk.'}hap(2);return 'Het lekkerste dat je ooit at.'}],['🙅 Toch maar niet',()=>'Je houdt het bij het hotelontbijt.']]],
+ ['In het hostel ontmoet je iemand heel leuks.',[['💬 Contact houden',()=>{if(typeof addFriend==='function'){const f=addFriend();if(f)f.grp='reis'}return 'Jullie wisselen nummers uit. Je hebt er een vriend bij.'}],['👋 Gezellig, maar dat was het',()=>'Een leuke avond. Morgen reizen jullie verder.']]]];
+GRPN.reis='Vrienden van je reizen';GRPN.geloof='Vrienden van je geloofsgemeenschap';
+function trip(e,n,k){withWho(n,e,(p,quick)=>{const cost=cpX(k)*(p?1.8:1);if(S.money<cost){toast('Daar heb je niet genoeg geld voor');return}
+  const fin=(extra,q)=>{cash(-Math.round(cost));const m=use('reis');hap(Math.round(6*m+2));hea(1);S.souv=S.souv||[];if(!S.souv.some(x=>x[1]===n))S.souv.push([e,n,year(),q?q.first:'']);if(S.souv.length>40)S.souv.shift();withFx(q,'reis+',n);if(q)q.rel=clamp(q.rel+4);
+    if(k>=2000&&!(S.flags.verre||0)){S.flags.verre=1;MS(`Reisde naar ${n}`,1)}return `${extra}${q?` Met ${q.first}. `:' '}Je neemt een souvenir mee uit ${n}.`};
+  if(quick)return doAct(n,()=>fin(`${pick(['Een onvergetelijke reis.','Een heerlijke vakantie.','Je komt uitgerust terug.'])}`,null),true,e);
+  const [x,ch]=pick(REISEV.filter((r,i)=>i!==5||ageY()>=16));modal({title:n,em:e,cat:p?`Met ${p.first}`:'Alleen op reis',person:p||undefined,text:x,choices:ch.map(([t,fn])=>({t,on:()=>{closeModal();doAct(n,()=>fin(fn()+' ',p),true,e)}}))})},{cat:'Reizen'})}
+function sheetDest(el){for(const [w,ds] of DEST){const s=sec(el,w);for(const [e,n,k] of ds)row(s,{ic:e,t:n,s:`Vanaf ${fmt(cpX(k))}${(S.souv||[]).some(x=>x[1]===n)?' · al geweest':''}`,dis:S.money<cpX(k)||ageY()<16,dots:true,on:()=>trip(e,n,k)})}}
+function sheetSouv(el){const sv=(S.souv||[]).slice().reverse();if(!sv.length){empty(el,'Nog geen souvenirs.');return}const s=sec(el,`${sv.length} ${sv.length===1?'bestemming':'bestemmingen'}`);for(const [e,n,y,w] of sv)row(s,{ic:e,t:n,s:`${y}${w?' · met '+w:''}`})}
+sheetTravel=function(el){const s=sec(el,'');const a=ageY();
+  row(s,{ic:'🌍',t:'Op reis',s:a<16?'Vanaf 16 jaar':'30 bestemmingen over de hele wereld',dis:a<16,on:()=>openSheet('Op reis',sheetDest,true)});
+  row(s,{ic:'🌴',t:'Pakketreis',s:'Van Ardennen tot wereldreis',on:()=>openSheet('Vakantie',sheetVacation,true)});
+  row(s,{ic:'⛷️',t:'Een dagje skiën',s:'Minigame · ontwijk de bomen',dis:a<6,dots:true,on:()=>withWho('Skiën','⛷️',p=>mgDodge({title:'Skiën',desc:'Suis de berg af en ontwijk bomen en andere skiërs.',em:'⛷️',me:'⛷️',obs:['🌲','⛄','🪨','🏂'],secs:12},(l,t)=>doAct('Skiën',()=>{if(ageY()>=16)cash(-cpX(70)*(p?2:1));const m=use('ski');hap(Math.round((2+l)*m));withFx(p,'uit+','de piste');if(l===0){hea(-ri(5,15));return 'Je slaat over de kop en ligt een dag op de bank met een gekneusde knie.'}return l===t?'Foutloos naar beneden. Je voelt je een prof.':'Een paar keer gevallen, maar wat een dag!'},true,'⛷️')),{cat:'Dagje uit'})});
+  row(s,{ic:'🎢',t:'Pretpark',s:fmt(cpX(45)),dis:a<4,dots:true,on:pretpark});
+  const n=(S.souv||[]).length;if(n)row(s,{ic:'🧳',t:'Je souvenirs',s:`${n} ${n===1?'bestemming':'bestemmingen'}`,on:()=>openSheet('Souvenirs',sheetSouv,true)})};
+
+// ---------- 12.5 uitgaan: met wie en hoeveel je drinkt ----------
+clubDoor=(f=>function(c){const go=()=>f.call(this,c);if(ageY()<16)return go();
+  withWho(c.n,c.em,(p,quick)=>{if(quick)return go();if(p){p.rel=clamp(p.rel+ri(3,7));if(chance(.25)&&typeof memAdd==='function')memAdd(p,'uit+',c.n)}
+    modal({title:c.n,em:'🍸',cat:p?`Met ${p.first}`:'Uitgaan',text:'Hoeveel drink je vanavond?',choices:[
+      {t:'💧 Niks, ik rijd',on:()=>{closeModal();go()}},
+      {t:'🍺 Een paar',on:()=>{closeModal();if(typeof addUp==='function')addUp('alcohol',1);hap(1);go()}},
+      {t:'🍾 Flink',on:()=>{closeModal();if(typeof addUp==='function')addUp('alcohol',4);hap(2);hea(-2);if(chance(.35))L('🥴 De volgende ochtend: een kater van jewelste. Nooit meer, zweer je.','sys');go()}}]})},{cat:'Uitgaan',min:16})})(clubDoor);
+
+// ---------- 12.6 cultuur ----------
+const CULT=[['🖼️','Museum',20,'Wat doe je in het museum?',[['🎧 Een rondleiding volgen',()=>{sma(2);return 'De gids vertelt geweldige verhalen bij elk schilderij.'}],['🚶 Zelf rondlopen',()=>{sma(1);hap(1);return 'Je blijft een kwartier staan bij één schilderij. Je weet zelf niet waarom.'}],['☕ Vooral het museumcafé',()=>{hap(2);return 'De appeltaart is het echte kunstwerk.'}]]],
+ ['🎭','Theater',35,'Het doek gaat op. Hoe ervaar je het?',[['😢 Je wordt geraakt',()=>{hap(3);return 'Je zit er nog een uur na de voorstelling stil van.'}],['😴 Je dommelt weg',()=>'Je wordt wakker van het applaus. Je klapt hard mee.'],['🌹 Je gooit een roos naar de acteurs',()=>{hap(2);return 'De hoofdrolspeler vangt hem en knipoogt.'}]]],
+ ['🎵','Musical',70,'Het slotnummer begint. Wat doe je?',[['🎤 Meezingen',()=>{hap(4);return 'De mensen naast je zingen mee. Kippenvel.'}],['👏 Staande ovatie',()=>{hap(3);return 'De hele zaal staat. De cast buigt drie keer.'}],['📱 Stiekem filmen',()=>{if(chance(.4)){hap(-1);return 'Een suppoost tikt je op de schouder.'}hap(2);return 'Je hebt het hele slotnummer op film.'}]]],
+ ['🎙️','Cabaret',30,'De cabaretier kijkt de zaal in en zoekt iemand.',[['🙋 Oogcontact maken',()=>{if(chance(.5)){hap(4);return 'Je wordt het onderwerp van de hele voorstelling. Iedereen lacht, jij het hardst.'}hap(-1);return 'Je wordt flink voor gek gezet. Gelukkig kent niemand je.'}],['🙈 Wegkijken',()=>{hap(3);return 'Je ontsnapt. Je buurman niet. Heerlijk.'}],['😂 Gewoon genieten',()=>{hap(3);return 'Je lacht tot je buikpijn hebt.'}]]]];
+function sheetCulture(el){const s=sec(el,'');const a=ageY();for(const [e,n,k,q,ch] of CULT)row(s,{ic:e,t:n,s:`${fmt(cpX(k))}${a<10?' · vanaf 10 jaar':''}`,dis:a<10||(a>=16&&S.money<cpX(k)),dots:true,on:()=>withWho(n,e,(p,quick)=>{const pay=()=>{if(ageY()>=16)cash(-cpX(k)*(p?2:1))};
+  if(quick)return doAct(n,()=>{pay();use('cult');hap(3);return 'Een mooie avond uit.'},true,e);scene(n,e,q,ch.map(([t,fn])=>[t,pp=>{pay();use('cult');const r=fn();withFx(pp,'uit+',n.toLowerCase()==='museum'?'het museum':'de '+n.toLowerCase());return r}]),p)},{cat:'Cultuur',min:8})})}
+
+// ---------- 12.6 buiten ----------
+function sheetOut(el){const s=sec(el,'');const a=ageY();const cp=S.cpi||1;
+  row(s,{ic:'⛺',t:'Kamperen',s:`Een weekend in de natuur · ${fmt(cpX(80))}`,dis:a<6,dots:true,on:()=>withWho('Kamperen','⛺',(p,quick)=>{const pay=()=>{if(ageY()>=16)cash(-cpX(80))};const rain=chance(.35);
+    if(quick)return doAct('Kamperen',()=>{pay();hap(rain?1:4);hea(1);withFx(p,'kamp+');return rain?'Het regent het hele weekend. Je tent lekt.':'Sterren, een kampvuur en marshmallows.'},true,'⛺');
+    scene('Kamperen','⛺',rain?'Het begint te regenen en je tent lekt.':'Het is een prachtige avond.',rain?[['🛠️ De tent repareren',q=>{pay();hap(2);hea(1);withFx(q,'kamp+');return 'Met tape en een vuilniszak houd je het droog. Je voelt je een echte overlever.'}],['🏨 Toch een hotel nemen',q=>{pay();cash(-cpX(90));hap(2);withFx(q);return 'Een warme douche en een echt bed. Kamperen is ook maar een woord.'}]]:[['🔥 Kampvuur maken',q=>{pay();hap(4);hea(1);withFx(q,'kamp+');return 'Jullie roosteren marshmallows en vertellen spookverhalen.'}],['🌌 Sterren kijken',q=>{pay();hap(4);sma(1);withFx(q,'kamp+');return 'Je ziet drie vallende sterren. Je doet drie wensen.'}]],p)},{cat:'Buiten'})});
+  row(s,{ic:'🥕',t:S.tuin?'Je volkstuin':'Een volkstuin huren',s:S.tuin?'Elk jaar groente en rust · tik om op te zeggen':`${fmt(cpX(150))} per jaar · groente, rust en buren`,dis:a<16,dots:true,on:()=>{S.tuin=S.tuin?0:1;toast(S.tuin?'Je hebt een volkstuin!':'Je zegt je volkstuin op');refreshSheet()}});
+  row(s,{ic:'🥾',t:'Een wandeltocht',s:'Kies zelf hoe ver',dis:a<6,dots:true,on:()=>modal({title:'Wandeltocht',em:'🥾',cat:'Buiten',text:'Hoe ver loop je?',choices:opts([10,25,40].map(km=>({t:`${km} kilometer`,on:()=>{closeModal();doAct('Wandeltocht',()=>{use('wandel');const hard=km/(20+(S.fit??50)/2);hea(km>=25?2:1);hap(2);S.fit=clamp((S.fit??50)+Math.round(km/10));if(hard>1.2&&chance(.5)){hap(-2);return `Na ${Math.round(km*.7)} kilometer heb je blaren op blaren. Je haalt de finish strompelend.`}return km>=40?'Je loopt de hele 40 kilometer. Je krijgt een medaille en kunt morgen niet lopen.':`Een mooie tocht van ${km} kilometer.`},true,'🥾')}})))})});
+  row(s,{ic:'🎣',t:'Vissen',s:'Rust aan de waterkant',dis:a<6,on:()=>doAct('Vissen',()=>{use('vis');hap(2);const r=R();return r<.4?'Niks gevangen. Wel een mooie zonsondergang.':r<.85?pick(['Een mooie snoek!','Drie baarsjes. Je zet ze terug.','Een karper van zeker tien kilo.']):'Je vangt een oude laars. En dan nog een.'},true,'🎣')})}
+function tuinYear(){if(!S.tuin||inJail())return;cash(-cpX(150));hap(2);hea(1);if(chance(.35))L(`🥕 Je volkstuin levert ${pick(['emmers vol tomaten','meer courgettes dan je kunt opeten','prachtige dahlia\'s','aardappels voor een hele winter'])} op.`,'good')}
+
+// ---------- 12.6 sport kijken ----------
+function sheetWatch(el){const s=sec(el,'');const a=ageY();const cl=(loc('clubs')||['de stadsclub']);
+  if(S.fav)card(el,`<span class="muted">Jouw club: <b>${he(S.fav)}</b></span>`);
+  row(s,{ic:'🏟️',t:'Naar het stadion',s:`${S.fav||'Kies een club'} · ${fmt(cpX(45))}`,dis:a<6||(a>=16&&S.money<cpX(45)),dots:true,on:()=>{const go=()=>withWho('Stadion','🏟️',(p,quick)=>doAct('Stadion',()=>{if(ageY()>=16)cash(-cpX(45)*(p?2:1));use('stad');const r=R();withFx(p,'stad+',S.fav);if(r<.45){hap(5);return `${S.fav} wint! Het hele stadion zingt.${p?` Je valt ${p.first} in de armen.`:''}`}if(r<.7){hap(1);return `Gelijkspel. ${S.fav} had moeten winnen.`}hap(-2);return `${S.fav} verliest. De terugweg is stil.`},true,'🏟️'),{cat:'Sport kijken'});
+    if(!S.fav)modal({title:'Jouw club',em:'⚽',cat:'Sport kijken',text:'Voor welke club ben je?',choices:opts(cl.map(c=>({t:c,on:()=>{closeModal();S.fav=c;go()}})))});else go()}});
+  row(s,{ic:'🍻',t:'Kijken in de kroeg',s:'Met vrienden, bier en veel geschreeuw',dis:a<16,on:()=>doAct('Kroeg',()=>{cash(-cpX(20));use('kroeg');if(typeof addUp==='function')addUp('alcohol',1);hap(3);for(const f of living('vriend').filter(f=>!f.gone).slice(0,3))f.rel=clamp(f.rel+2);return pick(['De kroeg ontploft bij de winnende goal.','Je hebt de hele wedstrijd naar het scherm geschreeuwd. Je stem is weg.','Penalty\'s! Je kunt niet kijken.'])},true,'🍻')});
+  if(S.fav)row(s,{ic:'🔁',t:'Andere club kiezen',dots:true,on:()=>{S.fav=null;refreshSheet()}})}
+
+// ---------- 12.6 leren ----------
+const TALEN=['Engels','Spaans','Frans','Duits','Italiaans','Portugees','Japans','Chinees','Arabisch','Turks'];
+const CURS=[['🏺','Pottenbakken','kunst'],['💻','Programmeren','tech'],['🍝','Italiaans koken','koken'],['💃','Salsa','sport'],['📊','Boekhouden','zaken'],['🎭','Improvisatietheater','sociaal'],['🎹','Pianoles','muziek']];
+const GELOOF={christendom:['⛪','Christendom','de kerk'],islam:['🕌','Islam','de moskee'],jodendom:['🕍','Jodendom','de synagoge'],hindoeisme:['🛕','Hindoeïsme','de tempel'],boeddhisme:['☸️','Boeddhisme','de tempel']};
+function sheetLearn(el){const a=ageY(),cp=S.cpi||1;S.lang=S.lang||{};
+  const t=sec(el,'Een taal leren');for(const l of TALEN){const v=S.lang[l]||0;row(t,{ic:v>=100?'🗣️':'📖',t:l,s:v>=100?'Vloeiend':v?`Niveau ${v}%${S.acts['taal'+l]?' · dit jaar al geoefend':''}`:`Les · ${fmt(cpX(200))}`,dis:v>=100||!!S.acts['taal'+l]||S.money<cpX(200)&&a>=18,on:()=>doAct(l,()=>{S.acts['taal'+l]=1;if(a>=18)cash(-cpX(200));const g=Math.round(ri(10,18)*(S.st.smarts>=70?1.3:1));S.lang[l]=Math.min(100,v+g);sma(1);if(S.lang[l]>=100){MS(`Spreekt vloeiend ${l}`,1);hap(4);return `Je spreekt vloeiend ${l}!`}return `Je ${l} gaat vooruit (${S.lang[l]}%).`},true,'📖')})}
+  const c=sec(el,'Een cursus voor je plezier');for(const [e,n,k] of CURS)row(c,{ic:e,t:n,s:S.acts['cur'+n]?'Dit jaar al gedaan':`${fmt(cpX(150))} · ${SKN[k]||''}`,dis:a<12||!!S.acts['cur'+n]||(a>=18&&S.money<cpX(150)),on:()=>doAct(n,()=>{S.acts['cur'+n]=1;if(a>=18)cash(-cpX(150));sk(k,ri(4,8));hap(2);if(chance(.25)&&typeof addFriend==='function')addFriend();return pick([`Tien avonden ${n.toLowerCase()}. Je bent er beter in dan je dacht.`,`Je ${n.toLowerCase()}-cursus is gezellig. Je gaat volgend jaar weer.`])},true,e)});
+  const g=sec(el,'Geloof');const F=S.faith||{};
+  if(!F.g)row(g,{ic:'🙏',t:'Een geloof kiezen',s:'Of geen: dat is ook prima',dots:true,on:()=>modal({title:'Geloof',em:'🙏',cat:'Leren',text:'Welk geloof past bij jou?',choices:opts(Object.entries(GELOOF).map(([k,[e,n]])=>({t:`${e} ${n}`,on:()=>{closeModal();S.faith={g:k,w:0};L(`${e} Je voelt je thuis in ${n==='Islam'?'de islam':'het '+n.toLowerCase()}.`,'sys');refreshSheet()}})))})});
+  else{const [e,n,pl]=GELOOF[F.g];row(g,{ic:e,t:F.w?`Elke week naar ${pl}`:`Naar ${pl} gaan`,s:F.w?'Tik om te stoppen':'Rust, gemeenschap en nieuwe mensen',dots:true,on:()=>{F.w=F.w?0:1;toast(F.w?`Je gaat elke week naar ${pl}`:`Je gaat niet meer elke week`);refreshSheet()}});
+    row(g,{ic:'🔄',t:'Een ander geloof, of geen',dots:true,on:()=>{S.faith=null;refreshSheet()}})}}
+function faithYear(){const F=S.faith;if(!F||!F.w||inJail())return;hap(2);kar(1);if(chance(.2)&&typeof addFriend==='function'){const f=addFriend();if(f)f.grp='geloof'}}
+
+// ---------- 12.3 hobby's met een doel ----------
+const HOBJOB={schilderen:'designer',fotografie:'fotograaf',tuinieren:'hovenier',koken:'kok',zingen:'muzikant',schrijven:'schrijver'};
+sheetHobby=(f=>function(el,k){const r=f.apply(this,arguments);const l=hobLvl(k);const [ic,t]=HOBBY[k];const s=sec(el,'Verder met je hobby');const kk='exp'+k;
+  row(s,{ic:'🖼️',t:['zingen','dansen'].includes(k)?'Optreden':'Je werk laten zien',s:l<60?'Vanaf 60% niveau':S.acts[kk]?'Dit jaar al gedaan':'Een expositie, optreden of demonstratie',dis:l<60||!!S.acts[kk],on:()=>doAct(t,()=>{S.acts[kk]=1;hap(5);S.fame=clamp((S.fame||0)+1);const g=cpX(Math.round(l*8));cash(g);return `${pick(['Een zaal vol mensen','Een lokale krant','Je familie en vrienden'])} ziet wat je kunt. Je verdient ${fmt(g)}.`},true,'🖼️')});
+  const jid=HOBJOB[k];if(jid&&JOB(jid))row(s,{ic:'💼',t:'Er je beroep van maken',s:l<75?'Vanaf 75% niveau':S.job&&S.job.id===jid?'Dit is al je beroep':`Begin als ${JOB(jid).lad[0].toLowerCase()}`,dis:l<75||ageY()<18||(S.job&&S.job.id===jid),dots:true,on:()=>ask('Je beroep ervan maken?',`Je wordt ${JOB(jid).lad[0].toLowerCase()}.${S.job?' Je stopt met je huidige baan.':''}`,'Doen',()=>doAct('Nieuw beroep',()=>{if(S.job)endJob();setJob(jid,0);hap(6);MS(`Maakte van ${t.toLowerCase()} zijn beroep`.replace('zijn',S.p.g==='v'?'haar':'zijn'),1);return `Je maakt van je hobby je werk: je bent nu ${jobTitle().toLowerCase()}!`},true,'💼'),'go')});return r})(sheetHobby);
+
+// ---------- nieuwe activiteiten in het menu ----------
+ACTS.push(['cultuur','🎭','Cultuur','Museum, theater, musical, cabaret',8,OS('Cultuur',el=>sheetCulture(el)),1],
+  ['buiten','🏕️','Buiten','Kamperen, volkstuin, wandelen, vissen',6,OS('Buiten',el=>sheetOut(el)),1],
+  ['kijk','🏟️','Sport kijken','In het stadion of in de kroeg',6,OS('Sport kijken',el=>sheetWatch(el)),1],
+  ['leren','📚','Leren','Een taal, een cursus, geloof',10,OS('Leren',el=>sheetLearn(el)),6]);
+ACH.push(['wereldreiziger','Wereldreiziger','Bezoek 10 verschillende bestemmingen'],['polyglot','Polyglot','Spreek 3 talen vloeiend']);
+F8.ach.push(add=>{if((S.souv||[]).length>=10)add('wereldreiziger');if(Object.values(S.lang||{}).filter(v=>v>=100).length>=3)add('polyglot')});
+F8.year.push(()=>{if(!S.alive)return;tuinYear();faithYear()});
+/* ================= FASE 13: geld, bezit en auto's =================
+   Keuze Thijmen: geen (nieuwe) verzekeringen; ongeveer 20 bedrijven op de beurs.
+   13.1 auto's: APK, onderhoud, drinken en rijden; ligplaats voor een boot
+   13.2 beurs: 8 bedrijven erbij (20 in totaal)
+   13.3 belastingaangifte: netjes, slim aftrekken of sjoemelen
+   13.5 rijk leven: personeel, een eigen stichting
+   13.6 pensioen opbouwen met een lijfrente */
+
+// ---------- 13.2 beurs ----------
+Object.assign(HOLD,{unilever:['Unilever','🧴',.05,.16,.035,'aandelen'],ing:['ING','🦁',.06,.28,.06,'aandelen'],booking:['Booking','🏨',.1,.32,0,'aandelen'],toyota:['Toyota','🚗',.06,.22,.025,'aandelen'],
+  samsung:['Samsung','📱',.08,.3,.02,'aandelen'],nike:['Nike','👟',.07,.27,.012,'aandelen'],lvmh:['LVMH','👜',.08,.26,.018,'aandelen'],novo:['Novo Nordisk','💉',.11,.3,.012,'aandelen']});
+if(typeof NLSTK!=='undefined'&&!NLSTK.includes('ing'))NLSTK.push('ing');
+
+// ---------- 13.1 auto's ----------
+function carYear(){const cp=S.cpi||1;for(const c of S.cars){if(c.kind==='motoren'&&!c.yr)continue;const age=c.yr!=null?year()-c.yr:4;
+  if(age>=3&&!inJail()){if((c.cond??100)<35){c.apk=0;L(`🔧 Je ${c.name} is afgekeurd bij de APK. Laat hem repareren (onderhoud) voordat je weer rijdt.`,'bad')}else{const k=Math.round(60*cp);cash(-k);c.apk=1}}}
+  // boot: ligplaats
+  const boats=(S.items||[]).filter(x=>catOf(x)==='boten');if(boats.length){const k=Math.round(boats.reduce((a,b)=>a+Math.max(800*cp,b.value*.015),0));cash(-k);if(period&&period.out){period.out['Ligplaats']=(period.out['Ligplaats']||0)+k;period.exp+=k}}
+  // drinken en rijden
+  if(S.cars.length&&S.lic&&typeof addLvl==='function'&&addLvl('alcohol')>=60&&chance(.12)&&!inJail()){const c=S.cars[0];c.cond=Math.max(0,(c.cond??100)-ri(20,50));hea(-ri(3,12));const b=Math.round(ri(5,15)*100*cp);cash(-b);kar(-3);S.crim=S.crim||{};L(`🚔 Je rijdt met te veel op en raakt een vangrail. Je ${c.name} is zwaar beschadigd en je krijgt een boete van ${fmt(b)}.`,'bad')}}
+sheetOwned=(f=>function(el,x){const r=f.apply(this,arguments);if(!ownById(x.id))return r;const veh=S.cars.includes(x);const cp=S.cpi||1;
+  if(veh||['boten','vliegtuigen','helikopters'].includes(catOf(x))){const s=sec(el,'Onderhoud');const cond=x.cond??100;const k=Math.round(Math.max(150*cp,x.value*.03));
+    row(s,{ic:'🔧',t:'Onderhoud laten doen',s:cond>=95?'Hij is in topconditie':`${fmt(k)} · conditie naar 100%${x.apk===0?' · nodig voor de APK':''}`,dis:cond>=95||S.money<k,on:()=>doAct('Onderhoud',()=>{cash(-k);x.cond=100;x.apk=1;return `Je ${x.name} glimt weer. De monteur zegt dat hij nog jaren meekan.`},true,'🔧')})}
+  return r})(sheetOwned);
+
+// ---------- 13.3 belastingaangifte ----------
+function aangifte(){const g=taxable(),t=taxOn(g);if(!g){toast('Je hebt dit jaar geen inkomen om aangifte over te doen');return}const home=S.home&&S.home.k==='eigen';
+  modal({title:'Belastingaangifte',em:'📋',cat:'Financiën',text:`Je belastbaar inkomen dit jaar: ${fmt(g)}. Je betaalt ongeveer ${fmt(t)} belasting. Hoe vul je het in?`,choices:opts([
+    {t:'✅ Netjes invullen',on:()=>{closeModal();doAct('Aangifte',()=>{S.acts.ib=1;kar(1);return 'Je vult alles eerlijk in. Een paar weken later: "Uw aangifte is akkoord."'},true,'✅')}},
+    {t:'🧮 Slim aftrekken',s:home?'Hypotheekrente, giften en studiekosten':'Giften en studiekosten',on:()=>{closeModal();doAct('Aangifte',()=>{S.acts.ib=1;const k=Math.round(t*(home?ri(3,6):ri(1,3))/100);cash(k);return `Je zoekt alle aftrekposten uit. Je krijgt ${fmt(k)} terug.`},true,'🧮')}},
+    {t:'🤫 Sjoemelen',s:'Meer terug, maar met een kans op controle',on:()=>{closeModal();doAct('Aangifte',()=>{S.acts.ib=1;kar(-3);if(chance(.22)){const b=Math.round(t*ri(10,20)/100);cash(-b);S.flags.fiscus=(S.flags.fiscus||0)+1;return `De belastingdienst controleert je aangifte. Je moet terugbetalen plus een boete: ${fmt(b)}.`}const k=Math.round(t*ri(5,9)/100);cash(k);return `Niemand die het merkt. Je krijgt ${fmt(k)} terug.`},true,'🤫')}}])})}
+
+// ---------- 13.5 en 13.6 ----------
+const STAFF={kok:['👨‍🍳','Een eigen kok',60000,'Elke dag gezond en lekker eten'],chauffeur:['🚘','Een chauffeur',55000,'Nooit meer zelf rijden'],tuin:['🌳','Een tuinman',40000,'Je tuin is altijd perfect'],huis:['🧹','Een huishoudster',45000,'Je huis is altijd schoon']};
+function staffMenu(){S.staff=S.staff||{};const cp=S.cpi||1;modal({title:'Personeel',em:'🤵',cat:'Rijk leven',text:'Wie neem je in dienst? Tik nog een keer om iemand te laten gaan.',choices:opts(Object.entries(STAFF).map(([k,[e,n,c,d]])=>({t:`${e} ${n}${S.staff[k]?' ✓':''}`,s:`${d} · ${fmt(c*cp)} per jaar`,on:()=>{closeModal();S.staff[k]=S.staff[k]?0:1;toast(S.staff[k]?`${n} begint morgen`:`${n} vertrekt`);refreshSheet()}})))})}
+function staffYear(){const st=S.staff||{};const cp=S.cpi||1;let k=0;for(const id of Object.keys(st))if(st[id])k+=STAFF[id][2]*cp;if(!k)return;cash(-Math.round(k));if(period&&period.out){period.out['Personeel']=(period.out['Personeel']||0)+Math.round(k);period.exp+=Math.round(k)}
+  if(st.kok)hea(2);if(st.huis||st.tuin)hap(1);if(st.chauffeur){hap(1);for(const c of S.cars)c.cond=Math.min(100,(c.cond??100)+5)}if(S.money<0&&chance(.5)){S.staff={};L('Je kunt je personeel niet meer betalen. Iedereen vertrekt.','bad')}}
+function stichting(){const cp=S.cpi||1;const k=Math.round(250000*cp);modal({title:'Een eigen stichting',em:'🕊️',cat:'Rijk leven',text:`Met ${fmt(k)} richt je een stichting op. Elk jaar gaat er 5% van je vermogen naar het goede doel. Waarvoor?`,choices:opts(['Kinderen in armoede','Onderzoek naar kanker','Natuur en dieren','Onderwijs in ontwikkelingslanden','Kunst en cultuur'].map(d=>({t:d,on:()=>{closeModal();doAct('Stichting',()=>{cash(-k);S.found={d,y:year(),n:`Stichting ${S.p.last}`};kar(8);S.fame=clamp((S.fame||0)+3);hap(6);MS(`Richtte de Stichting ${S.p.last} op voor ${d.toLowerCase()}`,2);return `De Stichting ${S.p.last} is opgericht. Je eerste project: ${d.toLowerCase()}.`},true,'🕊️')}})))})}
+function foundYear(){const F=S.found;if(!F||inJail())return;const g=Math.round(Math.max(0,netWorth())*.05);if(g<1000)return;cash(-g);kar(2);hap(1);if(chance(.25))L(`🕊️ De ${F.n} helpt dit jaar ${pick(['honderden gezinnen','een ziekenhuis in Ghana','een natuurgebied','drie scholen','jonge kunstenaars'])} (${fmt(g)}).`,'good')}
+// lijfrente: elk jaar een vast deel van je salaris opzij, met rendement; bij je pensioen wordt het extra pensioen
+function lijfMenu(){const cur=S.lijf?S.lijf.pct:0;modal({title:'Lijfrente',em:'🏦',cat:'Pensioen',text:`Zet elk jaar een deel van je salaris opzij voor later. Je spaarpot: ${fmt(S.lijf?S.lijf.v:0)}.`,choices:opts([0,5,10,15].map(p=>({t:p?`${p}% van je salaris`:'Niets (stoppen)',cls:cur===p?'go':'',on:()=>{closeModal();S.lijf=S.lijf||{v:0,pct:0};S.lijf.pct=p;toast(p?`Je legt ${p}% opzij`:'Je stopt met inleggen');refreshSheet()}})))})}
+function lijfYear(){const Lf=S.lijf;if(!Lf)return;Lf.v=Math.round(Lf.v*(1.04+gauss()*.03));if(Lf.pct&&S.job&&ageY()<aowAge()){const k=Math.round(salary()*Lf.pct/100);cash(-k);Lf.v+=k}
+  if(ageY()>=aowAge()&&Lf.v>0&&S.pension){const add=Math.round(Lf.v/18);S.pension+=add;L(`🏦 Je lijfrente gaat in: ${fmt(add)} per jaar extra pensioen.`,'good');Lf.v=0;Lf.pct=0}}
+const _nw13=netWorth;netWorth=function(){return _nw13.apply(this,arguments)+((S&&S.lijf&&S.lijf.v)||0)};
+
+// ---------- in Financiën ----------
+sheetFinance=(f=>function(el){const r=f.apply(this,arguments);const a=ageY();if(a<18)return r;const s=sec(el,'Belasting, pensioen en meer');const cp=S.cpi||1;
+  row(s,{ic:'📋',t:'Belastingaangifte',s:S.acts.ib?'Dit jaar al gedaan':'Netjes, slim of sjoemelen',dis:!!S.acts.ib||inJail(),dots:true,on:aangifte});
+  row(s,{ic:'🏦',t:'Lijfrente',s:S.lijf&&S.lijf.pct?`${S.lijf.pct}% van je salaris · spaarpot ${fmt(S.lijf.v)}`:S.lijf&&S.lijf.v?`Spaarpot ${fmt(S.lijf.v)}`:'Extra pensioen opbouwen',dis:a>=aowAge(),dots:true,on:lijfMenu});
+  const nw=netWorth();if(nw>=2e6*cp||S.staff&&Object.values(S.staff).some(Boolean))row(s,{ic:'🤵',t:'Personeel',s:Object.keys(S.staff||{}).filter(k=>S.staff[k]).map(k=>STAFF[k][1].toLowerCase()).join(', ')||'Kok, chauffeur, tuinman, huishoudster',dots:true,on:staffMenu});
+  if(S.found)row(s,{ic:'🕊️',t:S.found.n,s:`Sinds ${S.found.y} · ${S.found.d.toLowerCase()}`});else if(nw>=1e6*cp)row(s,{ic:'🕊️',t:'Een eigen stichting oprichten',s:`${fmt(250000*cp)} · elk jaar 5% van je vermogen naar het goede doel`,dis:S.money<250000*cp,dots:true,on:stichting});
+  return r})(sheetFinance);
+// een stichting die je niet meer kunt betalen, stopt
+F8.year.push(()=>{if(!S.alive)return;carYear();staffYear();foundYear();lijfYear();if(S.found&&S.money<0){L(`De ${S.found.n} stopt: er is geen geld meer.`,'bad');S.found=null}});
+/* ================= FASE 14: roem en social media =================
+   Keuze Thijmen: echte namen waar het kan (prijzen, hitlijsten, modeweken); films, albums, boeken en programma's zijn verzonnen.
+   14.1 carrière in projecten: acteur (audities, rollen, recensies), muzikant (nummers, album, hitlijst, tour), model (castings, shows, covers),
+        schrijver (een boek, de bestsellerlijst) en presentator (nieuw beroep: een eigen programma, kijkcijfers)
+   14.2 een manager; 14.3 een succes geeft promotie; 14.4 een eigen merk voor influencers en gecanceld worden; 14.5 prijzen als groot moment */
+
+// ---------- nieuw beroep: presentator ----------
+{const j={id:'presentator',lad:['Radiopresentator','Tv-presentator','Bekende tv-presentator','Showmaster'],sal:[30,70,220,900],req:{age:[18,99],sk:['sociaal',40]},sk:'sociaal',fame:1};
+  if(!JOB('presentator')){JOBS.splice(JOBS.findIndex(x=>x.id==='politiek'),0,j);j.sec='media';j.via=[];JOBEM.presentator='🎙️';JGROUP.fame.push('presentator');FAMEJ.presentator=[6,30,65,90]}}
+// ---------- prijzen en lijsten per land ----------
+const AWARD={film:{NL:'Gouden Kalf',BE:'Ensor',UK:'BAFTA',FR:'César',ES:'Goya',IT:'David di Donatello',DE:'Deutscher Filmpreis',_:'Oscar'},
+  serie:{NL:'Gouden Kalf voor beste serie',UK:'BAFTA TV Award',_:'Emmy'},muziek:{NL:'Edison',UK:'Brit Award',DE:'Echo',_:'Grammy'},
+  boek:{NL:'Libris Literatuur Prijs',BE:'Boon-literatuurprijs',UK:'Booker Prize',US:'Pulitzer Prize',FR:'Prix Goncourt',ES:'Premio Planeta',_:'internationale literatuurprijs'},
+  tv:{NL:'Gouden Televizier-Ring',BE:'Ultima',UK:'BAFTA TV Award',_:'Emmy'},mode:{_:'Model of the Year van de British Fashion Awards'}};
+const awardN=k=>{const t=AWARD[k];const intl=S.fame>=80&&['film','muziek','serie','tv'].includes(k);return intl?{film:'Oscar',muziek:'Grammy',serie:'Emmy',tv:'Emmy'}[k]:(t[S.p.country]||t._)};
+const CHART={NL:'de Top 40',BE:'de Ultratop',UK:'de UK Singles Chart',US:'de Billboard Hot 100',DE:'de Offizielle Deutsche Charts',FR:'de Top Singles',_:'de hitlijst'};
+const BSL={NL:'de Bestseller 60',BE:'de Boekenbon Top 10',UK:'de Sunday Times-bestsellerlijst',US:'de New York Times-bestsellerlijst',_:'de bestsellerlijst'};
+const ccL=t=>t[S.p.country]||t._;
+const TITLEW=['Het','De','Een','Nacht','Zomer','Stilte','Vuur','Rood','Blauw','Licht','Storm','Huis','Weg','Laatste','Verloren','Wilde','Gouden','Stad','Zee','Hart','Schaduw','Spiegel'];
+const mkTitle=()=>{const a=pick(['Het','De']),b=pick(['Laatste','Verloren','Wilde','Gouden','Stille','Rode','Blauwe','Lange','Zachte']),c=pick(['Zomer','Nacht','Stad','Zee','Storm','Weg','Spiegel','Hart','Schaduw','Brug','Rivier','Jas']);return `${a} ${b.toLowerCase()} ${c.toLowerCase()}`.replace(/^(\w)/,m=>m.toUpperCase())};
+const P14=()=>S.p14||(S.p14={act:[],songs:[],alb:0,tour:0,book:null,show:null,hist:[]});
+const fameJob=()=>S.job&&JOB(S.job.id)&&JOB(S.job.id).fame?S.job.id:null;
+const mgrB=()=>S.p14&&S.p14.mgr?.15:0;
+function star(q){const n=clamp(Math.round(q/20),1,5);return '⭐'.repeat(n)}
+function hist14(t){const X=P14();X.hist.push([year(),t]);if(X.hist.length>12)X.hist.shift()}
+// een succes: geld, roem en soms promotie; groot succes: kans op een prijs (groot moment)
+function hit(q,kind,title,fee){const X=P14();const cp=S.cpi||1;cash(Math.round(fee));S.fame=Math.round(clamp((S.fame||0)+(q>=80?4:q>=60?2:q>=40?0:-1)));perfAdd(q>=60?6:q<40?-5:0);
+  if(q>=75&&S.job&&S.job.lvl<JOB(S.job.id).lad.length-1&&chance(.45)){promote();L(`🌟 Door het succes van ${title} ben je nu ${jobTitle().toLowerCase()}!`,'good')}
+  if(q>=88&&typeof fmFree==='function'&&fmFree()&&!inJail()){fmTake();Q.push({id:'f14_prijs',c:{k:kind,t:title}})}}
+E('f14_prijs',{sys:1,need:()=>!inJail(),t:'Genomineerd!',x:c=>`${c.t} is genomineerd voor een ${awardN(c.k)}. De uitreiking is vanavond. Je zit in de zaal en je hart bonkt.`,ch:[
+ ['📝 Een speech voorbereiden',c=>{if(chance(.35+(S.sk.sociaal||0)/300)){S.fame=clamp(S.fame+6);hap(10);MS(`Won een ${awardN(c.k)} voor ${c.t}`,3);S.flags.prijs14=(S.flags.prijs14||0)+1;return `"And the winner is..." Jij! Je speech is kort, ontroerend en gaat viraal.`}hap(-2);return 'Een ander wint. Je klapt beleefd en stopt je speech diep in je zak.'}],
+ ['😎 Gewoon genieten',c=>{if(chance(.3)){S.fame=clamp(S.fame+6);hap(12);MS(`Won een ${awardN(c.k)} voor ${c.t}`,3);S.flags.prijs14=(S.flags.prijs14||0)+1;return 'Je wint! Je hebt niks voorbereid en bedankt je moeder, je kat en de catering.'}hap(1);return 'Je wint niet, maar het feest na afloop is legendarisch.'}]]});
+EVMETA.f14_prijs=['Roem','🏆'];
+
+// ---------- 14.1 acteur ----------
+const ROLE={reclame:['📺','Een reclame',.08,30],serie:['🎞️','Een tv-serie',.35,45],film:['🎬','Een film',.6,60],theater:['🎭','Theater',.15,35]};
+function audition(ty){const [e,n,f,min]=ROLE[ty];const X=P14();doAct('Auditie',()=>{S.acts['aud'+ty]=1;const p=clamp(.25+(S.st.looks-50)/200+(S.sk.kunst||0)/250+(S.fame||0)/300+mgrB()-(min-30)/200+(S.job?S.job.lvl*.08:0),.05,.9);
+  if(!chance(p)){hap(-2);return pick(['"Dank je wel, we bellen je." Ze bellen niet.','Je bent te lang, zeggen ze. Of te kort. In elk geval niet goed.','Je hebt de rol bijna, maar een bekende naam gaat met de eer strijken.'])}
+  const t=mkTitle();X.act.push({ty,t,y:year()});hap(5);hist14(`Kreeg een rol in ${ty==='reclame'?'een reclame':`"${t}"`}`);return `Je hebt de rol! ${ty==='reclame'?'Een reclame voor een groot merk.':`"${t}" komt volgend jaar uit.`}`},true,e)}
+function releaseAct(){const X=P14();for(const a of X.act.filter(a=>a.y<year())){const [e,n,f]=ROLE[a.ty];const q=clamp(Math.round((S.sk.kunst||30)*.5+(S.job?S.job.perf:50)*.3+R()*40+(S.fame||0)*.1));const fee=salary()*f*(1+mgrB());
+    if(a.ty==='reclame')L(`📺 Je reclame is overal te zien. Je verdient ${fmt(fee)}.`,'good');else{L(`${e} "${a.t}" komt uit. Recensies: ${star(q)}${q>=80?' · een enorm succes!':q<35?' · een flop.':''} Je verdient ${fmt(fee)}.`,q>=60?'good':q<35?'bad':'sys');hist14(`"${a.t}": ${star(q)}`)}
+    hit(a.ty==='reclame'?50:q,a.ty==='serie'?'serie':'film',`"${a.t}"`,fee)}
+  X.act=X.act.filter(a=>a.y>=year())}
+// ---------- muzikant ----------
+function writeSong(){const X=P14();doAct('Een nummer schrijven',()=>{const m=use('song');if(m<.3)return 'Je inspiratie is op voor dit jaar.';const q=clamp(Math.round((S.sk.muziek||30)*.6+R()*45));X.songs.push(q);sk('muziek',2);hap(2);
+  return q>=75?'Je schrijft een nummer dat meteen blijft hangen. Dit wordt een hit, zeg je tegen jezelf.':q<35?'Het nummer klinkt als iets wat je al eens gehoord hebt. Weg ermee? Nee, het mag op het album.':'Een mooi nummer. Je zet het bij de rest.'},true,'🎼')}
+function album(){const X=P14();if(X.songs.length<8){toast('Je hebt minstens 8 nummers nodig');return}
+  doAct('Album',()=>{const songs=X.songs.splice(0,X.songs.length);const best=Math.max(...songs),avg=songs.reduce((a,b)=>a+b,0)/songs.length;const q=clamp(Math.round(avg*.6+best*.3+(S.fame||0)*.15+R()*10));const t=mkTitle();X.alb++;X.lastAlb=year();
+    const pos=clamp(Math.round(101-q-((S.fame||0)*.4)-mgrB()*40+ri(-8,8)),1,100);const fee=salary()*.4*(1+mgrB())*(q/60);
+    hist14(`Album "${t}": single op ${pos} in ${ccL(CHART)}`);MS(`Bracht het album "${t}" uit`,1);
+    hit(q,'muziek',`het album "${t}"`,fee);
+    return `Je album "${t}" is uit. De single komt binnen op nummer ${pos} in ${ccL(CHART)}${pos<=3?'. Een monsterhit!':pos<=20?'. Een hit!':'.'} Je verdient ${fmt(fee)}.`},true,'💿')}
+function tour(){const X=P14();const cp=S.cpi||1;if(!X.alb){toast('Breng eerst een album uit');return}doAct('Tour',()=>{S.acts.tour=1;X.tour++;const sz=S.fame>=70?'stadions':S.fame>=40?'grote zalen':'kleine clubs';const rev=Math.round(salary()*(S.fame>=70?.8:S.fame>=40?.4:.15)*(1+mgrB()));cash(rev);hea(-ri(2,6));hap(6);S.fame=clamp(S.fame+2);
+  hist14(`Tour langs ${sz}`);return `Je toert een maand langs ${sz}. ${pick(['Het publiek zingt elk woord mee.','Je stem is na drie weken op, maar je gaat door.','Elke avond is uitverkocht.'])} Opbrengst: ${fmt(rev)}.`},true,'🚌')}
+// ---------- model ----------
+function casting(kind){const cp=S.cpi||1;doAct('Casting',()=>{S.acts['cast'+kind]=1;const p=clamp(.2+(S.st.looks-60)/100+(S.fame||0)/300+mgrB()+(S.job?S.job.lvl*.12:0),.05,.9);if(!chance(p)){hap(-2);return pick(['Ze zoeken "iets anders". Niemand weet wat.','Je loopt prima, maar ze kiezen een ander.'])}
+  const fw=pick(['Parijs','Milaan','New York','Londen']);const q=clamp(Math.round(S.st.looks*.6+R()*40+(S.fame||0)*.1));const fee=salary()*(kind==='show'?.15:kind==='cover'?.1:.3)*(1+mgrB());
+  const txt=kind==='show'?`Je loopt op de Fashion Week van ${fw}.`:kind==='cover'?`Je staat op de cover van ${pick(['Vogue','Elle','Harper\'s Bazaar','Glamour'])}.`:`Je bent het gezicht van de nieuwe campagne van ${pick(['een groot parfummerk','een Italiaans modehuis','een sportmerk','een horlogemerk'])}.`;
+  hist14(txt.replace(/^Je /,'').replace(/\.$/,''));hit(q,'mode',kind==='cover'?'je cover':'je werk',fee);return `${txt} Je verdient ${fmt(fee)}.`},true,'📸')}
+// ---------- schrijver ----------
+function writeBook(){const X=P14();doAct('Schrijven',()=>{const m=use('boek');X.book=X.book||{t:mkTitle(),p:0,q:0};const g=Math.round(ri(15,30)*Math.max(.3,m));X.book.p=Math.min(100,X.book.p+g);X.book.q+=Math.round((S.sk.kunst||30)*.3+R()*20);sk('kunst',2);
+  return X.book.p>=100?`Je manuscript "${X.book.t}" is af! Tijd om het uit te geven.`:`Je werkt aan "${X.book.t}" (${X.book.p}% af).`},true,'✍️')}
+function publish(){const X=P14();const b=X.book;if(!b||b.p<100)return;doAct('Uitgeven',()=>{const q=clamp(Math.round(b.q/Math.max(1,b.p/22)+(S.fame||0)*.2+R()*15));const fee=salary()*.5*(q/60)*(1+mgrB());X.book=null;X.books=(X.books||0)+1;
+  const list=q>=70;hist14(`Boek "${b.t}": ${star(q)}${list?' · op '+ccL(BSL):''}`);MS(`Schreef het boek "${b.t}"`,1);hit(q,'boek',`"${b.t}"`,fee);
+  return `"${b.t}" ligt in de winkel. Recensies: ${star(q)}.${list?` Het boek komt op ${ccL(BSL)}!`:''} Je verdient ${fmt(fee)}.`},true,'📚')}
+// ---------- presentator ----------
+const SHOWT=['een quizprogramma','een talkshow','een kookprogramma','een datingshow','een reisprogramma','een spelshow op zaterdagavond'];
+function pitch(){const X=P14();doAct('Pitchen',()=>{S.acts.pitch=1;const p=clamp(.25+(S.sk.sociaal||0)/200+(S.fame||0)/250+mgrB(),.05,.85);if(!chance(p))return 'De zender vindt het idee "interessant". Dat betekent nee.';const ty=pick(SHOWT);X.show={ty,n:`${cap(mkTitle())}`,y:year(),k:0};hist14(`Kreeg ${ty}: "${X.show.n}"`);hap(6);return `Je krijgt ${ty}: "${X.show.n}". De opnames beginnen dit najaar.`},true,'🎙️')}
+function showYear(){const X=P14();const s=X.show;if(!s||s.y>=year())return;if(fameJob()!=='presentator'){X.show=null;return}const q=clamp(Math.round((S.sk.sociaal||30)*.5+R()*45+(S.fame||0)*.15));s.k=q;const kijk=Math.round((q/100)*(S.p.country==='NL'?2:S.p.country==='US'?15:4)*10)/10;
+  L(`📺 "${s.n}" trekt gemiddeld ${kijk.toLocaleString('nl-NL')} miljoen kijkers.${q<30?' De zender stopt ermee.':''}`,q>=60?'good':q<30?'bad':'sys');if(q<30){X.show=null;hist14(`"${s.n}" gestopt`)}hit(q,'tv',`"${s.n}"`,salary()*.2*(1+mgrB()))}
+
+// ---------- 14.2 manager en de rijen ----------
+function f14Rows(el){const id=fameJob();if(!id||inJail())return;const X=P14();const s=sec(el,'Projecten');
+  if(id==='acteur')for(const [k,[e,n,,min]] of Object.entries(ROLE))row(s,{ic:e,t:`Auditie: ${n.toLowerCase()}`,s:S.acts['aud'+k]?'Dit jaar al gedaan':X.act.some(a=>a.ty===k)?'Je hebt al zo\'n rol, komt volgend jaar uit':`Kans hangt af van je uiterlijk, talent en bekendheid`,dis:!!S.acts['aud'+k]||X.act.some(a=>a.ty===k),dots:true,on:()=>audition(k)});
+  if(id==='muzikant'){row(s,{ic:'🎼',t:'Een nummer schrijven',s:`${X.songs.length} nummers klaar voor een album`,on:writeSong});row(s,{ic:'💿',t:'Een album uitbrengen',s:X.songs.length<8?`Nog ${8-X.songs.length} nummers nodig`:`${X.songs.length} nummers · de single gaat naar ${ccL(CHART)}`,dis:X.songs.length<8,dots:true,on:album});
+    row(s,{ic:'🚌',t:'Op tour gaan',s:!X.alb?'Breng eerst een album uit':S.acts.tour?'Dit jaar al gedaan':'Geld en fans, maar zwaar',dis:!X.alb||!!S.acts.tour,on:tour})}
+  if(id==='model')for(const [k,e,n] of [['show','👠','Een modeshow'],['cover','📰','Een tijdschriftcover'],['camp','📸','Een campagne']])row(s,{ic:e,t:`Casting: ${n.toLowerCase()}`,s:S.acts['cast'+k]?'Dit jaar al gedaan':'',dis:!!S.acts['cast'+k],on:()=>casting(k)});
+  if(id==='schrijver'){const b=X.book;row(s,{ic:'✍️',t:b?`Schrijven aan "${b.t}"`:'Een nieuw boek beginnen',s:b?`${b.p}% af`:'Elk jaar een stuk verder',dis:b&&b.p>=100,on:writeBook});if(b&&b.p>=100)row(s,{ic:'📚',t:'Je boek uitgeven',s:`De weg naar ${ccL(BSL)}`,dots:true,on:publish})}
+  if(id==='presentator'){if(X.show)row(s,{ic:'📺',t:`"${X.show.n}"`,s:`${cap(X.show.ty)}${X.show.k?` · laatste seizoen ${star(X.show.k)}`:' · eerste seizoen in de maak'}`});else row(s,{ic:'💡',t:'Een programma pitchen',s:S.acts.pitch?'Dit jaar al gedaan':'Bij een tv-zender',dis:!!S.acts.pitch,dots:true,on:pitch})}
+  row(s,{ic:'🤝',t:X.mgr?'Je manager':'Een manager nemen',s:X.mgr?'Krijgt 15% van je projecten · tik om te ontslaan':'Betere kansen, maar 15% van je inkomsten uit projecten',dots:true,on:()=>{X.mgr=X.mgr?0:1;toast(X.mgr?'Je hebt een manager':'Je manager vertrekt');refreshSheet()}});
+  if(X.hist.length){const h=sec(el,'Je werk tot nu toe');for(const [y,t] of X.hist.slice().reverse())row(h,{ic:'•',t,s:String(y)})}}
+// manager kost 15% van de projectinkomsten (verrekend in hit via mgrB: je krijgt +15% kansen en meer werk, maar betaalt 15%)
+const _hit14=hit;hit=function(q,k,t,fee){const X=P14();if(X.mgr&&fee>0){const c=Math.round(fee*.15);fee-=c}return _hit14(q,k,t,fee)};
+circRow=(f=>function(el,slot){if(slot==='work'&&fameJob()){safe(()=>f14Rows(el));return}return f.apply(this,arguments)})(circRow);
+// fase 10-rijen (jaargesprek e.d.) niet voor bekende beroepen
+f10JobRows=(f=>function(el){if(fameJob()||(S.job&&JOB(S.job.id)&&JOB(S.job.id).pol))return;return f.apply(this,arguments)})(f10JobRows);
+
+// ---------- 14.4 influencers: eigen merk, gecanceld ----------
+function brandRow(el){if(!S.sm||(S.foll||0)<1e5||inJail())return;const s=sec(el,'Je eigen merk');const B=S.brand14;
+  if(B)row(s,{ic:'🏷️',t:B.n,s:`Sinds ${B.y} · ${B.ty}`});else{const k=Math.round(40000*(S.cpi||1));row(s,{ic:'🏷️',t:'Een eigen merk lanceren',s:`${fmt(k)} · je volgers zijn je klanten`,dis:S.money<k,dots:true,on:()=>modal({title:'Een eigen merk',em:'🏷️',cat:'Social media',text:'Wat ga je verkopen?',choices:opts(['Kleding','Make-up','Energiedrankjes','Sportkleding','Een kookboek en pannen'].map(ty=>({t:ty,on:()=>{closeModal();doAct('Eigen merk',()=>{cash(-k);S.brand14={n:`${S.p.first} ${pick(['Studio','Club','Label','& Co'])}`,ty:ty.toLowerCase(),y:year()};MS(`Lanceerde het merk ${S.brand14.n}`,2);hap(6);return `${S.brand14.n} is gelanceerd. De eerste voorraad is binnen een uur uitverkocht!`},true,'🏷️')}})))})})}}
+sheetSocial=(f=>function(el){const r=f.apply(this,arguments);safe(()=>brandRow(el));return r})(sheetSocial);
+function brandYear(){const B=S.brand14;if(!B)return;const rev=Math.round((S.foll||0)*ri(2,12)/100*(S.cpi||1));if(rev<500&&chance(.3)){L(`🏷️ ${B.n} verkoopt niet meer. Je stopt ermee.`,'bad');S.brand14=null;return}cash(rev);if(period&&period.src){period.src['Eigen merk']=(period.src['Eigen merk']||0)+rev;period.inc+=rev}}
+E('f14_cancel',{sys:1,need:()=>(S.foll||0)>=1e5&&!inJail(),t:'Gecanceld',x:()=>`Een oude grap van jou duikt op. Het internet ontploft: #cancel${S.p.first} is trending.`,ch:[
+ ['🙏 Oprecht sorry zeggen',()=>{if(chance(.65)){S.foll=Math.round(S.foll*.95);return 'Je excuses worden geaccepteerd. Na een week is het nieuws alweer vergeten.'}S.foll=Math.round(S.foll*.8);return 'Je excuses vallen verkeerd. Je verliest veel volgers.'}],
+ ['😤 Ontkennen',()=>{if(chance(.3))return 'Je fans staan achter je. Het waait over.';S.foll=Math.round(S.foll*.6);S.fame=clamp(S.fame-8);return 'Het wordt alleen maar erger. Sponsors haken af.'}],
+ ['🤐 Even offline gaan',()=>{S.foll=Math.round(S.foll*.85);hap(2);return 'Je verdwijnt een maand van internet. Rust in je hoofd, minder volgers.'}]]});
+EVMETA.f14_cancel=['Social media','🔥'];
+
+// ---------- jaarlijks ----------
+F8.year.push(()=>{if(!S.alive||inJail())return;const id=fameJob();if(id==='acteur')releaseAct();showYear();brandYear();
+  if((S.foll||0)>=1e5&&chance(.04)&&typeof fmFree==='function'&&fmFree()){fmTake();Q.push({id:'f14_cancel',c:{}})}
+  if(S.p14&&!id){S.p14.act=[];S.p14.show=null}});
+ACH.push(['prijs','In de prijzen','Win een grote prijs voor je werk']);F8.ach.push(add=>{if(S.flags.prijs14)add('prijs')});
+/* ================= FASE 15: sport =================
+   Keuze Thijmen: echte namen waar het kan (clubs, competities, toernooien); spelers blijven verzonnen. Alle 16 sporten.
+   15.1 competitie en eindstand (ploegsporten) of wereldranglijst (individueel); 15.2 grote momenten: finale, kampioenschap,
+   EK/WK en Olympische Spelen, het nationale team; 15.3 zaakwaarnemer; 15.4 na je carrière: trainer, analist of een eigen sportschool;
+   15.5 toernooien met echte namen voor individuele sporten. */
+
+// ---------- echte clubs en competities ----------
+const RCLUB={
+ voetbal:{NL:['Ajax','PSV','Feyenoord','AZ','FC Twente','FC Utrecht','sc Heerenveen','Vitesse'],BE:['Club Brugge','RSC Anderlecht','KRC Genk','Standard Luik','Royal Antwerp','AA Gent'],DE:['Bayern München','Borussia Dortmund','RB Leipzig','Bayer Leverkusen','VfB Stuttgart','Eintracht Frankfurt'],
+  UK:['Manchester United','Liverpool','Arsenal','Chelsea','Manchester City','Tottenham Hotspur','Newcastle United'],US:['LA Galaxy','Inter Miami','Seattle Sounders','Atlanta United','New York Red Bulls'],CA:['Toronto FC','CF Montréal','Vancouver Whitecaps'],
+  FR:['Paris Saint-Germain','Olympique Marseille','Olympique Lyon','AS Monaco','LOSC Lille'],IT:['Juventus','Inter','AC Milan','AS Roma','SSC Napoli','Lazio'],ES:['Real Madrid','FC Barcelona','Atlético Madrid','Sevilla','Real Sociedad','Valencia'],
+  AU:['Sydney FC','Melbourne Victory','Western Sydney Wanderers'],JP:['Urawa Reds','Kashima Antlers','Yokohama F. Marinos','Kawasaki Frontale'],BR:['Flamengo','Corinthians','Palmeiras','São Paulo','Santos'],MX:['Club América','Chivas','Cruz Azul','Tigres UANL'],
+  ZA:['Kaizer Chiefs','Orlando Pirates','Mamelodi Sundowns'],TR:['Galatasaray','Fenerbahçe','Beşiktaş','Trabzonspor'],MA:['Raja Casablanca','Wydad Casablanca','FAR Rabat'],ID:['Persija Jakarta','Persib Bandung','Bali United']},
+ basketbal:{US:['Los Angeles Lakers','Boston Celtics','Golden State Warriors','Chicago Bulls','Miami Heat','New York Knicks'],ES:['Real Madrid','FC Barcelona','Baskonia'],TR:['Fenerbahçe','Anadolu Efes'],CA:['Toronto Raptors']},
+ americanfootball:{US:['Kansas City Chiefs','Dallas Cowboys','Green Bay Packers','New England Patriots','San Francisco 49ers','Philadelphia Eagles']},
+ honkbal:{US:['New York Yankees','Boston Red Sox','Los Angeles Dodgers','Chicago Cubs','San Francisco Giants'],JP:['Yomiuri Giants','Hanshin Tigers','Fukuoka SoftBank Hawks'],MX:['Diablos Rojos del México','Sultanes de Monterrey']},
+ ijshockey:{CA:['Toronto Maple Leafs','Montreal Canadiens','Edmonton Oilers','Vancouver Canucks'],US:['New York Rangers','Chicago Blackhawks','Boston Bruins','Detroit Red Wings']},
+ hockey:{NL:['Amsterdam','Bloemendaal','Kampong','HC Den Bosch','Oranje-Rood','SV Kampong'],BE:['Royal Léopold','KHC Dragons','Waterloo Ducks']},
+ rugby:{UK:['Leicester Tigers','Saracens','Bath Rugby','Harlequins'],FR:['Stade Toulousain','RC Toulon','Stade Français'],ZA:['Stormers','Bulls','Sharks'],AU:['NSW Waratahs','Queensland Reds','Brumbies']},
+ cricket:{UK:['Surrey','Yorkshire','Lancashire'],AU:['New South Wales','Victoria','Western Australia'],ZA:['Titans','Lions','Western Province']},
+ volleybal:{IT:['Sir Safety Perugia','Itas Trentino','Lube Civitanova'],BR:['Minas Tênis Clube','Sada Cruzeiro'],TR:['Halkbank Ankara','Fenerbahçe']},
+ wielrennen:{_:['Visma | Lease a Bike','UAE Team Emirates','INEOS Grenadiers','Soudal Quick-Step','Lidl-Trek','Alpecin-Deceuninck']}};
+const LEAGUE={voetbal:{NL:'de Eredivisie',BE:'de Jupiler Pro League',DE:'de Bundesliga',UK:'de Premier League',US:'de MLS',CA:'de MLS',FR:'de Ligue 1',IT:'de Serie A',ES:'LaLiga',AU:'de A-League',JP:'de J1 League',BR:'de Série A',MX:'de Liga MX',ZA:'de Premiership',TR:'de Süper Lig',MA:'de Botola Pro',ID:'de Liga 1'},
+ basketbal:{US:'de NBA',CA:'de NBA',_:'de nationale competitie'},americanfootball:{US:'de NFL',_:'de nationale competitie'},honkbal:{US:'de MLB',JP:'de NPB',_:'de nationale competitie'},ijshockey:{CA:'de NHL',US:'de NHL',_:'de nationale competitie'},
+ hockey:{NL:'de Hoofdklasse',BE:'de Belgische Hoofdklasse',_:'de nationale competitie'},rugby:{UK:'de Premiership Rugby',FR:'de Top 14',ZA:'de United Rugby Championship',AU:'de Super Rugby',_:'de nationale competitie'},cricket:{_:'het nationale kampioenschap'},volleybal:{IT:'de SuperLega',_:'de nationale competitie'}};
+const TOURN={tennis:['de Australian Open','Roland Garros','Wimbledon','de US Open'],golf:['The Masters','het PGA Championship','de US Open','The Open'],wielrennen:['de Tour de France','de Giro d\'Italia','de Vuelta','Parijs-Roubaix','de Ronde van Vlaanderen'],
+  schaatsen:['het WK allround','het WK afstanden','de wereldbeker'],atletiek:['de Diamond League','het WK atletiek'],zwemmen:['het WK zwemmen','het EK zwemmen'],badminton:['de All England','het WK badminton']};
+const RANKN={tennis:'de wereldranglijst (ATP/WTA)',golf:'de wereldranglijst',wielrennen:'de UCI-ranglijst',schaatsen:'de wereldbekerstand',atletiek:'de wereldranglijst',zwemmen:'de wereldranglijst',badminton:'de BWF-wereldranglijst'};
+proClub=(f=>function(id,cn){const L=RCLUB[id]&&(RCLUB[id][cn]||RCLUB[id]._);return L?pick(L):f.apply(this,arguments)})(proClub);
+const leagueN=(id,cc)=>{const t=LEAGUE[id];return t?(t[cc||S.p.country]||t._||'de nationale competitie'):'de nationale competitie'};
+
+// ---------- 15.1 eindstand en ranglijst ----------
+function sportSeason(){const P=S.sport;if(!P||P.st!=='pro'||inJail())return;const D=SPORTS[P.id],se=P.seasons[P.seasons.length-1];if(!se||se.a!==ageY())return;const perf=se.perf;
+  if(D.team){const n=P.id==='voetbal'?18:16;const pos=clamp(Math.round(n+1-(perf/100)*n*(.6+P.lvl*.15)+ri(-3,3)),1,n);se.pos=pos;P.lg=leagueN(P.id);
+    L(`${D.em} ${P.team} eindigt als ${pos}e in ${P.lg}.${pos===1?' Kampioen!':pos>=n-1?' Degradatie dreigt.':''}`,pos<=3?'good':pos>=n-1?'bad':'sys');
+    if(pos===1){P.titles=(P.titles||0)+1;hap(10);S.fame=clamp(S.fame+4);MS(`Werd kampioen van ${P.lg} met ${P.team}`,2)}}
+  else{const r=clamp(Math.round(300/(1+(perf/20)*(P.lvl+1))+ri(-3,3)),1,500);se.rank=r;P.rank=r;P.bestRank=Math.min(P.bestRank||999,r);
+    const T=TOURN[P.id];let won=null;if(T&&perf>=78&&chance((perf-70)/60+P.lvl*.05)){won=pick(T);P.majors=(P.majors||[]);P.majors.push([year(),won]);hap(10);S.fame=clamp(S.fame+5);MS(`Won ${won}`,2)}
+    L(`${D.em} Je staat ${r}e op ${RANKN[P.id]||'de wereldranglijst'}.${won?` En je wint ${won}!`:''}`,r<=10||won?'good':'sys')}
+  // nationale ploeg
+  if(P.lvl>=2&&perf>=68&&!P.nat){P.nat=1;L(`🇺🇳 Je wordt geselecteerd voor het nationale team van ${COUNTRIES[S.p.country].n}!`.replace('🇺🇳',flag(S.p.country)),'good');MS('Werd international',2);hap(6)}
+  // grote toernooien: hooguit één groot moment per jaar
+  const y=year();const big=P.nat&&(y%2===0)&&typeof fmFree==='function'&&fmFree()&&chance(.7);
+  if(big){fmTake();const ol=(y%4===0&&!['voetbal','americanfootball','honkbal','ijshockey','cricket','rugby'].includes(P.id))||(y%4===2&&['schaatsen','ijshockey'].includes(P.id));
+    Q.push({id:'s15_toernooi',c:{n:ol?'de Olympische Spelen':P.id==='voetbal'?(y%4===2?'het WK':'het EK'):`het WK ${D.n.toLowerCase()}`,ol:ol?1:0}})}
+  else if(D.team&&se.pos&&se.pos<=4&&chance(.35)&&typeof fmFree==='function'&&fmFree()){fmTake();Q.push({id:'s15_finale',c:{t:P.team}})}}
+E('s15_toernooi',{sys:1,need:()=>!!S.sport&&S.sport.st==='pro'&&!inJail(),t:'Een groot toernooi',x:c=>`Je speelt voor ${COUNTRIES[S.p.country].n} op ${c.n}. ${c.ol?'De hele wereld kijkt mee.':'Het hele land staat in het oranje… of welke kleur dan ook.'.replace('in het oranje… of welke kleur dan ook',S.p.country==='NL'?'in het oranje':'achter je')}`,ch:[
+ ['🔥 Alles geven',c=>{const P=S.sport;const p=clamp((P.sk-50)/60+P.lvl*.08,.05,.7);const r=R();if(r<p){hap(15);S.fame=clamp(S.fame+8);MS(`Won goud op ${c.n}`,3);P.gold=(P.gold||0)+1;return `GOUD! Je wint ${c.n}. Je staat op het podium en het volkslied klinkt.`}if(r<p+.2){hap(8);S.fame=clamp(S.fame+4);MS(`Won een medaille op ${c.n}`,2);return `Je wint ${pick(['zilver','brons'])} op ${c.n}!`}if(chance(.12)){P.inj=1;hea(-10);return 'Je geeft alles en blesseert je in de halve finale.'}hap(-3);return `Je strandt in de ${pick(['kwartfinale','halve finale','groepsfase'])}. Volgende keer beter.`}],
+ ['🧠 Slim en tactisch spelen',c=>{const P=S.sport;const p=clamp((P.sk-55)/70+P.lvl*.06,.04,.55);if(chance(p)){hap(14);S.fame=clamp(S.fame+7);MS(`Won goud op ${c.n}`,3);P.gold=(P.gold||0)+1;return `Met een slim plan win je ${c.n}. Goud!`}if(chance(.4)){hap(6);MS(`Won een medaille op ${c.n}`,2);return `Een medaille! ${pick(['Zilver','Brons'])} op ${c.n}.`}return `Je haalt de ${pick(['kwartfinale','halve finale'])}. Netjes.`}]]});
+E('s15_finale',{sys:1,need:()=>!!S.sport&&S.sport.st==='pro'&&!inJail(),t:'De bekerfinale',x:c=>`${c.t} staat in de bekerfinale. Het stadion is uitverkocht. ${SPORTS[S.sport.id].team?'In de laatste minuut krijg jij de kans.':''}`,ch:[
+ ['🎯 Zelf de beslissing zoeken',()=>{const P=S.sport;if(chance(clamp((P.sk-40)/70,.15,.75))){hap(12);S.fame=clamp(S.fame+5);MS(`Won de bekerfinale met ${P.team}`,2);P.cups=(P.cups||0)+1;return SPORTS[P.id].win}hap(-4);return 'Je mist. De tegenstander wint de beker. Je zit nog lang op het veld.'}],
+ ['🤝 De bal afgeven aan een ploeggenoot',()=>{const P=S.sport;if(chance(.5)){hap(9);P.cups=(P.cups||0)+1;MS(`Won de bekerfinale met ${P.team}`,2);return 'Je ploeggenoot scoort na jouw assist. De beker is van jullie!'}hap(-2);return 'Het gaat net mis. Verlies in de laatste minuut.'}]]});
+Object.assign(EVMETA,{s15_toernooi:['Sport','🏅'],s15_finale:['Sport','🏆']});
+
+// ---------- 15.3 zaakwaarnemer ----------
+// ---------- 15.4 na je carrière ----------
+retireSport=(f=>function(){const P=S.sport;const wasPro=P&&P.st==='pro';const r=f.apply(this,arguments);if(wasPro&&ageY()<70&&!inJail())Q.push({id:'s15_nacarriere',c:{}});return r})(retireSport);
+E('s15_nacarriere',{sys:1,need:()=>!inJail(),t:'En nu?',x:'Je sportcarrière is voorbij. Wat ga je doen?',ch:[
+ ['📋 Trainer worden',()=>{if(JOB('coach')){setJob('coach',Math.min(2,(S.sport&&S.sport.lvl)||0));return `Je wordt ${jobTitle().toLowerCase()}. Nu sta jij langs de lijn te schreeuwen.`}return 'Je gaat jonge spelers trainen.'}],
+ ['🎙️ Analist op tv',()=>{if(JOB('presentator')){setJob('presentator',1);S.fame=clamp(S.fame+3);return 'Je schuift elke week aan als analist. Je uitspraken worden memes.'}return 'Je wordt analist op tv.'}],
+ ['🏋️ Een eigen sportschool',()=>{const k=Math.round(60000*(S.cpi||1));if(S.money<k)return 'Daar heb je net niet genoeg geld voor. Misschien later.';cash(-k);if(JOB('pt'))setJob('pt',2);MS('Begon een eigen sportschool',1);return 'Je opent een sportschool met jouw naam op de gevel. De eerste maand staan er rijen.'}],
+ ['🌴 Even helemaal niks',()=>{hap(5);return 'Je slaapt uit, reist en eet eindelijk wat je wilt.'}]]});
+EVMETA.s15_nacarriere=['Sport','🏁'];
+// ---------- in het sportscherm ----------
+sheetSport=(f=>function(el){const r=f.apply(this,arguments);const P=S.sport;if(!P||P.st==='gestopt')return r;const D=SPORTS[P.id];const bits=[];
+  if(P.st==='pro'&&D.team&&P.lg){const se=P.seasons[P.seasons.length-1];if(se&&se.pos)bits.push(`Vorig seizoen: ${se.pos}e in ${P.lg}`)}
+  if(P.rank)bits.push(`Wereldranglijst: ${P.rank}e (beste ${P.bestRank}e)`);if(P.titles)bits.push(`${P.titles}× kampioen`);if(P.cups)bits.push(`${P.cups}× beker`);if(P.gold)bits.push(`${P.gold}× goud`);if(P.nat)bits.push('International');
+  if((P.majors||[]).length)bits.push(`Gewonnen: ${f8List([...new Set(P.majors.map(m=>m[1]))])}`);
+  if(bits.length)card(el,`<h3>🏅 Erelijst</h3><span class="muted">${he(bits.join(' · '))}</span>`);
+  if(P.st==='pro'){const s=sec(el,'Zaakwaarnemer');row(s,{ic:'🤝',t:P.agent?'Je zaakwaarnemer':'Een zaakwaarnemer nemen',s:P.agent?'Regelt betere contracten · tik om te ontslaan':'Onderhandelt een beter contract, ook na zijn deel van 8% houd je meer over',dots:true,on:()=>{P.agent=P.agent?0:1;if(S.job)S.job.mult=Math.round(S.job.mult*(P.agent?1.04:1/1.04)*100)/100;toast(P.agent?'Je hebt een zaakwaarnemer':'Je zaakwaarnemer vertrekt');refreshSheet()}})}
+  return r})(sheetSport);
+F8.year.push(()=>{if(!S.alive)return;sportSeason()});
+ACH.push(['kampioen','Kampioen!','Word landskampioen met je club'],['goud','Goud!','Win goud op een groot toernooi']);
+F8.ach.push(add=>{const P=S.sport;if(P&&P.titles)add('kampioen');if(P&&P.gold)add('goud')});
+/* ================= FASE 16: misdaad en gevangenis =================
+   Keuze Thijmen: milder (meer kans om weg te komen, iets lagere straffen); moord en huurmoord erbij, zoals in BitLife:
+   alleen als spelregel, zonder echte methodes. Doelwit: iedereen uit je leven vanaf 16 jaar (bij familie is de pakkans hoger).
+   16.1 opsporing en verhoor; 16.2 rechtszaak met schikking; 16.3 hacken, afpersing, heling; 16.4 een nieuwe start; 16.5 slachtoffer: aangifte doen */
+
+// ---------- milder ----------
+const CRIMEMILD=.8;
+jail=(f=>function(m,w){if(!/moord/i.test(w||''))m=Math.max(1,Math.round(m*.85));return f.call(this,m,w)})(jail);
+
+// ---------- 16.3 meer misdrijven ----------
+CRIMES.push({id:'hacken',t:'Hacken',s:'Inbreken in computersystemen (Techniek 30+)',a:16,p:.32,gain:[2000,90000],jail:[10,40],heat:14,c:()=>S.sk.tech>=30},
+  {id:'afpersing',t:'Afpersing',s:'Iemand onder druk zetten',a:18,p:.42,gain:[3000,60000],jail:[12,48],heat:20},
+  {id:'heling',t:'Heling',s:'Gestolen spullen doorverkopen',a:16,p:.3,gain:[500,15000],jail:[3,18],heat:9});
+Object.assign(CRIMEPLAN,{hacken:[['💻','Een webwinkel hacken',1,1],['🏦','Een bank proberen te hacken',1.5,3],['🎣','Mensen nepmails sturen',.8,.7]],
+  afpersing:[['📸','Met gênante foto\'s dreigen',1,1],['🏪','Een winkeleigenaar onder druk zetten',1.2,1.4],['🕴️','Een rijke zakenman benaderen',1.5,2.8]],
+  heling:[['📱','Telefoons doorverkopen',1,1],['🚲','Fietsen op een markt',.8,.6],['💎','Sieraden aan een opkoper',1.3,2.2]]});
+Object.assign(CRMG,{hacken:'cijfers',heling:'straat'});
+
+// na een keuze haalt processQ het huidige item weg: het volgende item moet dus op plek 2
+const qNext=it=>Q.splice(1,0,it);
+// ---------- 16.1 verhoor (voor elke rechtszaak) ----------
+E('c16_verhoor',{sys:1,t:'Het verhoor',x:c=>`Je zit in een kale verhoorkamer. Twee rechercheurs willen weten wat er gebeurd is: ${c.w.toLowerCase()}.`,ch:[
+ ['🤐 Zwijgen',c=>{if(chance(.22)){S.crim.heat=clamp((S.crim.heat||0)-10);return 'Je zegt geen woord. Na 48 uur moeten ze je laten gaan: te weinig bewijs.'}qNext({id:'s_trial',c:Object.assign({},c,{vh:1})});return 'Je zegt geen woord. De aanklager zet de zaak toch door.'}],
+ ['🗣️ Bekennen',c=>{kar(2);qNext({id:'s_trial',c:Object.assign({},c,{vh:1,m:Math.max(1,Math.round(c.m*.7))})});return 'Je vertelt alles. De rechercheurs knikken. Dat scheelt straks in je straf.'}],
+ ['🤥 Een verhaal verzinnen',c=>{if(chance(.4)){S.crim.heat=clamp((S.crim.heat||0)+5);return 'Je verhaal klopt precies. Ze moeten je laten gaan.'}qNext({id:'s_trial',c:Object.assign({},c,{vh:1,m:Math.round(c.m*1.25)})});return 'Je verhaal rammelt aan alle kanten. Dat maakt het erger.'}],
+ ['🧑‍⚖️ Eerst je advocaat bellen',c=>{const k=Math.round(1500*(S.cpi||1));cash(-Math.min(k,Math.max(0,S.money)));if(chance(.3))return 'Je advocaat vindt een vormfout. Je staat binnen een uur weer buiten.';qNext({id:'s_trial',c:Object.assign({},c,{vh:1,m:Math.max(1,Math.round(c.m*.9))})});return 'Je advocaat zit naast je. De zaak gaat door, maar je staat sterker.'}]]});
+EVMETA.c16_verhoor=['Misdaad','🕵️'];
+processQ=(f=>function(){if(Q.length&&Q[0].id==='s_trial'&&!(Q[0].c&&Q[0].c.vh)&&!inJail()){const q=Q.shift();qNext({id:'c16_verhoor',c:Object.assign({},q.c||{})})}return f.apply(this,arguments)})(processQ);
+
+// ---------- 16.2 rechtszaak: schikking, jury ----------
+if(EV.s_trial){const x0=EV.s_trial.x;EV.s_trial.x=c=>(typeof x0==='function'?x0(c):x0)+(S.p.country==='US'?' Een jury van twaalf burgers beslist.':'');
+  EV.s_trial.ch.push(['🤝 Een schikking voorstellen',c=>{const k=Math.round((2500+c.m*900)*(S.cpi||1));cash(-Math.min(k,Math.max(0,S.money)));if(chance(.55)){S.crim.rec.push({w:c.w+' (schikking)',a:ageY()});hap(-2);return `De aanklager gaat akkoord met een schikking van ${fmt(k)}. Geen gevangenis, wel een aantekening.`}jail(c.m,c.w);return `De aanklager wil niet schikken. Je krijgt ${c.m} maanden.`},c=>c.m<=36&&!/moord/i.test(c.w)]);}
+
+// ---------- moord en huurmoord (spelregel, geen details) ----------
+const killable=()=>living().filter(p=>isHuman(p)&&!p.gone&&pAge(p)>=16&&!(typeof abroad==='function'&&abroad(p))&&!['influencer','celgenoot'].includes(p.role));
+const FAMR=['moeder','vader','partner','kind','broer','zus','opa','oma','kleinkind','schoonzoon','schoondochter'];
+function murderMenu(){if(ageY()<18||inJail())return;const ps=killable().sort((a,b)=>a.rel-b.rel).slice(0,12);if(!ps.length){toast('Er is niemand');return}
+  modal({title:'Iemand uit de weg ruimen',em:'🔪',cat:'Misdaad',text:'Wie? Dit kun je niet terugdraaien.',choices:opts(ps.map(p=>({t:p.first+' '+(p.last||''),ic:faceOf(p),s:`${roleLabel(p)} · relatie ${Math.round(p.rel)}%`,on:()=>{closeModal();murderHow(p)}})))})}
+function murderHow(p){const k=Math.round(ri(20,60)*1000*(S.cpi||1));
+  modal({title:'Hoe?',em:'🔪',cat:p.first,person:p,text:'Je denkt na over een plan.',choices:opts([
+    {t:'🧩 Een plan waarbij het op een ongeluk lijkt',on:()=>{closeModal();murderGo(p,'plan',0)}},
+    {t:'😤 Het zelf doen, in een opwelling',on:()=>{closeModal();murderGo(p,'zelf',0)}},
+    {t:`🕶️ Een huurmoordenaar inhuren (${fmt(k)})`,dis:S.money<k,on:()=>{closeModal();murderGo(p,'huur',k)}}])})}
+function murderGo(p,how,k){doAct(how==='huur'?'Huurmoord':'Moord',()=>{if(k)cash(-k);const fam=FAMR.includes(p.role);kar(-40);
+  const ok=chance(how==='huur'?.7:how==='plan'?.6:.5);
+  if(!ok){p.role=p.role==='partner'?'ex':p.role;if(p.role==='ex'){p.st='';p.live=0}p.rel=0;if(['vriend','ex'].includes(p.role))p.role='vijand';hap(-6);
+    if(chance(.55)){Q.push({id:'s_trial',c:{w:'poging tot moord',m:ri(60,120)}});return `Het mislukt. ${p.first} overleeft en gaat naar de politie.`}return `Het mislukt. ${p.first} overleeft, maar weet niet dat jij erachter zat. Voorlopig.`}
+  p.alive=false;p.died=ageY();p.murd=1;hap(-12);S.crim.heat=clamp((S.crim.heat||0)+(how==='huur'?30:55));S.flags.moord=(S.flags.moord||0)+1;
+  S.crim.moord=S.crim.moord||[];S.crim.moord.push({w:'moord op '+p.first,a:ageY(),fam:fam?1:0,h:how});safe(()=>onDeath(p));
+  return how==='huur'?`De klus wordt geklaard. Niemand kan jou ermee in verband brengen, hoop je.`:`Het is gebeurd. ${p.first} leeft niet meer. Je slaapt slecht.`},true,'🕯️')}
+// de recherche onderzoekt een moord: bij familie of een opwelling sneller
+function murderYear(){const M=S.crim&&S.crim.moord;if(!M||!M.length||inJail())return;for(const o of M.slice()){const yrs=ageY()-o.a;if(yrs>30){M.splice(M.indexOf(o),1);continue}
+  const p=(o.fam?.22:.08)+(o.h==='zelf'?.12:o.h==='huur'?-.03:0)+(S.crim.heat||0)/500-yrs*.006;if(chance(Math.max(.02,p))){M.splice(M.indexOf(o),1);Q.push({id:'c16_moordzaak',c:{w:o.w,m:(S.flags.moord||1)>=2?600:ri(144,264)}});break}}}
+E('c16_moordzaak',{sys:1,t:'De recherche',x:c=>`Twee rechercheurs staan voor je deur. Ze hebben nieuw bewijs in de zaak: ${c.w}.`,ch:[
+ ['🚔 Meegaan',c=>{qNext({id:'s_trial',c:{w:c.w,m:c.m,vh:0}});return 'Je gaat mee naar het bureau.'}],
+ ['🏃 Vluchten',c=>{if(chance(.25)){S.crim.wanted=true;S.crim.heat=100;return 'Je ontsnapt via de tuin. Je bent nu voortvluchtig.'}qNext({id:'s_trial',c:{w:c.w,m:Math.round(c.m*1.2),vh:0}});return 'Je komt niet ver.'}]]});
+EVMETA.c16_moordzaak=['Misdaad','🕵️'];
+
+// ---------- 16.4 een nieuwe start ----------
+function newStart(){doAct('Een nieuwe start',()=>{S.flags.ns16=ageY();S.crim.heat=0;kar(10);hap(4);if(S.crim.org&&S.crim.org.type==='bende')S.crim.org=null;
+  return pick(['Je verbreekt het contact met je oude vrienden uit het milieu en zoekt hulp om het anders te gaan doen.','Je schrijft je in voor een opleiding en begint met een schone lei.','Je vertelt je familie eerlijk over je verleden. Het lucht op.'])},true,'🌱')}
+// ---------- 16.5 slachtoffer ----------
+E('c16_slachtoffer',{a:[16,90],w:.35,cd:12,t:'Bestolen',x:()=>pick(['Er is ingebroken in je schuur. Je fiets en gereedschap zijn weg.','Iemand heeft met jouw gegevens online spullen gekocht.','Je portemonnee is gerold in de trein.']),ch:[
+ ['📝 Aangifte doen',()=>{if(chance(.35)){const k=Math.round(ri(2,8)*100*(S.cpi||1));cash(k);hap(3);return `De dader wordt gepakt. Je krijgt ${fmt(k)} schadevergoeding.`}return 'Je doet aangifte. Je hoort er nooit meer iets van.'}],
+ ['🔎 Zelf speuren',()=>{if(chance(.2)){hap(4);return 'Je vindt je spullen terug op een tweedehandssite. De politie haalt ze op.'}hap(-1);return 'Je speurt dagenlang. Niks.'}],
+ ['🤷 Het laten gaan',()=>{hap(-2);return 'Je baalt, maar gaat door met je leven.'}]]});
+EVMETA.c16_slachtoffer=['Misdaad','🧾'];
+
+// ---------- in het misdaadscherm ----------
+sheetCrime=(f=>function(el){const r=f.apply(this,arguments);const a=ageY();const s=sec(el,'Zwaar');
+  row(s,{ic:'🔪',t:'Iemand uit de weg ruimen',s:a<18?'Vanaf 18 jaar':'Moord of huurmoord · met zware gevolgen als je gepakt wordt',dis:a<18||inJail(),dots:true,on:murderMenu});
+  if((S.crim.rec.length||S.flags.moord)&&!inJail())row(s,{ic:'🌱',t:'Een nieuwe start maken',s:S.flags.ns16&&ageY()-S.flags.ns16<5?'Je bent net opnieuw begonnen':'Stoppen met het criminele leven',dis:!!(S.flags.ns16&&ageY()-S.flags.ns16<5),dots:true,on:newStart});return r})(sheetCrime);
+F8.year.push(()=>{if(!S.alive)return;murderYear()});
+ACH.push(['nieuwestart','Een nieuwe start','Stop met het criminele leven']);F8.ach.push(add=>{if(S.flags.ns16)add('nieuwestart')});
 /* ================= MEETSCHERM (verbeterplan 2.1) =================
    Verborgen: tik 5 keer op het versienummer onderaan het hoofdmenu.
    Toont schermmaten en hulplijnen. De proefstanden A-E zijn weg: stand B staat sinds 11-11-2026 vast in src/pwa/fix.css.
