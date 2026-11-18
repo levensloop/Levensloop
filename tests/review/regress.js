@@ -402,6 +402,20 @@ F8T('21.4','sportwedstrijd per sport (penalty\'s voor voetbal), één keer per j
   return {ok:pen&&played&&!!S.acts.wed21,msg:`penalty-spel ${pen}, gespeeld ${played}, tennis automatisch ${!!S.acts.wed21}`}});
 F8T('21.5','examens: meer vragen per vak, moeilijkere op vwo','NL','',async()=>{S.m=16*12;S.edu.stage='middel';S.edu.lvl='vmbo';const v=quizPool('Biologie').length;S.edu.lvl='vwo';const w=quizPool('Biologie').length;const n=quizPool('Nederlands').length;
   return {ok:v>=11&&w>v&&n>=11,msg:`Biologie vmbo ${v}, vwo ${w}; Nederlands ${n}`}});
+F8T('22.1','huisdier: gezondheid en band, verwaarlozen maakt zwakker, voer en borstelen helpen','NL','',async()=>{S.m=30*12;S.money=5000;const d=addPet('hond','Rex',{br:'Labrador',k:1200,life:[10,13]});d.born=S.m-3*12;d.hl=80;S.lastActs={};f8Year(30);const neg=d.hl;
+  openSheet(d.first,el=>sheetPerson(el,d),true);await sl(40);const txt=document.querySelector('#sheet').textContent;closeSheet();d.cy=year();const before=d.hl;S.lastActs={['bors'+d.id]:1};d.cy=year()-1;f8Year(31);
+  return {ok:neg<80&&/Gezondheid/.test(txt)&&/Voer kopen/.test(txt)&&/Borstelen/.test(txt)&&d.hl>=before,msg:`verwaarloosd: 80 → ${neg}; verzorgd: ${before} → ${d.hl}; karakter ${d.pkt}`}});
+F8T('22.2','trucjes leren en een show winnen','NL','',async()=>{S.m=25*12;S.money=5000;const d=addPet('hond','Rex',{br:'Border collie',k:1000,life:[12,15]});d.born=S.m-3*12;d.pkt='Slim';d.rel=95;d.hl=95;
+  for(let i=0;i<30&&(d.tr22||[]).length<8;i++){S.acts={};openSheet(d.first,el=>sheetPerson(el,d),true);await sl(20);const b=[...document.querySelectorAll('#sheet .mrow')].find(x=>/trucje leren/.test(x.textContent));b&&!b.disabled&&b.click();await sl(30);closeModal();closeSheet()}
+  let won=0;for(let i=0;i<6;i++){S.acts={};petShow(d,SHOW.hond,45);await sl(30);closeModal()}won=(d.cups||[]).length;
+  return {ok:(d.tr22||[]).length>=5&&won>=1,msg:`trucjes: ${(d.tr22||[]).join(', ')}; bekers ${won}`}});
+F8T('22.3','meer soorten: cavia, vissen, fret, rat, kip, geit, ezel; kip alleen met eigen huis','NL','',async()=>{S.m=30*12;S.home={k:'huur',name:'Appartement',rent:16500};const el=document.createElement('div');sheetPets(el);const t=el.textContent;
+  let blocked=false;const tt=toast;toast=m=>{if(/tuin/.test(m))blocked=true};petBreed('kip');toast=tt;closeModal();
+  return {ok:['Cavia','Vissen','Fret','Rat','Kip','Geit','Ezel'].every(x=>t.includes(x))&&blocked,msg:`winkel heeft nieuwe soorten ${['Cavia','Vissen','Kip','Ezel'].map(x=>x+':'+t.includes(x)).join(' ')}; kip zonder tuin geblokkeerd ${blocked}`}});
+F8T('22.4','jongen, oud worden en afscheid','NL','',async()=>{S.m=30*12;S.money=5000;const k=addPet('kat','Mimi',{br:'Asielkat',k:90,life:[13,19]});k.born=S.m-3*12;k.pg='v';const n0=living('huisdier').length;
+  const c={id:k.id};EV.p22_nest.x(c);const t1=EV.p22_nest.ch[0][1](c);const kept=living('huisdier').length===n0+1;
+  k.born=S.m-(k.life-1)*12;k.old22=0;Q.length=0;f8Year(30);const old=Q.some(q=>q.id==='p22_oud');Q.length=0;k.alive=false;k.died=ageY();f8Year(30);const afs=Q.some(q=>q.id==='p22_afscheid');const t3=EV.p22_afscheid.ch[1][1]({id:k.id});Q.length=0;
+  return {ok:kept&&old&&afs&&!!t3,msg:`nestje: ${t1.slice(0,40)}; oud-moment ${old}; afscheid ${afs}: ${t3.slice(0,40)}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 
