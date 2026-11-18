@@ -6,8 +6,8 @@
 
 // ---------- 11.1 ziektes ----------
 {const i=ILLO.indexOf('Alzheimer');if(i>=0)ILLO.splice(i,1)}
-Object.assign(ILLS,{'een oorontsteking':[1,0,'huisarts',.8],'eczeem':[1,0,'dermatoloog',.5,1],'hooikoorts':[1,0,'huisarts',.4,1],'een gebroken pols':[2,0,'orthopeed',.85],
-  'reuma':[3,0,'internist',.2,1],'glaucoom':[2,0,'oogarts',.3,1],'gehoorverlies':[2,0,'huisarts',.2,1],'jicht':[2,0,'internist',.6],'galstenen':[3,0,'internist',.75],
+Object.assign(ILLS,{'een oorontsteking':[1,0,'huisarts',.8],'eczeem':[1,0,'dermatoloog',.5],'hooikoorts':[1,0,'huisarts',.5],'een gebroken pols':[2,0,'orthopeed',.85],
+  'reuma':[3,0,'internist',.35],'glaucoom':[2,0,'oogarts',.5],'gehoorverlies':[2,0,'huisarts',.4],'jicht':[2,0,'internist',.6],'galstenen':[3,0,'internist',.75],
   'slapeloosheid':[2,0,'huisarts',.5,0,1],'een blaasontsteking':[1,0,'huisarts',.9],'spataderen':[1,0,'dermatoloog',.7]});
 for(const n of ['een oorontsteking','eczeem','hooikoorts','een gebroken pols','slapeloosheid','een blaasontsteking'])if(!ILLY.includes(n))ILLY.push(n);
 for(const n of ['reuma','glaucoom','gehoorverlies','jicht','galstenen','spataderen'])if(!ILLO.includes(n))ILLO.push(n);
