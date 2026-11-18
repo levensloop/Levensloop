@@ -16,6 +16,7 @@ Lees eerst `CLAUDE.md` en de werkwijze in `VERBETERPLAN.md` (die blijft gelden: 
 | 14 Roem | Gebouwd: `fame14.js`. |
 | 15 Sport | Gebouwd: `sport15.js`. |
 | 16 Misdaad | Gebouwd: `crime16.js` (moord: doelwit vanaf 16 jaar). |
+| Meting na fase 16 | 136 passieve levens: pop-ups 3,0 → 2,1 schermen per jaar; sterfleeftijd mediaan 80 → 82 (11% vóór 60); gezondheid 40/55/65: 81/72/59; geluk 40/55/65: 69/65/62 → 76/70/65 (hoger: minder kleine tegenslag-pop-ups, betere banden). `FULL=1 run.sh` groen, 0 JS-fouten, harvest UK/US/BE/ES/MA 0 treffers. Niet online gezet (wacht op Thijmen). |
 
 ## Wat Thijmen al koos (18 nov 2026)
 
