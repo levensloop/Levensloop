@@ -386,6 +386,22 @@ F8T('20.4','buren: schutting, oppassen, buurtapp','NL','',async()=>{S.m=40*12;co
 F8T('20.5','studentenhuis: hospiteeravond bij intrek, huisoudste na twee jaar','NL','',async()=>{S.m=19*12;S.edu.cur={id:'rechten',ty:'wo'};Q.length=0;setRent('Studentenkamer',6500);const hospi=Q.some(q=>q.id==='st20_hospi');Q.length=0;
   S.sth.y=year()-3;let old=false;for(let i=0;i<10&&!old;i++){f8Year(21);old=Q.some(q=>q.id==='st20_oudste')}Q.length=0;const t=EV.st20_afwas.ch[0][1]();
   return {ok:hospi&&old&&!!t,msg:`hospiteeravond ${hospi}, huisoudste ${old}; ${t.slice(0,50)}`}});
+F8T('21.1','minigames aan/uit: uit geeft meteen een uitslag op basis van vaardigheid','NL','',async()=>{S.m=20*12;S.settings.mg=0;let got=[];
+  mgQuiz('x',[['a',['1','2']],['b',['1','2']]],sc=>got.push(['quiz',sc]));mgDodge({lives:3},(h,t)=>got.push(['dodge',h,t]));mgTap('t','d',sc=>got.push(['tap',sc]));mgAim({n:3},(p,m)=>got.push(['aim',p,m]));mgTiming('t','d',4,h=>got.push(['time',h]));mgPenalty({n:5},(g,n)=>got.push(['pen',g,n]));
+  await sl(50);const noModal=!document.querySelector('#modal:not([hidden]) .mg');S.settings.mg=1;mgQuiz('x',[['a',['1','2']]],()=>{});await sl(30);const shown=!!document.querySelector('#modal:not([hidden])');closeModal();
+  const el=document.createElement('div');sheetMain(el);const row=[...el.querySelectorAll('.mrow')].some(b=>/Minigames/.test(b.textContent));
+  return {ok:got.length===6&&noModal&&shown&&row,msg:`${got.map(g=>g.join(':')).join(' ')} · aan toont spel ${shown} · menu-rij ${row}`}});
+F8T('21.2','rijexamen: eerst theorie, dan praktijk met inparkeren; herkansen goedkoper','NL','',async()=>{S.m=18*12;S.money=10000;S.lic=false;S.flags.rijles=0;S.flags.theorie=0;S.settings.mg=1;
+  drivingExam();await sl(40);const theory=/Theorie/.test(document.querySelector('#modal').textContent);closeModal();const paid1=10000-S.money;S.settings.mg=0;S.st.smarts=100;S.sk.sport=100;S.st.health=100;
+  let n=0;while(!S.lic&&n<12){drivingExam();await sl(500);closeModal();n++}const paid=10000-S.money;S.settings.mg=1;
+  return {ok:theory&&paid1>=2600&&S.lic&&S.flags.theorie===1,msg:`theorie eerst ${theory}; eerste keer ${paid1}, totaal ${paid} na ${n} pogingen; rijbewijs ${S.lic}`}});
+F8T('21.3','sollicitatiegesprek: vier vragen met slotvraag','NL','',async()=>{S.settings.mg=1;let res=null;const qs=[];mgInterview('Test',sc=>res=sc,'kantoor');for(let i=0;i<6&&res==null;i++){await sl(40);const m=document.querySelector('#modal:not([hidden])');if(!m)break;qs.push(m.querySelector('h3,.mt,.title')?.textContent||'');m.querySelector('.btn').click()}await sl(60);
+  return {ok:res!=null&&qs.length===4&&/vragen voor ons/.test(qs[3]||document.body.textContent),msg:`${qs.length} vragen, uitslag ${res}; laatste: ${qs[3]}`}});
+F8T('21.4','sportwedstrijd per sport (penalty\'s voor voetbal), één keer per jaar','NL','',async()=>{S.m=18*12;S.sport={id:'voetbal',sk:50,st:'club',team:'Test',lvl:0};S.acts.wed21=0;S.settings.mg=1;sportMatch();await sl(40);const pen=/Schot 1 van 5/.test(document.querySelector('#modal').textContent);
+  for(let i=0;i<5;i++){const b=document.querySelector('#modal .btn');b&&b.click();await sl(300)}await sl(200);closeModal();const played=!!S.acts.wed21;S.acts.wed21=0;S.sport.id='tennis';S.settings.mg=0;sportMatch();await sl(150);closeModal();S.settings.mg=1;
+  return {ok:pen&&played&&!!S.acts.wed21,msg:`penalty-spel ${pen}, gespeeld ${played}, tennis automatisch ${!!S.acts.wed21}`}});
+F8T('21.5','examens: meer vragen per vak, moeilijkere op vwo','NL','',async()=>{S.m=16*12;S.edu.stage='middel';S.edu.lvl='vmbo';const v=quizPool('Biologie').length;S.edu.lvl='vwo';const w=quizPool('Biologie').length;const n=quizPool('Nederlands').length;
+  return {ok:v>=11&&w>v&&n>=11,msg:`Biologie vmbo ${v}, vwo ${w}; Nederlands ${n}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 
