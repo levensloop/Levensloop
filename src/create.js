@@ -48,7 +48,7 @@ function cTalent(){modal({title:'Speciaal talent',em:'🍼',cat:'Nieuw leven',te
 function cLook(){let tab='skin';const ap=Object.assign({},CF.ap);
   const tabs=[['skin','Huid'],['eye','Ogen'],['hair','Kapsel'],['hc','Haarkleur']].concat(CF.g==='v'?[]:[['beard','Baard']]);
   const paint=()=>{const opt=tab==='skin'?SKINS.map((c,i)=>[i,`<i style="background:${c}"></i>`,SKINN[i]]):tab==='eye'?EYEC.map((c,i)=>[i,`<i style="background:${c}"></i>`,EYECN[i]]):tab==='hc'?HAIRC.map((c,i)=>[i,`<i style="background:${c}"></i>`,HAIRCN[i]]):
-      (tab==='hair'?HAIRN:BEARDN).map((n,i)=>[i,avatarSvg(Object.assign({},ap,{[tab]:i,hair:tab==='hair'?i:ap.hair,beard:tab==='beard'?i:0}),25,CF.g),n]);
+      (tab==='hair'?(CF.g==='v'?FHAIR.concat(MHAIR):MHAIR.concat(FHAIR)):BEARDN.map((_,i)=>i)).map(i=>{const n=(tab==='hair'?HAIRN:BEARDN)[i];return [i,avatarSvg(Object.assign({},ap,{[tab]:i,hair:tab==='hair'?i:ap.hair,beard:tab==='beard'?i:0}),25,CF.g),n]});
     openRaw(`<div class="mhead"><small>Nieuw leven</small><h3>🍼 Uiterlijk</h3></div><div class="mbody lookb"><div class="ltabs">${tabs.map(([k,t])=>`<button data-t="${k}" aria-pressed="${k===tab}">${t}</button>`).join('')}</div>
       <div class="lprev">${avatarSvg(ap,25,CF.g)}</div><p class="lname">${he([SKINN,EYECN,HAIRN,HAIRCN,BEARDN][['skin','eye','hair','hc','beard'].indexOf(tab)][ap[tab]]||'')}</p>
       <div class="lopts ${['hair','beard'].includes(tab)?'shapes':''}">${opt.map(([i,h,n])=>`<button data-i="${i}" aria-pressed="${ap[tab]===i}" aria-label="${he(n)}">${h}</button>`).join('')}</div>
