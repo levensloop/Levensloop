@@ -696,7 +696,7 @@ html body #app{height:100%;box-sizing:border-box;padding-top:env(safe-area-inset
 <div id="toast" role="status"></div>
 <script>
 "use strict";
-const APP_VERSION='20261118-1959';
+const APP_VERSION='20261118-2045';
 document.documentElement.lang='nl';
 /* ================= DATA ================= */
 const NAMES={
@@ -3598,7 +3598,7 @@ function sheetMain(el){
   row(s,{ic:'⏱️',t:'Tempo',s:S.settings.mode==='year'?'Per jaar (tik om te wisselen)':'Per maand (tik om te wisselen)',dots:true,on:()=>{S.settings.mode=S.settings.mode==='year'?'month':'year';render();refreshSheet();saveLife();toast(S.settings.mode==='year'?'Je speelt nu per jaar':'Je speelt nu per maand')}});
   row(s,{ic:'👨‍👩‍👧‍👦',t:'Grote familie',s:(S.settings.bigFam?'Aan':'Uit')+' · grootouders, ooms, tantes, neven, nichten, schoonfamilie (tik om te wisselen)',dots:true,on:()=>{S.settings.bigFam=S.settings.bigFam?0:1;if(S.settings.bigFam)ensureBigFam();refreshSheet();saveLife();toast(S.settings.bigFam?'Grote familie staat aan':'Grote familie staat uit')}});
   row(s,{ic:'⭐',t:'Favoriete activiteiten',s:`${favs().length} van 5 gekozen · deze staan bovenaan bij Activiteiten`,on:()=>openSheet('Favorieten',sheetFavs,true)});
-  row(s,{ic:'🗳️',t:'Stemmen',s:{ask:'Elke keer vragen',same:'Altijd dezelfde partij',none:'Niet stemmen'}[voteMode()]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.vote={ask:'same',same:'none',none:'ask'}[voteMode()];refreshSheet();saveLife()}});
+  row(s,{ic:'🗳️',t:'Stemmen',s:voteLabel(),dots:true,on:()=>voteMenu(false)});
   row(s,{ic:'🌀',t:'Chaos',s:['Rustig','Normaal','Chaos'][S.settings.chaos]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.chaos=(S.settings.chaos+1)%3;refreshSheet();saveLife()}});
   if(typeof godMenuRow==='function')godMenuRow(s);
   row(s,{ic:'🌪️',t:'Tijdmachine',s:'Spoel 1, 3, 5 of 10 jaar terug',on:()=>openSheet('Tijdmachine',sheetRewind,true)});
@@ -6064,11 +6064,12 @@ function studySubject(sub){const E=S.edu;const apply=sc=>doAct(sub,()=>{use('ler
   if(sub==='Rekenen'||sub==='Wiskunde')mgExam(apply);else if(sub==='Wiskunde A'||sub==='Wiskunde B')mgQuiz(sub,[mathQ(),mathQ(),mathQ(),mathQ()],apply);else if(sub==='Gym')mgTap('Gymles','Tik zo snel als je kunt tijdens de bleeptest.',sc=>apply(sc));else mgQuiz(sub,pickQs(sub,4),apply)}
 
 /* ---------- eindtoets en profielkeuze ---------- */
-function setAdvice(score){const E=S.edu;const sc=S.st.smarts*.4+E.perf*.3+(score-500)*1.2;E.lvl=sc>=62?'vwo':sc>=45?'havo':'vmbo';E.stage='middel';E.yrs=0;E.len={vmbo:4,havo:5,vwo:6}[E.lvl];E.gr={};E.tch={};E.eind=score;
+// advies: vooral je cijfers (zoals in het echt); de eindtoets kan het één niveau omhoog of omlaag duwen
+function setAdvice(score){const E=S.edu;const g=gradeAvg();let l=g>=7.3?2:g>=6.3?1:0;if(score>=538&&l<2)l++;else if(score<=508&&l>0&&g<7.8)l--;E.lvl=['vmbo','havo','vwo'][l];E.stage='middel';E.yrs=0;E.len={vmbo:4,havo:5,vwo:6}[E.lvl];E.gr={};E.tch={};E.eind=score;
   L(`Je eindtoetsscore is ${score}. Je basisschooladvies is ${lvlN(E.lvl)}. Je gaat naar de middelbare school.`,'big');MS(`Kreeg ${lvlN(E.lvl)}-advies (eindtoets ${score})`,0);return `Score: ${score}. Je advies wordt ${lvlN(E.lvl)}!`}
 E('sc_eindtoets',{sys:1,need:()=>S.edu.stage==='basis',t:'De eindtoets',x:'Je zit in groep 8. Vandaag is de eindtoets: rekenen, taal en wereldoriëntatie. De uitslag telt mee voor je advies.',ch:[
- ['📝 Mijn best doen 🎮',()=>({go:()=>{const qs=[...pickQs('Taal',2),...pickQs('Wereldoriëntatie',2),mathQ()];mgQuiz('Eindtoets',qs,sc=>{const score=Math.round(clamp(501+sc*30+(S.st.smarts-50)*.25+ri(-3,3),501,550));const t=setAdvice(score);result('Eindtoets',t,'',processQ,{cat:'School',em:'📝'})})}})],
- ['😴 Gewoon invullen',()=>{const score=Math.round(clamp(510+(S.st.smarts-50)*.45+ri(-6,6),501,550));return setAdvice(score)}]]});
+ ['📝 Mijn best doen 🎮',()=>({go:()=>{const qs=[...pickQs('Taal',2),...pickQs('Wereldoriëntatie',2),mathQ()];mgQuiz('Eindtoets',qs,sc=>{const score=Math.round(clamp(501+sc*44+(S.st.smarts-50)*.04+ri(-1,2),501,550));const t=setAdvice(score);result('Eindtoets',t,'',processQ,{cat:'School',em:'📝'})})}})],
+ ['😴 Gewoon invullen',()=>{const score=Math.round(clamp(501+(gradeAvg()-1)/9*36+(S.st.smarts-50)*.12+ri(-5,5),501,550));return setAdvice(score)}]]});
 E('sc_profiel',{sys:1,need:()=>S.edu.stage==='middel'&&!S.edu.prof&&S.edu.lvl!=='vmbo',t:'Profiel kiezen',x:()=>{const g=S.edu.gr;return `Je gaat naar de bovenbouw en moet een profiel kiezen. Je cijfers: wiskunde ${nl1(g.Wiskunde??6)}, biologie ${nl1(g.Biologie??6)}, geschiedenis ${nl1(g.Geschiedenis??6)}. Je profiel bepaalt welke studies je straks kunt doen.`},
   ch:Object.entries(PROF).map(([k,[n,ic,subs]])=>[`${ic} ${n}`,()=>{S.edu.prof=k;ensureGrades();MS(`Koos het profiel ${n}`,0);return `Je kiest ${n}: ${subs.join(', ').toLowerCase()}. ${k==='NT'?'Alle technische studies staan voor je open.':k==='NG'?'Geneeskunde en biologie liggen binnen bereik.':k==='EM'?'Economie en bedrijfskunde zijn je richting.':'Taal, kunst en cultuur worden je ding.'}`}])});
 E('sc_sector',{sys:1,need:()=>S.edu.stage==='middel'&&!S.edu.sect&&S.edu.lvl==='vmbo',t:'Sector kiezen',x:'In de bovenbouw van het vmbo kies je een sector. Welke past bij jou?',
@@ -6331,7 +6332,7 @@ function polYear(a){polMigrate();if(!S.pw&&!S.pol&&a<18)return;if(isPres()&&type
   if(y>=W.nextEP){W.nextEP=y+5;if(P&&P.cand.ep)Q.push({id:'pol_ep'});else if(P&&P.lvl==='ep')loseOffice('Je termijn in het Europees Parlement zit erop.')}
   if(typeof prYear==='function')prYear(a);
   if(y>=W.nextTK){W.nextTK=y+cyc();
-    if(!polPro()&&a>=18&&!inJail()&&!S.dict){const vm=voteMode();if(vm==='ask')Q.push({id:'pol_stem',c:{run:1}});else{const pre=vm==='same'&&W.vote&&PTY(W.vote)?`Je stemt weer op ${PTY(W.vote).n}.`:vm==='none'?'Je stemt niet.':'';L(tkCitizen(pre),'sys')}}
+    if(!polPro()&&a>=18&&!inJail()&&!S.dict){const vm=voteMode();if(vm==='ask')Q.push({id:'pol_stem',c:{run:1}});else{const pre=vm==='same'&&W.vote&&PTY(W.vote)?`🗳️ Je stemt op ${PTY(W.vote).n}.`:vm==='none'?'Je stemt niet.':'';L(tkCitizen(pre),'sys')}}
     else if(a>=18&&!inJail()){Q.push({id:'pol_stem'});Q.push({id:'pol_tk'})}else if(P&&polPro()){Q.push({id:'pol_tk'})}else{const r=runTK();if(presL())prGov(W);else autoForm(r.seats,NS());cabPolicy();if(a>=12)L(r.news,'sys')}}
   if(P&&a>=16)polEvents();
   if(typeof regYear==='function')regYear(a);
@@ -6472,7 +6473,7 @@ function polWorld(el){const W=polW();const s=sec(el,'Politiek in het land');warC
 /* ---------- stemmen als gewone burger (verbeterplan 4.1) ----------
    Politici krijgen de hele verkiezingsavond. Gewone burgers één pop-up waarin ze stemmen en meteen de uitslag zien,
    of (instelling "altijd dezelfde partij" / "niet stemmen") alleen een regel in het logboek. */
-const voteMode=()=>(S&&S.settings&&S.settings.vote)||'ask';
+const voteMode=()=>(S&&S.settings&&S.settings.vote)||'same';// standaard: automatisch op je voorkeur (vote17.js)
 // fase 9.9: na het stemmen komt de uitslag in het logboek in plaats van in een tweede pop-up
 const vlog=o=>o.map(([l,f,c])=>[l,x=>{const r=f(x);if(r&&typeof r==='string')L('🗳️ '+r);return ''},c]);
 const polPro=()=>{const P=S.pol;return !!(P&&((P.lvl&&P.lvl!=='lid')||Object.values(P.cand||{}).some(Boolean)))};
@@ -6692,7 +6693,7 @@ function prYear(a){const W=S.pw,P=S.pol,y=year();if(!presL()||!W.nextPR||y<W.nex
   const mine=polPro()&&prCands().C.some(c=>c.me);
   if(mine||S.dict){if(a>=18&&!inJail())Q.push({id:'pr_stem'});Q.push({id:'pr_pres'})}
   else if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'pr_stem',c:{run:1}});
-  else{const t=prQuick();if(a>=12)L(t,'sys')}
+  else{if(a>=18&&!inJail()&&voteMode()==='same'&&W.vote){const c=prCands().C.find(c=>c.k===W.vote);L(c?`🗳️ Je stemt op ${c.n} (${PTY(c.k).n}).`:`🗳️ ${PTY(W.vote)?PTY(W.vote).n:'Je partij'} heeft geen kandidaat. Je stemt blanco.`,'sys')}const t=prQuick();if(a>=12)L(t,'sys')}
   if(p.same)W.nextTK=y}
 // verkiezing zonder tussenschermen, voor wie zelf geen kandidaat is (verbeterplan 4.1)
 function prQuick(){const p=psys().pres;const {C:Cs}=prCands();const sh=prShares(Cs);Cs.forEach((c,i)=>c.r1=sh[i]);const srt=Cs.slice().sort((a,b)=>b.r1-a.r1);const top=srt[0];const pc=v=>String(v).replace('.',',');
@@ -7091,7 +7092,7 @@ function usFedYear(a,y){const W=S.pw,P=S.pol;const pres=y%4===0;
       if(P.run){if(P.nom!==y||P.run.chal)Q.push({id:'us_prim'});Q.push({id:'us_vp'});Q.push({id:'us_gen'})}}
     else if(P&&['dem','rep'].includes(P.party)&&['kamer','ek','gov','min'].includes(P.lvl)&&(P.pop>=45||S.fame>=55)&&chance(.3))Q.push({id:'us_vpoffer'})}
   if(!polPro()&&!S.dict){// gewone burger (verbeterplan 4.1): hooguit één pop-up, de uitslagen als logregels
-    if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'us_stem'});
+    if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'us_stem'});else if(a>=18&&!inJail()&&voteMode()==='same'&&S.pw&&S.pw.vote&&PTY(S.pw.vote))L(`🗳️ Je stemt op ${pres&&S.pw.nom&&S.pw.nom[S.pw.vote]?S.pw.nom[S.pw.vote].n+' ('+PTY(S.pw.vote).k+')':PTY(S.pw.vote).n}.`,'sys');
     const lg=id=>{const e=EV[id];if(e&&(!e.need||safe(()=>e.need({}))))try{const t=e.f({});if(t&&a>=12)L(t,'sys')}catch(x){errLog&&errLog(x,'opgevangen')}};
     if(pres)lg('us_pnpc');lg('us_cong')}
   else{if(a>=18&&!inJail())Q.push({id:'us_stem'});
@@ -9797,10 +9798,10 @@ function lifeYear(){for(const p of S.rel.slice())if(fullLife(p))safe(()=>lifeOne
 // Wat je laat liggen, verloopt op je volgende verjaardag (en dat merken ze).
 const IBX={
  verj:{em:'🎂',t:(p,a)=>`${Who(p)} nodigt je uit voor ${f8Zijn(p.g)} ${a}e verjaardag`,yes:'🎉 Gaan',no:'🙅 Afzeggen',
-   ok:(p,a)=>{const k=Math.round(ri(20,60)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(5,9));hap(2);memAdd(p,'verj+',a);return `Je gaat naar het feest van ${p.first} en neemt een cadeau mee (${fmt(k)}). ${pick(['Het wordt laat.','Er wordt veel gelachen.','Je danst zelfs even.'])}`},
+   ok:(p,a)=>{const k=giftCost(20,60);if(k)cash(-k);p.rel=clamp(p.rel+ri(5,9));hap(2);memAdd(p,'verj+',a);return `Je gaat naar het feest van ${p.first} en ${k?`neemt een cadeau mee (${fmt(k)})`:ageY()<18?'geeft een zelfgemaakt cadeau':'neemt een zelfgemaakte kaart mee'}. ${pick(['Het wordt laat.','Er wordt veel gelachen.','Je danst zelfs even.'])}`},
    nee:p=>{p.rel=clamp(p.rel-2);return `Je zegt af. ${p.first} begrijpt het, zegt ${f8Hij(p.g)}.`},skip:(p,a)=>{p.rel=clamp(p.rel-4);memAdd(p,'verj-',a)}},
  bruil:{em:'💒',t:(p,a)=>`${Who(p)} gaat trouwen met ${a} en nodigt je uit voor de bruiloft`,yes:'💒 Gaan',no:'🙅 Afzeggen',
-   ok:p=>{const k=Math.round(ri(100,300)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(7,11));hap(4);memAdd(p,'bruil+');return `Wat een dag! Je geeft ${fmt(k)} als cadeau en danst tot het einde.`},
+   ok:p=>{const k=giftCost(100,300);if(k)cash(-k);p.rel=clamp(p.rel+ri(7,11));hap(4);memAdd(p,'bruil+');return `Wat een dag! ${k?`Je geeft ${fmt(k)} als cadeau`:ageY()<18?'Je geeft een zelfgemaakt cadeau':'Je schrijft een mooie kaart'} en danst tot het einde.`},
    nee:p=>{p.rel=clamp(p.rel-6);memAdd(p,'bruil-');return `Je zegt af. ${p.first} is er stil van.`},skip:p=>{p.rel=clamp(p.rel-8);memAdd(p,'bruil-')}},
  geld:{em:'💶',t:(p,a)=>`${Who(p)} zit krap en vraagt of je ${fmt(a)} kunt lenen`,yes:'💶 Lenen',no:'🙅 Weigeren',can:(p,a)=>S.money>=a,
    ok:(p,a)=>{cash(-a);p.owe=(p.owe||0)+a;p.oweY=year();p.rel=clamp(p.rel+ri(6,10));memAdd(p,'geld+');return `Je maakt ${fmt(a)} over. ${p.first} belooft het terug te betalen.`},
@@ -9814,12 +9815,17 @@ const IBX={
  bezoek:{em:'✈️',t:p=>`${Who(p)} woont in ${landN(p.cc)} en vraagt of je eens langskomt`,yes:'✈️ Op bezoek',no:'🙅 Nu niet',can:()=>S.money>=500*(S.cpi||1),
    ok:p=>{const k=Math.round(ri(500,1600)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(9,14));hap(5);memAdd(p,'bezoek+',landN(p.cc));return `Je vliegt naar ${landN(p.cc)} (${fmt(k)}). ${p.first} laat je ${pick(['de mooiste plekjes','de lokale markt','het strand','de beste restaurants'])} zien.`},
    nee:p=>{p.rel=clamp(p.rel-1);return `Misschien volgend jaar, zeg je. ${p.first} houdt je eraan.`},skip:p=>{p.rel=clamp(p.rel-2)}}};
+// cadeau: kinderen en tieners maken zelf iets; zonder geld wordt het een kaart
+function giftCost(lo,hi){if(ageY()<18)return 0;const k=Math.round(ri(lo,hi)*(S.cpi||1));return Math.max(0,Math.min(k,Math.floor(S.money||0)))}
 const HULPW=['verhuizen','het schilderen van de woonkamer','het leeghalen van de zolder','de tuin','een nieuwe keuken in elkaar zetten'];
-function ibAdd(p,k,a){S.inbox=S.inbox||[];if(S.inbox.length>=5||S.inbox.some(i=>i.p===p.id&&i.k===k))return false;S.inbox.push({i:uid(),p:p.id,k,y:year(),a});const d=IBX[k];L(`📨 ${d.t(p,a)}. Je vindt het bericht bij Relaties.`,'sys');return true}
+function ibAdd(p,k,a){S.inbox=S.inbox||[];const me=ageY();
+  if(me<12){if((k==='verj'||k==='bruil')&&p.alive){p.rel=clamp(p.rel+2);L(k==='verj'?`🎂 Je viert de ${a}e verjaardag van ${who(p)} mee.`:`💒 Je bent erbij als ${p.first} trouwt.`,'sys')}return false}
+  if(me<18&&(k==='geld'||k==='bezoek'||k==='ziek'&&abroad(p)))return false;if(S.inbox.length>=5||S.inbox.some(i=>i.p===p.id&&i.k===k))return false;S.inbox.push({i:uid(),p:p.id,k,y:year(),a});const d=IBX[k];L(`📨 ${d.t(p,a)}. Je vindt het bericht bij Relaties.`,'sys');return true}
 function ibOpen(it){const p=P(it.p),d=IBX[it.k];if(!p||!p.alive||!d){S.inbox=S.inbox.filter(x=>x!==it);refreshSheet();render();return}
   const yes=typeof d.yes==='function'?d.yes(p):d.yes;const can=!d.can||d.can(p,it.a);
   modal({title:'Bericht',em:d.em,cat:roleLabel(p),person:p,text:d.t(p,it.a)+'.',choices:[{t:yes,cls:'go',dis:!can,on:()=>{closeModal();doAct('Bericht',()=>{const r=d.ok(p,it.a);S.inbox=S.inbox.filter(x=>x!==it);return r},true,d.em)}},{t:d.no,on:()=>{closeModal();doAct('Bericht',()=>{const r=d.nee(p,it.a);S.inbox=S.inbox.filter(x=>x!==it);return r},true,d.em)}},{t:'Later',cls:'ghost',on:closeModal}]})}
-function ibYear(){S.inbox=S.inbox||[];
+function ibYear(){S.inbox=S.inbox||[];if(ageY()<13)S.inbox=S.inbox.filter(i=>i.y>=year());// een kind wordt niets kwalijk genomen
+
   // wat blijft liggen, verloopt
   for(const it of S.inbox.filter(i=>i.y<year())){const p=P(it.p),d=IBX[it.k];if(p&&p.alive&&d&&d.skip)safe(()=>d.skip(p,it.a))}
   S.inbox=S.inbox.filter(i=>i.y>=year());if(inJail())return;
@@ -10257,6 +10263,12 @@ function oldYear(){const a=ageY();if(a<75||inJail())return;
   if(a>=80&&S.st.health<40&&S.home&&S.home.name!=='Zorgcentrum'&&!S.flags.zc11){S.flags.zc11=1;L('Alles gaat wat moeizamer. Een zorgcentrum is misschien iets voor je (zie Bezit → Wonen).','sys')}}
 
 F8.year.push(()=>{if(!S.alive)return;lsYear();mentYear();oldYear()});
+// doodsoorzaak: geen vaag "een slechte gezondheid" meer, maar wat je echt opbrak (leefstijl, ziektes, leeftijd)
+deathCause=(f=>function(a){if(S.ill.some(i=>i.l)||S.st.health>5)return f.apply(this,arguments);const o=[];
+  if(addLvl('roken')>=40)o.push('longkanker','COPD');if(addLvl('alcohol')>=40)o.push('leverfalen');if(addLvl('drugs')>=40)o.push('een overdosis');
+  const ch=S.ill.map(i=>i.n).filter(Boolean);if(ch.length)o.push(`complicaties van ${pick(ch)}`);if((S.fit??50)<30)o.push('hartfalen');
+  if(!o.length)o.push(...(a<50?['een hartaanval','een hersenbloeding','een ernstige infectie']:a<75?['hartfalen','een hartaanval','een beroerte','nierfalen','longontsteking']:['ouderdom','hartfalen','longontsteking','nierfalen']));
+  return pick(o)})(deathCause);
 /* ================= FASE 12: activiteiten =================
    12.1 een activiteit is een moment met een keuze (met een knop "Snel" voor wie alleen het resultaat wil)
    12.2 samen doen: kies wie er meegaat (telt voor jullie band en wordt soms een herinnering)
@@ -10699,6 +10711,25 @@ function looksMigrate(s){if(!s||!s.p)return;const reg=(COUNTRIES[s.p.country]||C
   const gp=s.roy&&s.roy.gp;if(gp&&gp.first){const ng=nameG(gp.first);if(ng&&ng!==gp.g)gp.g=ng}
   const c=s.crim&&s.crim.jail&&s.crim.jail.cell;if(c&&c.first&&c.ap&&!c.lk17){c.lk17=1;const ng=nameG(c.first);if(ng){c.g=ng;c.ap=randAp(ng)}}}
 migrate=(f=>function(s){f.apply(this,arguments);safe(()=>looksMigrate(s))})(migrate);
+/* ================= Stemmen als gewone burger =================
+   Keuze Thijmen: verkiezingen alleen als pop-up als je met politiek bezig bent.
+   Anders vraagt het spel één keer (als je 18 wordt) welke partij bij je past en stem je daarna automatisch.
+   Oude levens: wie al eens stemde, stemt automatisch op die partij; wie nog niets koos, krijgt de vraag één keer. */
+function voteParties(){const W=polW();if(isPres())return ['dem','rep','gpus'].filter(k=>PTY(k));return Object.keys(W.sh||{}).filter(k=>PTY(k)).sort((a,b)=>W.sh[b]-W.sh[a])}
+function voteLabel(){const m=voteMode(),W=S.pw;if(m==='ask')return 'Elke keer vragen';if(m==='none')return 'Niet stemmen';return W&&W.vote&&PTY(W.vote)?`Automatisch op ${PTY(W.vote).n}`:'Automatisch (nog geen partij gekozen)'}
+function voteChoices(after){const W=polW();return voteParties().map(k=>({t:`${PTY(k).em} ${PTY(k).n}`,s:PTY(k).k&&PTY(k).k!==PTY(k).n?PTY(k).k:'',cls:voteMode()==='same'&&W.vote===k?'go':'',on:()=>{closeModal();W.vote=k;S.settings.vote='same';after(`Je voorkeur: ${PTY(k).n}. Bij verkiezingen stem je voortaan automatisch op ${PTY(k).n}.`)}}))
+  .concat([{t:'🛋️ Ik stem niet',cls:voteMode()==='none'?'go':'',on:()=>{closeModal();S.settings.vote='none';after('Je gaat niet stemmen.')}},
+    {t:'🗳️ Vraag het me elke keer',s:'Bij elke verkiezing een pop-up',cls:voteMode()==='ask'?'go':'',on:()=>{closeModal();S.settings.vote='ask';after('Bij elke verkiezing vraagt het spel op wie je stemt.')}}])}
+// vanuit het menu: altijd te wijzigen
+function voteMenu(){if(S.dict){toast('In een dictatuur valt er niets te kiezen');return}modal({title:'Stemmen',em:'🗳️',cat:'Instellingen',text:'Welke partij past het best bij jou? Bij verkiezingen stem je daar automatisch op.',choices:opts(voteChoices(t=>{toast(t);refreshSheet();saveLife()}))})}
+// de vraag bij 18 (één keer)
+E('vote18',{sys:1,need:()=>!S.dict,t:'Je mag stemmen!',x:()=>ageY()<=18?'Je bent 18 en mag voortaan stemmen. Welke partij past het best bij jou? Bij verkiezingen stem je daarna automatisch. In het menu kun je dit altijd veranderen.':'Voortaan stem je automatisch bij verkiezingen. Welke partij past het best bij jou? In het menu kun je dit altijd veranderen.',ch:[]});
+Object.defineProperty(EV.vote18,'ch',{get(){const W=polW();return voteParties().map(k=>[`${PTY(k).em} ${PTY(k).n}`,()=>{W.vote=k;S.settings.vote='same';return `Je voorkeur: ${PTY(k).n}. Bij verkiezingen stem je voortaan automatisch.`}])
+  .concat([['🛋️ Ik stem niet',()=>{S.settings.vote='none';return 'Je gaat niet stemmen. In het menu kun je dit altijd veranderen.'}],['🗳️ Vraag het me elke keer',()=>{S.settings.vote='ask';return 'Bij elke verkiezing vraagt het spel op wie je stemt.'}]])}});
+EVMETA.vote18=['Politiek','🗳️'];
+F8.year.push(a=>{if(!S.alive||a<18||S.flags.vote18||S.dict||inJail())return;S.flags.vote18=1;if(S.settings.vote)return;// zelf al ingesteld
+  const W=S.pw;if(W&&W.vote&&PTY(W.vote))return;// stemde al eens: daar gaat het automatisch op verder
+  if(!voteParties().length)return;Q.push({id:'vote18'})});
 /* ================= MEETSCHERM (verbeterplan 2.1) =================
    Verborgen: tik 5 keer op het versienummer onderaan het hoofdmenu.
    Toont schermmaten en hulplijnen. De proefstanden A-E zijn weg: stand B staat sinds 11-11-2026 vast in src/pwa/fix.css.
