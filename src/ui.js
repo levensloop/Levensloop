@@ -428,7 +428,7 @@ function sheetMain(el){
   row(s,{ic:'⏱️',t:'Tempo',s:S.settings.mode==='year'?'Per jaar (tik om te wisselen)':'Per maand (tik om te wisselen)',dots:true,on:()=>{S.settings.mode=S.settings.mode==='year'?'month':'year';render();refreshSheet();saveLife();toast(S.settings.mode==='year'?'Je speelt nu per jaar':'Je speelt nu per maand')}});
   row(s,{ic:'👨‍👩‍👧‍👦',t:'Grote familie',s:(S.settings.bigFam?'Aan':'Uit')+' · grootouders, ooms, tantes, neven, nichten, schoonfamilie (tik om te wisselen)',dots:true,on:()=>{S.settings.bigFam=S.settings.bigFam?0:1;if(S.settings.bigFam)ensureBigFam();refreshSheet();saveLife();toast(S.settings.bigFam?'Grote familie staat aan':'Grote familie staat uit')}});
   row(s,{ic:'⭐',t:'Favoriete activiteiten',s:`${favs().length} van 5 gekozen · deze staan bovenaan bij Activiteiten`,on:()=>openSheet('Favorieten',sheetFavs,true)});
-  row(s,{ic:'🗳️',t:'Stemmen',s:{ask:'Elke keer vragen',same:'Altijd dezelfde partij',none:'Niet stemmen'}[voteMode()]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.vote={ask:'same',same:'none',none:'ask'}[voteMode()];refreshSheet();saveLife()}});
+  row(s,{ic:'🗳️',t:'Stemmen',s:voteLabel(),dots:true,on:()=>voteMenu(false)});
   row(s,{ic:'🌀',t:'Chaos',s:['Rustig','Normaal','Chaos'][S.settings.chaos]+' (tik om te wisselen)',dots:true,on:()=>{S.settings.chaos=(S.settings.chaos+1)%3;refreshSheet();saveLife()}});
   if(typeof godMenuRow==='function')godMenuRow(s);
   row(s,{ic:'🌪️',t:'Tijdmachine',s:'Spoel 1, 3, 5 of 10 jaar terug',on:()=>openSheet('Tijdmachine',sheetRewind,true)});

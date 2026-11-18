@@ -108,7 +108,7 @@ t('3.6','staatsschuld blijft rond het normale niveau en rentenieuws is zeldzaam'
   const jp=(()=>{const o=E_.d0;E_.d0=ECO_D0.JP;const r=rating(ECO_D0.JP)[1];E_.d0=o;return r})();
   return {ok:d0===45&&max<=d0+40&&min>=d0-30&&rn<=Math.ceil(45/3)+1&&jp!=='Junk',msg:`NL begint op ${d0}%, schuld over 45 jaar ${min}–${max}% · rentenieuws ${rn}× · Japan (${ECO_D0.JP}%) krijgt rating ${jp}`}});
 
-t('4.1','verkiezingen: één pop-up voor gewone burgers, instelling werkt','NL',async()=>{S.m=30*12;const W=polW();Q.length=0;W.nextTK=year();polYear(30);const ask=Q.filter(q=>/^pol_/.test(q.id)).map(q=>q.id+(q.c&&q.c.run?'+uitslag':''));
+t('4.1','verkiezingen: één pop-up voor gewone burgers, instelling werkt','NL',async()=>{S.m=30*12;S.settings.vote='ask';const W=polW();Q.length=0;W.nextTK=year();polYear(30);const ask=Q.filter(q=>/^pol_/.test(q.id)).map(q=>q.id+(q.c&&q.c.run?'+uitslag':''));
   Q.length=0;S.settings.vote='none';W.nextTK=year();const n0=S.log.length;polYear(30);const none=Q.filter(q=>/^pol_/.test(q.id)).length;const logged=S.log.slice(n0).some(l=>/Je stemt niet/.test(l.t));Q.length=0;S.settings.vote='ask';
   return {ok:ask.length===1&&ask[0]==='pol_stem+uitslag'&&none===0&&logged,msg:`vragen: ${ask.join(', ')} · niet stemmen: ${none} pop-ups, logregel ${logged}`}});
 
@@ -322,6 +322,17 @@ F8T('17.2','vrouwen krijgen een vrouwenkapsel, ook in oude levens','NL','',async
 F8T('17.3','oud leven: verkeerde naam wordt rechtgezet bij laden','NL','',async()=>{const s=JSON.parse(JSON.stringify(S));const v=s.rel.find(p=>p.role==='vader');v.first='Emma';const f={id:'x1',role:'vriend',g:'m',first:'Sophie',born:S.m,ap:randAp('m'),alive:true,rel:50};s.rel.push(f);
   s.roy={gp:{first:'Emma',g:'m',by:1970}};migrate(s);const v2=s.rel.find(p=>p.role==='vader');const f2=s.rel.find(p=>p.id==='x1');
   return {ok:v2.g==='m'&&nameG(v2.first)!=='v'&&f2.g==='v'&&s.roy.gp.g==='v',msg:`vader heet nu ${v2.first}, vriendin Sophie is ${f2.g}, vorst Emma is ${s.roy.gp.g}`}});
+F8T('17.4','berichten: peuter krijgt geen uitnodiging, tiener betaalt niets, zonder geld toch naar een feest','NL','',async()=>{S.m=2*12;S.inbox=[];const ma=S.rel.find(p=>p.role==='moeder');ma.alive=true;const r1=ibAdd(ma,'verj',30);const none=!r1&&S.inbox.length===0;
+  S.m=15*12;S.money=0;ibAdd(ma,'verj',40);const it=S.inbox[0];let ok2=false;if(it){ibOpen(it);await sl(30);const b=[...document.querySelectorAll('#modal .btn')].find(x=>/Gaan/.test(x.textContent));b&&b.click();await sl(60);ok2=!S.inbox.length;closeModal()}
+  const g=ibAdd(ma,'geld',500);S.m=30*12;S.money=0;S.inbox=[];ibAdd(ma,'verj',50);const it3=S.inbox[0];let ok3=false;if(it3){ibOpen(it3);await sl(30);const b=[...document.querySelectorAll('#modal .btn')].find(x=>/Gaan/.test(x.textContent));b&&b.click();await sl(60);ok3=!S.inbox.length;closeModal()}
+  return {ok:none&&ok2&&!g&&ok3,msg:`peuter geen bericht ${none}, tiener zonder geld naar feest ${ok2}, tiener geen leenvraag ${!g}, volwassene zonder geld naar feest ${ok3}`}});
+F8T('17.5','stemmen: één keer je voorkeur bij 18, daarna automatisch zonder pop-up','NL','',async()=>{S.m=17*12+11;S.settings.vote=undefined;S.flags.vote18=0;Q.length=0;f8Year(18);const asked=Q.some(q=>q.id==='vote18');
+  const ch=EV.vote18.ch;ch[0][1]();Q.length=0;const W=polW();const pref=W.vote;W.nextTK=year();const n0=S.log.length;polYear(30);const pop=Q.some(q=>q.id==='pol_stem');const txt=S.log.slice(n0).map(x=>x.t||x[0]||x).join(' ');
+  return {ok:asked&&!!pref&&!pop&&txt.includes('Je stemt op '+PTY(pref).n),msg:`vraag bij 18 ${asked}, voorkeur ${pref}, geen pop-up ${!pop}, logregel ${txt.includes('Je stemt op')}`}});
+F8T('17.6','doodsoorzaak: geen "een slechte gezondheid" meer','NL','',async()=>{S.st.health=0;S.ill=[];const c=[];for(let i=0;i<40;i++)c.push(deathCause(ri(20,90)));S.add=S.add||{};S.add.roken=80;const r=deathCause(50);
+  return {ok:!c.includes('een slechte gezondheid')&&['longkanker','COPD'].includes(r),msg:`oorzaken ${[...new Set(c)].slice(0,5).join(', ')}; roker: ${r}`}});
+F8T('17.7','schooladvies volgt je cijfers: een 1 gemiddeld en alles fout geeft geen vwo','NL','',async()=>{S.m=12*12;S.edu.stage='basis';S.edu.gr={Rekenen:1,Taal:1.2};S.st.smarts=100;setAdvice(Math.round(clamp(501+0*44+(100-50)*.04+2,501,550)));const low=S.edu.lvl;
+  S.edu.stage='basis';S.edu.gr={Rekenen:8.5,Taal:8.1};setAdvice(530);const high=S.edu.lvl;return {ok:low==='vmbo'&&high==='vwo',msg:`1 gemiddeld: ${low}, 8,3 gemiddeld: ${high}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 

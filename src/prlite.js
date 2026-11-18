@@ -12,7 +12,7 @@ function prYear(a){const W=S.pw,P=S.pol,y=year();if(!presL()||!W.nextPR||y<W.nex
   const mine=polPro()&&prCands().C.some(c=>c.me);
   if(mine||S.dict){if(a>=18&&!inJail())Q.push({id:'pr_stem'});Q.push({id:'pr_pres'})}
   else if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'pr_stem',c:{run:1}});
-  else{const t=prQuick();if(a>=12)L(t,'sys')}
+  else{if(a>=18&&!inJail()&&voteMode()==='same'&&W.vote){const c=prCands().C.find(c=>c.k===W.vote);L(c?`🗳️ Je stemt op ${c.n} (${PTY(c.k).n}).`:`🗳️ ${PTY(W.vote)?PTY(W.vote).n:'Je partij'} heeft geen kandidaat. Je stemt blanco.`,'sys')}const t=prQuick();if(a>=12)L(t,'sys')}
   if(p.same)W.nextTK=y}
 // verkiezing zonder tussenschermen, voor wie zelf geen kandidaat is (verbeterplan 4.1)
 function prQuick(){const p=psys().pres;const {C:Cs}=prCands();const sh=prShares(Cs);Cs.forEach((c,i)=>c.r1=sh[i]);const srt=Cs.slice().sort((a,b)=>b.r1-a.r1);const top=srt[0];const pc=v=>String(v).replace('.',',');

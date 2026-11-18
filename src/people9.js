@@ -120,10 +120,10 @@ function lifeYear(){for(const p of S.rel.slice())if(fullLife(p))safe(()=>lifeOne
 // Wat je laat liggen, verloopt op je volgende verjaardag (en dat merken ze).
 const IBX={
  verj:{em:'🎂',t:(p,a)=>`${Who(p)} nodigt je uit voor ${f8Zijn(p.g)} ${a}e verjaardag`,yes:'🎉 Gaan',no:'🙅 Afzeggen',
-   ok:(p,a)=>{const k=Math.round(ri(20,60)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(5,9));hap(2);memAdd(p,'verj+',a);return `Je gaat naar het feest van ${p.first} en neemt een cadeau mee (${fmt(k)}). ${pick(['Het wordt laat.','Er wordt veel gelachen.','Je danst zelfs even.'])}`},
+   ok:(p,a)=>{const k=giftCost(20,60);if(k)cash(-k);p.rel=clamp(p.rel+ri(5,9));hap(2);memAdd(p,'verj+',a);return `Je gaat naar het feest van ${p.first} en ${k?`neemt een cadeau mee (${fmt(k)})`:ageY()<18?'geeft een zelfgemaakt cadeau':'neemt een zelfgemaakte kaart mee'}. ${pick(['Het wordt laat.','Er wordt veel gelachen.','Je danst zelfs even.'])}`},
    nee:p=>{p.rel=clamp(p.rel-2);return `Je zegt af. ${p.first} begrijpt het, zegt ${f8Hij(p.g)}.`},skip:(p,a)=>{p.rel=clamp(p.rel-4);memAdd(p,'verj-',a)}},
  bruil:{em:'💒',t:(p,a)=>`${Who(p)} gaat trouwen met ${a} en nodigt je uit voor de bruiloft`,yes:'💒 Gaan',no:'🙅 Afzeggen',
-   ok:p=>{const k=Math.round(ri(100,300)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(7,11));hap(4);memAdd(p,'bruil+');return `Wat een dag! Je geeft ${fmt(k)} als cadeau en danst tot het einde.`},
+   ok:p=>{const k=giftCost(100,300);if(k)cash(-k);p.rel=clamp(p.rel+ri(7,11));hap(4);memAdd(p,'bruil+');return `Wat een dag! ${k?`Je geeft ${fmt(k)} als cadeau`:ageY()<18?'Je geeft een zelfgemaakt cadeau':'Je schrijft een mooie kaart'} en danst tot het einde.`},
    nee:p=>{p.rel=clamp(p.rel-6);memAdd(p,'bruil-');return `Je zegt af. ${p.first} is er stil van.`},skip:p=>{p.rel=clamp(p.rel-8);memAdd(p,'bruil-')}},
  geld:{em:'💶',t:(p,a)=>`${Who(p)} zit krap en vraagt of je ${fmt(a)} kunt lenen`,yes:'💶 Lenen',no:'🙅 Weigeren',can:(p,a)=>S.money>=a,
    ok:(p,a)=>{cash(-a);p.owe=(p.owe||0)+a;p.oweY=year();p.rel=clamp(p.rel+ri(6,10));memAdd(p,'geld+');return `Je maakt ${fmt(a)} over. ${p.first} belooft het terug te betalen.`},
@@ -137,12 +137,17 @@ const IBX={
  bezoek:{em:'✈️',t:p=>`${Who(p)} woont in ${landN(p.cc)} en vraagt of je eens langskomt`,yes:'✈️ Op bezoek',no:'🙅 Nu niet',can:()=>S.money>=500*(S.cpi||1),
    ok:p=>{const k=Math.round(ri(500,1600)*(S.cpi||1));cash(-k);p.rel=clamp(p.rel+ri(9,14));hap(5);memAdd(p,'bezoek+',landN(p.cc));return `Je vliegt naar ${landN(p.cc)} (${fmt(k)}). ${p.first} laat je ${pick(['de mooiste plekjes','de lokale markt','het strand','de beste restaurants'])} zien.`},
    nee:p=>{p.rel=clamp(p.rel-1);return `Misschien volgend jaar, zeg je. ${p.first} houdt je eraan.`},skip:p=>{p.rel=clamp(p.rel-2)}}};
+// cadeau: kinderen en tieners maken zelf iets; zonder geld wordt het een kaart
+function giftCost(lo,hi){if(ageY()<18)return 0;const k=Math.round(ri(lo,hi)*(S.cpi||1));return Math.max(0,Math.min(k,Math.floor(S.money||0)))}
 const HULPW=['verhuizen','het schilderen van de woonkamer','het leeghalen van de zolder','de tuin','een nieuwe keuken in elkaar zetten'];
-function ibAdd(p,k,a){S.inbox=S.inbox||[];if(S.inbox.length>=5||S.inbox.some(i=>i.p===p.id&&i.k===k))return false;S.inbox.push({i:uid(),p:p.id,k,y:year(),a});const d=IBX[k];L(`📨 ${d.t(p,a)}. Je vindt het bericht bij Relaties.`,'sys');return true}
+function ibAdd(p,k,a){S.inbox=S.inbox||[];const me=ageY();
+  if(me<12){if((k==='verj'||k==='bruil')&&p.alive){p.rel=clamp(p.rel+2);L(k==='verj'?`🎂 Je viert de ${a}e verjaardag van ${who(p)} mee.`:`💒 Je bent erbij als ${p.first} trouwt.`,'sys')}return false}
+  if(me<18&&(k==='geld'||k==='bezoek'||k==='ziek'&&abroad(p)))return false;if(S.inbox.length>=5||S.inbox.some(i=>i.p===p.id&&i.k===k))return false;S.inbox.push({i:uid(),p:p.id,k,y:year(),a});const d=IBX[k];L(`📨 ${d.t(p,a)}. Je vindt het bericht bij Relaties.`,'sys');return true}
 function ibOpen(it){const p=P(it.p),d=IBX[it.k];if(!p||!p.alive||!d){S.inbox=S.inbox.filter(x=>x!==it);refreshSheet();render();return}
   const yes=typeof d.yes==='function'?d.yes(p):d.yes;const can=!d.can||d.can(p,it.a);
   modal({title:'Bericht',em:d.em,cat:roleLabel(p),person:p,text:d.t(p,it.a)+'.',choices:[{t:yes,cls:'go',dis:!can,on:()=>{closeModal();doAct('Bericht',()=>{const r=d.ok(p,it.a);S.inbox=S.inbox.filter(x=>x!==it);return r},true,d.em)}},{t:d.no,on:()=>{closeModal();doAct('Bericht',()=>{const r=d.nee(p,it.a);S.inbox=S.inbox.filter(x=>x!==it);return r},true,d.em)}},{t:'Later',cls:'ghost',on:closeModal}]})}
-function ibYear(){S.inbox=S.inbox||[];
+function ibYear(){S.inbox=S.inbox||[];if(ageY()<13)S.inbox=S.inbox.filter(i=>i.y>=year());// een kind wordt niets kwalijk genomen
+
   // wat blijft liggen, verloopt
   for(const it of S.inbox.filter(i=>i.y<year())){const p=P(it.p),d=IBX[it.k];if(p&&p.alive&&d&&d.skip)safe(()=>d.skip(p,it.a))}
   S.inbox=S.inbox.filter(i=>i.y>=year());if(inJail())return;

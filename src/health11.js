@@ -69,3 +69,9 @@ function oldYear(){const a=ageY();if(a<75||inJail())return;
   if(a>=80&&S.st.health<40&&S.home&&S.home.name!=='Zorgcentrum'&&!S.flags.zc11){S.flags.zc11=1;L('Alles gaat wat moeizamer. Een zorgcentrum is misschien iets voor je (zie Bezit → Wonen).','sys')}}
 
 F8.year.push(()=>{if(!S.alive)return;lsYear();mentYear();oldYear()});
+// doodsoorzaak: geen vaag "een slechte gezondheid" meer, maar wat je echt opbrak (leefstijl, ziektes, leeftijd)
+deathCause=(f=>function(a){if(S.ill.some(i=>i.l)||S.st.health>5)return f.apply(this,arguments);const o=[];
+  if(addLvl('roken')>=40)o.push('longkanker','COPD');if(addLvl('alcohol')>=40)o.push('leverfalen');if(addLvl('drugs')>=40)o.push('een overdosis');
+  const ch=S.ill.map(i=>i.n).filter(Boolean);if(ch.length)o.push(`complicaties van ${pick(ch)}`);if((S.fit??50)<30)o.push('hartfalen');
+  if(!o.length)o.push(...(a<50?['een hartaanval','een hersenbloeding','een ernstige infectie']:a<75?['hartfalen','een hartaanval','een beroerte','nierfalen','longontsteking']:['ouderdom','hartfalen','longontsteking','nierfalen']));
+  return pick(o)})(deathCause);

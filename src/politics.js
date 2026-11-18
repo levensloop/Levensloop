@@ -106,7 +106,7 @@ function polYear(a){polMigrate();if(!S.pw&&!S.pol&&a<18)return;if(isPres()&&type
   if(y>=W.nextEP){W.nextEP=y+5;if(P&&P.cand.ep)Q.push({id:'pol_ep'});else if(P&&P.lvl==='ep')loseOffice('Je termijn in het Europees Parlement zit erop.')}
   if(typeof prYear==='function')prYear(a);
   if(y>=W.nextTK){W.nextTK=y+cyc();
-    if(!polPro()&&a>=18&&!inJail()&&!S.dict){const vm=voteMode();if(vm==='ask')Q.push({id:'pol_stem',c:{run:1}});else{const pre=vm==='same'&&W.vote&&PTY(W.vote)?`Je stemt weer op ${PTY(W.vote).n}.`:vm==='none'?'Je stemt niet.':'';L(tkCitizen(pre),'sys')}}
+    if(!polPro()&&a>=18&&!inJail()&&!S.dict){const vm=voteMode();if(vm==='ask')Q.push({id:'pol_stem',c:{run:1}});else{const pre=vm==='same'&&W.vote&&PTY(W.vote)?`🗳️ Je stemt op ${PTY(W.vote).n}.`:vm==='none'?'Je stemt niet.':'';L(tkCitizen(pre),'sys')}}
     else if(a>=18&&!inJail()){Q.push({id:'pol_stem'});Q.push({id:'pol_tk'})}else if(P&&polPro()){Q.push({id:'pol_tk'})}else{const r=runTK();if(presL())prGov(W);else autoForm(r.seats,NS());cabPolicy();if(a>=12)L(r.news,'sys')}}
   if(P&&a>=16)polEvents();
   if(typeof regYear==='function')regYear(a);
@@ -247,7 +247,7 @@ function polWorld(el){const W=polW();const s=sec(el,'Politiek in het land');warC
 /* ---------- stemmen als gewone burger (verbeterplan 4.1) ----------
    Politici krijgen de hele verkiezingsavond. Gewone burgers één pop-up waarin ze stemmen en meteen de uitslag zien,
    of (instelling "altijd dezelfde partij" / "niet stemmen") alleen een regel in het logboek. */
-const voteMode=()=>(S&&S.settings&&S.settings.vote)||'ask';
+const voteMode=()=>(S&&S.settings&&S.settings.vote)||'same';// standaard: automatisch op je voorkeur (vote17.js)
 // fase 9.9: na het stemmen komt de uitslag in het logboek in plaats van in een tweede pop-up
 const vlog=o=>o.map(([l,f,c])=>[l,x=>{const r=f(x);if(r&&typeof r==='string')L('🗳️ '+r);return ''},c]);
 const polPro=()=>{const P=S.pol;return !!(P&&((P.lvl&&P.lvl!=='lid')||Object.values(P.cand||{}).some(Boolean)))};

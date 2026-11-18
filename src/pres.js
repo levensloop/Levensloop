@@ -101,7 +101,7 @@ function usFedYear(a,y){const W=S.pw,P=S.pol;const pres=y%4===0;
       if(P.run){if(P.nom!==y||P.run.chal)Q.push({id:'us_prim'});Q.push({id:'us_vp'});Q.push({id:'us_gen'})}}
     else if(P&&['dem','rep'].includes(P.party)&&['kamer','ek','gov','min'].includes(P.lvl)&&(P.pop>=45||S.fame>=55)&&chance(.3))Q.push({id:'us_vpoffer'})}
   if(!polPro()&&!S.dict){// gewone burger (verbeterplan 4.1): hooguit één pop-up, de uitslagen als logregels
-    if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'us_stem'});
+    if(a>=18&&!inJail()&&voteMode()==='ask')Q.push({id:'us_stem'});else if(a>=18&&!inJail()&&voteMode()==='same'&&S.pw&&S.pw.vote&&PTY(S.pw.vote))L(`🗳️ Je stemt op ${pres&&S.pw.nom&&S.pw.nom[S.pw.vote]?S.pw.nom[S.pw.vote].n+' ('+PTY(S.pw.vote).k+')':PTY(S.pw.vote).n}.`,'sys');
     const lg=id=>{const e=EV[id];if(e&&(!e.need||safe(()=>e.need({}))))try{const t=e.f({});if(t&&a>=12)L(t,'sys')}catch(x){errLog&&errLog(x,'opgevangen')}};
     if(pres)lg('us_pnpc');lg('us_cong')}
   else{if(a>=18&&!inJail())Q.push({id:'us_stem'});
