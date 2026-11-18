@@ -34,8 +34,8 @@ if(EV.s_trial){const x0=EV.s_trial.x;EV.s_trial.x=c=>(typeof x0==='function'?x0(
 // ---------- moord en huurmoord (spelregel, geen details) ----------
 const killable=()=>living().filter(p=>isHuman(p)&&!p.gone&&pAge(p)>=16&&!(typeof abroad==='function'&&abroad(p))&&!['influencer','celgenoot'].includes(p.role));
 const FAMR=['moeder','vader','partner','kind','broer','zus','opa','oma','kleinkind','schoonzoon','schoondochter'];
-function murderMenu(){if(ageY()<18||inJail())return;const ps=killable().sort((a,b)=>a.rel-b.rel).slice(0,12);if(!ps.length){toast('Er is niemand');return}
-  modal({title:'Iemand uit de weg ruimen',em:'🔪',cat:'Misdaad',text:'Wie? Dit kun je niet terugdraaien.',choices:opts(ps.map(p=>({t:p.first+' '+(p.last||''),ic:faceOf(p),s:`${roleLabel(p)} · relatie ${Math.round(p.rel)}%`,on:()=>{closeModal();murderHow(p)}})))})}
+function murderMenu(){if(ageY()<18||inJail())return;const all=killable(),fo=r=>{const i=FAMR.indexOf(r);return i<0?99:i};const fam=all.filter(p=>FAMR.includes(p.role)).sort((a,b)=>fo(a.role)-fo(b.role));const ps=fam.concat(all.filter(p=>!FAMR.includes(p.role)).sort((a,b)=>a.rel-b.rel).slice(0,10));if(!ps.length){toast('Er is niemand');return}
+  modal({title:'Iemand uit de weg ruimen',em:'🔪',cat:'Misdaad',text:'Wie? Dit kun je niet terugdraaien.',choices:opts(ps.map(p=>({t:p.first+' '+(p.last||''),ic:faceOf(p),s:`${FAMR.includes(p.role)?'👪 ':''}${roleLabel(p)} · relatie ${Math.round(p.rel)}%`,on:()=>{closeModal();murderHow(p)}})))})}
 function murderHow(p){const k=Math.round(ri(20,60)*1000*(S.cpi||1));
   modal({title:'Hoe?',em:'🔪',cat:p.first,person:p,text:'Je denkt na over een plan.',choices:opts([
     {t:'🧩 Een plan waarbij het op een ongeluk lijkt',on:()=>{closeModal();murderGo(p,'plan',0)}},

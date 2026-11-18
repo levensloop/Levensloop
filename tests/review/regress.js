@@ -309,6 +309,10 @@ F8T('16.1','verhoor komt voor de rechtszaak; schikking mogelijk','NL','',async()
 F8T('16.2','moord: alleen spelregel, met onderzoek achteraf','NL','',async()=>{S.m=40*12;S.money=100000;const v=mkPerson('vijand','m',S.m-40*12,{rel:5});S.rel.push(v);let done=false;for(let i=0;i<20&&!done;i++){if(!v.alive)break;murderGo(v,'huur',1000);await sl(20);closeModal();Q.length=0;done=!v.alive}
   S.crim.moord=[{w:'moord op test',a:ageY(),fam:1,h:'zelf'}];let q=false;for(let i=0;i<60&&!q;i++){Q.length=0;murderYear();q=Q.some(x=>x.id==='c16_moordzaak');if(!q)S.crim.moord=[{w:'moord op test',a:ageY(),fam:1,h:'zelf'}]}Q.length=0;
   const el=document.createElement('div');sheetCrime(el);return {ok:done&&q&&/uit de weg ruimen/.test(el.textContent)&&!killable().some(p=>pAge(p)<16),msg:`gelukt ${done}, recherche ${q}`}});
+F8T('16.4','moord: directe familie staat altijd in het menu (16+)','NL','',async()=>{S.m=40*12;S.money=100000;for(let i=0;i<15;i++)S.rel.push(mkPerson('vijand','m',S.m-30*12,{rel:2}));const kid=mkPerson('kind','v',S.m-10*12,{rel:90});S.rel.push(kid);
+  const ma=S.rel.find(p=>p.role==='moeder'&&p.alive);Q.length=0;murderMenu();await sl(30);const txt=document.querySelector('#modal').textContent;closeModal();
+  const inMenu=!!ma&&txt.includes(ma.first)&&/👪/.test(txt)&&!txt.includes(kid.first+' ');let dead=false;for(let i=0;i<20&&ma&&!dead;i++){murderGo(ma,'huur',1000);await sl(20);closeModal();Q.length=0;dead=!ma.alive}
+  return {ok:inMenu&&dead,msg:`moeder in menu ${inMenu}, kind van 10 niet in menu, moeder vermoord ${dead}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 
