@@ -40,6 +40,7 @@ node regress.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
 
 echo "== fase 8: rondgang langs de nieuwe onderdelen"
 node f8tour.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
+node f9tour.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1
 
 echo "== meetscherm en indeling"
 node diag.test.js | sed 's/^/   /'; [ ${PIPESTATUS[0]} = 0 ] || RC=1

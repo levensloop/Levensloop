@@ -197,6 +197,89 @@ F8T('8.10','Leeftijd-knop blijft op zijn plek bij tikken','NL','',async()=>{cons
   lastTapEl=b;haptic(12);await sl(60);const r1=b.getBoundingClientRect();const dx=Math.abs((r1.left+r1.width/2)-(r0.left+r0.width/2)),dy=Math.abs((r1.top+r1.height/2)-(r0.top+r0.height/2));
   return {ok:dx<1&&dy<1,msg:`midden verschoof ${Math.round(dx)} px opzij en ${Math.round(dy)} px omlaag tijdens het tik-effect`}});
 
+// ---------- fase 9 ----------
+F8T('9.1','geheugen: beledigen wordt een herinnering, zichtbaar onder Samen meegemaakt','NL','',async()=>{S.m=25*12;const f=addFriend();f.rel=70;Q.length=0;
+  openSheet(f.first,el=>sheetPerson(el,f),true);await sl(30);const b=[...document.querySelectorAll('#sheet-b .mrow')].find(x=>/Beledigen/.test(x.textContent));b&&b.click();await sl(30);closeModal();await sl(30);
+  const mem=(f.mem||[]).some(m=>m[0]==='bel-');refreshSheet();await sl(30);const txt=document.querySelector('#sheet-b').textContent;closeSheet();
+  return {ok:mem&&/Samen meegemaakt/.test(txt)&&/beledigd/.test(txt)&&mood(f)<0,msg:`herinnering ${mem}, zichtbaar ${/Samen meegemaakt/.test(txt)}, stemming ${Math.round(mood(f))}`}});
+F8T('9.2','karakter: iedereen krijgt er een, ook in oude levens','NL','',async()=>{const p=mkPerson('vriend','m',S.m);const nu=!!p.kt&&GTRAITS.includes(p.kt);
+  const mom=living('moeder')[0];delete mom.kt;const s2=JSON.parse(JSON.stringify(S));f9Migrate(s2);const mig=!!s2.rel.find(x=>x.id===mom.id).kt;S.rel.find(x=>x.id===mom.id).kt='Gul';
+  const card=f9Card(mom);return {ok:nu&&mig&&/gul/i.test(card),msg:`nieuw ${p.kt}, migratie ${mig}, kaart ${/gul/i.test(card)}`}});
+F8T('9.3','eigen leven: een broer krijgt opleiding, werk, liefde en een tijdlijn','NL','',async()=>{S.m=17*12;S.settings.bigFam=1;S.rel=S.rel.filter(p=>!['broer','zus'].includes(p.role));const bs=[0,1,2].map(()=>{const x=mkPerson('broer','m',S.m-17*12,{rel:70,smarts:85});S.rel.push(x);return x});const b=bs[0];Q.length=0;
+  let job=0,love=0,ed=0;for(let i=0;i<30&&b.alive;i++){S.m+=12;lifeYear();if(b.job&&b.job!=='student')job=1;if(b.lf.ps)love=1;if(bs.some(x=>x.lf.ed||(x.lf.ev||[]).some(e=>/Begon aan/.test(e[1]))))ed=1}
+  const ev=(b.lf.ev||[]).length;openSheet(b.first,el=>sheetPerson(el,b),true);await sl(30);const txt=document.querySelector('#sheet-b').textContent;closeSheet();
+  return {ok:job&&love&&ed&&ev>=3&&/Het leven van/.test(txt),msg:`werk ${job}, liefde ${love}, opleiding ${ed}, tijdlijn ${ev} regels`}});
+F8T('9.3b','eigen leven: je kind trouwt (groot moment) en krijgt een schoonzoon of schoondochter','NL','',async()=>{S.m=50*12;const k=mkPerson('kind','v',S.m-28*12,{rel:80});S.rel.push(k);const x=lf(k);x.v=1;x.ps={n:'Bram',g:'m',st:'samen',y:year()-3,a:29};S.fmY=0;Q.length=0;
+  let wed=false;for(let i=0;i<40&&!wed;i++){x.ps=x.ps||{n:'Bram',g:'m',a:29};x.ps.st='samen';x.ps.y=year()-3;S.fmY=0;Q.length=0;lifeOne(k);wed=Q.some(q=>q.id==='f9_trouwkind')}
+  const sz=S.rel.some(p=>p.role==='schoonzoon'&&p.of===k.id);Q.length=0;Q.push({id:'f9_trouwkind',c:{id:k.id}});processQ();await sl(30);const t=(document.querySelector('#modal .ptitle')||{}).textContent||'';closeModal();Q.length=0;
+  return {ok:wed&&sz&&/bruiloft/.test(t),msg:`bruiloft in de wachtrij ${wed}, schoonzoon ${sz}, pop-up "${t.trim()}"`}});
+F8T('9.4','berichten: uitnodiging beantwoorden en laten verlopen','NL','',async()=>{S.m=40*12;S.money=1000;S.inbox=[];const z=mkPerson('zus','v',S.m-50*12,{rel:70});S.rel.push(z);ibAdd(z,'verj',50);
+  openSheet('Relaties',sheetRel);await sl(30);const shown=/Berichten/.test(document.querySelector('#sheet-b').textContent);const badge=(render(),!!document.querySelector('#t-rel .ib9'));
+  ibOpen(S.inbox[0]);await sl(30);const yes=[...document.querySelectorAll('#modal .btn')].find(x=>/Gaan/.test(x.textContent));yes.click();await sl(30);closeModal();closeSheet();
+  const ok1=!S.inbox.length&&(z.mem||[]).some(m=>m[0]==='verj+');const v=mkPerson('vriend','m',S.m-30*12,{rel:60});S.rel.push(v);S.inbox.push({i:'x',p:v.id,k:'hulp',y:year()-1,a:'verhuizen'});ibYear();
+  const ok2=(v.mem||[]).some(m=>m[0]==='hulp-')&&!S.inbox.some(i=>i.i==='x');return {ok:shown&&badge&&ok1&&ok2,msg:`bij Relaties ${shown}, teller ${badge}, ja ${ok1}, verlopen ${ok2}`}});
+F8T('9.4b','buitenland: bellen en op bezoek in plaats van tijd samen','NL','',async()=>{S.m=40*12;S.money=10000;const z=mkPerson('zus','v',S.m-38*12,{rel:60});z.cc='ES';S.rel.push(z);
+  openSheet(z.first,el=>sheetPerson(el,z),true);await sl(30);const txt=document.querySelector('#sheet-b').textContent;const r0=z.rel;const t=[...document.querySelectorAll('#sheet-b .mrow')].find(x=>/Tijd samen doorbrengen/.test(x.textContent));t&&t.click();await sl(30);const blocked=z.rel===r0&&document.querySelector('#modal').hidden;closeModal();closeSheet();
+  return {ok:/Woont in Spanje/.test(txt)&&/Op bezoek gaan/.test(txt)&&blocked&&f9Tag(z).includes(flag('ES')),msg:`sectie ${/Woont in Spanje/.test(txt)}, tijd samen geblokkeerd ${blocked}`}});
+F8T('9.5','kinderen: rapport, club en huisregels per leeftijd','NL','',async()=>{S.m=40*12;S.money=5000;const k=mkPerson('kind','m',S.m-13*12,{rel:80,smarts:70});S.rel.push(k);kidSchool();
+  const el=document.createElement('div');sheetPerson(el,k);const t=el.textContent;const b=mkPerson('kind','v',S.m-6,{rel:90});S.rel.push(b);const el2=document.createElement('div');sheetPerson(el2,b);
+  return {ok:k.gr>0&&/Rapport bekijken/.test(t)&&/Huisregels/.test(t)&&/club/i.test(t)&&/Voeden/.test(el2.textContent)&&!!k.lf.lvl,msg:`cijfer ${k.gr}, niveau ${k.lf.lvl}, baby-acties ${/Voeden/.test(el2.textContent)}`}});
+F8T('9.6','partner: samen beslissen en de trouwdag als groot moment','NL','',async()=>{S.m=40*12;const pt=addPartner();pt.st='getrouwd';pt.wy=year()-10;pt.live=1;const el=document.createElement('div');sheetPerson(el,pt);
+  S.fmY=0;Q.length=0;momentsYear();const jub=Q.some(q=>q.id==='f9_jubileum'&&q.c.n===10);Q.length=0;return {ok:/Samen beslissen/.test(el.textContent)&&/10 jaar getrouwd/.test(el.textContent)&&jub,msg:`rij ${/Samen beslissen/.test(el.textContent)}, jubileum ${jub}`}});
+F8T('9.7','vrienden: vriendengroep, uit beeld raken en reünie','NL','',async()=>{S.m=35*12;S.rel=S.rel.filter(p=>p.role!=='vriend');const a=addFriend(),b=addFriend();a.grp=b.grp='studie';const el=document.createElement('div');f9FriendRows(el);const grp=/Studievrienden/.test(el.textContent);
+  b.rel=3;S.lastActs={};for(let i=0;i<40&&S.rel.includes(b);i++)friendsYear();const gone=!S.rel.includes(b)&&(S.oldF||[]).length>0;
+  Q.length=0;Q.push({id:'f9_reunie',c:{g:'studie'}});processQ();await sl(30);const go=[...document.querySelectorAll('#modal .btn')].find(x=>/Gaan/.test(x.textContent));go&&go.click();await sl(30);closeModal();
+  const back=living('vriend').some(p=>p.first===b.first);return {ok:grp&&gone&&back,msg:`groep ${grp}, uit beeld ${gone}, terug via reünie ${back}`}});
+F8T('9.8','hooguit één groot familiemoment per jaar','NL','',async()=>{S.m=40*12;const pt=addPartner();pt.st='getrouwd';pt.wy=year()-25;pt.live=1;S.fmY=0;Q.length=0;momentsYear();momentsYear();
+  const n=Q.filter(q=>/^f9_/.test(q.id)).length;const k=mkPerson('kind','m',S.m-25*12);S.rel.push(k);lf(k).ps={n:'Lisa',g:'v',st:'getrouwd',y:year(),a:25};f9Wedding(k);const inv=(S.inbox||[]).some(i=>i.p===k.id&&i.k==='bruil');Q.length=0;
+  return {ok:n===1&&inv,msg:`${n} moment(en) dit jaar, tweede bruiloft wordt een bericht ${inv}`}});
+F8T('9.9','rustiger: griep wordt een logregel, stemmen één scherm','NL','',async()=>{S.m=30*12;Q.length=0;const n0=S.log.length;Q.push({id:'griep',c:{}});processQ();await sl(30);const pop=!document.querySelector('#modal').hidden;closeModal();
+  const line=S.log.slice(n0).some(l=>/Griep:/.test(typeof l==='string'?l:(l.t||'')));Q.length=0;const ch=EV.pol_stem.ch;const r=ch[0][1]({run:1});
+  return {ok:!pop&&line&&r==='',msg:`pop-up ${pop}, logregel ${line}, stemuitslag in een tweede scherm ${r!==''}`}});
+F8T('9.10','getrouwd: samen wonen, ook na het kopen van een huis','NL','',async()=>{S.m=35*12;S.money=3e6;const pt=addPartner();pt.st='getrouwd';S.home={k:'huur',name:'Appartement',rent:16500};render();const a=S.home.samen===pt.id;
+  const h=mkListing(3);const p=buyHouse(h,false);S.home={k:'eigen',pid:p.id};render();const b=S.home.samen===pt.id;return {ok:a&&b,msg:`huur ${a}, na kopen ${b}`}});
+F8T('9.11','verder spelen als kleinkind als er geen kind meer leeft','NL','',async()=>{S.m=80*12;S.rel=S.rel.filter(p=>!['kind','kleinkind'].includes(p.role));const k=mkPerson('kind','m',S.m-50*12,{rel:80});k.alive=false;k.died=75;S.rel.push(k);
+  const sz=mkPerson('schoondochter','v',S.m-49*12,{of:k.id});S.rel.push(sz);const g=mkPerson('kleinkind','v',S.m-20*12,{par:k.id,rel:80});const g2=mkPerson('kleinkind','m',S.m-18*12,{par:k.id,rel:70});S.rel.push(g,g2);
+  S.alive=false;S.died=80;S.cause='ouderdom';showDeath();await sl(40);document.querySelector('#d-cont').click();await sl(40);const lbl=/Verder spelen als je kleinkind/.test(document.querySelector('#death').textContent);inherit(g.id);
+  const me=S.p.first===g.first;const dad=S.rel.find(p=>p.role==='vader');const mom=S.rel.find(p=>p.role==='moeder');const bro=S.rel.find(p=>p.role==='broer');const gp=S.rel.find(p=>['opa','oma'].includes(p.role)&&!p.alive);
+  return {ok:lbl&&me&&dad&&!dad.alive&&mom&&mom.alive&&bro&&gp,msg:`knop ${lbl}, speler ${me}, vader overleden ${dad&&!dad.alive}, moeder ${!!mom}, broer ${!!bro}, grootouder ${!!gp}`}});
+
+// ---------- fase 10 ----------
+F8T('10.1','nieuwe beroepen en studies: piloot via de pilotenopleiding','NL','',async()=>{S.m=24*12;const ok1=['piloot','cabine','buschauffeur','machinist','tandarts','apotheker','dierenarts','ambulance','ambtenaar','brandweer','recherche','douane','boer','hovenier','timmerman','loodgieter'].every(id=>!!JOB(id));
+  S.edu.deg.push({ty:'hbo',f:'luchtvaart'});const st=startFor(JOB('piloot'));const em=jobEm('piloot')==='✈️';const grp=jobGroup('brandweer')==='veilig'&&!!SIG.veilig;
+  return {ok:ok1&&st&&st.lvl===0&&em&&grp,msg:`16 beroepen ${ok1}, toegang piloot ${!!st}, icoon ${em}, groep ${grp}`}});
+F8T('10.2','werkdag: logregel of een situatie uit je beroep','NL','',async()=>{S.m=30*12;setJob('brandweer',0);let modal=0,res=0;for(let i=0;i<12;i++){S.acts={};workDay();await sl(20);const t=(document.querySelector('#modal .ptitle')||{}).textContent||'';if(/Op je werk/.test(t)){modal++;document.querySelector('#modal .btn').click();await sl(20)}const t2=(document.querySelector('#modal .ptitle')||{}).textContent||'';if(/Werkdag/.test(t2))res++;closeModal()}
+  return {ok:res>=10&&modal>=1,msg:`${modal}× een situatie, ${res}× een uitslag`}});
+F8T('10.3','jaargesprek en werktijden','NL','',async()=>{S.m=35*12;setJob('ambtenaar',0);S.job.yrs=2;S.job.lyrs=2;const s0=salary();openSheet('Werk',sheetMyJob,true);await sl(30);const txt=document.querySelector('#sheet-b').textContent;
+  const r=[...document.querySelectorAll('#sheet-b .mrow')].find(x=>/Jaargesprek/.test(x.textContent));r.click();await sl(30);const b=[...document.querySelectorAll('#modal .btn')].find(x=>/Tevreden/.test(x.textContent));b.click();await sl(30);closeModal();closeSheet();
+  S.job.wl='part';const s1=salary();S.job.wl='normaal';return {ok:/Werktijden/.test(txt)&&/leidinggevende/.test(txt)&&S.acts.jg===1&&Math.abs(s1/s0-.6)<.01,msg:`rijen ${/Werktijden/.test(txt)}, gesprek gehad ${S.acts.jg===1}, parttime ${Math.round(s1/s0*100)}%`}});
+F8T('10.4','burn-out na jaren overuren','NL','',async()=>{S.m=35*12;setJob('ambtenaar',0);S.job.wl='over';S.job.ot=3;let got=false;for(let i=0;i<40&&!got;i++){S.fmY=0;Q.length=0;workYear();got=Q.some(q=>q.id==='w10_burnout')}Q.length=0;return {ok:got,msg:`burn-out in de wachtrij ${got}`}});
+F8T('10.5','school: docenten met een naam en extra uitleg','NL','',async()=>{S.m=14*12;S.edu.stage='middel';S.edu.lvl='havo';S.edu.len=5;S.edu.yrs=1;ensureGrades();const el=document.createElement('div');sheetDocs(el);const t=el.textContent;
+  return {ok:/(meneer|mevrouw) /.test(t)&&/cijfer/.test(t),msg:`docenten ${/(meneer|mevrouw) /.test(t)}`}});
+F8T('10.6','studie: stage en semester in het buitenland, baan na je diploma','NL','',async()=>{S.m=20*12;S.money=8000;enroll('hbo','luchtvaart','zelf');const c=S.edu.cur;c.y=1;const el=document.createElement('div');f10StudyRows(el,c);const t=el.textContent;
+  S.flags.stage10={id:'piloot',lvl:0,co:'Testair'};S.edu.cur=null;S.job=null;stageYear();return {ok:/Stage lopen/.test(t)&&/buitenland/.test(t)&&S.job&&S.job.id==='piloot',msg:`rijen ${/Stage lopen/.test(t)}, aangenomen ${!!S.job}`}});
+// ---------- fase 11 ----------
+F8T('11.1','klachten eerst, de dokter stelt het vast; geen Alzheimer meer','NL','',async()=>{S.m=40*12;S.ill=[{n:'migraine',sev:2,l:0,und:1}];S.money=5000;const el=document.createElement('div');sheetDoctor(el);const t=el.textContent;
+  const r=treat(S.ill[0],'huisarts',{});return {ok:/bonzende hoofdpijn/i.test(t)&&/ontdekt wat het is/.test(r)&&!ILLO.includes('Alzheimer')&&/leefstijl/i.test(t),msg:`klacht zichtbaar ${/bonzende hoofdpijn/i.test(t)}, diagnose ${/ontdekt/.test(r)}, leefstijl ${/leefstijl/i.test(t)}`}});
+F8T('11.2','ernstige ziekte: behandelplan als groot moment','NL','',async()=>{S.m=60*12;S.money=50000;S.ill=[{n:'kanker',sev:9,l:1}];Q.length=0;Q.push({id:'h11_zkh',c:{n:'kanker'}});processQ();await sl(30);const t=(document.querySelector('#modal .ptitle')||{}).textContent||'';
+  document.querySelector('#modal .btn').click();await sl(30);closeModal();Q.length=0;return {ok:/behandelplan/.test(t),msg:`pop-up "${t.trim()}"`}});
+F8T('11.3','leefstijl en fitheid','NL','',async()=>{S.m=40*12;S.lastActs={gym:1,run:1,eten:1};lsYear();const a=S.ls;S.lastActs={};S.addict={roken:80};lsYear();return {ok:a>=70&&S.fit>0,msg:`leefstijl met sport ${a}, fitheid ${S.fit}`}});
+F8T('11.4','ouder worden: seniorenwoning, zorgcentrum en mantelzorg','NL','',async()=>{S.m=72*12;S.home={k:'huur',name:'Appartement',rent:16500};const el=document.createElement('div');sheetHousing(el);const t=el.textContent;
+  const v=mkPerson('vader','m',S.m-95*12,{rel:70});S.rel.push(v);const el2=document.createElement('div');sheetPerson(el2,v);return {ok:/seniorenwoning/.test(t)&&/Mantelzorg/.test(el2.textContent),msg:`seniorenwoning ${/seniorenwoning/.test(t)}, mantelzorg ${/Mantelzorg/.test(el2.textContent)}`}});
+
+// ---------- fase 12 ----------
+F8T('12.1','bioscoop met iemand: keuze en herinnering','NL','',async()=>{S.m=30*12;S.money=5000;const f=addFriend();f.rel=70;openSheet('Bioscoop',sheetMovies,true);await sl(30);document.querySelector('#sheet-b .mrow').click();await sl(30);
+  const who=[...document.querySelectorAll('#modal .btn')].find(x=>x.textContent.includes(f.first));const r0=f.rel;who.click();await sl(30);const t=(document.querySelector('#modal .pbody')||{}).textContent||'';document.querySelector('#modal .btn').click();await sl(30);closeModal();closeSheet();
+  return {ok:/Wat vond je ervan/.test(t)&&f.rel>r0,msg:`keuze ${/Wat vond je ervan/.test(t)}, band ${r0} → ${f.rel}`}});
+F8T('12.2','reizen: bestemming, iets onderweg, souvenir','NL','',async()=>{S.m=30*12;S.money=20000;trip('🗼','Parijs',700);await sl(30);const b=[...document.querySelectorAll('#modal .btn')].find(x=>/Alleen/.test(x.textContent));b.click();await sl(30);document.querySelector('#modal .btn').click();await sl(30);closeModal();
+  const el=document.createElement('div');sheetTravel(el);return {ok:(S.souv||[]).some(x=>x[1]==='Parijs')&&/souvenirs/i.test(el.textContent),msg:`souvenir ${(S.souv||[]).length}, rij ${/souvenirs/i.test(el.textContent)}`}});
+F8T('12.3','nieuwe activiteiten: cultuur, buiten, sport kijken, leren','NL','',async()=>{S.m=30*12;S.money=20000;const keys=['cultuur','buiten','kijk','leren'].every(k=>ACTS.some(x=>x[0]===k));
+  const els=[sheetCulture,sheetOut,sheetWatch,sheetLearn].map(fn=>{const el=document.createElement('div');fn(el);return el.textContent});
+  return {ok:keys&&/Museum/.test(els[0])&&/volkstuin/i.test(els[1])&&/stadion/.test(els[2])&&/Engels/.test(els[3])&&/geloof/i.test(els[3]),msg:`in het menu ${keys}`}});
+F8T('12.4','hobby wordt beroep, taal leren tot vloeiend','NL','',async()=>{S.m=30*12;S.money=50000;S.hob=S.hob||{};S.hob.fotografie=80;const el=document.createElement('div');sheetHobby(el,'fotografie');
+  S.lang={Spaans:95};S.acts={};const el2=document.createElement('div');sheetLearn(el2);const r=[...el2.querySelectorAll('.mrow')].find(x=>/Spaans/.test(x.textContent));r.click();await sl(30);closeModal();
+  return {ok:/beroep van maken/.test(el.textContent)&&S.lang.Spaans===100,msg:`beroep-rij ${/beroep van maken/.test(el.textContent)}, Spaans ${S.lang.Spaans}`}});
+
 const sl=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const b=await chromium.launch();let fail=0;const only=process.argv[2];
   for(const x of T){if(only&&!x.nr.startsWith(only))continue;

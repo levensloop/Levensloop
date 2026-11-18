@@ -54,6 +54,6 @@ F8.person.push((el,p)=>{if(!godOn()||!p.alive)return;const s=sec(el,'✨ God-mod
   if(!pet&&p.role==='vijand')row(s,{ic:'🕊️',t:'Vrede sluiten',on:()=>doAct('God-modus',()=>{S.god=1;p.role='vriend';p.rel=70;return `${p.first} staat met een taart voor de deur. Jullie zijn vrienden.`},true,'🕊️')})});
 // karakter doet ook echt iets
 F8.year.push(()=>{for(const p of S.rel){if(!p.kt||!p.alive||p.born>S.m)continue;
-  if(p.kt==='Lief')p.rel=clamp(p.rel+1);else if(p.kt==='Chagrijnig')p.rel=clamp(p.rel-1);else if(p.kt==='Grappig'&&p.rel>=60)hap(1);else if(p.kt==='Ambitieus')p.money=Math.round((p.money||0)*1.04+2000*(S.cpi||1));else if(p.kt==='Lui')p.money=Math.round((p.money||0)*.98);
+  if(p.kt==='Lief')p.rel=clamp(p.rel+1);else if(p.kt==='Chagrijnig')p.rel=clamp(p.rel-1);else if(p.kt==='Grappig'&&p.rel>=60&&!S.acts.grap9&&p.role!=='huisdier'){S.acts.grap9=1;if(chance(.5))hap(1)}else if(p.kt==='Ambitieus')p.money=Math.round((p.money||0)*1.04+2000*(S.cpi||1));else if(p.kt==='Lui')p.money=Math.round((p.money||0)*.98);
   if(p.kt==='Jaloers'&&p.role==='partner'&&chance(.25)){p.rel=clamp(p.rel-6);hap(-2);L(`${p.first} is jaloers omdat je te lang met een collega praatte.`,'sys')}}});
 if(typeof sheetAch==='function'){sheetAch=(f=>function(el){if(S.god)card(el,'<span class="muted">✱ In dit leven is God-modus gebruikt.</span>');f(el)})(sheetAch)}
