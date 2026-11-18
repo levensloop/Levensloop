@@ -337,7 +337,7 @@ function cellmate(){const J=S.crim.jail,c=J.cell;
     {t:'😤 Intimideren',on:()=>{closeModal();doAct('Intimideren',()=>{c.rel=clamp(c.rel-ri(10,20));if(chance(.6)){J.resp+=6;return `${c.first} doet voortaan wat jij zegt.`}hea(-ri(5,12));return `${c.first} slaat terug. Hard.`},true,'😤')}},
     {t:'🕳️ Samen een ontsnapping plannen',dis:c.rel<60,on:()=>{closeModal();doAct('Plan',()=>{J.tunnel=Math.max(J.tunnel,40);return 'Jullie beginnen elke nacht te graven achter de wc.'},true,'🕳️')}}])})}
 function sheetLove(el){const a=ageY();const s=sec(el,'');
-  row(s,{ic:'💘',t:'Daten',s:partner()?'Je hebt al een relatie':a<16?'Vanaf 16 jaar':'Swipe door de datingapp',dis:!!partner()||a<16,dots:true,on:dating});
+  row(s,{ic:'💘',t:'Daten',s:partner()?'Je hebt al een relatie':a<10?'Vanaf 10 jaar':'Swipe door de datingapp',dis:!!partner()||a<10,dots:true,on:()=>dating()});
   row(s,{ic:'🤝',t:'Vrienden maken',s:'Ga naar plekken waar je mensen ontmoet',dis:a<5,on:()=>doAct('Vrienden maken',()=>{const m=use('vrienden');if(chance((.35+S.sk.sociaal/200)*m)){const f=addFriend();sk('sociaal',2);return f?`Je raakt aan de praat met ${f.first}. Een nieuwe vriend!`:'Je hebt al genoeg vrienden.'}hap(-1);return 'Het klikt met niemand.'},true,'🤝')});
   row(s,{ic:'🥂',t:'Speeddaten',s:a<18?'Vanaf 18 jaar':`Kost ${fmt(35)}`,dis:!!partner()||a<18,dots:true,on:()=>doAct('Speeddaten',()=>{cash(-35);use('speed');if(chance(.3+S.st.looks/300)){addPartner();hap(6);return 'Na tien dates van vier minuten is er één die je mee uit vraagt. Het klikt!'}hap(-1);return 'Tien dates, nul klik.'},true,'🥂')})}
 function sheetMind(el){const a=ageY();const s=sec(el,'');

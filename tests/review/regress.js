@@ -363,6 +363,12 @@ F8T('19.4','scheiding: huis verdelen en partneralimentatie; ruzie-moment','NL','
   S.job={id:JOBS[0].id,lvl:0,mult:3,perf:50,y:0};const sal=salary();const h=mkListing(4);const pr=buyHouse(h,false);S.home={k:'eigen',pid:pr.id};S.money=5e6;const m0=S.money;
   breakUp();const al=S.alim;const kept=S.props.includes(pr);const r=EV.l19_ruzie.ch.map(c=>c[0]).join(' / ');
   return {ok:p.role==='ex'&&kept&&S.money<m0/2&&(sal<10000||!!al&&al.until===year()+5),msg:`salaris ${sal}; huis gehouden ${kept}, saldo ${m0} → ${S.money}; alimentatie ${al?al.amt+' tot '+al.until:'geen'}; ruzie: ${r}`}});
+F8T('19.5','daten binnen je leeftijdsgroep (10–14, 14–16, 16–30, 30+), minderjarig alleen met minderjarig, zelf leeftijd kiezen','NL','',async()=>{S.flags.pref='beide';const out=[];let ok=true;
+  for(const a of [10,12,14,15,16,17,18,25,30,45,80]){S.m=a*12+3;S.flags.dage=null;let lo=999,hi=0;for(let i=0;i<150;i++){for(const c of [candidate({app:1}),candidate()]){const x=pAge(c);lo=Math.min(lo,x);hi=Math.max(hi,x)}}
+    const B=dateBand(a);if(lo<B[0]||hi>B[1]||(a<18&&hi>=18)||(a>=18&&lo<18))ok=false;out.push(`${a}: ${lo}–${hi}`)}
+  S.m=40*12;S.flags.dage=[50,59];let pr=true;for(let i=0;i<100;i++){const x=pAge(candidate({app:1}));if(x<50||x>59)pr=false}S.flags.dage=null;
+  S.m=12*12;const kid=dprof();const kidOk=!/drinken|kroeg|wijn/.test(kid.bio)&&kid.job==='scholier';
+  return {ok:ok&&pr&&kidOk,msg:out.join(' · ')+` · voorkeur 50–59 ${pr} · kinderprofiel ${kidOk}`}});
 F8T('16.3','nieuwe misdrijven en een nieuwe start','NL','',async()=>{S.m=25*12;S.sk.tech=50;const ids=['hacken','afpersing','heling'].every(id=>CRIMES.some(c=>c.id===id)&&CRIMEPLAN[id]);S.crim.rec.push({w:'Inbreken',a:20});const el=document.createElement('div');sheetCrime(el);
   return {ok:ids&&/nieuwe start/.test(el.textContent),msg:`misdrijven ${ids}`}});
 
